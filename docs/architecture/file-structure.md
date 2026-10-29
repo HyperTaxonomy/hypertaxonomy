@@ -108,6 +108,8 @@ hypertaxonomy/
     │   ├── post-editor-rest.php        # REST endpoints: GET htax/v1/suggested-tags, GET htax/v1/term-meta (editor UI — require edit_posts)
     │   ├── rest-api.php                # REST field extensions on term/post objects + X-HyperTaxonomy header + sitemap filter
     │   ├── search.php             # All search functions (24 functions - query handling, post text sync, AJAX formatting, utilities)
+    │   ├── search-state.php       # Search State API: POST/Redirect/GET token encode/decode for large searches
+    │   ├── strength-models.php    # Strength Model API: registration, scoring hooks for external relevance models
     │   ├── taxonomies.php         # Custom taxonomy registration (registers 'group' taxonomy)
     │   ├── term-archives.php      # Archive queries & sticky posts (12 functions - includes group archives)
     │   ├── term-conversion.php    # Term taxonomy conversion (14 functions): native engine,  icon-transfer check, sticky transfer, redirect stub creation
@@ -229,6 +231,8 @@ Load order (dependencies verified):
    - core/term-visibility.php (visibility logic - depends on helpers)
    - core/cache.php (includes cache helpers)
    - core/search.php (all search functions - depends on term-visibility)
+   - core/search-state.php (Search State POST/Redirect/GET token encode/decode)
+   - core/strength-models.php (Strength Model API registration/scoring hooks)
    - core/taxonomies.php (registers 'group' taxonomy)
    - core/group-functions.php (group membership - _htax_groups meta)
    - core/term-relationships.php (includes relationship helpers)

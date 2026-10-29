@@ -407,7 +407,7 @@ Post text fields (title, content, excerpt) use **NATURAL LANGUAGE MODE** so that
 - `htax_reverse_rel_{slug}_{term_id}` - Raw A→T rows for a relationship type, non-group sources only. Works for any slug including core `'includes'`. No TTL. Invalidated by `htax_delete_custom_rel_caches_for_term`. Used by the term edit screen and surgically by `htax_invalidate_term_caches_on_delete` to clear a target's cache when its source term is deleted.
 - `htax_direct_rel_grp_{slug}_{term_id}` - Raw T→G rows for a relationship type, group targets only. Works for any slug including core `'includes'`. No TTL. Invalidated by `htax_delete_custom_rel_caches_for_term`. Used by the PRE-CLEAR warm-cache path in `htax_invalidate_term_caches_on_delete` to avoid a DB query for group targets.
 - `htax_reverse_rel_grp_{slug}_{term_id}` - Raw G→T rows for a relationship type, group sources only. Works for any slug including core `'includes'`. No TTL. Invalidated by `htax_delete_custom_rel_caches_for_term`.
-- `htax_autocomplete_*` - Autocomplete caches for admin UI
+- `htax_ac_*` / `htax_ac_grp_*` - Autocomplete caches for admin UI (term and group autocomplete, respectively)
 - `htax_ss_{hash}` - Search state of a POST-mode search too large for an inline results-page token (`htax_search_state_encode()`; the token is `k{hash}`, a 16-hex content hash). TTL 30 days (`HTAX_SEARCH_STATE_TTL`); an expired token makes the results URL render as if no search was submitted.
 - `htax_pl_t{ids}_f{ids}_p{page}_n{ppp}_m{max}_o{orderby}_x{excludes}` - Post list shortcode query results (see below)
 

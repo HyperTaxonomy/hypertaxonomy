@@ -85,8 +85,10 @@ class HyperTaxonomy_Capabilities {
             $allcaps['manage_term_visibility'] = true;
         }
 
-        // Map edit_posts to sticky posts capability
-        if ( isset( $allcaps['edit_posts'] ) && $allcaps['edit_posts'] ) {
+        // Map manage_categories (Editor+) to sticky posts capability, matching the
+        // documented "Admin + Editor" role model. Contributors/Authors also hold
+        // edit_posts but must not get this capability.
+        if ( isset( $allcaps['manage_categories'] ) && $allcaps['manage_categories'] ) {
             $allcaps['manage_term_sticky_posts'] = true;
         }
 
@@ -104,7 +106,7 @@ class HyperTaxonomy_Capabilities {
             'manage_term_redirects' => 'manage_categories',
             'manage_term_icons' => 'manage_categories',
             'manage_term_visibility' => 'manage_categories',
-            'manage_term_sticky_posts' => 'edit_posts',
+            'manage_term_sticky_posts' => 'manage_categories',
         );
 
         if ( current_user_can( $capability ) ) {

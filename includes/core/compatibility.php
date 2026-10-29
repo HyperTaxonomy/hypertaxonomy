@@ -29,12 +29,12 @@ function htax_check_compatibility() {
         );
     }
 
-    // Check WordPress version
+    // Check WordPress version. Must match the "Requires at least" header in hypertaxonomy.php.
     global $wp_version;
-    if ( version_compare( $wp_version, '5.0', '<' ) ) {
+    if ( version_compare( $wp_version, '5.9', '<' ) ) {
         $errors[] = sprintf(
             /* translators: %s: Current WordPress version */
-            __( 'HyperTaxonomy requires WordPress 5.0 or higher. You are running WordPress %s.', 'hypertaxonomy' ),
+            __( 'HyperTaxonomy requires WordPress 5.9 or higher. You are running WordPress %s.', 'hypertaxonomy' ),
             $wp_version
         );
     }
@@ -97,22 +97,61 @@ function htax_display_compatibility_errors() {
  * @return array Array of missing files
  */
 function htax_check_file_integrity() {
+    // Must cover every file includes/bootstrap.php require_once's without its own
+    // file_exists() guard — anything missing from this list can fatal with a raw
+    // PHP error instead of the graceful admin notice below.
     $required_files = array(
         'includes/bootstrap.php',
         'includes/core/functions.php',
+        'includes/core/helpers.php',
+        'includes/core/relationship-types.php',
+        'includes/core/relationship-types-rest.php',
+        'includes/core/post-editor-rest.php',
+        'includes/core/term-visibility.php',
         'includes/core/cache.php',
         'includes/core/search.php',
         'includes/core/search-state.php',
+        'includes/core/strength-models.php',
+        'includes/core/taxonomies.php',
+        'includes/core/group-functions.php',
         'includes/core/term-relationships.php',
+        'includes/core/term-groups.php',
+        'includes/core/term-conversion.php',
+        'includes/core/term-merge.php',
         'includes/core/term-archives.php',
+        'includes/core/integration-api.php',
+        'includes/core/rest-api.php',
         'includes/core/frontend.php',
+        'includes/core/native-blocks.php',
         'includes/core/activation.php',
-        'includes/admin/settings.php',
-        'includes/admin/term-icons.php',
-        'includes/admin/term-edit.php',
         'includes/admin/post-edit.php',
+        'includes/admin/term-icons.php',
+        'includes/admin/admin-menu.php',
+        'includes/admin/relationship-types-admin.php',
+        'includes/admin/term-edit-lock.php',
+        'includes/admin/settings.php',
+        'includes/admin/import-tag-groups-handler.php',
+        'includes/admin/tag-groups-live-sync.php',
+        'includes/admin/term-edit.php',
         'includes/admin/tables.php',
+        'includes/admin/term-filters.php',
+        'includes/admin/bulk-actions.php',
+        'includes/admin/group-admin.php',
+        'includes/admin/merge-terms.php',
+        'includes/admin/convert-terms.php',
         'includes/admin/ajax.php',
+        'includes/shortcodes/class-shortcode-base.php',
+        'includes/shortcodes/class-term-display-base.php',
+        'includes/shortcodes/class-term-list.php',
+        'includes/shortcodes/class-term-cloud.php',
+        'includes/shortcodes/class-term-groups.php',
+        'includes/shortcodes/class-term-index.php',
+        'includes/shortcodes/class-sort-order.php',
+        'includes/shortcodes/class-filter-options.php',
+        'includes/shortcodes/class-post-list.php',
+        'includes/classes/class-blocks.php',
+        'includes/integrations/class-atcf-integration.php',
+        'includes/integrations/class-taxopress-integration.php',
         'includes/hooks/actions.php',
         'includes/hooks/filters.php',
     );

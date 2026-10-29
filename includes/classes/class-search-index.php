@@ -99,6 +99,16 @@ class HyperTaxonomy_Search_Index_Manager {
      * When post is deleted
      */
     public function on_post_delete( $post_id ) {
+        $this->remove_post_from_search_index( $post_id );
+    }
+
+    /**
+     * Remove a post from wp_htax_search_terms and clear the count cache for
+     * whatever terms it was associated with.
+     *
+     * @param int $post_id Post ID.
+     */
+    private function remove_post_from_search_index( $post_id ) {
         global $wpdb;
         $table_name = $wpdb->prefix . 'htax_search_terms';
 
@@ -174,13 +184,20 @@ class HyperTaxonomy_Search_Index_Manager {
      * @param WP_Post $post Post object
      */
     public function on_post_status_change( $new_status, $old_status, $post ) {
-        // Only process posts (not pages, attachments, etc.)
-        if ( ! in_array( $post->post_type, htax_get_indexed_post_types(), true ) ) {
-            return;
-        }
-
         $was_published = ( 'publish' === $old_status );
         $is_published  = ( 'publish' === $new_status );
+
+        // Current post_type is not one we index. This also catches a post whose
+        // type changed away from an indexed type while post_status itself stayed
+        // "publish" (no status transition, so the branches below would otherwise
+        // never run) — if it was published before, make sure it isn't left behind
+        // in the index.
+        if ( ! in_array( $post->post_type, htax_get_indexed_post_types(), true ) ) {
+            if ( $was_published ) {
+                $this->remove_post_from_search_index( $post->ID );
+            }
+            return;
+        }
 
         // No change in published state - nothing to do
         if ( $was_published === $is_published ) {
@@ -202,29 +219,7 @@ class HyperTaxonomy_Search_Index_Manager {
             }
         } else {
             // Post is no longer published - remove from index
-            global $wpdb;
-            $table_name = $wpdb->prefix . 'htax_search_terms';
-
-            // Get terms before deleting (for cache clearing)
-            $terms_by_taxonomy = $wpdb->get_results( $wpdb->prepare(
-                "SELECT DISTINCT source_term_id, taxonomy
-                 FROM {$table_name}
-                 WHERE post_id = %d
-                 AND relationship_type = 'direct'",
-                $post->ID
-            ), ARRAY_A );
-
-            // Delete from index
-            $wpdb->delete(
-                $table_name,
-                array( 'post_id' => $post->ID ),
-                array( '%d' )
-            );
-
-            // Clear count cache for affected terms
-            if ( ! empty( $terms_by_taxonomy ) ) {
-                $this->clear_count_cache_for_terms( $terms_by_taxonomy );
-            }
+            $this->remove_post_from_search_index( $post->ID );
         }
     }
 

@@ -624,12 +624,16 @@ function htax_sync_post_text_row( $post_id, $post ) {
         return;
     }
 
+    $table = $wpdb->prefix . 'htax_post_text';
+
+    // Current post_type is not one we index. This also catches a post whose type
+    // changed away from an indexed type (e.g. post -> a custom type) without a
+    // status transition — delete any pre-existing row so it doesn't go stale.
     $indexed_types = htax_get_indexed_post_types();
     if ( ! in_array( $post->post_type, $indexed_types, true ) ) {
+        $wpdb->delete( $table, array( 'post_id' => $post_id ), array( '%d' ) );
         return;
     }
-
-    $table = $wpdb->prefix . 'htax_post_text';
 
     // Store published, draft, and pending posts. Remove everything else (trash,
     // auto-draft, inherit) so the table never holds truly stale content.

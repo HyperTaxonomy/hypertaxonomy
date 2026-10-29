@@ -1,0 +1,251 @@
+/* Admin Styles for Term Icons */
+
+/* ── Size error notice ──────────────────────────────────────────────────── */
+.htax-icon-error {
+    color: #d63638;
+    margin: 6px 0 0;
+    font-style: italic;
+}
+
+/* ── Crop modal ─────────────────────────────────────────────────────────── */
+#htax-crop-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 100100; /* above wp.media (100001) */
+}
+
+#htax-crop-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, .7);
+}
+
+#htax-crop-dialog {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    border-radius: 4px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, .4);
+    padding: 24px;
+    max-width: 680px;
+    width: calc(100vw - 48px);
+    max-height: calc(100vh - 48px);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+#htax-crop-dialog h2 {
+    margin: 0;
+    font-size: 1.3em;
+}
+
+#htax-crop-instructions {
+    margin: 0;
+    color: #50575e;
+    font-style: italic;
+}
+
+#htax-crop-img-wrap {
+    overflow: auto;
+    flex: 1;
+    min-height: 0;
+    border: 1px solid #dcdcde;
+    background: #f0f0f1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+#htax-crop-img {
+    display: block;
+    max-width: 100%;
+    max-height: 420px;
+    width: auto;
+    height: auto;
+}
+
+#htax-crop-actions {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+}
+.htax-icon-preview {
+    margin-bottom: 10px;
+    display: inline-block;
+    position: relative;
+}
+
+.htax-icon-preview img {
+    max-width: 96px;
+    height: auto;
+    display: block;
+    border: 1px solid #ddd;
+    padding: 2px;
+    background: #fff;
+}
+
+.htax-icon-placeholder {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 18px;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+
+.htax-icon-buttons {
+    margin-bottom: 10px;
+}
+
+.htax-icon-buttons .button {
+    margin-right: 5px;
+}
+
+/* Widget Pill Styles with Icons */
+.htax-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 8px;
+    margin: 2px;
+    background: #f0f0f1;
+    border: 1px solid #c3c4c7;
+    border-radius: 12px;
+    font-size: 13px;
+    line-height: 1.4;
+    cursor: default;
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+/* Link pills (post metadata) */
+a.htax-pill {
+    cursor: pointer;
+    color: inherit;
+}
+
+a.htax-pill:hover {
+    background: #e0e0e0;
+    border-color: #a0a0a0;
+    text-decoration: none;
+}
+
+a.htax-pill:focus {
+    outline: 2px solid #0073aa;
+    outline-offset: 1px;
+}
+
+/* Icon display in pills */
+.htax-pill-icon {
+    width: 16px;
+    height: 16px;
+    margin-right: 4px;
+    vertical-align: middle;
+}
+
+/* Empty colored square placeholder */
+.htax-pill-placeholder {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    margin-right: 5px;
+    vertical-align: middle;
+}
+
+/* Locked pills (at minimum constraint) */
+.htax-pill-locked {
+    opacity: 0.8;
+    background: #e0e0e0;
+}
+
+.htax-pill-locked .htax-pill-remove {
+    display: none;
+}
+
+.htax-pill-text {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.htax-pill-remove {
+    margin-left: 5px;
+    background: none;
+    border: none;
+    color: #787c82;
+    cursor: pointer;
+    padding: 0;
+    width: 16px;
+    height: 16px;
+    line-height: 14px;
+    text-align: center;
+    border-radius: 50%;
+    transition: all 0.2s;
+    font-size: 16px;
+}
+
+.htax-pill-remove:hover {
+    background: rgba(0,0,0,0.1);
+    color: #d63638;
+}
+
+/* Term list display (for themes) */
+.htax-term-link {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 8px;
+    margin: 2px;
+    text-decoration: none;
+}
+
+.htax-term-link .htax-term-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 6px;
+    object-fit: cover;
+}
+
+.htax-term-link .htax-term-placeholder {
+    width: 20px;
+    height: 20px;
+    margin-right: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 10px;
+    font-weight: bold;
+}
+
+/* Archive page icons */
+.htax-archive-icon {
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 10px;
+}
+
+.htax-archive-icon img {
+    width: 48px;
+    height: 48px;
+    object-fit: cover;
+}
+
+.htax-archive-icon .htax-icon-placeholder {
+    width: 48px;
+    height: 48px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}

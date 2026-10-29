@@ -1,0 +1,138 @@
+{
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+    "apiVersion": 3,
+    "name": "hypertaxonomy/related-posts",
+    "version": "1.0.0",
+    "title": "HT Related Posts",
+    "category": "hypertaxonomy",
+    "icon": "randomize",
+    "description": "Display posts related to the current post by shared taxonomy terms, with full HyperTaxonomy relevance scoring.",
+    "keywords": [ "related", "posts", "taxonomy", "terms", "hypertaxonomy" ],
+    "supports": {
+        "html": false,
+        "align": false
+    },
+    "usesContext": [ "postId", "postType" ],
+    "textdomain": "hypertaxonomy",
+    "attributes": {
+        "taxonomy": {
+            "type": "string",
+            "default": "post_tag"
+        },
+        "include_terms": {
+            "type": "string",
+            "default": ""
+        },
+        "include_groups": {
+            "type": "string",
+            "default": ""
+        },
+        "exclude_terms": {
+            "type": "string",
+            "default": ""
+        },
+        "exclude_groups": {
+            "type": "string",
+            "default": ""
+        },
+        "filter_terms": {
+            "type": "string",
+            "default": ""
+        },
+        "filter_groups": {
+            "type": "string",
+            "default": ""
+        },
+        "filter_out_terms": {
+            "type": "string",
+            "default": ""
+        },
+        "filter_out_groups": {
+            "type": "string",
+            "default": ""
+        },
+        "posts_per_page": {
+            "type": "string",
+            "default": "10"
+        },
+        "max_results": {
+            "type": "string",
+            "default": "0"
+        },
+        "post_type": {
+            "type": "string",
+            "default": "post"
+        },
+        "orderby": {
+            "type": "string",
+            "default": "relevance:desc,date:desc"
+        },
+        "show_thumbnail": {
+            "type": "string",
+            "default": "true"
+        },
+        "show_excerpt": {
+            "type": "string",
+            "default": "true"
+        },
+        "meta": {
+            "type": "string",
+            "default": "{date} by {author}"
+        },
+        "template": {
+            "type": "string",
+            "default": "default"
+        },
+        "format": {
+            "type": "string",
+            "default": "ul"
+        },
+        "class": {
+            "type": "string",
+            "default": ""
+        },
+        "no_results_message": {
+            "type": "string",
+            "default": ""
+        },
+        "sort_order_options": {
+            "type": "string",
+            "default": ""
+        },
+        "filters": {
+            "type": "string",
+            "default": ""
+        },
+        "filter_options": {
+            "type": "string",
+            "default": ""
+        },
+        "sort_order_align": {
+            "type": "string",
+            "default": ""
+        },
+        "filters_align": {
+            "type": "string",
+            "default": ""
+        },
+        "prepend": {
+            "type": "string",
+            "default": ""
+        },
+        "append": {
+            "type": "string",
+            "default": ""
+        },
+        "image_size": {
+            "type": "string",
+            "default": "medium"
+        },
+        "columns": {
+            "type": "string",
+            "default": "1"
+        }
+    },
+    "example": {},
+    "editorScript": "file:./build/index.js",
+    "editorStyle": "file:./build/ht-related-posts.css"
+}

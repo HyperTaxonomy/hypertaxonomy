@@ -1,0 +1,238 @@
+/**
+ * Sort Order Picker Component
+ *
+ * Shared styles for the pill-based sort order selector.
+ * Used on the admin term edit screen and on frontend archives/search.
+ *
+ * @package HyperTaxonomy
+ * @since 1.0.0
+ */
+
+/* ============================================================================
+   ROOT WRAPPER
+   ============================================================================ */
+
+.htax-sort-order-root {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Hide container + picker when collapsed */
+.htax-sort-order-root[data-state="collapsed"] [data-htax-sort-container],
+.htax-sort-order-root[data-state="collapsed"] [data-htax-sort-picker] {
+    display: none !important;
+}
+
+/* ============================================================================
+   TOGGLE BUTTON
+   ============================================================================ */
+
+.htax-sort-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    background: none;
+    border: 1px solid #c3c4c7;
+    border-radius: 3px;
+    font-size: 13px;
+    line-height: 1.4;
+    cursor: pointer;
+    color: inherit;
+    white-space: nowrap;
+}
+
+.htax-sort-toggle:hover {
+    border-color: #8c8f94;
+    background: #f0f0f1;
+}
+
+/* Hide toggle button when expanded (optional — always visible if you want
+   users to be able to collapse again after expanding) */
+
+/* ============================================================================
+   SORT ORDER CONTAINER (active pills + add button)
+   ============================================================================ */
+
+.htax-sort-order-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    align-items: center;
+    padding: 4px 6px;
+    min-height: 36px;
+}
+
+/* ============================================================================
+   ACTIVE SORT PILL
+   ============================================================================ */
+
+.htax-sort-order-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 6px 3px 4px;
+    background: #f0f0f1;
+    border: 1px solid #c3c4c7;
+    border-radius: 3px;
+    font-size: 13px;
+    line-height: 1.4;
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    height: 26px;
+    box-sizing: border-box;
+}
+
+.htax-sort-order-pill:hover {
+    border-color: #8c8f94;
+    background: #e8e8e8;
+}
+
+.htax-sort-order-pill.htax-sort-dragging {
+    opacity: 0.35;
+}
+
+/* Drag handle (⋮) */
+.htax-sort-drag-handle {
+    color: #8c8f94;
+    font-size: 16px;
+    line-height: 1;
+    cursor: grab;
+    flex-shrink: 0;
+}
+
+.htax-sort-order-pill:active .htax-sort-drag-handle {
+    cursor: grabbing;
+}
+
+/* Field label */
+.htax-sort-label {
+    flex-shrink: 0;
+}
+
+/* Direction arrow (↑ / ↓) */
+.htax-sort-dir {
+    font-size: 14px;
+    font-weight: 600;
+    min-width: 10px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+/* Remove (×) button */
+.htax-sort-order-pill .htax-remove {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    padding: 0;
+    margin-left: 2px;
+    width: 14px;
+    height: 14px;
+    font-size: 16px;
+    line-height: 1;
+    color: #8c8f94;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.htax-sort-order-pill .htax-remove:hover {
+    color: #d63638;
+}
+
+/* ============================================================================
+   ADD BUTTON (+)
+   ============================================================================ */
+
+.htax-sort-order-add {
+    background: #fff;
+    border: 1px solid #8c8f94;
+    border-radius: 3px;
+    color: #50575e;
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    box-sizing: border-box;
+    transition: border-color 0.1s, color 0.1s;
+}
+
+.htax-sort-order-add:hover {
+    border-color: #2271b1;
+    color: #2271b1;
+    background: #f0f6fc;
+}
+
+.htax-sort-order-add:focus {
+    outline: 2px solid #2271b1;
+    outline-offset: 1px;
+}
+
+/* ============================================================================
+   PICKER POPOVER
+   ============================================================================ */
+
+.htax-sort-order-picker {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    padding: 6px 8px;
+    background: #fff;
+    border: 1px solid #c3c4c7;
+    border-radius: 4px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    margin-top: 4px;
+}
+
+.htax-sort-picker-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    background: #f6f7f7;
+    border: 1px solid #c3c4c7;
+    border-radius: 3px;
+    font-size: 13px;
+    line-height: 1.4;
+    height: 26px;
+    cursor: pointer;
+    box-sizing: border-box;
+    white-space: nowrap;
+}
+
+.htax-sort-picker-pill:hover {
+    background: #2271b1;
+    border-color: #135e96;
+    color: #fff;
+}
+
+/* ============================================================================
+   ADMIN CONTEXT OVERRIDES
+   Apply when the component is inside a WordPress admin form.
+   ============================================================================ */
+
+.wp-admin .htax-sort-order-container {
+    border: 1px solid #8c8f94;
+    border-radius: 4px;
+    background: #fff;
+    max-width: 600px;
+    padding: 4px 6px;
+}
+
+.wp-admin .htax-sort-order-container:focus-within {
+    border-color: #2271b1;
+    box-shadow: 0 0 0 1px #2271b1;
+    outline: 2px solid transparent;
+}
+
+.wp-admin .htax-sort-order-picker {
+    max-width: 600px;
+}

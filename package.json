@@ -1,0 +1,16 @@
+{
+    "name": "hypertaxonomy",
+    "version": "1.0.0",
+    "description": "HyperTaxonomy WordPress plugin",
+    "scripts": {
+        "build": "wp-scripts build",
+        "start": "wp-scripts start",
+        "lint:js": "wp-scripts lint-js blocks"
+    },
+    "devDependencies": {
+        "@wordpress/scripts": "^30.0.0"
+    },
+    "dependencies": {
+        "playwright": "^1.60.0"
+    }
+}

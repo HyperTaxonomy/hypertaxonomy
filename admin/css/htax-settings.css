@@ -1,0 +1,107 @@
+/**
+ * Settings Page Styles
+ * Styling for the HyperTaxonomy settings page in wp-admin
+ *
+ * @package HyperTaxonomy
+ * @since 1.0.0
+ */
+
+.htax-nav-tab-wrapper {
+    margin-bottom: 20px;
+}
+
+.htax-settings-form .form-table {
+    margin-top: 0;
+}
+
+.htax-taxonomy-option {
+    margin-bottom: 10px;
+    display: inline-block;
+}
+
+.htax-relevance-table td,
+.htax-cache-table td {
+    padding: 5px 10px 5px 0;
+}
+
+.htax-relevance-table td:first-child,
+.htax-cache-table td:first-child {
+    min-width: 150px;
+}
+
+.htax-corners-table td {
+    padding: 8px 12px 8px 0;
+}
+
+.htax-corner-slider {
+    vertical-align: middle;
+}
+
+.htax-corner-value {
+    min-width: 40px;
+    display: inline-block;
+    font-weight: 600;
+    color: #2271b1;
+}
+
+/* Subtab styling to match top-level tabs */
+.htax-general-subtabs,
+.htax-search-subtabs,
+.htax-icons-subtabs,
+.htax-export-import-subtabs {
+    margin: 0 0 20px;
+    padding: 0;
+    border-bottom: 1px solid #c3c4c7;
+    background: transparent;
+}
+
+.htax-general-subtabs li,
+.htax-search-subtabs li,
+.htax-icons-subtabs li,
+.htax-export-import-subtabs li {
+    display: inline-block;
+    margin: 0 0 -1px;
+    padding: 0;
+}
+
+.htax-general-subtabs a,
+.htax-search-subtabs a,
+.htax-icons-subtabs a,
+.htax-export-import-subtabs a {
+    display: inline-block;
+    padding: 8px 14px;
+    text-decoration: none;
+    border: 1px solid transparent;
+    background: transparent;
+    color: #50575e;
+    font-weight: 400;
+    transition: all 0.1s ease-in-out;
+}
+
+.htax-general-subtabs a:hover,
+.htax-search-subtabs a:hover,
+.htax-icons-subtabs a:hover,
+.htax-export-import-subtabs a:hover {
+    color: #2271b1;
+}
+
+.htax-general-subtabs a.current,
+.htax-search-subtabs a.current,
+.htax-icons-subtabs a.current,
+.htax-export-import-subtabs a.current {
+    margin: 0;
+    padding: 8px 14px;
+    border: 1px solid #c3c4c7;
+    border-bottom-color: #f0f0f1;
+    background: #f0f0f1;
+    color: #000;
+    font-weight: 600;
+}
+
+/* Remove the pipe separators from old subsubsub style */
+.htax-general-subtabs li::before,
+.htax-search-subtabs li::before,
+.htax-icons-subtabs li::before,
+.htax-export-import-subtabs li::before {
+    content: none;
+}

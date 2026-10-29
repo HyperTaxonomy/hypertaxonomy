@@ -1,0 +1,69 @@
+{
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+    "apiVersion": 3,
+    "name": "hypertaxonomy/power-search",
+    "version": "1.0.0",
+    "title": "HT PowerSearch",
+    "category": "hypertaxonomy",
+    "icon": "search",
+    "description": "A MySQL FULLTEXT search form with relevance scoring, field operators (title:, tags:, etc.), and boolean logic. Renders results inline (POST mode) or updates a separate container (AJAX mode).",
+    "keywords": [ "search", "fulltext", "posts", "hypertaxonomy" ],
+    "supports": {
+        "html": false,
+        "align": false
+    },
+    "textdomain": "hypertaxonomy",
+    "attributes": {
+        "placeholder": {
+            "type": "string",
+            "default": ""
+        },
+        "button_text": {
+            "type": "string",
+            "default": ""
+        },
+        "match": {
+            "type": "string",
+            "default": "any"
+        },
+        "min_length": {
+            "type": "string",
+            "default": "3"
+        },
+        "search_in": {
+            "type": "string",
+            "default": "all"
+        },
+        "posts_per_page": {
+            "type": "string",
+            "default": "10"
+        },
+        "max_results": {
+            "type": "string",
+            "default": "0"
+        },
+        "orderby": {
+            "type": "string",
+            "default": "relevance:desc,date:desc"
+        },
+        "min_score": {
+            "type": "string",
+            "default": "0.01"
+        },
+        "ajax": {
+            "type": "string",
+            "default": ""
+        },
+        "class": {
+            "type": "string",
+            "default": ""
+        },
+        "near_country": {
+            "type": "string",
+            "default": "US"
+        }
+    },
+    "example": {},
+    "editorScript": "file:./build/index.js",
+    "editorStyle": "file:./build/ht-power-search.css"
+}

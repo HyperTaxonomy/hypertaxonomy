@@ -1,0 +1,211 @@
+/**
+ * HyperTaxonomy Filter Options Styles
+ *
+ * Filter panel rendered by [ht_filter_options] and htax_render_filter_options().
+ *
+ * @package HyperTaxonomy
+ * @since 1.0.0
+ */
+
+/* ==========================================================================
+   Root container
+   ========================================================================== */
+
+.htax-filter-options {
+    font-size: 0.9em;
+    margin-bottom: 1em;
+}
+
+/* ==========================================================================
+   Header: toggle button + clear button
+   ========================================================================== */
+
+.htax-filter-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75em;
+    margin-bottom: 0.5em;
+}
+
+.htax-filter-toggle {
+    background: none;
+    border: 1px solid currentColor;
+    border-radius: 3px;
+    cursor: pointer;
+    font: inherit;
+    padding: 0.3em 0.7em;
+    opacity: 0.8;
+}
+
+.htax-filter-toggle:hover {
+    opacity: 1;
+}
+
+.htax-filter-clear {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.85em;
+    opacity: 0.6;
+    padding: 0;
+    text-decoration: underline;
+}
+
+.htax-filter-clear:hover {
+    opacity: 1;
+}
+
+/* ==========================================================================
+   Body: visibility
+   ========================================================================== */
+
+.htax-filter-state-collapsed .htax-filter-body {
+    display: none;
+}
+
+.htax-filter-state-expanded .htax-filter-body {
+    display: block;
+}
+
+/* ==========================================================================
+   Filter body layout
+   ========================================================================== */
+
+.htax-filter-body {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1em 2em;
+    align-items: flex-start;
+}
+
+/* ==========================================================================
+   Individual filter group
+   ========================================================================== */
+
+.htax-filter-group {
+    min-width: 8em;
+}
+
+.htax-filter-group-label {
+    font-weight: 600;
+    margin-bottom: 0.4em;
+    font-size: 0.85em;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    opacity: 0.7;
+}
+
+/* ==========================================================================
+   Pills (flat taxonomy term filter)
+   ========================================================================== */
+
+.htax-filter-pills-mode .htax-filter-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3em;
+}
+
+.htax-filter-pill {
+    background: none;
+    border: 1px solid currentColor;
+    border-radius: 2em;
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.85em;
+    line-height: 1;
+    opacity: 0.55;
+    padding: 0.3em 0.7em;
+    transition: opacity 0.15s, background-color 0.15s;
+}
+
+.htax-filter-pill:hover {
+    opacity: 0.8;
+}
+
+.htax-filter-pill.htax-active {
+    background-color: currentColor;
+    opacity: 1;
+}
+
+/* Invert text color inside active pills so label is readable */
+.htax-filter-pill.htax-active span,
+.htax-filter-pill.htax-active {
+    color: inherit;
+}
+
+/* Ensure text inside filled pill contrasts with background */
+.htax-filter-pill.htax-active {
+    color: #fff;
+    border-color: transparent;
+    /* Fallback: rely on theme foreground color — works well on light and dark themes */
+}
+
+/* ==========================================================================
+   Checklist (hierarchical taxonomy or author)
+   ========================================================================== */
+
+.htax-filter-checklist {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25em;
+}
+
+.htax-filter-checklist-item {
+    display: flex;
+    align-items: center;
+    gap: 0.4em;
+    cursor: pointer;
+    font-size: 0.9em;
+}
+
+.htax-filter-checklist-item input[type="checkbox"] {
+    cursor: pointer;
+    margin: 0;
+}
+
+/* ==========================================================================
+   Date inputs
+   ========================================================================== */
+
+.htax-filter-date-inputs {
+    display: flex;
+    align-items: center;
+    gap: 0.4em;
+    flex-wrap: wrap;
+}
+
+.htax-filter-date-inputs input[type="date"] {
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    font: inherit;
+    font-size: 0.9em;
+    padding: 0.25em 0.4em;
+    max-width: 10em;
+}
+
+.htax-filter-date-sep {
+    opacity: 0.5;
+}
+
+/* ==========================================================================
+   Controls bar: flex row holding sort picker and/or filter panel
+   ========================================================================== */
+
+.htax-controls-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75em;
+    margin-bottom: 0.75em;
+}
+
+/* Suppress each control's own bottom margin when inside the bar */
+.htax-controls-bar .htax-filter-options,
+.htax-controls-bar .htax-sort-order-root {
+    margin-bottom: 0;
+}
+
+.htax-controls-bar .htax-align-right  { margin-left: auto; }
+.htax-controls-bar .htax-align-left   { margin-right: auto; }
+.htax-controls-bar .htax-align-center { margin-left: auto; margin-right: auto; }

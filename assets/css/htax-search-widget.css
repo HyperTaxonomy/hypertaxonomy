@@ -1,0 +1,1116 @@
+/**
+ * HyperTaxonomy Advanced Search Widget Styles
+ * @package HyperTaxonomy
+ * @since 1.0.0
+ */
+
+/* Import admin styles for pills to match admin UI */
+@import url('../../admin/css/htax-term-edit.css');
+
+/* ==========================================================================
+   Form Container
+   ========================================================================== */
+
+.htax-search-form {
+    margin: 20px 0;
+    padding: 20px;
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    font-size: 14px;
+}
+
+/* State classes */
+.htax-search-form.htax-state-collapsed .htax-show-expanded {
+    display: none !important;
+}
+
+.htax-search-form.htax-state-expanded .htax-show-collapsed {
+    display: none !important;
+}
+
+.htax-hidden {
+    display: none !important;
+}
+
+/* Toggle button: CSS drives the text swap so the correct label shows before JS runs */
+.htax-search-form.htax-state-expanded .htax-toggle-button .htax-text-collapsed {
+    display: none;
+}
+
+.htax-search-form.htax-state-collapsed .htax-toggle-button .htax-text-expanded {
+    display: none;
+}
+
+/* ==========================================================================
+   Field Wrappers
+   ========================================================================== */
+
+.htax-field-wrapper {
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+}
+
+.htax-field-wrapper.htax-hidden {
+    display: none;
+}
+
+.htax-field-wrapper.htax-disabled {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.htax-field-wrapper.htax-error {
+    animation: shake 0.3s;
+}
+
+.htax-validation-message {
+    display: none;
+    margin-top: 4px;
+    font-size: 12px;
+    color: #dc3232;
+}
+.htax-field-wrapper.htax-error .htax-pills-container {
+    border-color: #dc3232;
+    box-shadow: 0 0 0 1px rgba(220, 50, 50, 0.3);
+    background: #fff8f8;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+/* Field labels */
+.htax-field-label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #333;
+    font-size: 14px;
+}
+
+.htax-required {
+    color: #dc3545;
+    font-weight: normal;
+}
+
+/* ==========================================================================
+   Field Groups
+   ========================================================================== */
+
+.htax-field-group {
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px dashed #d0d0d0;
+    border-radius: 6px;
+    background: #f9f9f9;
+    position: relative;
+}
+
+.htax-field-group .htax-field-group {
+    /* Nested groups - lighter background */
+    background: #ffffff;
+    border-color: #e0e0e0;
+    margin-bottom: 15px;
+}
+
+.htax-field-group[data-group-relation="OR"]::before {
+    content: "OR";
+    position: absolute;
+    top: -10px;
+    left: 10px;
+    background: #fff3cd;
+    color: #856404;
+    padding: 2px 8px;
+    font-size: 11px;
+    font-weight: 600;
+    border-radius: 3px;
+    border: 1px solid #ffc107;
+}
+
+.htax-field-group[data-group-relation="AND"]::before {
+    content: "AND";
+    position: absolute;
+    top: -10px;
+    left: 10px;
+    background: #d4edda;
+    color: #155724;
+    padding: 2px 8px;
+    font-size: 11px;
+    font-weight: 600;
+    border-radius: 3px;
+    border: 1px solid #28a745;
+}
+
+.htax-field-group .htax-field-wrapper:last-child {
+    margin-bottom: 0;
+}
+
+.htax-field-group.htax-hidden {
+    display: none;
+}
+
+/* ==========================================================================
+   Pills Field
+   ========================================================================== */
+
+.htax-pills-container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+    padding: 3px;
+    width: 100%;
+    box-sizing: border-box;
+    min-height: 36px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: #fff;
+    transition: border-color 0.2s;
+}
+
+/* Pills container with max-rows scrolling */
+.htax-pills-container[data-max-rows] {
+    max-height: calc(var(--max-rows) * 38px + 16px); /* 38px per row + padding */
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.htax-pills-container:focus-within {
+    border-color: #0073aa;
+    box-shadow: 0 0 0 1px rgba(0, 115, 170, 0.1);
+}
+
+/* Individual pill */
+.htax-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 0 5px;
+    background: #f0f1f3;
+    border: 1px solid #d4d4d4;
+    border-radius: 3px;
+    font-size: 13px;
+    line-height: 1.4;
+    white-space: nowrap;
+    animation: fadeIn 0.2s;
+    overflow: hidden;
+}
+
+/* Pill icon/placeholder: flush with left border, stretch to fill pill height */
+.htax-pill-icon,
+.htax-pill-placeholder {
+    align-self: stretch;
+    flex-shrink: 0;
+    margin-left: -5px;
+    margin-right: 4px;
+}
+
+.htax-pill-icon {
+    width: 20px;
+    object-fit: cover;
+}
+
+.htax-pill-placeholder {
+    width: 20px;
+}
+
+/* Pill scheduled for animated removal */
+@keyframes htax-pill-blink {
+    0%, 100% { border-color: #dc3232; box-shadow: 0 0 0 2px rgba(220, 50, 50, 0.25); background: #fff0f0; }
+    50%       { border-color: #dc3232; box-shadow: 0 0 0 4px rgba(220, 50, 50, 0.5);  background: #ffe0e0; }
+}
+.htax-pill.htax-pill-removing {
+    animation: htax-pill-blink 0.8s ease-in-out infinite;
+    pointer-events: none;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.8); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.htax-pill:hover {
+    background: #e8e9eb;
+    border-color: #bbb;
+}
+
+/* Pill remove button */
+.htax-pill-remove {
+    margin-left: 6px;
+    padding: 0;
+    background: none;
+    border: none;
+    color: #666;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.htax-pill-remove:hover {
+    color: #dc3545;
+}
+
+/* Pills input field — !important needed to beat jQuery UI's cross-origin stylesheet */
+.htax-pills-container .htax-pills-input {
+    flex: 1;
+    min-width: 120px;
+    padding: 4px;
+    border: none;
+    outline: none;
+    font-size: inherit !important;
+    background: transparent;
+}
+
+/* Pill count indicator */
+.htax-count {
+    margin-left: 4px;
+    color: #666;
+    font-size: 11px;
+}
+
+/* ==========================================================================
+   Checklist Field
+   ========================================================================== */
+
+.htax-checklist-container {
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: #fff;
+}
+
+/* Checklist container with max-rows override */
+.htax-checklist-container[data-max-rows] {
+    max-height: calc(var(--max-rows) * 28px + 20px); /* 28px per item + padding */
+}
+
+.htax-checklist-item {
+    margin: 5px 0;
+    line-height: 1.6;
+}
+
+.htax-checklist-item label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-size: inherit;
+    transition: color 0.2s;
+}
+
+.htax-checklist-item label:hover {
+    color: #0073aa;
+}
+
+.htax-checklist-item input[type="checkbox"] {
+    margin-right: 8px;
+}
+
+.htax-checklist-item input[type="checkbox"]:disabled:not(:checked) {
+    cursor: not-allowed;
+    opacity: 0.4;
+}
+
+.htax-checklist-item input[type="checkbox"]:disabled:checked,
+.htax-checklist-item input[type="checkbox"].htax-locked {
+    cursor: not-allowed;
+    opacity: 1;
+    accent-color: #2271b1;
+}
+
+.htax-checklist-item input[type="checkbox"].htax-locked + span::after {
+    content: " 🔒";
+    font-size: 12px;
+    opacity: 0.5;
+}
+
+/* Hierarchical indentation */
+.htax-checklist-container .htax-checklist-item[style*="margin-left: 20px"] {
+    border-left: 2px solid #e0e0e0;
+    padding-left: 10px;
+}
+
+/* ==========================================================================
+   Controllers
+   ========================================================================== */
+
+.htax-controller-wrapper {
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+}
+
+.htax-controller-wrapper.htax-hidden {
+    display: none;
+}
+
+.htax-controller-wrapper.htax-disabled {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.htax-controller-label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: 600;
+    color: #333;
+    font-size: 14px;
+}
+
+/* Radio buttons */
+.htax-radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.htax-controller-wrapper.htax-inline .htax-radio-group {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.htax-radio-item label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-size: inherit;
+}
+
+.htax-radio-item input[type="radio"] {
+    margin-right: 8px;
+}
+
+/* Checkboxes */
+.htax-checkbox-group,
+.htax-toggle-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.htax-controller-wrapper.htax-inline .htax-checkbox-group,
+.htax-controller-wrapper.htax-inline .htax-toggle-group {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.htax-checkbox-item label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-size: inherit;
+}
+
+.htax-checkbox-item input[type="checkbox"] {
+    margin-right: 8px;
+}
+
+/* Toggle */
+
+.htax-toggle-item label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-size: inherit;
+    gap: 10px;
+}
+
+.htax-toggle-item input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.htax-toggle-switch {
+    position: relative;
+    display: inline-block;
+    flex-shrink: 0;
+    width: 36px;
+    height: 20px;
+    background: #ccc;
+    border-radius: 20px;
+    transition: background 0.2s;
+}
+
+.htax-toggle-switch::before {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 14px;
+    height: 14px;
+    background: #fff;
+    border-radius: 50%;
+    transition: transform 0.2s;
+}
+
+.htax-toggle-item input[type="checkbox"]:checked + .htax-toggle-switch {
+    background: #2271b1;
+}
+
+.htax-toggle-item input[type="checkbox"]:checked + .htax-toggle-switch::before {
+    transform: translateX(16px);
+}
+
+.htax-toggle-item input[type="checkbox"]:disabled + .htax-toggle-switch {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.htax-toggle-item input[type="checkbox"]:focus-visible + .htax-toggle-switch {
+    outline: 2px solid #2271b1;
+    outline-offset: 2px;
+}
+
+/* Dropdown */
+.htax-dropdown {
+    width: 100%;
+    height: 36px;
+    padding: 0 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: #fff;
+    font-size: inherit;
+    cursor: pointer;
+    transition: border-color 0.2s;
+}
+
+.htax-dropdown:focus {
+    outline: none;
+    border-color: #0073aa;
+    box-shadow: 0 0 0 1px rgba(0, 115, 170, 0.1);
+}
+
+/* Button controller */
+.htax-controller-button button[data-actions] {
+    margin: 5px;
+    padding: 6px 16px;
+    background: #f0f0f1;
+    color: #333;
+    border: 1px solid #c3c4c7;
+    border-radius: 4px;
+    font-size: inherit;
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.htax-controller-button button[data-actions]:hover {
+    background: #e0e0e1;
+    border-color: #999;
+}
+
+.htax-controller-button button[data-actions]:active {
+    background: #d0d0d1;
+}
+
+.htax-controller-button button[data-actions]:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Link controller */
+.htax-controller-link a[data-actions] {
+    color: #0073aa;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.htax-controller-link a[data-actions]:hover {
+    text-decoration: underline;
+}
+
+/* ==========================================================================
+   Buttons
+   ========================================================================== */
+
+.htax-text-input {
+    height: 36px;
+    padding: 0 12px;
+    font-size: inherit;
+    line-height: 36px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.htax-text-input:focus {
+    outline: none;
+    border-color: #0073aa;
+    box-shadow: 0 0 0 1px #0073aa;
+}
+
+.htax-submit-button,
+.htax-toggle-button {
+    height: 36px;
+    padding: 0 16px;
+    background: #0073aa;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: inherit;
+    font-weight: 500;
+    line-height: 36px;
+    box-sizing: border-box;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+.htax-submit-button:hover,
+.htax-toggle-button:hover {
+    background: #005a87;
+}
+
+.htax-submit-button:active,
+.htax-toggle-button:active {
+    transform: translateY(1px);
+}
+
+.htax-toggle-button {
+    background: #f7f7f7;
+    color: #333;
+    border: 1px solid #ddd;
+    margin-left: 10px;
+}
+
+.htax-toggle-button:hover {
+    background: #e7e7e7;
+}
+
+/* Button container */
+.htax-search-form > button {
+    margin-right: 10px;
+}
+
+/* ==========================================================================
+   Search Results
+   ========================================================================== */
+
+.htax-controls-bar {
+    margin-top: 32px;
+}
+
+.htax-search-results {
+    margin-top: 20px;
+}
+
+.htax-results-container {
+    min-height: 100px;
+}
+
+/* Loading indicator */
+.htax-loading {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+    font-size: 14px;
+}
+
+.htax-loading::before {
+    content: "";
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #0073aa;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    vertical-align: middle;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* No results message */
+.htax-no-results {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+    font-size: 16px;
+}
+
+/* Result item */
+.htax-result-item {
+    display: flex;
+    gap: 20px;
+    padding: 20px 0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.htax-result-item:last-child {
+    border-bottom: none;
+}
+
+/* Result thumbnail */
+.htax-result-thumbnail {
+    flex: 0 0 150px;
+}
+
+.htax-result-thumbnail img {
+    width: 100%;
+    height: auto;
+    border-radius: 4px;
+}
+
+/* Result content */
+.htax-result-content {
+    flex: 1;
+}
+
+.htax-result-title {
+    margin: 0 0 10px 0;
+    font-size: 20px;
+    line-height: 1.3;
+}
+
+.htax-result-title a {
+    color: #333;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.htax-result-title a:hover {
+    color: #0073aa;
+}
+
+.htax-result-excerpt {
+    margin-bottom: 10px;
+    color: #666;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.htax-result-meta {
+    font-size: 12px;
+    color: #999;
+}
+
+.htax-meta-date,
+.htax-meta-author {
+    margin-right: 15px;
+}
+
+/* Grid template */
+.htax-search-results[data-template="grid"] .htax-results-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.htax-search-results[data-template="grid"] .htax-result-item {
+    flex-direction: column;
+    padding: 0;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.htax-search-results[data-template="grid"] .htax-result-thumbnail {
+    flex: none;
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+}
+
+.htax-search-results[data-template="grid"] .htax-result-thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 0;
+}
+
+.htax-search-results[data-template="grid"] .htax-result-content {
+    padding: 15px;
+}
+
+/* ============================================================================
+   COLUMN LAYOUT (controlled via --htax-columns CSS custom property)
+   Only active when columns > 1; PHP sets inline style only in that case.
+   ============================================================================ */
+
+/* Post list div format: CSS grid */
+.htax-post-list[style*="--htax-columns"] {
+    display: grid;
+    grid-template-columns: repeat(var(--htax-columns), 1fr);
+    gap: 20px;
+}
+
+/* Post list ul/ol format: multi-column text flow */
+.htax-post-list[style*="--htax-columns"] > ul,
+.htax-post-list[style*="--htax-columns"] > ol {
+    column-count: var(--htax-columns);
+    column-gap: 30px;
+}
+
+/* Search results (both search widget and PowerSearch): grid layout */
+.htax-search-results[style*="--htax-columns"] .htax-results-container {
+    display: grid;
+    grid-template-columns: repeat(var(--htax-columns), 1fr);
+    gap: 20px;
+}
+
+/* Results count always spans all columns */
+.htax-results-container .htax-results-count {
+    grid-column: 1 / -1;
+}
+
+/* List-format result: spans full width, uses column-count internally */
+.htax-results-container .htax-result-list {
+    grid-column: 1 / -1;
+}
+.htax-search-results[style*="--htax-columns"] .htax-result-list {
+    column-count: var(--htax-columns);
+    column-gap: 30px;
+}
+
+/* Responsive: cap at 2 columns on tablet */
+@media (max-width: 768px) {
+    .htax-post-list[style*="--htax-columns"],
+    .htax-search-results[style*="--htax-columns"] .htax-results-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .htax-post-list[style*="--htax-columns"] > ul,
+    .htax-post-list[style*="--htax-columns"] > ol,
+    .htax-search-results[style*="--htax-columns"] .htax-result-list {
+        column-count: 2;
+    }
+}
+
+/* Responsive: 1 column on mobile */
+@media (max-width: 480px) {
+    .htax-post-list[style*="--htax-columns"],
+    .htax-search-results[style*="--htax-columns"] .htax-results-container {
+        grid-template-columns: 1fr;
+    }
+    .htax-post-list[style*="--htax-columns"] > ul,
+    .htax-post-list[style*="--htax-columns"] > ol,
+    .htax-search-results[style*="--htax-columns"] .htax-result-list {
+        column-count: 1;
+    }
+}
+
+/* Pagination nav */
+.htax-search-results-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin: 30px auto;
+}
+
+.htax-search-results-nav .htax-results-prev,
+.htax-search-results-nav .htax-results-next {
+    padding: 8px 20px;
+    background: #f7f7f7;
+    color: #333;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.htax-search-results-nav .htax-results-prev:hover,
+.htax-search-results-nav .htax-results-next:hover {
+    background: #e7e7e7;
+}
+
+.htax-search-results-nav .htax-results-page-info {
+    font-size: 13px;
+    color: #666;
+}
+
+/* ==========================================================================
+   Autocomplete Dropdown
+   ========================================================================== */
+
+.ui-autocomplete {
+    max-height: none !important;
+    overflow-x: hidden;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-top: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 0 0 4px 4px;
+    z-index: 1000;
+}
+
+.ui-autocomplete li {
+    list-style: none;
+}
+
+.htax-autocomplete-item {
+    display: flex;
+    align-items: center;
+    padding: 1px 12px;
+    cursor: pointer;
+    border: none;
+    text-decoration: none;
+    color: #32373c;
+    background: #fff;
+}
+
+.ui-autocomplete li:hover .htax-autocomplete-item {
+    background: #0073aa;
+    color: #fff;
+}
+
+.htax-autocomplete-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 4px;
+    border-radius: 2px;
+    flex-shrink: 0;
+    object-fit: cover;
+}
+
+.htax-autocomplete-placeholder {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    margin-right: 4px;
+    border-radius: 2px;
+    flex-shrink: 0;
+}
+
+.htax-autocomplete-text {
+    flex: 1;
+}
+
+.ui-autocomplete .ui-state-focus {
+    background: transparent;
+    border: none;
+}
+
+.ui-menu-item {
+    padding: 0;
+    cursor: pointer;
+    font-size: 13px;
+    transition: background-color 0.2s;
+}
+
+.ui-menu-item:hover,
+.ui-state-active {
+    background: #0073aa;
+    color: #fff;
+}
+
+/* ==========================================================================
+   Responsive Design
+   ========================================================================== */
+
+@media screen and (max-width: 768px) {
+    .htax-search-form {
+        padding: 15px;
+    }
+    
+    .htax-result-item {
+        flex-direction: column;
+    }
+    
+    .htax-result-thumbnail {
+        flex: none;
+        width: 100%;
+        height: 200px;
+        overflow: hidden;
+    }
+    
+    .htax-result-thumbnail img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .htax-search-results[data-template="grid"] .htax-results-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .htax-controller-wrapper.htax-inline .htax-radio-group,
+    .htax-controller-wrapper.htax-inline .htax-checkbox-group,
+    .htax-controller-wrapper.htax-inline .htax-toggle-group {
+        flex-direction: column;
+        gap: 8px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .htax-pills-container {
+        min-height: auto;
+        padding: 6px;
+    }
+    
+    .htax-pill {
+        font-size: 12px;
+        padding: 3px 8px;
+    }
+    
+    .htax-submit-button,
+    .htax-toggle-button {
+        width: 100%;
+        margin: 5px 0;
+    }
+}
+
+/* ==========================================================================
+   Dark Mode Support
+   ========================================================================== */
+
+@media (prefers-color-scheme: dark) {
+    .htax-search-form {
+        background: #1e1e1e;
+        border-color: #444;
+    }
+    
+    .htax-field-label,
+    .htax-controller-label {
+        color: #e0e0e0;
+    }
+    
+    .htax-pills-container,
+    .htax-checklist-container {
+        background: #2a2a2a;
+        border-color: #444;
+    }
+    
+    .htax-pill {
+        background: #333;
+        border-color: #555;
+        color: #e0e0e0;
+    }
+    
+    .htax-pill:hover {
+        background: #444;
+        border-color: #666;
+    }
+    
+    .htax-pills-input {
+        color: #e0e0e0;
+    }
+    
+    .htax-dropdown {
+        background: #2a2a2a;
+        border-color: #444;
+        color: #e0e0e0;
+    }
+    
+    .htax-result-title a {
+        color: #e0e0e0;
+    }
+    
+    .htax-result-title a:hover {
+        color: #4db8ff;
+    }
+    
+    .ui-autocomplete {
+        background: #2a2a2a;
+        border-color: #444;
+    }
+    
+    .ui-menu-item {
+        color: #e0e0e0;
+    }
+    
+    .ui-menu-item:hover,
+    .ui-state-active {
+        background: #0073aa;
+        color: #fff;
+    }
+}
+
+/* ==========================================================================
+   Utility Classes
+   ========================================================================== */
+
+.htax-error {
+    border-color: #dc3545 !important;
+}
+
+.htax-error .htax-field-label {
+    color: #dc3545;
+}
+
+.htax-success {
+    border-color: #28a745 !important;
+}
+
+.htax-warning {
+    border-color: #ffc107 !important;
+}
+
+.htax-clearfix::after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.htax-text-center {
+    text-align: center;
+}
+
+.htax-text-right {
+    text-align: right;
+}
+
+/* ==========================================================================
+   Accessibility
+   ========================================================================== */
+
+/* Focus styles */
+.htax-search-form *:focus {
+    outline: 2px solid #0073aa;
+    outline-offset: 2px;
+}
+
+.htax-search-form button:focus {
+    outline-offset: 0;
+}
+
+/* Skip link */
+
+/* Checklist items implied by a checked ancestor (match=any) — visible but inactive.
+   pointer-events:none blocks interaction; opacity signals the unavailable state. */
+.htax-checklist-item.htax-implied-by-parent {
+    opacity: 0.35;
+    pointer-events: none;
+}
+
+/* -------------------------------------------------------------------------
+   Distance field — inline label text ("Within … of …") and geo icon
+------------------------------------------------------------------------- */
+
+.htax-distance-label,
+.htax-distance-of {
+    white-space: nowrap;
+    color: inherit;
+}
+
+/* Suppress ATCF's own bottom margin when inside an HT field wrapper */
+.htax-field-distance .atcf-finder-controls {
+    margin-bottom: 0;
+}
+
+/* Loading / used states — class names match ATCF's atcfGeo.initGeoBtn API */
+
+@keyframes htax-geo-pulse {
+    from { opacity: 1; }
+    to   { opacity: 0.3; }
+}
+
+/* Notice about how a search was run (e.g. near:me without a known location) */
+.htax-search-notice {
+    margin: 0 0 1em;
+    padding: 8px 12px;
+    border-left: 4px solid #dba617;
+    background: #fcf9e8;
+    color: #3c434a;
+}

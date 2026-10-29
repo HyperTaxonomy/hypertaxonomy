@@ -1,0 +1,305 @@
+/**
+ * Hierarchical Checklist Component - CSS
+ *
+ * Styling for hierarchical term checklists with search filter.
+ * Based on WordPress core's category meta box styles.
+ * Can be used in admin screens and frontend widgets.
+ *
+ * @package HyperTaxonomy
+ * @since 1.0.0
+ */
+
+/* ==========================================================================
+   Wrapper and Container
+   ========================================================================== */
+
+.htax-hierarchical-checklist-wrapper {
+	position: relative;
+}
+
+.htax-checklist-container {
+	position: relative;
+}
+
+/* ==========================================================================
+   Tabs
+   ========================================================================== */
+
+.htax-checklist-tabs {
+	margin: 12px 0 0 0;
+	padding: 0;
+	clear: both;
+	list-style: none;
+}
+
+.htax-checklist-tabs li {
+	display: inline;
+	border-style: solid solid none;
+	border-width: 1px;
+	border-color: #c3c4c7;
+	margin: 0;
+}
+
+.htax-checklist-tabs li.tabs {
+	border-color: #c3c4c7;
+	background-color: #fff;
+	color: #000;
+}
+
+.htax-checklist-tabs li a {
+	text-decoration: none;
+	display: block;
+	padding: 4px 7px;
+	border-bottom-width: 0;
+	color: inherit;
+}
+
+.htax-checklist-tabs li a:hover,
+.htax-checklist-tabs li a:focus {
+	color: #2271b1;
+}
+
+/* ==========================================================================
+   Tabs Panels
+   ========================================================================== */
+
+.htax-hierarchical-checklist-wrapper .tabs-panel {
+	border: 1px solid #c3c4c7;
+	background-color: #fff;
+	min-height: 42px;
+	margin-top: -1px;
+}
+
+.htax-hierarchical-checklist-wrapper .tabs-panel:not([style*="padding"]) {
+	padding: 0 0.9em;
+}
+
+/* ==========================================================================
+   Search Input
+   ========================================================================== */
+
+.htax-checklist-search {
+	width: 100%;
+	margin: 0 0 4px 0;
+	padding: 4px 6px;
+	border: 1px solid #dcdcde;
+	border-radius: 0;
+	box-sizing: border-box;
+	font-size: 13px;
+	background-color: transparent;
+}
+
+.htax-checklist-search:focus {
+	border-color: #2271b1;
+	outline: 1px solid #2271b1;
+	outline-offset: 0;
+	background-color: transparent;
+}
+
+/* Search inside tabs-panel */
+.tabs-panel .htax-checklist-search {
+	margin-top: 4px;
+}
+
+/* Search input in add-tag form (no tabs) - eliminate gap below search */
+.tabs-panel[style*="border: 0"] .htax-checklist-search {
+	margin-bottom: 0;
+	padding: 3px 6px;
+}
+
+/* Search input wrapper in add-tag form - remove white background gap */
+.tabs-panel[style*="border: 0"] {
+	background-color: transparent;
+	padding-top: 0;
+	padding-bottom: 0;
+}
+
+/* Checklist container in add-tag form - eliminate gap after search input */
+.tabs-panel[style*="border: 0"] .htax-checklist-container {
+	margin-top: 0;
+}
+
+/* ==========================================================================
+   Checklist - Hierarchical Structure
+   ========================================================================== */
+
+.htax-checklist {
+	margin: 0;
+	padding: 0 0 0 2px;
+	list-style: none;
+}
+
+.htax-checklist.htax-checklist {
+	overflow: visible;
+}
+
+.htax-checklist li {
+	margin: 0;
+	padding: 0;
+	line-height: 2;
+	position: relative;
+}
+
+/* Nested lists for hierarchy - 18px indentation per level */
+.htax-checklist ul {
+	margin-left: 18px;
+	list-style: none;
+	padding: 0;
+}
+
+.htax-checklist ul ul {
+	margin-left: 18px;
+}
+
+/* Labels */
+.htax-checklist label {
+	display: inline-block;
+	margin: 0;
+	padding: 0;
+	cursor: pointer;
+	white-space: nowrap;
+}
+
+.htax-checklist label:hover {
+	color: #2271b1;
+}
+
+/* Focused state for accessibility */
+.htax-checklist label.htax-focused {
+	outline: 1px dotted #2271b1;
+	outline-offset: 2px;
+}
+
+/* Checkboxes */
+.htax-checklist input[type="checkbox"] {
+	margin: 0 5px 0 0;
+	vertical-align: text-top;
+}
+
+/* ==========================================================================
+   Special States
+   ========================================================================== */
+
+/* Popular terms */
+.htax-checklist .popular-term > label {
+	font-weight: 600;
+}
+
+/* Disabled checkboxes */
+.htax-checklist input[type="checkbox"]:disabled + label {
+	color: #a7aaad;
+	cursor: not-allowed;
+}
+
+/* Form utility */
+.form-no-clear {
+	overflow: auto;
+}
+
+/* ==========================================================================
+   Responsive Adjustments
+   ========================================================================== */
+
+@media screen and (max-width: 782px) {
+	.htax-checklist label {
+		font-size: 14px;
+		line-height: 2.2;
+	}
+
+	.htax-checklist input[type="checkbox"] {
+		margin-right: 8px;
+	}
+
+	.htax-checklist-search {
+		font-size: 16px; /* Prevent zoom on iOS */
+		padding: 6px 8px;
+	}
+}
+
+/* ==========================================================================
+   Integration with Term Edit Screens
+   ========================================================================== */
+
+/* When used in term edit forms */
+.form-field .htax-hierarchical-checklist-wrapper {
+	max-width: 600px;
+}
+
+tr.form-field .htax-hierarchical-checklist-wrapper {
+	max-width: none;
+}
+
+/* Add some spacing in form context */
+.form-field .htax-checklist-container {
+	margin-top: 4px;
+}
+
+/* ==========================================================================
+   Loading and Empty States
+   ========================================================================== */
+
+.htax-checklist-loading {
+	padding: 20px;
+	text-align: center;
+	color: #646970;
+}
+
+.htax-checklist-loading::before {
+	content: "";
+	display: inline-block;
+	width: 20px;
+	height: 20px;
+	border: 2px solid #f0f0f1;
+	border-top-color: #2271b1;
+	border-radius: 50%;
+	animation: htax-checklist-spin 0.6s linear infinite;
+	margin-right: 8px;
+	vertical-align: middle;
+}
+
+@keyframes htax-checklist-spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+/* Empty state */
+.htax-checklist-empty {
+	padding: 12px;
+	text-align: center;
+	color: #646970;
+	font-style: italic;
+}
+
+/* ==========================================================================
+   Print Styles
+   ========================================================================== */
+
+@media print {
+	.htax-checklist-search {
+		display: none;
+	}
+
+	.htax-checklist-tabs {
+		display: none;
+	}
+
+	.htax-hierarchical-checklist-wrapper .tabs-panel {
+		display: block !important;
+		border: none;
+		padding: 0;
+	}
+}
+
+/* ==========================================================================
+   Disabled Items — owned by another tool, not togglable here
+   ========================================================================== */
+
+.htax-checklist li input[type="checkbox"]:disabled {
+	cursor: not-allowed;
+}
+
+.htax-checklist-item-locked {
+	color: #646970;
+	cursor: not-allowed;
+}

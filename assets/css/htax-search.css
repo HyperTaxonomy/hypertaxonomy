@@ -1,0 +1,122 @@
+/**
+ * HyperTaxonomy Search Styles
+ * @package HyperTaxonomy
+ * @since 1.0.0
+ */
+
+/* ==========================================================================
+   PowerSearch Form
+   ========================================================================== */
+
+.htax-power-search-form {
+    margin: 20px 0;
+}
+
+.htax-power-search-input-wrapper {
+    display: flex;
+    align-items: stretch;
+    gap: 10px;
+}
+
+.htax-power-search-input {
+    flex: 1;
+    padding: 10px 15px;
+    font-size: 16px;
+    line-height: 1.5;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    min-height: 44px;
+    box-sizing: border-box;
+}
+
+.htax-power-search-input:focus {
+    outline: none;
+    border-color: #0073aa;
+    box-shadow: 0 0 0 1px #0073aa;
+}
+
+.htax-power-search-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    line-height: 1.5;
+    color: #fff;
+    background-color: #0073aa;
+    border: 1px solid #0073aa;
+    border-radius: 4px;
+    cursor: pointer;
+    min-height: 44px;
+    box-sizing: border-box;
+    white-space: nowrap;
+    transition: background-color 0.2s ease;
+}
+
+.htax-power-search-button:hover {
+    background-color: #005a87;
+    border-color: #005a87;
+}
+
+.htax-power-search-button:active {
+    background-color: #004975;
+    border-color: #004975;
+}
+
+/* .htax-power-search-results and .htax-power-search-results-container are
+   now .htax-search-results and .htax-results-container (unified with search widget). */
+
+.htax-power-search-loading {
+    padding: 20px;
+    text-align: center;
+    color: #666;
+    font-style: italic;
+}
+
+.htax-power-search-result {
+    padding: 15px;
+    margin-bottom: 15px;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    transition: box-shadow 0.2s ease;
+}
+
+.htax-power-search-result:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.htax-power-search-result h3 {
+    margin: 0 0 10px 0;
+    font-size: 18px;
+}
+
+.htax-power-search-result h3 a {
+    color: #0073aa;
+    text-decoration: none;
+}
+
+.htax-power-search-result h3 a:hover {
+    text-decoration: underline;
+}
+
+.htax-power-search-result .excerpt {
+    color: #666;
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.htax-power-search-error {
+    padding: 15px;
+    background: #fff3cd;
+    border: 1px solid #ffc107;
+    border-radius: 4px;
+    color: #856404;
+}
+
+/* Notice about how a search was run (e.g. near:me without a known location) */
+.htax-search-notice {
+    margin: 0 0 1em;
+    padding: 8px 12px;
+    border-left: 4px solid #dba617;
+    background: #fcf9e8;
+    color: #3c434a;
+}

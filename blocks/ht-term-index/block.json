@@ -1,0 +1,113 @@
+{
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+    "apiVersion": 3,
+    "name": "hypertaxonomy/term-index",
+    "version": "1.0.0",
+    "title": "HT Term Index",
+    "category": "hypertaxonomy",
+    "icon": "book-alt",
+    "description": "Display an alphabetical A\u2013Z index of taxonomy terms with optional letter navigation.",
+    "keywords": [ "index", "terms", "taxonomy", "alphabetical", "hypertaxonomy" ],
+    "supports": {
+        "html": false,
+        "align": false
+    },
+    "textdomain": "hypertaxonomy",
+    "attributes": {
+        "taxonomy": {
+            "type": "string",
+            "default": "post_tag"
+        },
+        "hide_empty": {
+            "type": "string",
+            "default": "0"
+        },
+        "include_groups": {
+            "type": "string",
+            "default": ""
+        },
+        "exclude_groups": {
+            "type": "string",
+            "default": ""
+        },
+        "include_terms": {
+            "type": "string",
+            "default": ""
+        },
+        "exclude_terms": {
+            "type": "string",
+            "default": ""
+        },
+        "show_navigation": {
+            "type": "string",
+            "default": "true"
+        },
+        "show_letter_headers": {
+            "type": "string",
+            "default": "true"
+        },
+        "columns": {
+            "type": "string",
+            "default": "1"
+        },
+        "navigation_position": {
+            "type": "string",
+            "default": "top"
+        },
+        "show_count": {
+            "type": "string",
+            "default": "true"
+        },
+        "uppercase_letters": {
+            "type": "string",
+            "default": "true"
+        },
+        "empty_message": {
+            "type": "string",
+            "default": ""
+        },
+        "format": {
+            "type": "string",
+            "default": "ul"
+        },
+        "separator": {
+            "type": "string",
+            "default": ""
+        },
+        "div_class": {
+            "type": "string",
+            "default": ""
+        },
+        "div_id": {
+            "type": "string",
+            "default": ""
+        },
+        "min_count": {
+            "type": "string",
+            "default": "0"
+        },
+        "header": {
+            "type": "string",
+            "default": ""
+        },
+        "prepend": {
+            "type": "string",
+            "default": ""
+        },
+        "append": {
+            "type": "string",
+            "default": ""
+        },
+        "show_icons": {
+            "type": "string",
+            "default": "when_available"
+        },
+        "class": {
+            "type": "string",
+            "default": ""
+        }
+    },
+    "example": {},
+    "editorScript": "file:./build/index.js",
+    "editorStyle": "file:./build/ht-term-index.css"
+}

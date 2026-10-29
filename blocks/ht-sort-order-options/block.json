@@ -1,0 +1,45 @@
+{
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+    "apiVersion": 3,
+    "name": "hypertaxonomy/sort-order-options",
+    "version": "1.0.0",
+    "title": "HT Sort Order Options",
+    "category": "hypertaxonomy",
+    "icon": "sort",
+    "description": "A sort order picker for taxonomy archive and search results pages. Navigates to the same URL with the selected sort order as a query parameter.",
+    "keywords": [ "sort", "order", "archive", "search", "taxonomy", "hypertaxonomy" ],
+    "supports": {
+        "html": false,
+        "align": false
+    },
+    "textdomain": "hypertaxonomy",
+    "attributes": {
+        "fields": {
+            "type": "string",
+            "default": "date,modified,title,author,comment_count"
+        },
+        "state": {
+            "type": "string",
+            "default": "expanded"
+        },
+        "sort_default": {
+            "type": "string",
+            "default": ""
+        },
+        "text_collapsed": {
+            "type": "string",
+            "default": ""
+        },
+        "text_expanded": {
+            "type": "string",
+            "default": ""
+        },
+        "class": {
+            "type": "string",
+            "default": ""
+        }
+    },
+    "example": {},
+    "editorScript": "file:./build/index.js",
+    "editorStyle": "file:./build/ht-sort-order-options.css"
+}

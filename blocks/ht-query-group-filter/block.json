@@ -1,0 +1,15 @@
+{
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+    "apiVersion": 3,
+    "name": "hypertaxonomy/query-group-filter",
+    "version": "1.0.0",
+    "title": "HT Term Group Filter",
+    "category": "hypertaxonomy",
+    "icon": "admin-generic",
+    "description": "Block editor extension that adds a Term Group filter to the core Query Loop and Latest Posts blocks.",
+    "textdomain": "hypertaxonomy",
+    "supports": {
+        "inserter": false
+    },
+    "editorScript": "file:./build/index.js"
+}

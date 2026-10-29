@@ -1,0 +1,1282 @@
+/**
+ * HyperTaxonomy Admin Styles
+ */
+
+/* ============================================================================
+   Edit lock dialog
+   ============================================================================ */
+
+.notification-dialog-wrap .notification-dialog.htax-lock-dialog {
+    width: 512px;
+    border-radius: 8px;
+    overflow: hidden;
+    top: 50%;
+    left: calc(50vw - 256px);
+    transform: translateY(-50%);
+    margin: 0;
+    box-shadow:
+        rgba(0, 0, 0, 0.08) 0px 5px 15px 0px,
+        rgba(0, 0, 0, 0.07) 0px 15px 27px 0px,
+        rgba(0, 0, 0, 0.04) 0px 30px 36px 0px,
+        rgba(0, 0, 0, 0.02) 0px 50px 43px 0px;
+}
+
+#htax-term-lock-dialog .notification-dialog-background {
+    background: rgba(0, 0, 0, 0.35);
+}
+
+.htax-lock-dialog,
+.htax-lock-dialog h2,
+.htax-lock-dialog p {
+    color: #1e1e1e;
+}
+
+.htax-lock-heading {
+    margin: 0 0 27px;
+    padding: 34px 32px 0;
+    font-size: 19.2px;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+.htax-lock-dialog #htax-lock-message-editing .htax-lock-user,
+.htax-lock-dialog #htax-lock-message-editing .htax-lock-buttons,
+.htax-lock-dialog #htax-lock-message-taken .htax-lock-user,
+.htax-lock-dialog #htax-lock-message-taken .htax-lock-buttons {
+    padding: 0 32px;
+}
+
+.htax-lock-dialog #htax-lock-message-editing .htax-lock-buttons,
+.htax-lock-dialog #htax-lock-message-taken .htax-lock-buttons {
+    padding-bottom: 32px;
+}
+
+.htax-lock-dialog #htax-lock-message-editing .htax-lock-user,
+.htax-lock-dialog #htax-lock-message-taken .htax-lock-user {
+    padding-top: 12px;
+    padding-bottom: 20px;
+}
+
+.htax-lock-user {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+.htax-lock-user img {
+    flex-shrink: 0;
+    border-radius: 50%;
+}
+
+.htax-lock-user-info p {
+    margin: 0 0 10px;
+}
+
+.htax-lock-user-info p:last-child {
+    margin-bottom: 0;
+}
+
+.htax-lock-buttons {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.htax-lock-dialog .button-primary,
+.htax-lock-dialog .htax-lock-link {
+    display: inline-flex;
+    align-items: center;
+    height: 40px;
+    padding: 6px 12px;
+    line-height: 1.4;
+    border-radius: 2px;
+    font-size: 13px;
+    font-weight: 400;
+    text-decoration: none;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+.htax-lock-dialog .button-primary {
+    background: #007cba;
+    color: #fff;
+    border: none;
+}
+
+.htax-lock-dialog .button-primary:hover,
+.htax-lock-dialog .button-primary:focus {
+    background: #006ba1;
+    color: #fff;
+}
+
+.htax-lock-link {
+    background: transparent;
+    color: #007cba;
+    border: none;
+}
+
+.htax-lock-link:hover,
+.htax-lock-link:focus {
+    color: #006ba1;
+    text-decoration: none;
+}
+
+/* Pills and containers */
+.htax-tag-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    align-items: center;
+    padding: 4px;
+    border: 1px solid #8c8f94;
+    border-radius: 4px;
+    min-height: 38px;  /* floor = 1 row (24px incl. margin) + 8px padding + 6px buffer */
+    max-height: 166px; /*5 rows × 26px (actual) + 4 row-gaps × 4px + 10px overhead = 156px */
+    overflow-y: auto;
+    background: #fff;
+    cursor: text;
+    width: 100%;
+    max-width: 600px;
+    box-sizing: border-box;
+}
+
+.htax-tag-container:focus-within {
+    border-color: #2271b1;
+    box-shadow: 0 0 0 1px #2271b1;
+    outline: 2px solid transparent;
+}
+
+/* Scrollbar styling for better appearance */
+.htax-tag-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.htax-tag-container::-webkit-scrollbar-track {
+    background: #f0f0f1;
+    border-radius: 4px;
+}
+
+.htax-tag-container::-webkit-scrollbar-thumb {
+    background: #c3c4c7;
+    border-radius: 4px;
+}
+
+.htax-tag-container::-webkit-scrollbar-thumb:hover {
+    background: #8c8f94;
+}
+
+.htax-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 1px 5px;
+    background: #f0f0f1;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    font-size: 13px;
+    margin: 1px;
+    position: relative;
+    cursor: default;
+    white-space: nowrap;
+    height: 22px;
+    line-height: 1.4;
+}
+
+.htax-pill.selected {
+    background: #2271b1;
+    color: #fff;
+    border-color: #135e96;
+}
+
+.htax-sym-arrow {
+    font-size: 0.78em;
+    opacity: 0.5;
+    margin-left: 3px;
+    letter-spacing: -0.5px;
+}
+
+.htax-pill[data-dir="rev"] {
+    border-style: dashed;
+}
+
+.htax-pill.selected .htax-remove {
+    color: #fff;
+}
+
+/* Synonym icon (⟳ two-arrow circle — bidirectional inclusion indicator) */
+.htax-synonym-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+    margin-left: 3px;
+    opacity: 0.75;
+    display: inline-block;
+    vertical-align: middle;
+    line-height: 1;
+}
+
+/* Terms that ARE redirects (grayed out in container list since they have no archives) */
+.htax-pill.is-redirect-term {
+    background: #f0f0f1;
+    border: 1px solid #c3c4c7;
+    color: #8c8f94;
+    opacity: 0.6;
+}
+
+.htax-pill.is-redirect-term .redirect-indicator {
+    color: #8c8f94;
+}
+
+.htax-pill.is-redirect-term .htax-remove {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #8b5a2b;
+    width: 15px;
+    height: 15px;
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1;
+    opacity: 0.6;
+}
+
+/* Group pills — blue in Includes panel; green when scoped to Containers panel */
+.htax-pill.htax-group-pill {
+    background: #b3d4fc;
+    border: 1px solid #0073aa;
+    color: #00395e;
+}
+
+.htax-pill.htax-group-pill.selected {
+    background: #0073aa;
+    color: #fff;
+    border-color: #005583;
+}
+
+.htax-pill.htax-group-pill .htax-remove {
+    color: #005583;
+}
+
+.htax-pill.htax-group-pill.selected .htax-remove {
+    color: #fff;
+}
+
+/* Container groups panel and standalone Container Groups field — green pills and + button */
+.htax-merged-container[data-panel="containers"] .htax-pill.htax-group-pill,
+.htax-container-groups-section .htax-pill.htax-group-pill {
+    background: #e8f5e9;
+    border-color: #4caf50;
+    color: #2e7d32;
+}
+
+.htax-merged-container[data-panel="containers"] .htax-pill.htax-group-pill.selected,
+.htax-container-groups-section .htax-pill.htax-group-pill.selected {
+    background: #388e3c;
+    border-color: #2e7d32;
+    color: #fff;
+}
+
+.htax-merged-container[data-panel="containers"] .htax-pill.htax-group-pill .htax-remove,
+.htax-container-groups-section .htax-pill.htax-group-pill .htax-remove {
+    color: #2e7d32;
+}
+
+/* Terms included via container group membership — light green (reverse path) */
+.htax-pill.via-container-group {
+    background: #eef7ef;
+    border: 1px solid #a5d6a7;
+    color: #2e7d32;
+}
+
+/* Indirect containers via included groups — light blue (matches data-via-groups indirect color) */
+
+/* === Hide indirect and reverse relationships toggle === */
+
+/* The checkbox row is hidden — the control is exposed as an icon-button in the field label */
+
+/* Icon-button injected by JS into the field label header */
+.htax-via-header-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0 0 0 5px;
+    color: #a0a5aa;
+    vertical-align: middle;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+}
+.htax-via-header-btn:hover,
+.htax-via-header-btn[aria-pressed="true"] {
+    color: #2271b1;
+}
+.htax-via-header-btn .dashicons {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+}
+
+/* Summary group pills: hidden by default (visible only when hiding indirect pills) */
+
+/* When checkbox is checked (.htax-via-hidden on the pill container):
+   - Hide the individual via-group expanded pills
+   - Show the compact group-name summary pills instead */
+.htax-tag-container.htax-via-hidden .via-container-group {
+    display: none;
+}
+
+/* Edit form (merged pill container): hide all htax-indirect pills across all tabs.
+   Group pills remain visible — they already show what's configured as the summary. */
+.htax-inclusions-field.htax-via-hidden .htax-indirect {
+    display: none;
+}
+
+/* Checkbox row layout */
+
+/* Path count badge for group-based relationships */
+
+/* Remove pill button */
+.htax-remove {
+    background: none;
+    border: none;
+    color: #666;
+    cursor: pointer;
+    font-size: 18px;
+    margin-left: 4px;
+    padding: 0;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 15px;
+    height: 15px;
+}
+
+.htax-remove:hover {
+    color: #d63638;
+}
+
+.htax-remove:focus {
+    outline: none;
+    color: #d63638;
+}
+
+.htax-remove .screen-reader-text {
+    position: absolute !important;
+    clip: rect(1px, 1px, 1px, 1px);
+    word-wrap: normal !important;
+    border: 0;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    width: 1px;
+}
+
+/* Search input */
+.htax-search {
+    flex: 0 1 auto;
+    min-width: 80px;
+    max-width: 100%;
+    border: none !important;
+    outline: none !important;
+    background: transparent !important;
+    padding: 1px 4px !important;
+    font-size: 13px !important;
+    margin: 1px !important;
+    line-height: 20px !important;
+    box-shadow: none !important;
+    color: #2c3338;
+    height: 22px !important;
+    min-height: 0 !important;
+    box-sizing: border-box !important;
+}
+
+/* Term-add "+" button — match pill dimensions so swapping pill↔button never changes row height. */
+.htax-term-add-btn {
+    height: 22px !important;
+    min-height: 0 !important;
+    margin: 1px !important;  /* match .htax-pill margin so cross-size = 24px in both states */
+    padding: 0 4px !important;
+    line-height: 1 !important;
+    flex-shrink: 0;
+}
+
+.htax-search:focus {
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+.htax-search::placeholder {
+    color: #8c8f94;
+    font-style: normal;
+}
+
+/* Redirect section */
+.htax-redirect-section {
+    padding-top: 15px;
+    margin-top: 15px;
+}
+
+.htax-redirect-container {
+    max-width: 400px;
+    min-height: 32px;
+}
+
+.htax-redirect-target {
+    transition: all 0.2s ease-in-out;
+}
+
+/* Tooltip */
+.htax-tooltip {
+    cursor: help;
+    color: #666;
+    font-size: 14px;
+    margin-left: 5px;
+    text-decoration: none;
+}
+
+/* Warning description (e.g. visibility locked by hidden parent) */
+.htax-notice-warning {
+    color: #856404;
+}
+
+/* Error messages */
+.htax-error {
+    background: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+    padding: 12px;
+    border-radius: 4px;
+    margin: 10px 0;
+}
+
+/* Hierarchical display */
+.htax-hierarchical .htax-term-item {
+    margin: 2px 0;
+    line-height: 1.6;
+}
+
+.htax-hierarchical .htax-redirect-term {
+    opacity: 0.85;
+}
+
+.htax-hierarchical .htax-depth-0 {
+    font-weight: 500;
+}
+
+/* Groups container */
+.htax-groups-container {
+    margin-bottom: 10px;
+}
+
+.htax-groups-field .description {
+    margin-top: 5px;
+}
+
+/* Autocomplete styles */
+.ui-autocomplete {
+    max-height: 300px !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-top: 1px solid #ccc;
+    font-size: 13px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+    z-index: 999999;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    margin-top: 1px;
+}
+
+.ui-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: block;
+    outline: none;
+}
+
+.ui-autocomplete .ui-menu-item {
+    margin: 0;
+    padding: 0;
+    cursor: pointer;
+    list-style: none;
+}
+
+.ui-autocomplete .ui-menu-item div {
+    display: block;
+    padding: 3px 8px;
+    margin: 0;
+    clear: both;
+    font-weight: normal;
+    line-height: 1.4;
+    color: #333;
+    white-space: nowrap;
+    text-decoration: none;
+}
+
+.ui-autocomplete .ui-menu-item:hover div,
+.ui-autocomplete .ui-state-focus div,
+.ui-autocomplete .ui-state-active div {
+    background: #0073aa;
+    color: #fff;
+}
+
+.ui-menu-item .match {
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+.ui-autocomplete .ui-menu-item:hover .match,
+.ui-autocomplete .ui-state-focus .match {
+    color: #fff;
+}
+
+/* Admin list view styles */
+.wp-list-table tbody tr[data-term-redirect="1"] .row-title {
+    font-style: italic;
+    color: #666;
+}
+
+.wp-list-table tbody tr[data-term-redirect="1"] .row-title:hover {
+    color: #135e96;
+}
+
+/* Redirect column in term list */
+.wp-list-table .column-htax_redirect {
+    width: 120px;
+}
+
+/* Form field spacing */
+.form-field.htax-groups-field {
+    border-bottom: 1px solid #f0f0f1;
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+}
+
+/* Hidden field styling */
+input[type="hidden"][name^="htax_"] {
+    display: none;
+}
+
+/* Disabled state */
+.htax-tag-container[style*="opacity: 0.6"] {
+    cursor: not-allowed;
+}
+
+.htax-tag-container[style*="opacity: 0.6"] .htax-search {
+    cursor: not-allowed;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 782px) {
+    .htax-tag-container {
+        max-height: 176px;
+    }
+    
+    .htax-pill {
+        padding: 3px 7px;
+        font-size: 14px;
+        height: 26px;
+    }
+    
+    .htax-search {
+        font-size: 14px !important;
+        padding: 3px !important;
+        height: 24px !important;
+    }
+    
+    .htax-remove {
+        width: 17px;
+        height: 17px;
+        font-size: 19px;
+    }
+}
+
+/* Accessibility improvements */
+.htax-pill:focus {
+    outline: 2px solid #2271b1;
+    outline-offset: 1px;
+}
+
+.htax-search:focus {
+    outline: none !important;
+}
+
+/* Loading state */
+.htax-loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.htax-loading::after {
+    content: '';
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border: 2px solid #666;
+    border-radius: 50%;
+    border-top-color: transparent;
+    -webkit-animation: htax-spin 0.6s linear infinite;
+    animation: htax-spin 0.6s linear infinite;
+    margin-left: 5px;
+}
+
+@-webkit-keyframes htax-spin {
+    to { -webkit-transform: rotate(360deg); transform: rotate(360deg); }
+}
+
+@keyframes htax-spin {
+    to { -webkit-transform: rotate(360deg); transform: rotate(360deg); }
+}
+
+/* Autocomplete styles to match WordPress native */
+.htax-tag-container + .ui-autocomplete,
+.htax-search + .ui-autocomplete {
+    background: #fff !important;
+    border: 1px solid #ddd !important;
+    border-top: none !important;
+    box-shadow: 0 1px 2px rgba(0,0,0,.07) !important;
+    z-index: 999999 !important;
+    max-height: 300px !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    margin-top: -1px !important;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+}
+
+.ui-autocomplete .ui-menu-item {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.ui-autocomplete .ui-menu-item > div {
+    display: block;
+    padding: 6px 10px !important;
+    margin: 0;
+    font-size: 13px !important;
+    line-height: 18px !important;
+    color: #32373c !important;
+    background: #fff !important;
+    border: none !important;
+    cursor: pointer;
+    text-decoration: none;
+    white-space: normal;
+}
+
+.ui-autocomplete .ui-menu-item > div:hover,
+.ui-autocomplete .ui-state-focus > div,
+.ui-autocomplete .ui-state-active > div,
+.ui-autocomplete .ui-menu-item-focus > div {
+    background: #0073aa !important;
+    color: #fff !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+/* Bold matching text */
+.ui-autocomplete .ui-menu-item strong {
+    font-weight: 600;
+    color: inherit;
+}
+
+/* Style for description matches */
+.ui-autocomplete .htax-desc-match {
+    color: #666;
+    font-size: 11px;
+    margin-left: 5px;
+    font-style: italic;
+}
+
+/* Remove default jQuery UI theme styling */
+.ui-autocomplete.ui-widget {
+    font-family: inherit !important;
+}
+
+.ui-autocomplete .ui-state-active,
+.ui-autocomplete .ui-state-focus {
+    border: none !important;
+    background: transparent !important;
+    font-weight: normal !important;
+    color: inherit !important;
+}
+
+/* Ensure the autocomplete appears directly below the input */
+.htax-tag-container {
+    position: relative;
+}
+
+/* Match WordPress tag selector hover color */
+.ui-autocomplete .ui-menu-item > div:hover {
+    background: #0073aa !important;
+    color: #fff !important;
+}
+
+.ui-autocomplete .ui-menu-item > div:hover strong {
+    color: #fff !important;
+}
+
+.ui-autocomplete .ui-menu-item > div:hover .htax-desc-match {
+    color: #e6f3ff !important;
+}
+
+/* Remove padding from form-field containing Term Groups checklist */
+.form-field .htax-hierarchical-checklist-wrapper {
+    margin: 0;
+}
+
+/* Collapsible Term Groups checklist tabs - override WordPress categorydiv padding */
+.htax-hierarchical-checklist-wrapper.categorydiv {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100%;
+    max-width: 100%;
+}
+
+.htax-checklist-tabs {
+    margin: 0 !important;
+    padding: 0 !important;
+    list-style: none;
+    border: none !important;
+}
+
+.htax-checklist-tabs li.tabs {
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 1;
+    border: none !important;
+}
+
+.htax-checklist-tabs li.tabs a.htax-has-toggle {
+    cursor: pointer;
+    position: relative;
+    padding: 6px 8px 6px 24px;
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    background: #fff;
+    border: 1px solid #8c8f94;
+    border-radius: 3px;
+    text-decoration: none;
+    color: #2c3338;
+    font-size: 13px;
+    line-height: 1.4;
+    box-shadow: 0 0 0 transparent;
+    transition: box-shadow 0.1s linear;
+}
+
+.htax-checklist-tabs li.tabs a.htax-has-toggle:hover {
+    border-color: #2271b1;
+}
+
+.htax-checklist-tabs li.tabs a.htax-has-toggle:focus {
+    border-color: #2271b1;
+    box-shadow: 0 0 0 1px #2271b1;
+    outline: 2px solid transparent;
+}
+
+.htax-toggle-arrow-tabs {
+    position: absolute;
+    left: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    line-height: 1;
+}
+
+.htax-toggle-arrow-tabs::before {
+    content: '\f140'; /* dashicons-arrow-down */
+    font-family: dashicons;
+    font-size: 16px;
+    line-height: 1;
+    color: #3c434a;
+    display: block;
+    width: 16px;
+    height: 16px;
+    transition: transform 0.2s ease;
+}
+
+/* Rotate arrow when collapsed */
+.htax-checklist-tabs li.htax-collapsed .htax-toggle-arrow-tabs::before {
+    transform: rotate(-90deg);
+}
+
+/* Limit height of expanded checklist and remove padding/margins */
+.htax-hierarchical-checklist-wrapper .tabs-panel {
+    max-height: 300px;
+    overflow-y: auto;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Make search input full width within panel */
+.htax-hierarchical-checklist-wrapper .tabs-panel .htax-checklist-search {
+    margin: 0;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Make checklist container full width and remove padding */
+.htax-hierarchical-checklist-wrapper .tabs-panel .htax-checklist-container {
+    padding-left: 0;
+    padding-right: 0;
+    margin: 0;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* ============================================================================
+   INCLUSIONS TABS UI  (unified edit-form field)
+   ============================================================================ */
+
+/* Tab nav strip */
+.htax-rel-tabs-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid #c3c4c7;
+    padding-bottom: 0;
+    width: 95%;
+}
+
+.htax-rel-tab-btn {
+    background: #dcdcde;
+    border: 1px solid #c3c4c7;
+    border-radius: 3px 3px 0 0;
+    color: #3c434a;
+    cursor: pointer;
+    font-size: 13px;
+    line-height: 1.4;
+    margin-bottom: -1px;
+    padding: 5px 12px;
+}
+
+.htax-rel-tab-btn:hover {
+    background: #d0d0d2;
+    color: #1d2327;
+}
+
+.htax-rel-tab-btn.active {
+    background: #f0f0f1;
+    border-color: #c3c4c7;
+    border-bottom-color: #f0f0f1;
+    color: #1d2327;
+    font-weight: 600;
+}
+
+/* Tab panels */
+.htax-rel-tab-panel {
+    display: block;
+}
+
+.htax-rel-tab-panel[hidden] {
+    display: none;
+}
+
+.htax-no-tabs {
+    /* No tab nav — panels shown stacked without decoration */
+}
+
+/* Individual panel within a tab: heading + container */
+.htax-inclusions-panel {
+    margin-bottom: 14px;
+}
+
+.htax-inclusions-panel:last-child {
+    margin-bottom: 0;
+}
+
+.htax-container-heading {
+    font-size: 12px;
+    font-weight: 600;
+    color: #50575e;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 0 0 4px 0;
+}
+
+/* Exclusions panel gets a top rule to visually separate it */
+.htax-exclude-panel {
+    border-top: 1px solid #f0f0f1;
+    padding-top: 10px;
+    margin-top: 4px;
+}
+
+/* ============================================================================
+   MERGED PILL CONTAINER
+   ============================================================================ */
+
+.htax-merged-container {
+    max-height: 166px; /*standardized with htax-tag-container: 5 rows */
+}
+
+/* Redirect target is single-value — pin height to eliminate any flex rounding drift. */
+.htax-redirect-container {
+    min-height: 38px;
+    max-height: 38px;
+}
+
+/* Section labels inside the pill container — each forces a new flex row */
+.htax-section-label {
+    display: inline-flex;
+    align-items: center;
+    font-size: 11px;
+    color: #8c8f94;
+    font-style: italic;
+    padding: 1px 4px;
+    margin: 1px 2px 1px 0;
+    white-space: nowrap;
+    user-select: none;
+    pointer-events: none;
+    flex-basis: 100%;
+}
+
+/* Indirect (read-only) term pills — base style; overridden below by path-type */
+.htax-pill.htax-indirect {
+    background: #f8f8f8;
+    border-color: #d0d0d0;
+    color: #555;
+    opacity: 0.85;
+}
+
+/* Pill tooltip overlay — light bubble, positioned above the pill */
+.htax-pill-tooltip {
+    position: absolute;
+    z-index: 100010;
+    background: #fff;
+    color: #1d2327;
+    border: 1px solid #c3c4c7;
+    border-radius: 3px;
+    padding: 5px 9px;
+    font-size: 12px;
+    line-height: 1.7;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+    display: none;
+    pointer-events: auto;
+    max-width: 280px;
+    word-wrap: break-word;
+}
+
+.htax-pill-tooltip a {
+    color: #2271b1;
+    text-decoration: none;
+}
+
+.htax-pill-tooltip a:hover {
+    text-decoration: underline;
+    color: #135e96;
+}
+
+.htax-tooltip-line {
+    white-space: normal;
+}
+
+/* Custom inclusion-type pills — tan/warm neutral; only when custom type is the sole path */
+.htax-pill.htax-via-custom {
+    background: #f5ede0;
+    border-color: #c4a06a;
+    color: #6b4e1f;
+    opacity: 0.9;
+}
+
+/* Overridden direct includes — excluded term, include has no effect */
+.htax-pill.htax-overridden {
+    opacity: 0.55;
+    text-decoration: line-through;
+}
+
+.htax-pill.htax-overridden .htax-remove {
+    opacity: 1;
+    text-decoration: none;
+}
+
+/* ============================================================================
+   BADGE  — white filled circle inside pill, left of text
+   ============================================================================ */
+
+.htax-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    border-radius: 50%;
+    border: 1px solid rgba(0,0,0,0.5);
+    color: #333;
+    font-size: 9px;
+    font-weight: 700;
+    line-height: 1;
+    min-width: 15px;
+    height: 15px;
+    padding: 0 2px;
+    box-sizing: border-box;
+    margin-right: 3px;
+    /* Badge sits left of the text — flex-order places it first. */
+    order: -1;
+}
+
+/* ============================================================================
+   DIRECT AND INDIRECT PILL COLORS
+   ============================================================================ */
+
+/* Direct term pills — standard gray (base .htax-pill style, no override needed) */
+
+/* Direct term also reached via included groups — light-blue/gray gradient */
+.htax-merged-container .htax-pill:not(.htax-group-pill):not(.htax-indirect)[data-via-groups]:not([data-via-container-groups]) {
+    background: #f0f0f1;
+    background: linear-gradient(135deg, #f0f0f1 50%, #ddeeff 50%);
+    border: 1px solid #7ab8e8;
+    color: #003366;
+}
+
+/* Direct term also reached via container group — light-green/gray gradient */
+.htax-merged-container .htax-pill:not(.htax-group-pill):not(.htax-indirect)[data-via-container-groups]:not([data-via-groups]) {
+    background: #f0f0f1;
+    background: linear-gradient(135deg, #f0f0f1 50%, #eef7ef 50%);
+    border: 1px solid #a5d6a7;
+    color: #2e7d32;
+}
+
+/* Direct term also reached via both indirect paths — light-blue/light-green gradient */
+.htax-merged-container .htax-pill:not(.htax-group-pill):not(.htax-indirect)[data-via-groups][data-via-container-groups] {
+    background: #ddeeff;
+    background: linear-gradient(135deg, #ddeeff 50%, #eef7ef 50%);
+    border: 1px solid #7ab8e8;
+    color: #003366;
+}
+
+/* Indirect via included groups only — light blue (Includes panel) */
+.htax-pill.htax-indirect[data-via-groups]:not([data-via-container-groups]) {
+    background: #ddeeff;
+    border-color: #7ab8e8;
+    color: #003366;
+    opacity: 1;
+}
+
+/* Indirect via container group path only — light green (Includes panel) */
+.htax-pill.htax-indirect[data-via-container-groups]:not([data-via-groups]) {
+    background: #eef7ef;
+    border-color: #a5d6a7;
+    color: #2e7d32;
+    opacity: 1;
+}
+
+/* Indirect via both paths — light-blue/light-green gradient */
+.htax-pill.htax-indirect[data-via-groups][data-via-container-groups] {
+    background: #ddeeff;
+    background: linear-gradient(135deg, #ddeeff 50%, #eef7ef 50%);
+    border-color: #7ab8e8;
+    color: #003366;
+    opacity: 1;
+}
+
+/* ============================================================================
+   CONTAINERS PANEL — swap via-groups/via-container-groups colors.
+   In the containers panel the data-flow is inverted:
+     data-via-groups       = members of this term's container groups  → light green
+     data-via-container-groups = terms that include a group this term is in → light blue
+   ============================================================================ */
+
+/* Direct + also members of container groups — light-green/gray */
+.htax-merged-container[data-panel="containers"] .htax-pill:not(.htax-group-pill):not(.htax-indirect)[data-via-groups]:not([data-via-container-groups]) {
+    background: #f0f0f1;
+    background: linear-gradient(135deg, #f0f0f1 50%, #eef7ef 50%);
+    border: 1px solid #a5d6a7;
+    color: #2e7d32;
+}
+
+/* Direct + also includes a group this term is in — light-blue/gray */
+.htax-merged-container[data-panel="containers"] .htax-pill:not(.htax-group-pill):not(.htax-indirect)[data-via-container-groups]:not([data-via-groups]) {
+    background: #f0f0f1;
+    background: linear-gradient(135deg, #f0f0f1 50%, #ddeeff 50%);
+    border: 1px solid #7ab8e8;
+    color: #003366;
+}
+
+/* Indirect: members of container groups — light green */
+.htax-merged-container[data-panel="containers"] .htax-pill.htax-indirect[data-via-groups]:not([data-via-container-groups]) {
+    background: #eef7ef;
+    border-color: #a5d6a7;
+    color: #2e7d32;
+}
+
+/* Indirect: terms that include a group this term is in — light blue */
+.htax-merged-container[data-panel="containers"] .htax-pill.htax-indirect[data-via-container-groups]:not([data-via-groups]) {
+    background: #ddeeff;
+    border-color: #7ab8e8;
+    color: #003366;
+}
+
+/* Context-direct highlight — injected when the info panel detects a direct relationship.
+   Thicker border makes the relevant pill easy to spot without a redundant notice. */
+.htax-pill.htax-context-direct {
+    border-width: 2px;
+    border-color: #2271b1;
+    box-shadow: 0 0 0 1px #2271b1;
+}
+
+/* ============================================================================
+   GROUP MEMBERSHIP PILLS (groups this term is a member of) — standard gray
+   ============================================================================ */
+
+.htax-member-pills-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    align-items: center;
+    padding: 4px;
+    min-height: 32px;
+    border: 1px solid #8c8f94;
+    border-radius: 4px;
+    background: #fff;
+    margin-bottom: 4px;
+    max-width: 600px;
+    box-sizing: border-box;
+}
+
+/* Member group pills — standard gray (same as base pill, no color override needed) */
+
+/* Shared + button base — unified style for all add buttons on the term edit screen */
+.htax-group-add-btn,
+.htax-term-add-btn {
+    background: #fff;
+    border: 1px solid #8c8f94;
+    border-radius: 3px;
+    color: #50575e;
+    cursor: pointer;
+    padding: 0;
+    width: 22px;
+    height: 22px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin: 1px;
+    transition: border-color 0.1s, color 0.1s;
+}
+
+.htax-group-add-btn .dashicons,
+.htax-term-add-btn .dashicons {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+    line-height: 1;
+}
+
+.htax-group-add-btn:hover,
+.htax-term-add-btn:hover {
+    border-color: #2271b1;
+    color: #2271b1;
+    background: #f0f6fc;
+}
+
+/* Floating group checklist dropdown — positioned by JS near the + button */
+.htax-group-dropdown {
+    display: none;
+    position: fixed;
+    z-index: 99999;
+    background: #fff;
+    border: 1px solid #c3c4c7;
+    border-radius: 2px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+    min-width: 240px;
+    max-width: 360px;
+}
+
+/* Redirect-here indicator (↩ character, in includes and container fields) */
+.redirect-indicator {
+    margin-left: 4px;
+    font-size: 13px;
+    opacity: 0.75;
+    display: inline-block;
+    vertical-align: middle;
+    line-height: 1;
+}
+/* ============================================================================
+   EDIT TERM — collapsible "More options" section
+   ============================================================================ */
+
+.htax-edit-form-toggle-cell {
+	padding-top: 8px !important;
+	padding-bottom: 4px !important;
+}
+
+.htax-edit-form-toggle {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	font-size: 13px;
+	color: #2271b1;
+	text-decoration: none !important;
+	cursor: pointer;
+	background: none;
+	border: none;
+	padding: 0;
+}
+
+.htax-edit-form-toggle,
+.htax-edit-form-toggle:hover,
+.htax-edit-form-toggle:focus,
+.htax-edit-form-toggle * {
+	text-decoration: none !important;
+}
+
+.htax-edit-form-toggle:hover,
+.htax-edit-form-toggle:focus {
+	color: #135e96;
+	outline: none;
+}
+
+/* Match native WordPress field width (95%) on the term edit screen.
+   Native inputs use width:95% via .form-table td input; HT containers use
+   width:100% which makes them slightly wider. This rule targets the edit
+   form's <tr><td> context only — the add form is handled separately. */
+tr.form-field td .htax-tag-container,
+tr.form-field td .htax-merged-container > .htax-tag-container,
+tr.form-field td .htax-member-pills-container,
+tr.form-field td .htax-hierarchical-checklist-wrapper {
+    width: 95%;
+    box-sizing: border-box;
+}
+
+/* Archive Settings field: constrain content to 95% to match native field width */
+tr.form-field.htax-archive-settings-field td > div {
+    max-width: 95%;
+    box-sizing: border-box;
+}
+
+/* Locked pills/sections — membership another tool (e.g. Tag Groups) owns;
+   not editable here, same muted treatment as other read-only pills above. */
+.htax-pill-locked {
+    background: #f0f0f1;
+    border: 1px solid #c3c4c7;
+    color: #646970;
+    cursor: default;
+}
+
+.htax-pill-locked .dashicons-lock {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+    margin-right: 2px;
+    vertical-align: text-bottom;
+}
+
+.htax-taxonomy-section-locked {
+    opacity: 0.85;
+}
+
+.htax-taxonomy-section-locked .dashicons-lock {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+    vertical-align: text-bottom;
+    color: #646970;
+}

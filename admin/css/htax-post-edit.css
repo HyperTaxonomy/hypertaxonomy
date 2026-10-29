@@ -1,0 +1,255 @@
+/* ── Redirect: italicise the label text only, not injected symbols ───────── */
+.tagchecklist li[data-htax-redirect="1"] span,
+.categorychecklist li[data-htax-redirect="1"] > label,
+.components-checkbox-control__label[data-htax-redirect="1"] {
+    font-style: italic !important;
+}
+
+.components-form-token-field__token[data-htax-redirect="1"] .components-form-token-field__token-text {
+    font-style: italic !important;
+}
+
+/* Restore normal style on injected badge groups and ↪ so only the term name
+   text is italic, not the arrows or redirect indicator. */
+.tagchecklist li[data-htax-redirect="1"] .htax-badge-group,
+.tagchecklist li[data-htax-redirect="1"] .redirect-indicator,
+.categorychecklist li[data-htax-redirect="1"] .htax-badge-group,
+.categorychecklist li[data-htax-redirect="1"] .redirect-indicator,
+.components-form-token-field__token[data-htax-redirect="1"] .htax-badge-group,
+.components-form-token-field__token[data-htax-redirect="1"] .redirect-indicator {
+    font-style: normal !important;
+}
+
+.ui-autocomplete .ui-menu-item div[data-htax-redirect="1"] {
+    font-style: italic !important;
+}
+
+/* ── Hidden: fade the whole pill / item ──────────────────────────────────── */
+/* !important needed — Gutenberg overrides opacity without it.
+   For GB categories: attribute is set on both $row (HStack, which may render
+   as .components-flex or other classes) and $label (stable class fallback);
+   :has() covers the case where only the label has the attribute. */
+.tagchecklist li[data-htax-hidden="1"],
+.categorychecklist li[data-htax-hidden="1"],
+.components-form-token-field__token[data-htax-hidden="1"],
+.components-flex[data-htax-hidden="1"],
+.components-checkbox-control__label[data-htax-hidden="1"],
+:has(> .components-checkbox-control__label[data-htax-hidden="1"]) {
+    opacity: 0.45 !important;
+}
+
+.ui-autocomplete .ui-menu-item div[data-htax-hidden="1"] {
+    opacity: 0.45 !important;
+}
+
+/* ── Redirect-elsewhere indicator (↪) — matches .redirect-indicator in term edit ─ */
+.redirect-indicator {
+    margin-left: 1px;
+    margin-right: 3px;
+    font-size: 0.85em;
+    opacity: 0.75;
+    display: inline-block;
+    vertical-align: middle;
+    line-height: 1;
+    font-style: normal;
+    transform: translateY(1px);
+}
+
+/* Gutenberg category HStack: ↪ sits lower than in tag pills. */
+.components-flex .redirect-indicator {
+    transform: translateY(3px);
+}
+
+/* Tag pills: must come after the .components-flex rule (equal specificity,
+   later wins) because the token list sits inside a flex wrapper. */
+.components-form-token-field__token .redirect-indicator {
+    transform: translateY(0px);
+}
+
+/* ── Badge group: arrow + circle (used in all contexts) ──────────────────── */
+/* Arrow character wrapped in a span so it's a proper flex item and aligns
+   vertically with the badge circle (text nodes don't reliably respond to
+   align-items: center in all browsers/contexts). */
+.htax-badge-group .htax-arrow {
+    align-self: center;
+    line-height: 1;
+    transform: translateY(-2px);
+}
+
+/* ⇇ (cont) glyph sits slightly lower in the font than ⇉ (inc) — needs less correction. */
+.htax-badge-group:has(.htax-badge--cont) .htax-arrow {
+    transform: translateY(0px);
+}
+
+.htax-badge-group {
+    display: inline-flex;
+    align-items: center;
+    vertical-align: middle;
+    font-size: 0.75em;
+    line-height: 1;
+    white-space: nowrap;
+    gap: 1px;
+}
+
+.htax-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.6em;
+    height: 1.6em;
+    padding: 0 0.3em;
+    border: 1px solid #1e1e1e;
+    border-radius: 0.8em;
+    background: #fff;
+    color: #1e1e1e;
+    font-style: normal;
+    font-weight: normal;
+    line-height: 1;
+    box-sizing: border-box;
+    vertical-align: middle;
+}
+
+/* Includes badge — light blue, matching the includes path color in term edit */
+.htax-badge--inc {
+    background: #ddeeff;
+    border-color: #7ab8e8;
+    color: #003366;
+}
+
+/* Containers badge — light green, matching the containers path color in term edit */
+.htax-badge--cont {
+    background: #eef7ef;
+    border-color: #a5d6a7;
+    color: #2e7d32;
+}
+
+/* Gutenberg token pills: badge group sits inside token-text, to the left of the label.
+   Pull the first badge group flush with the pill's left edge by negating the token-text
+   padding. !important overrides any Gutenberg specificity. */
+.components-form-token-field__token-text > .htax-badge-group:first-child {
+    margin-left: -4px !important;
+}
+.components-form-token-field__token .htax-badge-group {
+    margin-right: 3px;
+    transform: translateY(-1px);
+}
+
+/* Gutenberg category rows: badge groups are injected inside the HStack
+   between the checkbox container and the label. */
+.components-flex .htax-badge-group {
+    margin: 0 3px 0 -2px;
+    align-self: center;
+}
+
+/* ── Sticky Terms Meta Box Styles ────────────────────────────────────────── */
+.htax-sticky-section {
+    margin-bottom: 15px;
+}
+
+.htax-sticky-section h4 {
+    margin: 10px 0 5px 0;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.htax-sticky-term-list {
+    max-height: 150px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    padding: 5px;
+    background: #fff;
+}
+
+.htax-sticky-term-item {
+    display: block;
+    margin: 3px 0;
+    padding: 2px 0;
+}
+
+.htax-sticky-term-item input[type="checkbox"] {
+    margin-right: 5px;
+}
+
+.htax-sticky-term-item.term-removed {
+    opacity: 0.5;
+    text-decoration: line-through;
+}
+
+/* ── Sticky pin ───────────────────────────────────────────────────────────── */
+.htax-sticky-pin {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: #8c8f94;
+    vertical-align: middle;
+    opacity: 0.6;
+    transition: opacity 0.15s, color 0.15s;
+    flex-shrink: 0;
+}
+.htax-sticky-pin:hover {
+    opacity: 1;
+    color: #2271b1;
+}
+.htax-sticky-pin.is-sticky {
+    opacity: 1;
+    color: #2271b1;
+}
+
+/* In Gutenberg tag pills: pin is leftmost, match badge-group flush offset. */
+.components-form-token-field__token-text > .htax-sticky-pin:first-child {
+    margin-left: -2px !important;
+    margin-right: 2px;
+}
+.components-form-token-field__token .htax-sticky-pin {
+    transform: translateY(-1px);
+}
+
+/* In category HStack (adjacent badges). */
+.components-flex .htax-sticky-pin:not(.pin-in-checkbox) {
+    margin: 0 2px 0 0;
+    align-self: center;
+}
+
+/* In checkbox input-container: covers the checkmark when sticky.
+   Matches Gutenberg's native checked-state appearance — same blue box,
+   same border-radius, same size — but shows a pin instead of a tick. */
+.htax-sticky-pin.pin-in-checkbox {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--wp-components-color-accent, #3858e9);
+    border: 1px solid var(--wp-components-color-accent, #3858e9);
+    border-radius: 2px;
+    z-index: 1;
+    opacity: 1;
+    width: auto;
+    height: auto;
+    color: #fff;
+}
+
+/* Tristate intercept: transparent overlay in "checked, not sticky" state.
+   Shows a faint pin outline on hover to hint that clicking will pin. */
+.htax-tristate-intercept {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    cursor: pointer;
+    opacity: 0;
+    color: var(--wp-components-color-accent, #3858e9);
+    transition: opacity 0.15s;
+    background: rgba(255,255,255,0.75);
+}
+.htax-tristate-intercept:hover {
+    opacity: 1;
+}

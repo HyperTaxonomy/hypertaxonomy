@@ -1,0 +1,513 @@
+/**
+ * HyperTaxonomy Shortcodes Stylesheet
+ * Default styles for all shortcode outputs
+ *
+ * @package HyperTaxonomy
+ * @since 1.0.0
+ */
+
+/* ============================================================================
+   EXTERNAL POST LIST — [ht_external_posts]
+   ============================================================================ */
+
+.htax-post-list {
+	margin: 16px 0;
+}
+
+.htax-post-list-items {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+.htax-result-item {
+	display: flex;
+	gap: 12px;
+}
+
+.htax-result-thumbnail {
+	flex-shrink: 0;
+}
+
+.htax-result-thumbnail img {
+	display: block;
+	max-width: 100px;
+	height: auto;
+	border-radius: 3px;
+}
+
+.htax-result-content {
+	flex: 1;
+	min-width: 0;
+}
+
+.htax-result-title {
+	margin: 0 0 4px;
+	font-size: 1em;
+	line-height: 1.4;
+}
+
+.htax-result-title a {
+	text-decoration: none;
+	color: inherit;
+}
+
+.htax-result-title a:hover {
+	text-decoration: underline;
+}
+
+.htax-result-meta {
+	font-size: 0.85em;
+	color: #666;
+	margin-bottom: 4px;
+}
+
+.htax-result-excerpt {
+	font-size: 0.9em;
+	color: #444;
+	margin: 0;
+}
+
+/* Load-more pagination */
+.htax-pagination {
+	margin-top: 16px;
+	text-align: center;
+}
+
+/* ============================================================================
+   TERM LIST SHORTCODE
+   ============================================================================ */
+
+/* Tag Groups exact spacing */
+.htax-term-list h3 {
+	margin: 0 0 3px 0 !important;
+	font-size: 14px;
+	font-weight: bold;
+	font-family: inherit !important;
+}
+
+.htax-term-list-tags {
+	margin: 0 0 8px 0;
+	overflow: hidden;
+}
+
+/* Tag Groups style: each term on its own line with minimal spacing */
+.htax-term-list .htax-term-item {
+	display: block;
+	margin: 0 0 1px 0;
+	padding: 0;
+	line-height: 1.2;
+}
+
+.htax-term-list .htax-redirect-term {
+	opacity: 0.85;
+}
+
+.htax-term-list.htax-hierarchical .htax-depth-0 {
+	font-weight: 500;
+}
+
+.htax-term-list .htax-redirect-nolink {
+	cursor: default;
+	text-decoration: none;
+}
+
+/* Keep groups together in columns */
+.htax-term-list .htax-group-section {
+	overflow: hidden;
+	break-inside: avoid;
+	-webkit-column-break-inside: avoid;
+}
+
+/* Column layouts for term list */
+/* For flat lists: apply columns to the .htax-term-list-tags wrapper */
+.htax-term-list.htax-flat.htax-columns-2 .htax-term-list-tags {
+	column-count: 2;
+	column-gap: 30px;
+}
+
+.htax-term-list.htax-flat.htax-columns-3 .htax-term-list-tags {
+	column-count: 3;
+	column-gap: 30px;
+}
+
+.htax-term-list.htax-flat.htax-columns-4 .htax-term-list-tags {
+	column-count: 4;
+	column-gap: 30px;
+}
+
+/* For hierarchical lists: apply columns directly to the container */
+.htax-term-list.htax-hierarchical.htax-columns-2 {
+	column-count: 2;
+	column-gap: 30px;
+}
+
+.htax-term-list.htax-hierarchical.htax-columns-3 {
+	column-count: 3;
+	column-gap: 30px;
+}
+
+.htax-term-list.htax-hierarchical.htax-columns-4 {
+	column-count: 4;
+	column-gap: 30px;
+}
+
+/* Legacy support for group-section-content */
+
+/* Responsive columns for term list */
+@media (max-width: 768px) {
+	.htax-term-list.htax-flat.htax-columns-3 .htax-term-list-tags,
+	.htax-term-list.htax-flat.htax-columns-4 .htax-term-list-tags,
+	.htax-term-list.htax-hierarchical.htax-columns-3,
+	.htax-term-list.htax-hierarchical.htax-columns-4 {
+		column-count: 2;
+	}
+}
+
+@media (max-width: 480px) {
+	.htax-term-list.htax-flat.htax-columns-2 .htax-term-list-tags,
+	.htax-term-list.htax-flat.htax-columns-3 .htax-term-list-tags,
+	.htax-term-list.htax-flat.htax-columns-4 .htax-term-list-tags,
+	.htax-term-list.htax-hierarchical.htax-columns-2,
+	.htax-term-list.htax-hierarchical.htax-columns-3,
+	.htax-term-list.htax-hierarchical.htax-columns-4 {
+		column-count: 1;
+	}
+}
+
+/* ============================================================================
+   COLLAPSIBLE TERM-LIST
+   ============================================================================ */
+
+details.htax-term-list-collapsible {
+	margin: 10px 0;
+}
+
+details.htax-term-list-collapsible > summary.htax-collapsible-header {
+	cursor: pointer;
+	list-style: none;
+	font-weight: 600;
+	font-size: 14px;
+	padding: 8px 10px;
+	background-color: #f5f5f5;
+	border-radius: 3px;
+	transition: background-color 0.2s ease;
+	user-select: none; /* Prevent text selection when clicking */
+}
+
+details.htax-term-list-collapsible > summary.htax-collapsible-header:hover {
+	background-color: #e0e0e0;
+}
+
+/* Hide default disclosure triangle */
+details.htax-term-list-collapsible > summary.htax-collapsible-header::-webkit-details-marker {
+	display: none;
+}
+
+details.htax-term-list-collapsible > summary.htax-collapsible-header::-moz-list-bullet {
+	list-style-type: none;
+}
+
+/* Custom arrow indicator */
+details.htax-term-list-collapsible > summary.htax-collapsible-header::before {
+	content: '▶';
+	display: inline-block;
+	margin-right: 8px;
+	font-size: 12px;
+	transition: transform 0.2s ease;
+}
+
+details.htax-term-list-collapsible[open] > summary.htax-collapsible-header::before {
+	transform: rotate(90deg);
+}
+
+/* Collapsible content wrapper */
+.htax-collapsible-content {
+	padding: 10px 0 0 0;
+}
+
+/* ============================================================================
+   TERM CLOUD SHORTCODE
+   ============================================================================ */
+
+.htax-cloud h3 {
+	margin: 0 0 3px 0 !important;
+	font-size: 14px;
+	font-weight: bold;
+	font-family: inherit !important;
+}
+
+.htax-cloud-tags {
+	margin: 0 0 8px 0;
+	overflow: hidden;
+}
+
+.htax-cloud .htax-redirect-term {
+	opacity: 0.85;
+}
+
+.htax-cloud .htax-redirect-nolink {
+	cursor: default;
+	text-decoration: none;
+}
+
+/* Keep groups together */
+.htax-cloud .htax-group-section {
+	overflow: hidden;
+	break-inside: avoid;
+	-webkit-column-break-inside: avoid;
+}
+
+/* ============================================================================
+   TERM GROUPS SHORTCODE
+   ============================================================================ */
+
+.htax-term-groups {
+	margin: 10px 0;
+	font-family: inherit;
+}
+
+.htax-group {
+	margin: 2px 0;
+}
+
+.htax-group-depth-0 > .htax-group-header,
+.htax-group-depth-0 > summary.htax-group-header {
+	font-weight: 600;
+	font-size: 1.1em;
+}
+
+.htax-group-header {
+	cursor: pointer;
+	padding: 5px;
+	border-radius: 3px;
+	transition: background-color 0.2s ease;
+}
+
+.htax-group-header:hover {
+	background-color: #f5f5f5;
+}
+
+details.htax-group > summary {
+	list-style: none;
+}
+
+details.htax-group > summary::-webkit-details-marker {
+	display: none;
+}
+
+details.htax-group > summary::before {
+	content: '▶';
+	display: inline-block;
+	margin-right: 5px;
+	transition: transform 0.2s ease;
+}
+
+details.htax-group[open] > summary::before {
+	transform: rotate(90deg);
+}
+
+.htax-group-icon {
+	display: inline-block;
+	margin-right: 3px;
+}
+
+.htax-group-count {
+	color: #666;
+	font-size: 0.9em;
+}
+
+.htax-group-content {
+	padding-left: 20px;
+	margin-top: 2px;
+	margin-bottom: 2px;
+}
+
+.htax-group-terms {
+	margin: 2px 0;
+}
+
+.htax-term-item {
+	padding: 3px 5px;
+	margin: 2px 0;
+	border-radius: 2px;
+	transition: background-color 0.2s ease;
+}
+
+.htax-term-item:hover {
+	background-color: #f9f9f9;
+}
+
+.htax-term-icon,
+.htax-pill-placeholder {
+	display: inline-block;
+	margin-right: 5px;
+	vertical-align: middle;
+}
+
+.htax-term-icon {
+	opacity: 0.7;
+}
+
+.htax-term-link {
+	text-decoration: none;
+	color: inherit;
+}
+
+.htax-term-link:hover {
+	text-decoration: underline;
+}
+
+.htax-term-count {
+	color: #666;
+	font-size: 0.85em;
+	margin-left: 3px;
+}
+
+.htax-redirect-term {
+	opacity: 0.85;
+}
+
+.htax-redirect-nolink {
+	cursor: default;
+}
+
+.htax-error {
+	background: #f8d7da;
+	border: 1px solid #f5c6cb;
+	color: #721c24;
+	padding: 12px;
+	border-radius: 4px;
+	margin: 10px 0;
+}
+
+/* ============================================================================
+   TERM INDEX SHORTCODE
+   ============================================================================ */
+
+.htax-term-index {
+	margin: 20px 0;
+}
+
+.htax-index-header {
+	margin: 0 0 15px 0;
+	font-size: 16px;
+	font-weight: 600;
+	line-height: 1.4;
+}
+
+.htax-index-navigation {
+	margin: 15px 0;
+	padding: 10px;
+	background: #f5f5f5;
+	border-radius: 5px;
+	text-align: center;
+}
+
+.htax-nav-letter {
+	display: inline-block;
+	margin: 0 2px;
+	font-weight: 500;
+}
+
+.htax-nav-available {
+	color: #0073aa;
+	text-decoration: none;
+	transition: color 0.2s ease;
+}
+
+.htax-nav-available:hover {
+	color: #005177;
+	text-decoration: underline;
+}
+
+.htax-nav-unavailable {
+	color: #ccc;
+}
+
+.htax-index-content {
+	margin-top: 20px;
+}
+
+.htax-letter-section {
+	margin-bottom: 30px;
+}
+
+.htax-letter-header {
+	font-size: 1.8em;
+	font-weight: 600;
+	margin: 0 0 10px 0;
+	padding-bottom: 5px;
+	border-bottom: 2px solid #ddd;
+	color: #333;
+}
+
+.htax-letter-terms {
+	margin: 10px 0;
+	padding-left: 0;
+	list-style: none;
+}
+
+.htax-letter-terms li {
+	margin: 5px 0;
+	padding: 2px 0;
+}
+
+.htax-term-item {
+	display: inline-block;
+}
+
+.htax-term-item a {
+	text-decoration: none;
+	color: inherit;
+}
+
+.htax-term-item a:hover {
+	text-decoration: underline;
+}
+
+.htax-term-count {
+	color: #666;
+	font-size: 0.9em;
+	margin-left: 3px;
+}
+
+.htax-redirect-term {
+	opacity: 0.85;
+}
+
+.htax-redirect-nolink {
+	cursor: default;
+}
+
+/* Column layouts for term index */
+.htax-columns-2 .htax-letter-terms {
+	column-count: 2;
+	column-gap: 20px;
+}
+
+.htax-columns-3 .htax-letter-terms {
+	column-count: 3;
+	column-gap: 20px;
+}
+
+.htax-columns-4 .htax-letter-terms {
+	column-count: 4;
+	column-gap: 20px;
+}
+
+/* Responsive columns */
+@media (max-width: 768px) {
+	.htax-columns-3 .htax-letter-terms,
+	.htax-columns-4 .htax-letter-terms {
+		column-count: 2;
+	}
+}
+
+@media (max-width: 480px) {
+	.htax-columns-2 .htax-letter-terms,
+	.htax-columns-3 .htax-letter-terms,
+	.htax-columns-4 .htax-letter-terms {
+		column-count: 1;
+	}
+}

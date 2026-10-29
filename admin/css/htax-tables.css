@@ -1,0 +1,346 @@
+/**
+ * List Table Styles
+ * Styling for term and post list tables in wp-admin
+ *
+ * @package HyperTaxonomy
+ * @since 1.0.0
+ */
+
+/* ============================================================================
+   COLUMN WIDTHS - Optimized for dynamic column sets
+   ============================================================================ */
+
+/* Icon column */
+.column-htax_icon {
+	width: 65px;
+	min-width: 65px;
+	max-width: 65px;
+	text-align: left;
+}
+.htax-icon-cell {
+	display: block;
+	line-height: 0; /* removes gap below inline img */
+}
+.htax-icon-cell img {
+	max-width: 100%;
+	height: auto;
+	display: block;
+}
+
+/* Redirect column — truncates to "Redir…" when space is tight */
+.column-htax_redirect {
+	width: 80px;
+	max-width: 80px;
+}
+
+/* Visibility column — truncates to "Visib…" when space is tight */
+.column-htax_hidden {
+	width: 80px;
+	max-width: 80px;
+	text-align: center;
+}
+
+/* Term Groups column */
+.column-htax_term_groups {
+	width: 110px;
+	max-width: 110px;
+}
+
+/* Terms count column (for group taxonomy) */
+.column-terms_count {
+	width: 60px;
+	max-width: 60px;
+	text-align: center;
+}
+
+/* Taxonomies column (for group taxonomy) */
+.column-taxonomies {
+	width: 90px;
+	max-width: 90px;
+}
+
+/* Name column - force adequate width */
+.column-name {
+	width: 33% !important;
+	min-width: 250px;
+}
+
+/* Slug column - compact */
+.column-slug {
+	width: 100px;
+	max-width: 100px;
+}
+
+/* Description column - more space for descriptions */
+.column-description {
+	width: 25% !important;
+	max-width: 300px;
+}
+
+/* Posts count column - wider to fit sort arrows */
+.column-posts {
+	width: 80px;
+	max-width: 80px;
+	text-align: center;
+}
+
+/* Checkbox column - keep narrow */
+.column-cb {
+	width: 2.2em;
+	max-width: 2.2em;
+}
+
+/* ============================================================================
+   RESPONSIVE WIDTH ADJUSTMENTS
+   ============================================================================ */
+
+/* Name column - always wrap, never truncate */
+.wp-list-table .column-name {
+	white-space: normal;
+	word-break: break-word;
+}
+
+/* Description column - truncate to save space */
+.wp-list-table .column-description {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+/* Use auto layout to let Name column expand naturally */
+.wp-list-table {
+	table-layout: auto;
+	width: 100%;
+}
+
+/* Truncate custom column headers that don't fit */
+.wp-list-table thead th.column-htax_icon,
+.wp-list-table tfoot  th.column-htax_icon,
+.wp-list-table thead th.column-htax_hidden,
+.wp-list-table tfoot  th.column-htax_hidden,
+.wp-list-table thead th.column-htax_redirect,
+.wp-list-table tfoot  th.column-htax_redirect,
+.wp-list-table thead th.column-htax_term_groups,
+.wp-list-table tfoot  th.column-htax_term_groups {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+/* Keep sort indicator on the same line as the column label — thead and tfoot. */
+.wp-list-table thead th.column-htax_icon a,
+.wp-list-table tfoot  th.column-htax_icon a,
+.wp-list-table thead th.column-htax_hidden a,
+.wp-list-table tfoot  th.column-htax_hidden a,
+.wp-list-table thead th.column-htax_redirect a,
+.wp-list-table tfoot  th.column-htax_redirect a,
+.wp-list-table thead th.column-htax_term_groups a,
+.wp-list-table tfoot  th.column-htax_term_groups a,
+.wp-list-table thead th.column-description a,
+.wp-list-table tfoot  th.column-description a {
+	white-space: nowrap;
+	flex-wrap: nowrap;
+}
+
+/* Ensure Description always gets enough width for its header + sort indicator. */
+.wp-list-table thead th.column-description,
+.wp-list-table tfoot  th.column-description {
+	min-width: 140px;
+}
+
+/* Truncating sort link headers for Redirect and Visibility — thead and tfoot. */
+.wp-list-table thead th.column-htax_redirect a,
+.wp-list-table tfoot  th.column-htax_redirect a,
+.wp-list-table thead th.column-htax_hidden a,
+.wp-list-table tfoot  th.column-htax_hidden a {
+	display: flex;
+	flex-wrap: nowrap;
+	align-items: center;
+	gap: 2px;
+}
+
+.wp-list-table thead th.column-htax_redirect a > span:first-child,
+.wp-list-table tfoot  th.column-htax_redirect a > span:first-child,
+.wp-list-table thead th.column-htax_hidden a > span:first-child,
+.wp-list-table tfoot  th.column-htax_hidden a > span:first-child {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	min-width: 0;
+	flex: 1 1 0;
+}
+
+/* ============================================================================
+   COLUMN CONTENT STYLING
+   ============================================================================ */
+
+/* Redirect indicator styling */
+.htax-redirect-indicator {
+	font-weight: bold;
+}
+
+/* Make redirect rows slightly faded to indicate they're redirects */
+tr.htax-is-redirect td:not(.column-htax_redirect) {
+	opacity: 0.7;
+}
+
+/* Make "Add Tag" and "Add Category" forms narrower to leave more room for the table */
+.taxonomy-post_tag #col-left,
+.taxonomy-category #col-left {
+	width: 30%;
+}
+
+.taxonomy-post_tag #col-right,
+.taxonomy-category #col-right {
+	width: 68%;
+}
+
+/* Keep Add Term form fields at 95% width to match native WP fields */
+#col-left .form-field input[type="text"],
+#col-left .form-field input[type="search"],
+#col-left .form-field textarea,
+#col-left .form-field select,
+#col-left .form-field .htax-tag-container,
+#col-left .form-field .htax-hierarchical-checklist-wrapper,
+#col-left .form-field .htax-member-pills-container,
+#col-left .form-field [data-htax-sort-root],
+#col-left .form-field .htax-sort-order-container {
+	max-width: 95%;
+}
+
+/* Filter container wrapping and alignment */
+.htax-filters {
+	display: flex !important;
+	flex-wrap: wrap;
+	align-items: flex-end;
+	gap: 6px; /* 6px gap both horizontal and vertical */
+	margin: 0 !important;
+	padding: 0;
+}
+
+/* Filter selects: explicit line-height = content height centers text */
+.htax-filters select {
+	max-width: 130px;
+	height: 32px !important;
+	min-height: 32px !important;
+	line-height: 30px !important;
+}
+
+/* Align all filter elements at the top so they share a top edge */
+.htax-filters > * {
+	margin: 0 !important;
+}
+
+.htax-filters {
+	align-items: flex-start !important;
+}
+
+/* Remove extra left margin from first filter */
+.htax-filters > :first-child {
+	margin-left: 0 !important;
+}
+
+/* ============================================================================
+   QUICK EDIT FIELDS
+   ============================================================================ */
+
+/* Scrollable group checklist inside Quick Edit */
+.htax-qe-group-list {
+	max-height: 140px;
+	overflow-y: auto;
+	border: 1px solid #dcdcde;
+	padding: 4px 8px;
+	background: #fafafa;
+	margin-top: 4px;
+}
+
+/* Add top margin when the group list appears below the visibility checkbox */
+.htax-qe-groups-with-vis {
+	margin-top: 10px;
+}
+
+/* Term Groups filter button */
+.htax-group-filter-button {
+	background: #fff !important;
+	border: 1px solid #8c8f94 !important;
+	color: #2c3338 !important;
+	box-shadow: none !important;
+	position: relative !important;
+	height: 32px !important;
+	min-height: 32px !important;
+	line-height: 30px !important;
+	padding: 0 22px 0 8px !important;
+	white-space: nowrap;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+/* Arrow: absolute-centered so it never depends on line-height */
+.htax-group-filter-button .dashicons {
+	position: absolute;
+	right: 4px;
+	top: 50%;
+	transform: translateY(-50%);
+	font-size: 14px;
+	width: 14px;
+	height: 14px;
+	line-height: 1 !important;
+	margin: 0 !important;
+}
+
+/* Bulk assign modal — indeterminate (mixed) state for three-state checkboxes */
+.htax-modal-group-option input[type="checkbox"]:indeterminate {
+	background-color: #2271b1;
+	border-color: #2271b1;
+}
+.htax-modal-group-option input[type="checkbox"]:indeterminate::before {
+	content: '';
+	display: block;
+	width: 8px;
+	height: 2px;
+	background: #fff;
+	margin: 7px 0 0 4px;
+}
+
+/* ============================================================================
+   ADD NEW TERM — collapsible "More options" section
+   ============================================================================ */
+
+.htax-add-form-collapsible-section {
+	margin-top: 4px;
+	margin-bottom: 20px; /* breathing room above the "Add" button when collapsed */
+}
+
+.htax-add-form-toggle,
+.htax-add-form-toggle:hover,
+.htax-add-form-toggle:focus,
+.htax-add-form-toggle * {
+	text-decoration: none !important;
+}
+
+.htax-add-form-toggle {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	margin-bottom: 6px;
+	font-size: 13px;
+	color: #2271b1;
+	cursor: pointer;
+	background: none;
+	border: none;
+	padding: 0;
+}
+
+.htax-add-form-toggle:hover,
+.htax-add-form-toggle:focus {
+	color: #135e96;
+	outline: none;
+}
+
+.htax-add-form-toggle-icon {
+	font-size: 16px;
+	width: 16px;
+	height: 16px;
+	line-height: 1;
+	flex-shrink: 0;
+}

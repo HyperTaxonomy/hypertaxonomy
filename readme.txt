@@ -341,12 +341,6 @@ define( 'HTAX_DEBUG_VERBOSE', true ); // Optional: adds backtrace
 
 == Changelog ==
 
-= 1.0.1 =
-* Fix: PowerSearch general-word scoring no longer double-counts tag/category matches or skips post-level `-word` exclusions when a `min_tags_score` / `min_categories_score` threshold is set; the threshold path is also faster on common words.
-* Fix: `wp_htax_post_text` and `wp_htax_search_terms` no longer go stale when a post's type changes away from an indexed post type without a status transition.
-* Fix: compatibility checks now correctly enforce the plugin's declared minimum WordPress version (5.9) and verify the full set of files the plugin loads, instead of a partial list.
-* Fix: the sticky-posts capability fallback now requires Editor-level access (`manage_categories`), matching Contributors/Authors being excluded by design.
-
 = 1.0.0 =
 * Initial release.
 

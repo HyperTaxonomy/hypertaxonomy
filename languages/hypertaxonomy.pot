@@ -3768,7 +3768,7 @@ msgstr ""
 #: includes/core/compatibility.php:37
 #, php-format
 msgid ""
-"HyperTaxonomy requires WordPress 5.0 or higher. You are running WordPress %s."
+"HyperTaxonomy requires WordPress 5.9 or higher. You are running WordPress %s."
 msgstr ""
 
 #: includes/core/compatibility.php:48

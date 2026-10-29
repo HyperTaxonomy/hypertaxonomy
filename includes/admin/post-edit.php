@@ -391,7 +391,9 @@ function htax_enqueue_post_editor_assets( $hook ) {
 
     // Localize sticky terms config for all taxonomies that support archive customization.
     // Whether to show the pins is a per-user preference (core/preferences htax/post-edit).
-    if ( $is_block_editor ) {
+    // Users without manage_term_sticky_posts get no pins: the REST write path ignores
+    // their sticky changes, so showing the pins would offer edits that never save.
+    if ( $is_block_editor && HyperTaxonomy_Capabilities::current_user_can( 'manage_term_sticky_posts' ) ) {
         $sticky_config = array();
         $tax_objects   = get_object_taxonomies( $screen->post_type, 'objects' );
         foreach ( $tax_objects as $tax_obj ) {

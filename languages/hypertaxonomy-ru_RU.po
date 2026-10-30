@@ -2780,7 +2780,7 @@ msgid ""
 "Sticky post lists shown on taxonomy archive pages. 0 = never expire (cleared"
 " when pins change)."
 msgstr ""
-"Списки закреплённых записей, показываемые на страницах архивов таксономий. 0"
+"Списки закреплённых записей, показываемые на страницах архивов терминов. 0"
 " = никогда не истекает (очищается при изменении закреплений)."
 
 #: includes/admin/settings.php:2731
@@ -5259,7 +5259,7 @@ msgstr "Подпись кнопки (в развёрнутом виде)"
 #: blocks/ht-sort-order-options/src/index.js:130
 msgid "Renders on taxonomy archive and search results pages only."
 msgstr ""
-"Отображается только на страницах архивов таксономий и результатов поиска."
+"Отображается только на страницах архивов терминов и результатов поиска."
 
 #: blocks/ht-sort-order-options/src/index.js:133
 msgid "HT Sort Order Options"
@@ -5965,7 +5965,7 @@ msgstr "HT Term List"
 #: blocks/ht-term-list/block.json
 msgctxt "block description"
 msgid "Display taxonomy terms as a filterable, optionally collapsible list with Term Groups support."
-msgstr "Выводит термины таксономии в виде списка с фильтрацией и необязательным сворачиванием, с поддержкой групп терминов."
+msgstr "Выводит термины таксономии в виде списка с фильтрацией и дополнительной возможностью сворачивания, с поддержкой групп терминов."
 
 #: blocks/ht-term-list/block.json
 msgctxt "block keyword"

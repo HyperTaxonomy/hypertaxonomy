@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: hypertaxonomy 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-29 21:34-0400\n"
+"POT-Creation-Date: 2026-10-30 08:34-0400\n"
 "PO-Revision-Date: 2026-07-06 19:58-0400\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -307,6 +307,7 @@ msgstr "Из таксономии"
 #: includes/admin/convert-terms.php:316 includes/admin/convert-terms.php:349
 #: includes/admin/merge-terms.php:152
 #: includes/admin/relationship-types-admin.php:610
+#: blocks/shared/post-list-edit.js:116 blocks/shared/term-display-edit.js:87
 msgid "— Select taxonomy —"
 msgstr "— Выберите таксономию —"
 
@@ -424,7 +425,7 @@ msgstr "Идёт формирование файла экспорта…"
 msgid "Export file downloaded"
 msgstr "Файл экспорта скачан"
 
-#: includes/admin/group-admin.php:73
+#: includes/admin/group-admin.php:73 blocks/shared/term-display-edit.js:106
 msgid "Taxonomies"
 msgstr "Таксономии"
 
@@ -446,7 +447,7 @@ msgstr ""
 
 #: includes/admin/group-admin.php:187 includes/admin/group-admin.php:956
 #: includes/admin/term-edit.php:594
-#: includes/shortcodes/class-sort-order.php:131
+#: includes/shortcodes/class-sort-order.php:131 blocks/shared/components.js:245
 msgid "Remove"
 msgstr "Удалить"
 
@@ -969,6 +970,7 @@ msgstr "Удалено исходных терминов:"
 
 #: includes/admin/merge-terms.php:148
 #: includes/admin/relationship-types-admin.php:607
+#: blocks/shared/post-list-edit.js:144 blocks/shared/term-display-edit.js:119
 msgid "Taxonomy"
 msgstr "Таксономия"
 
@@ -1090,6 +1092,7 @@ msgstr ""
 #: includes/admin/relationship-types-admin.php:391
 #: includes/admin/relationship-types-admin.php:420
 #: includes/admin/relationship-types-admin.php:474
+#: blocks/ht-term-list/src/index.js:30
 msgid "Slug"
 msgstr "Ярлык"
 
@@ -1123,6 +1126,7 @@ msgid "Yes"
 msgstr "Да"
 
 #: includes/admin/relationship-types-admin.php:404
+#: blocks/ht-term-groups/src/index.js:26 blocks/ht-term-list/src/index.js:81
 msgid "No"
 msgstr "Нет"
 
@@ -1394,7 +1398,10 @@ msgstr "HyperTaxonomy"
 msgid "Features"
 msgstr "Функции"
 
-#: includes/admin/settings.php:368
+#: includes/admin/settings.php:368 blocks/ht-sort-order-options/src/index.js:80
+#: blocks/ht-term-cloud/src/index.js:19 blocks/ht-term-groups/src/index.js:21
+#: blocks/ht-term-index/src/index.js:20 blocks/ht-term-list/src/index.js:22
+#: blocks/shared/post-list-edit.js:288
 msgid "Display"
 msgstr "Отображение"
 
@@ -1415,7 +1422,7 @@ msgstr "Кэширование"
 msgid "Export / Import"
 msgstr "Экспорт / Импорт"
 
-#: includes/admin/settings.php:373
+#: includes/admin/settings.php:373 blocks/ht-power-search/src/index.js:130
 msgid "Advanced"
 msgstr "Расширенные настройки"
 
@@ -1494,7 +1501,8 @@ msgstr "Ярлык URL:"
 msgid "Terms (from other taxonomies)"
 msgstr "Термины (из других таксономий)"
 
-#: includes/admin/settings.php:733
+#: includes/admin/settings.php:733 blocks/ht-term-list/src/index.js:60
+#: blocks/ht-term-list/src/index.js:92
 msgid "None"
 msgstr "Нет"
 
@@ -3843,12 +3851,12 @@ msgid "Sort order:"
 msgstr "Порядок сортировки:"
 
 #: includes/admin/term-edit.php:595
-#: includes/shortcodes/class-sort-order.php:129
+#: includes/shortcodes/class-sort-order.php:129 blocks/shared/components.js:221
 msgid "Ascending — click to toggle"
 msgstr "По возрастанию — нажмите для переключения"
 
 #: includes/admin/term-edit.php:596
-#: includes/shortcodes/class-sort-order.php:130
+#: includes/shortcodes/class-sort-order.php:130 blocks/shared/components.js:222
 msgid "Descending — click to toggle"
 msgstr "По убыванию — нажмите для переключения"
 
@@ -3864,6 +3872,7 @@ msgstr "Добавить критерий сортировки"
 #: includes/shortcodes/class-filter-options.php:139
 #: includes/shortcodes/class-filter-options.php:1076
 #: includes/shortcodes/class-sort-order.php:39
+#: blocks/ht-sort-order-options/src/index.js:17
 msgid "Date"
 msgstr "Дата"
 
@@ -3872,6 +3881,7 @@ msgid "Last modified"
 msgstr "Время последнего изменения"
 
 #: includes/admin/term-edit.php:609 includes/shortcodes/class-sort-order.php:41
+#: blocks/ht-sort-order-options/src/index.js:19 blocks/shared/components.js:150
 msgid "Title"
 msgstr "Заголовок"
 
@@ -3879,10 +3889,12 @@ msgstr "Заголовок"
 #: includes/shortcodes/class-filter-options.php:184
 #: includes/shortcodes/class-filter-options.php:1088
 #: includes/shortcodes/class-sort-order.php:42
+#: blocks/ht-sort-order-options/src/index.js:20 blocks/shared/components.js:151
 msgid "Author"
 msgstr "Автор"
 
 #: includes/admin/term-edit.php:611 includes/shortcodes/class-sort-order.php:43
+#: blocks/ht-sort-order-options/src/index.js:21
 msgid "Comments"
 msgstr "Количество комментариев"
 
@@ -4191,6 +4203,8 @@ msgstr ""
 #: includes/shortcodes/class-sort-order.php:100
 #: includes/shortcodes/class-sort-order.php:190
 #: includes/shortcodes/class-sort-order.php:191
+#: blocks/ht-sort-order-options/src/index.js:105
+#: blocks/ht-sort-order-options/src/index.js:113
 msgid "Sort"
 msgstr "Сортировка"
 
@@ -4396,7 +4410,7 @@ msgstr ""
 msgid "Post not found."
 msgstr "Запись не найдена."
 
-#: includes/core/relationship-types-rest.php:145 includes/core/rest-api.php:465
+#: includes/core/relationship-types-rest.php:145 includes/core/rest-api.php:470
 #: includes/core/term-conversion.php:128
 msgid "Term not found."
 msgstr "Термин не найден."
@@ -5001,6 +5015,7 @@ msgstr "встроенную функцию слияния терминов Hype
 #: includes/shortcodes/class-filter-options.php:162
 #: includes/shortcodes/class-filter-options.php:1082
 #: includes/shortcodes/class-sort-order.php:40
+#: blocks/ht-sort-order-options/src/index.js:18
 msgid "Modified"
 msgstr "Дата изменения"
 
@@ -5041,18 +5056,20 @@ msgid "Next »"
 msgstr "Следующая »"
 
 #: includes/shortcodes/class-sort-order.php:44
+#: blocks/ht-sort-order-options/src/index.js:22
 msgid "Latest Comment"
 msgstr "Самый свежий комментарий"
 
 #: includes/shortcodes/class-sort-order.php:45
+#: blocks/ht-sort-order-options/src/index.js:23
 msgid "Latest Activity"
 msgstr "Самая свежая запись или комментарий"
 
-#: includes/shortcodes/class-sort-order.php:46
+#: includes/shortcodes/class-sort-order.php:46 blocks/shared/components.js:156
 msgid "Relevance"
 msgstr "Релевантность"
 
-#: includes/shortcodes/class-sort-order.php:47
+#: includes/shortcodes/class-sort-order.php:47 blocks/shared/components.js:155
 msgid "ID"
 msgstr "ID"
 

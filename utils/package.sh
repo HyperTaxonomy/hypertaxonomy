@@ -16,7 +16,7 @@
 
 set -e
 
-PLUGIN_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -W)"
+PLUGIN_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PLUGIN_NAME="hypertaxonomy"
 DIST_DIR="${PLUGIN_ROOT}/dist"
 ZIP_PATH="${DIST_DIR}/${PLUGIN_NAME}.zip"

@@ -2,7 +2,7 @@
 Tags: tags, categories, taxonomy, relationships, archive, organization, synonyms, redirect, sticky posts, icons, search, SEO
 Contributors: eugenevv
 Author: Eugene Weinstein
-Requires at least: 5.9
+Requires at least: 6.6
 Tested up to: 7.1
 Requires PHP: 7.4
 Stable tag: 1.0.0
@@ -70,7 +70,7 @@ For a detailed walk-through of the concepts behind HyperTaxonomy — why WordPre
 Post list, display, PowerSearch, and sort-order shortcodes each have a corresponding Gutenberg block with a live editor preview. The Advanced Search Widget is a composed system of nested shortcodes; it has no single block equivalent and must be built in markup or a text block. See the dedicated sections below for syntax and parameters.
 
 **Native Block Extensions**
-* **Query Loop — HT Term Group Filter** — Adds a Term Group filter panel to every core Query Loop block; select one or more groups to restrict results to posts with matching terms (OR logic, subgroup-inclusive, taxonomy auto-detected from post type; requires WordPress 6.1+)
+* **Query Loop — HT Term Group Filter** — Adds a Term Group filter panel to every core Query Loop block; select one or more groups to restrict results to posts with matching terms (OR logic, subgroup-inclusive, taxonomy auto-detected from post type)
 * **Latest Posts — HT Term Group Filter** — Same Term Group filter panel on every core Latest Posts block; filters the block's post list to terms from the selected groups
 
 **Admin Interface**
@@ -321,7 +321,7 @@ define( 'HTAX_DEBUG_VERBOSE', true ); // Optional: adds backtrace
 
 == Compatibility ==
 
-**Required:** WordPress 5.9+, PHP 7.4+, MySQL 5.7+ (or MariaDB 10.3+)
+**Required:** WordPress 6.6+, PHP 7.4+, MySQL 5.7+ (or MariaDB 10.3+)
 **Editors:** Classic Editor, Gutenberg
 **Multisite:** Fully supported
 **No Plugin Dependencies:** Works standalone

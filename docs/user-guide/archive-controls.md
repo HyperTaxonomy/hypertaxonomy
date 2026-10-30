@@ -212,8 +212,6 @@ HyperTaxonomy extends two native WordPress blocks — **Query Loop** and **Lates
 
 **Example use case:** You have a "Featured" group containing a curated set of tags. Add a Query Loop or Latest Posts block to your home page template, open the inspector, select the "Featured" group in the HT Term Group Filter panel, and the block will only show posts tagged with Featured terms.
 
-> **Version requirements.** The Query Loop group filter requires WordPress 6.1+ (the underlying `query_loop_block_query_vars` filter). The Latest Posts group filter requires WordPress 5.9+ (`pre_render_block`). On earlier versions the attribute is stored but has no effect.
-
 > **If HyperTaxonomy is deactivated:** The group filter has no effect on the frontend while the plugin is inactive. The configured group IDs remain stored in the block and are restored when the plugin is reactivated — provided the post has not been re-saved in the block editor during that time. Re-saving a post while HyperTaxonomy is deactivated causes WordPress to strip the `htax_filter_groups` attribute (it is no longer in any registered block schema), permanently losing the configured filter for that block.
 
 ---

@@ -335,7 +335,7 @@ The first eight blocks (all except `sort-order-options`) display a live `ServerS
 
 `htax-sort-order-options` and `htax-power-search` each have their own standalone `Edit` components and do not use a shared factory.
 
-**Query Loop and Latest Posts block extension**: `blocks/ht-query-group-filter/` is not a standalone block (it has `"supports": {"inserter": false}` in `block.json`). It uses `addFilter('blocks.registerBlockType')` to add an `htax_filter_groups` attribute to both `core/query` and `core/latest-posts`, and `addFilter('editor.BlockEdit')` with `createHigherOrderComponent` to inject a `GroupTokenField` inspector panel into both block types. The PHP side is `includes/core/native-blocks.php` → `htax_query_loop_group_filter()` (hooked to `query_loop_block_query_vars`, WP 6.1+) and `htax_latest_posts_group_filter()` (hooked to `pre_render_block`, WP 5.9+). See [Query Loop Group Filter](#query-loop-group-filter) below.
+**Query Loop and Latest Posts block extension**: `blocks/ht-query-group-filter/` is not a standalone block (it has `"supports": {"inserter": false}` in `block.json`). It uses `addFilter('blocks.registerBlockType')` to add an `htax_filter_groups` attribute to both `core/query` and `core/latest-posts`, and `addFilter('editor.BlockEdit')` with `createHigherOrderComponent` to inject a `GroupTokenField` inspector panel into both block types. The PHP side is `includes/core/native-blocks.php` → `htax_query_loop_group_filter()` (hooked to `query_loop_block_query_vars`) and `htax_latest_posts_group_filter()` (hooked to `pre_render_block`). See [Query Loop Group Filter](#query-loop-group-filter) below.
 
 The webpack config (`webpack.config.js`) is an array of per-block configs, each outputting to its own `build/` directory.
 

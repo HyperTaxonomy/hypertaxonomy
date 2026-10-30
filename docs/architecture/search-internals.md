@@ -279,8 +279,6 @@ Algorithm:
 
 **OR logic rationale:** Multiple groups = union. Selecting groups A and B includes posts from A, B, or both. Within a single group, subgroup expansion is inclusive. Across taxonomies, OR is used because a post might carry the relevant term in any of its taxonomies — requiring ALL taxonomies to match would incorrectly exclude posts that use only one of them.
 
-**WordPress version requirement:** `query_loop_block_query_vars` was introduced in WordPress 6.1 — the Query Loop group filter has no effect on earlier versions. `pre_render_block` is available since WordPress 5.9 — the Latest Posts group filter requires WordPress 5.9+. Both attributes are stored regardless of WordPress version; they take effect as soon as the version requirement is met.
-
 ---
 
 ## AJAX Endpoints
@@ -317,7 +315,7 @@ Each result item: `{ id, value, label, item_type: 'term'|'group' }`
 ## Credits
 - **Author:** Eugene Weinstein
 - **License:** GPLv2 or later
-- **Requires:** WordPress 5.9+, PHP 7.4+, MySQL 5.7+ (MariaDB 10.3+)
+- **Requires:** WordPress 6.6+, PHP 7.4+, MySQL 5.7+ (MariaDB 10.3+)
 - **Version:** 1.0.0
 
 ## Support

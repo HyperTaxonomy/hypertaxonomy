@@ -33,7 +33,7 @@ One of five interoperable WordPress plugins for richer, connected taxonomies. Ea
 
 | Item | Version |
 |------|---------|
-| WordPress | 5.9+ |
+| WordPress | 6.6+ |
 | PHP | 7.4+ |
 | MySQL | 5.7+ (MariaDB 10.3+) |
 

@@ -12,7 +12,7 @@ For cross-site content — fetching related posts from peer WordPress sites, RSS
 
 | Item | Version |
 |------|---------|
-| WordPress | 5.9+ |
+| WordPress | 6.6+ |
 | PHP | 7.4+ |
 | MySQL | 5.7+ (MariaDB 10.3+) |
 

@@ -4329,10 +4329,10 @@ msgstr "HyperTaxonomy требует PHP 7.4 или выше. У вас уста
 #: includes/core/compatibility.php:37
 #, php-format
 msgid ""
-"HyperTaxonomy requires WordPress 5.9 or higher. You are running WordPress "
+"HyperTaxonomy requires WordPress 6.6 or higher. You are running WordPress "
 "%s."
 msgstr ""
-"HyperTaxonomy требует WordPress 5.9 или выше. У вас установлен WordPress %s."
+"HyperTaxonomy требует WordPress 6.6 или выше. У вас установлен WordPress %s."
 
 #: includes/core/compatibility.php:48
 #, php-format

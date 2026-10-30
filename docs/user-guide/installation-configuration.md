@@ -8,7 +8,7 @@ nav_order: 2
 
 | Requirement | Minimum Version |
 |-------------|----------------|
-| WordPress | 5.9 |
+| WordPress | 6.6 |
 | PHP | 7.4 |
 | MySQL | 5.7 (or MariaDB 10.3) |
 

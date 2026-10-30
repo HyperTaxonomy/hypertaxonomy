@@ -31,10 +31,10 @@ function htax_check_compatibility() {
 
     // Check WordPress version. Must match the "Requires at least" header in hypertaxonomy.php.
     global $wp_version;
-    if ( version_compare( $wp_version, '5.9', '<' ) ) {
+    if ( version_compare( $wp_version, '6.6', '<' ) ) {
         $errors[] = sprintf(
             /* translators: %s: Current WordPress version */
-            __( 'HyperTaxonomy requires WordPress 5.9 or higher. You are running WordPress %s.', 'hypertaxonomy' ),
+            __( 'HyperTaxonomy requires WordPress 6.6 or higher. You are running WordPress %s.', 'hypertaxonomy' ),
             $wp_version
         );
     }

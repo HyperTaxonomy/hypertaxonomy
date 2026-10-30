@@ -5099,3 +5099,183 @@ msgstr ""
 #: blocks/shared/term-display-edit.js:197
 msgid "Colored placeholder"
 msgstr ""
+
+#: blocks/ht-post-list/block.json
+msgctxt "block title"
+msgid "HT Post List"
+msgstr ""
+
+#: blocks/ht-post-list/block.json
+msgctxt "block description"
+msgid "Display posts filtered by taxonomy terms with sorting, filtering, and full HyperTaxonomy features."
+msgstr ""
+
+#: blocks/ht-post-list/block.json blocks/ht-power-search/block.json blocks/ht-related-posts/block.json
+msgctxt "block keyword"
+msgid "posts"
+msgstr ""
+
+#: blocks/ht-post-list/block.json blocks/ht-related-posts/block.json blocks/ht-sort-order-options/block.json blocks/ht-term-cloud/block.json blocks/ht-term-groups/block.json blocks/ht-term-index/block.json blocks/ht-term-list/block.json
+msgctxt "block keyword"
+msgid "taxonomy"
+msgstr ""
+
+#: blocks/ht-post-list/block.json blocks/ht-related-posts/block.json blocks/ht-term-cloud/block.json blocks/ht-term-groups/block.json blocks/ht-term-index/block.json blocks/ht-term-list/block.json
+msgctxt "block keyword"
+msgid "terms"
+msgstr ""
+
+#: blocks/ht-post-list/block.json
+msgctxt "block keyword"
+msgid "filter"
+msgstr ""
+
+#: blocks/ht-post-list/block.json blocks/ht-power-search/block.json blocks/ht-related-posts/block.json blocks/ht-sort-order-options/block.json blocks/ht-term-cloud/block.json blocks/ht-term-groups/block.json blocks/ht-term-index/block.json blocks/ht-term-list/block.json
+msgctxt "block keyword"
+msgid "hypertaxonomy"
+msgstr ""
+
+#: blocks/ht-power-search/block.json
+msgctxt "block title"
+msgid "HT PowerSearch"
+msgstr ""
+
+#: blocks/ht-power-search/block.json
+msgctxt "block description"
+msgid "A MySQL FULLTEXT search form with relevance scoring, field operators (title:, tags:, etc.), and boolean logic. Renders results inline (POST mode) or updates a separate container (AJAX mode)."
+msgstr ""
+
+#: blocks/ht-power-search/block.json blocks/ht-sort-order-options/block.json
+msgctxt "block keyword"
+msgid "search"
+msgstr ""
+
+#: blocks/ht-power-search/block.json
+msgctxt "block keyword"
+msgid "fulltext"
+msgstr ""
+
+#: blocks/ht-query-group-filter/block.json
+msgctxt "block title"
+msgid "HT Term Group Filter"
+msgstr ""
+
+#: blocks/ht-query-group-filter/block.json
+msgctxt "block description"
+msgid "Block editor extension that adds a Term Group filter to the core Query Loop and Latest Posts blocks."
+msgstr ""
+
+#: blocks/ht-related-posts/block.json
+msgctxt "block title"
+msgid "HT Related Posts"
+msgstr ""
+
+#: blocks/ht-related-posts/block.json
+msgctxt "block description"
+msgid "Display posts related to the current post by shared taxonomy terms, with full HyperTaxonomy relevance scoring."
+msgstr ""
+
+#: blocks/ht-related-posts/block.json
+msgctxt "block keyword"
+msgid "related"
+msgstr ""
+
+#: blocks/ht-sort-order-options/block.json
+msgctxt "block title"
+msgid "HT Sort Order Options"
+msgstr ""
+
+#: blocks/ht-sort-order-options/block.json
+msgctxt "block description"
+msgid "A sort order picker for taxonomy archive and search results pages. Navigates to the same URL with the selected sort order as a query parameter."
+msgstr ""
+
+#: blocks/ht-sort-order-options/block.json
+msgctxt "block keyword"
+msgid "sort"
+msgstr ""
+
+#: blocks/ht-sort-order-options/block.json
+msgctxt "block keyword"
+msgid "order"
+msgstr ""
+
+#: blocks/ht-sort-order-options/block.json
+msgctxt "block keyword"
+msgid "archive"
+msgstr ""
+
+#: blocks/ht-term-cloud/block.json
+msgctxt "block title"
+msgid "HT Term Cloud"
+msgstr ""
+
+#: blocks/ht-term-cloud/block.json
+msgctxt "block description"
+msgid "Display a tag cloud with variable font sizes based on post count, with Term Groups filtering."
+msgstr ""
+
+#: blocks/ht-term-cloud/block.json
+msgctxt "block keyword"
+msgid "tag"
+msgstr ""
+
+#: blocks/ht-term-cloud/block.json
+msgctxt "block keyword"
+msgid "cloud"
+msgstr ""
+
+#: blocks/ht-term-groups/block.json
+msgctxt "block title"
+msgid "HT Term Groups"
+msgstr ""
+
+#: blocks/ht-term-groups/block.json
+msgctxt "block description"
+msgid "Display terms organized by their groups in a collapsible tree using native HTML details/summary elements."
+msgstr ""
+
+#: blocks/ht-term-groups/block.json
+msgctxt "block keyword"
+msgid "groups"
+msgstr ""
+
+#: blocks/ht-term-groups/block.json
+msgctxt "block keyword"
+msgid "tree"
+msgstr ""
+
+#: blocks/ht-term-index/block.json
+msgctxt "block title"
+msgid "HT Term Index"
+msgstr ""
+
+#: blocks/ht-term-index/block.json
+msgctxt "block description"
+msgid "Display an alphabetical A–Z index of taxonomy terms with optional letter navigation."
+msgstr ""
+
+#: blocks/ht-term-index/block.json
+msgctxt "block keyword"
+msgid "index"
+msgstr ""
+
+#: blocks/ht-term-index/block.json
+msgctxt "block keyword"
+msgid "alphabetical"
+msgstr ""
+
+#: blocks/ht-term-list/block.json
+msgctxt "block title"
+msgid "HT Term List"
+msgstr ""
+
+#: blocks/ht-term-list/block.json
+msgctxt "block description"
+msgid "Display taxonomy terms as a filterable, optionally collapsible list with Term Groups support."
+msgstr ""
+
+#: blocks/ht-term-list/block.json
+msgctxt "block keyword"
+msgid "list"
+msgstr ""

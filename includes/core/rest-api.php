@@ -14,6 +14,11 @@
  *   htax_synonyms    array   Synonym terms (mutual inclusions) as term stubs:
  *                            id, slug, name, taxonomy. Dedicated field for direct
  *                            synonym access without parsing htax_includes.
+ *   htax_locations   array   Schema.org Place objects (address + optional geo).
+ *                            Requires ATCF active and the share_locations feature.
+ *   htax_relationships array Effective outbound storage-only custom relationships.
+ *                            Disabled if either Term Inclusion Relationships or
+ *                            Custom Term Relationships and Relationship Types is off.
  *
  * Posts endpoint (/wp-json/wp/v2/posts):
  *   htax_score              number  Scored responses only. Normalized 0–1 relevance.

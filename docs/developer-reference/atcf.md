@@ -78,7 +78,7 @@ A post passes `near:` when at least one of its terms in a location-enabled taxon
 
 Multiple positive `near:` clauses are unioned regardless of the search's AND/OR mode; unresolvable clauses are ignored. `-near:` clauses always remove in-range posts. When ATCF is inactive, unrecognized `near:` text passes through to FULLTEXT unchanged.
 
-**`near:`-only searches** — a PowerSearch query or search-widget text field holding only `near:` tokens returns every indexed, published post with a location in range (a `near:` whose location is unknown is ignored, as in any search, leaving every post). Relevance is the distance score from the `htax_search_proximity_relevance` filter, so relevance ordering is nearest first; text score thresholds (`min_score` etc.) don't apply.
+**`near:`-only searches** — a PowerSearch query or search-widget text field holding only `near:` tokens returns every indexed, published post with a location in range (a `near:` whose location is unknown is ignored, as in any search, leaving every post). Relevance is the distance score from the `htax_search_proximity_relevance` filter, so the default order (`relevance:desc,date:desc`) is nearest first, then newest first among equal distances. A configured `orderby` (shortcode/block attribute, form setting, or `htax_orderby`) replaces that default as for any search. Text score thresholds (`min_score` etc.) don't apply.
 
 ### `htax_search_proximity_relevance` Filter
 

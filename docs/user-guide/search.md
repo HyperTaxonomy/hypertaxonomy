@@ -36,7 +36,7 @@ Container for all search widget shortcodes.
 
 #### Field shortcodes
 
-**`[ht_text_field]`** — Full-text keyword search. At most one per form; must be placed at the top level of `[ht_search_form]`, not inside `[ht_field_group]`. The text field filters the entire result set independently — it is not part of the AND/OR taxonomy group logic. Supports boolean operators: `+required`, `-excluded`, `"exact phrase"`.
+**`[ht_text_field]`** — Full-text keyword search. At most one per form; must be placed at the top level of `[ht_search_form]`, not inside `[ht_field_group]`. The text field filters the entire result set independently — it is not part of the AND/OR taxonomy group logic. Supports boolean operators: `+required`, `-excluded`, `"exact phrase"`. When As the Crow Flies is active it also accepts the PowerSearch proximity operators (`near:`, `-near:`) — see **Proximity operators** under [PowerSearch](#ht_power_search--powersearch-form); a text field holding only `near:` operators lists results nearest first under the default sort order.
 
 **`[ht_pills_field]`** — Autocomplete pill-selector. With the default `suggest_on_focus="true"`, the dropdown opens as soon as the input is focused — no typing required. Set `suggest_on_focus="false"` to require at least one character before suggestions appear. With the default `prefetch="true"`, all options are loaded on page load and suggestions are filtered client-side:
 
@@ -435,7 +435,7 @@ Only posts with a location in range are kept: posts whose location is unknown �
 
 The **country context** for postal code validation defaults to US; set `near_country="CA"` (etc.) on the `[ht_power_search]` shortcode or HT PowerSearch block for other countries.
 
-A query made only of `near:` operators (e.g. `near:me/10`, `near:97201/5`) lists every post with a location in range, nearest first.
+A query made only of `near:` operators (e.g. `near:me/10`, `near:97201/5`) lists every post with a location in range. Its relevance is the distance, so with the default sort order (`relevance:desc,date:desc`) results come nearest first, and posts at the same distance newest first. A different configured `orderby`, or a visitor's choice in a sort picker, takes precedence over distance. The same applies to a search widget's text field holding only `near:` operators.
 
 **Where `near:me` gets the location:**
 

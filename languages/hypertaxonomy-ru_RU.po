@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: hypertaxonomy 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-29 14:06-0400\n"
+"POT-Creation-Date: 2026-10-29 21:34-0400\n"
 "PO-Revision-Date: 2026-07-06 19:58-0400\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -16,7 +16,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
 #: includes/admin/admin-menu.php:34 includes/admin/admin-menu.php:35
 #: includes/admin/convert-terms.php:327 includes/admin/group-admin.php:72
@@ -42,7 +43,7 @@ msgstr "Типы связей между терминами"
 #: includes/admin/ajax.php:949 includes/admin/bulk-actions.php:240
 #: includes/admin/settings.php:3565 includes/admin/settings.php:3583
 #: includes/admin/term-icons.php:1062
-#: includes/classes/class-search-index.php:1216
+#: includes/classes/class-search-index.php:1211
 #: includes/integrations/class-taxopress-integration.php:126
 msgid "Security check failed."
 msgstr "Проверка безопасности не пройдена."
@@ -227,8 +228,8 @@ msgstr "У вас недостаточно прав для доступа к э�
 
 #: includes/admin/convert-terms.php:243
 msgid ""
-"Move terms from one taxonomy to another. Post assignments are preserved — no"
-" posts are removed from the site."
+"Move terms from one taxonomy to another. Post assignments are preserved — no "
+"posts are removed from the site."
 msgstr ""
 "Перемещение терминов из одной таксономии в другую. Связи между терминами и "
 "записями сохраняются — ни одна запись не будет удалена с сайта."
@@ -328,8 +329,7 @@ msgstr "Рудименты для перенаправления"
 #: includes/admin/convert-terms.php:366
 msgid "Create 301 redirect stubs in the old taxonomy"
 msgstr ""
-"Создавать рудименты для перенаправления (статус 301) в изначальной "
-"таксономии"
+"Создавать рудименты для перенаправления (статус 301) в изначальной таксономии"
 
 #: includes/admin/convert-terms.php:368
 msgid ""
@@ -355,8 +355,8 @@ msgstr "Экспорт данных HyperTaxonomy"
 
 #: includes/admin/export-ui.php:21
 msgid ""
-"Export term groups, relationships, and metadata to a JSON file for migration"
-" between WordPress instances."
+"Export term groups, relationships, and metadata to a JSON file for migration "
+"between WordPress instances."
 msgstr ""
 "Экспорт групп терминов, связей и метаданных в файл JSON для переноса между "
 "установками WordPress."
@@ -390,8 +390,7 @@ msgstr ""
 #: includes/admin/export-ui.php:34
 msgid "All data uses slug-based matching for cross-site compatibility"
 msgstr ""
-"Все данные используют сопоставление по ярлыку для совместимости между "
-"сайтами"
+"Все данные используют сопоставление по ярлыку для совместимости между сайтами"
 
 #: includes/admin/export-ui.php:40
 msgid "Select Taxonomies to Export:"
@@ -471,8 +470,8 @@ msgid ""
 "its name and member terms are kept in continuous sync with that plugin and "
 "aren't editable here."
 msgstr ""
-"Эта группа была создана при миграции из плагина Tag Groups. Согласно текущим"
-" настройкам, её название и состав синхронизируются непрерывно и здесь не "
+"Эта группа была создана при миграции из плагина Tag Groups. Согласно текущим "
+"настройкам, её название и состав синхронизируются непрерывно и здесь не "
 "редактируются."
 
 #: includes/admin/group-admin.php:249
@@ -481,8 +480,8 @@ msgid ""
 "its name and member terms are synced with that plugin during each migration "
 "run and aren't editable here."
 msgstr ""
-"Эта группа была создана при миграции из плагина Tag Groups. Согласно текущим"
-" настройкам, её название и состав синхронизируются при каждой миграции и "
+"Эта группа была создана при миграции из плагина Tag Groups. Согласно текущим "
+"настройкам, её название и состав синхронизируются при каждой миграции и "
 "здесь не редактируются."
 
 #: includes/admin/group-admin.php:255
@@ -495,8 +494,8 @@ msgstr ""
 "Удаление этой группы не заблокировано, но учтите: при следующей миграции из "
 "плагина Tag Groups она будет создана заново с участниками из плагина Tag "
 "Groups; однако связи и участники этой группы, существующие только в "
-"HyperTaxonomy (включение, обратное включение, пользовательские типы связей),"
-" будут утеряны."
+"HyperTaxonomy (включение, обратное включение, пользовательские типы связей), "
+"будут утеряны."
 
 #: includes/admin/group-admin.php:341
 msgid "Group Members"
@@ -537,13 +536,12 @@ msgstr "Контейнеры"
 
 #: includes/admin/group-admin.php:514
 msgid ""
-"Terms whose posts appear in the archives of all same-taxonomy group members."
-" Adding a term here sets this group as its container group."
+"Terms whose posts appear in the archives of all same-taxonomy group members. "
+"Adding a term here sets this group as its container group."
 msgstr ""
 "Термины, помеченные которыми записи появляются в архивах всех терминов-"
 "членов группы, входящих в ту же таксономию. При добавлении термина в этот "
-"список, группа будет автоматически добавлена в список его контейнерных "
-"групп."
+"список, группа будет автоматически добавлена в список его контейнерных групп."
 
 #: includes/admin/group-admin.php:914 includes/admin/term-edit.php:1068
 msgid "Add…"
@@ -563,15 +561,13 @@ msgid "Add %s…"
 msgstr "Добавить %s…"
 
 #: includes/admin/group-admin.php:1050
-msgid ""
-"Terms this group has this relationship with (this group is the source)."
+msgid "Terms this group has this relationship with (this group is the source)."
 msgstr ""
 "Термины, с которыми у этой группы есть эта связь (эта группа — источник)."
 
 #: includes/admin/group-admin.php:1064
 msgid ""
-"Terms that have this relationship with this group (this group is the "
-"target)."
+"Terms that have this relationship with this group (this group is the target)."
 msgstr ""
 "Термины, у которых есть данная связь с этой группой (эта группа — цель)."
 
@@ -623,12 +619,12 @@ msgstr ""
 #: includes/admin/group-admin.php:1357
 msgid ""
 "Groups are hierarchical, meaning you can create parent and child groups. In "
-"addition to directly assigned terms, groups automatically include terms from"
-" all their child groups as well."
+"addition to directly assigned terms, groups automatically include terms from "
+"all their child groups as well."
 msgstr ""
 "Группы иерархичны: вы можете создавать родительские и дочерние группы. В "
-"дополнение к терминам-членам группы, состоящим в ней непосредственно, каждая"
-" родительская группа также автоматически включает в себя и термины из всех "
+"дополнение к терминам-членам группы, состоящим в ней непосредственно, каждая "
+"родительская группа также автоматически включает в себя и термины из всех "
 "своих дочерних групп."
 
 #: includes/admin/group-admin.php:1364
@@ -645,11 +641,11 @@ msgstr ""
 
 #: includes/admin/group-admin.php:1366
 msgid ""
-"Group archive pages (e.g., /group/colors/) will display posts from all terms"
-" assigned to that group across all enabled taxonomies."
+"Group archive pages (e.g., /group/colors/) will display posts from all terms "
+"assigned to that group across all enabled taxonomies."
 msgstr ""
-"Страницы архивов групп (например, /group/colors/) отображают записи со всеми"
-" терминами-членами данной группы, входящими в любую включённую таксономию."
+"Страницы архивов групп (например, /group/colors/) отображают записи со всеми "
+"терминами-членами данной группы, входящими в любую включённую таксономию."
 
 #: includes/admin/group-admin.php:1373 includes/core/functions.php:94
 msgid "Settings"
@@ -669,8 +665,7 @@ msgid ""
 "interface on their term edit screens."
 msgstr ""
 "Интерфейс выбора групп отображается на страницах редактирования терминов "
-"только у таксономий, для которых включена функция внесения терминов в "
-"группы."
+"только у таксономий, для которых включена функция внесения терминов в группы."
 
 #: includes/admin/import-hypertaxonomy.php:25
 msgid "Missing version field"
@@ -814,8 +809,8 @@ msgid ""
 "Import term groups, relationships, and metadata from a HyperTaxonomy export "
 "JSON file."
 msgstr ""
-"Импорт групп терминов, связей и метаданных из файла экспорта HyperTaxonomy в"
-" формате JSON."
+"Импорт групп терминов, связей и метаданных из файла экспорта HyperTaxonomy в "
+"формате JSON."
 
 #: includes/admin/import-ui.php:24
 msgid "Select Export File:"
@@ -901,8 +896,8 @@ msgstr "Недопустимый файл JSON"
 
 #: includes/admin/import-ui.php:153
 msgid ""
-"Are you sure you want to import this data? This will create/update terms and"
-" relationships."
+"Are you sure you want to import this data? This will create/update terms and "
+"relationships."
 msgstr ""
 "Вы уверены, что хотите импортировать эти данные? Это создаст или обновит "
 "термины и связи."
@@ -945,18 +940,18 @@ msgid ""
 "transfer group memberships and relationships, then delete the source terms."
 msgstr ""
 "Перенести все связи с записями из одного или нескольких исходных терминов, "
-"их связи с другими терминами и членство в группах, в целевой термин, а затем"
-" удалить исходные термины, без возможности отмены."
+"их связи с другими терминами и членство в группах, в целевой термин, а затем "
+"удалить исходные термины, без возможности отмены."
 
 #: includes/admin/merge-terms.php:109
 msgid ""
-"TaxoPress is active and has its own term-merge tool. If you came from there:"
-" it does not transfer HyperTaxonomy relationship data (group memberships, "
-"inclusions) for the deleted term — use this tool instead to merge terms that"
-" have HyperTaxonomy relationships."
+"TaxoPress is active and has its own term-merge tool. If you came from there: "
+"it does not transfer HyperTaxonomy relationship data (group memberships, "
+"inclusions) for the deleted term — use this tool instead to merge terms that "
+"have HyperTaxonomy relationships."
 msgstr ""
-"Плагин TaxoPress активен и имеет собственный инструмент слияния терминов. Он"
-" не переносит связи HyperTaxonomy (членство в группах, включения) для "
+"Плагин TaxoPress активен и имеет собственный инструмент слияния терминов. Он "
+"не переносит связи HyperTaxonomy (членство в группах, включения) для "
 "удаляемого термина — и поэтому им не следует пользоваться для слияния "
 "терминов с такими связями."
 
@@ -1011,8 +1006,8 @@ msgid ""
 "Keeps old archive URLs working by creating redirect stubs pointing to the "
 "target term's archive."
 msgstr ""
-"Сохраняет URL-адреса прежних архивов в рабочем состоянии, создавая рудименты"
-" для перенаправления запросов на архив целевого термина."
+"Сохраняет URL-адреса прежних архивов в рабочем состоянии, создавая рудименты "
+"для перенаправления запросов на архив целевого термина."
 
 #: includes/admin/relationship-types-admin.php:84
 #, php-format
@@ -1026,8 +1021,8 @@ msgstr[0] ""
 "%d существующая строка связи использует этот тип, но не соответствует новым "
 "ограничениям таксономии. Она будет удалена. Продолжить?"
 msgstr[1] ""
-"%d существующие строки связей используют этот тип, но не соответствуют новым"
-" ограничениям таксономии. Они будут удалены. Продолжить?"
+"%d существующие строки связей используют этот тип, но не соответствуют новым "
+"ограничениям таксономии. Они будут удалены. Продолжить?"
 msgstr[2] ""
 "%d существующих строк связей используют этот тип, но не соответствуют новым "
 "ограничениям таксономии. Они будут удалены. Продолжить?"
@@ -1058,8 +1053,8 @@ msgstr "Не удалось удалить этот тип связи."
 
 #: includes/admin/relationship-types-admin.php:225
 msgid ""
-"Relationship type is now locally owned. You can edit it from the local types"
-" list."
+"Relationship type is now locally owned. You can edit it from the local types "
+"list."
 msgstr ""
 "Тип связи теперь принадлежит этому сайту. Вы можете редактировать его в "
 "списке локальных типов."
@@ -1159,8 +1154,8 @@ msgstr "Синхронизировать"
 
 #: includes/admin/relationship-types-admin.php:451
 msgid ""
-"Make this type local? This cannot be undone. The type definition will become"
-" editable and its namespace will change to this site. It will no longer be "
+"Make this type local? This cannot be undone. The type definition will become "
+"editable and its namespace will change to this site. It will no longer be "
 "updated from the source."
 msgstr ""
 "Сделать этот тип локальным? Это действие нельзя отменить. Определение типа "
@@ -1249,8 +1244,7 @@ msgstr "например, wrote"
 #: includes/admin/relationship-types-admin.php:578
 msgid "Lowercase letters, digits, hyphens. Cannot be changed after save."
 msgstr ""
-"Строчные буквы, цифры, дефисы. После сохранения невозможно вносить "
-"изменения."
+"Строчные буквы, цифры, дефисы. После сохранения невозможно вносить изменения."
 
 #: includes/admin/relationship-types-admin.php:586
 msgid "Forward label, e.g. \"Wrote\"."
@@ -1525,11 +1519,11 @@ msgstr ""
 "функциональности группового включения и обратного включения, через "
 "контейнерные группы. Поэтому, несмотря на то, что сами группы тоже являются "
 "терминами, они не могут непосредственно участвовать в связях между "
-"терминами, сверх группового включения или обратного включения в контейнерную"
-" группу. Некоторые другие функции неприменимы, поскольку группы не содержат "
+"терминами, сверх группового включения или обратного включения в контейнерную "
+"группу. Некоторые другие функции неприменимы, поскольку группы не содержат "
 "связей непосредственно с записями. Однако у групп, наравне с терминами из "
-"прочих таксономий, есть страницы архивов, которые могут перенаправляться или"
-" служить целями для других перенаправлений, и могут быть пользовательские "
+"прочих таксономий, есть страницы архивов, которые могут перенаправляться или "
+"служить целями для других перенаправлений, и могут быть пользовательские "
 "значки."
 
 #: includes/admin/settings.php:766
@@ -1552,12 +1546,12 @@ msgstr "Разрешить перенаправления для групп"
 #: includes/admin/settings.php:781
 msgid ""
 "Term Group archive pages can redirect to other term groups' archives - this "
-"allows to consolidate content, reorganize group hierarchies or rename groups"
-" without invalidating the original URLs."
+"allows to consolidate content, reorganize group hierarchies or rename groups "
+"without invalidating the original URLs."
 msgstr ""
 "Страницы архивов групп терминов могут перенаправляться на архивы других "
-"групп терминов — это позволяет объединять контент, реорганизовывать иерархии"
-" групп или переименовывать группы, сохраняя прежние URL-адреса."
+"групп терминов — это позволяет объединять контент, реорганизовывать иерархии "
+"групп или переименовывать группы, сохраняя прежние URL-адреса."
 
 #: includes/admin/settings.php:790
 msgid "Enable Term Group visibility options"
@@ -1572,8 +1566,8 @@ msgid ""
 msgstr ""
 "Разрешить скрытие отдельных групп и их подгрупп от публичного просмотра. "
 "Архивы скрытых групп возвращают статус 404 неавторизованным пользователям и "
-"исключаются из ответов REST API и карт сайта. Эта настройка не влияет на то,"
-" какие записи отображаются в архивах терминов, включающих всю группу — т.е. "
+"исключаются из ответов REST API и карт сайта. Эта настройка не влияет на то, "
+"какие записи отображаются в архивах терминов, включающих всю группу — т.е. "
 "на реализацию расширения групп, которая используется для группового "
 "включения и контейнерных групп."
 
@@ -1637,8 +1631,8 @@ msgid ""
 msgstr ""
 "Страницы архивов терминов таксономии «%s» могут перенаправляться на архивы "
 "других терминов — это позволяет объединять контент, переименовывать эти "
-"термины или преобразовывать их в термины других таксономий, сохраняя прежние"
-" URL-адреса."
+"термины или преобразовывать их в термины других таксономий, сохраняя прежние "
+"URL-адреса."
 
 #: includes/admin/settings.php:878
 #, php-format
@@ -1664,8 +1658,8 @@ msgstr "Включить управление видимостью термин�
 #, php-format
 msgid "Allow hiding specific %s from post meta or show them to editors only."
 msgstr ""
-"Разрешить скрытие отдельных терминов из таксономии «%s» в метаданных записей"
-" или показ их только редакторам."
+"Разрешить скрытие отдельных терминов из таксономии «%s» в метаданных записей "
+"или показ их только редакторам."
 
 #: includes/admin/settings.php:912
 #, php-format
@@ -1823,10 +1817,10 @@ msgid ""
 "0 = top level only; 1-99 = limit to that many levels."
 msgstr ""
 "Максимальная глубина вложенности по умолчанию для шорткода [ht_term_list], "
-"блока «Список терминов» и иерархических списков таксономий в виджете поиска."
-" Каждый из них может переопределить это своим атрибутом/настройкой "
-"max_depth. -1 = без ограничений; 0 = только верхний уровень; 1–99 = "
-"ограничить указанным числом уровней."
+"блока «Список терминов» и иерархических списков таксономий в виджете поиска. "
+"Каждый из них может переопределить это своим атрибутом/настройкой max_depth. "
+"-1 = без ограничений; 0 = только верхний уровень; 1–99 = ограничить "
+"указанным числом уровней."
 
 #: includes/admin/settings.php:1109
 msgid "Frontend Styles"
@@ -1841,8 +1835,8 @@ msgid ""
 "Check this to provide your own CSS for shortcodes and blocks. Stylesheet is "
 "at assets/css/htax-shortcodes.css."
 msgstr ""
-"Отметьте, чтобы использовать собственный CSS для шорткодов и блоков. Таблица"
-" стилей находится в assets/css/htax-shortcodes.css."
+"Отметьте, чтобы использовать собственный CSS для шорткодов и блоков. Таблица "
+"стилей находится в assets/css/htax-shortcodes.css."
 
 #: includes/admin/settings.php:1182
 msgid "No taxonomies with icons feature enabled."
@@ -1930,8 +1924,8 @@ msgstr "Оформление капсул"
 msgid ""
 "Pills automatically inherit border-radius from your icon settings. The "
 "border-radius applies to both the icon and the pill container, creating a "
-"cohesive visual style. Icons and placeholders have a 1px border that matches"
-" their shape."
+"cohesive visual style. Icons and placeholders have a 1px border that matches "
+"their shape."
 msgstr ""
 "Капсулы автоматически наследуют скругление углов (border-radius) из ваших "
 "настроек значков. Скругление применяется как к значку, так и к контейнеру "
@@ -2003,8 +1997,8 @@ msgstr ""
 #: includes/admin/settings.php:1405
 msgid ""
 "Upload icons at exactly the full size dimensions shown above (larger images "
-"would be cropped). Medium and small sizes are generated automatically at the"
-" configured percentages."
+"would be cropped). Medium and small sizes are generated automatically at the "
+"configured percentages."
 msgstr ""
 "Загружайте значки в размере, указанном выше для полного варианта "
 "(превышающие его изображения будут обрезаны). Средний и малый варианты "
@@ -2176,13 +2170,13 @@ msgstr "Использовать PowerSearch для поиска по сайту
 msgid ""
 "Replaces WordPress's default search (/?s=…) with the PowerSearch engine on "
 "all site searches. Applies relevance scoring, term relationship expansion, "
-"and field operators automatically. Disable if using Relevanssi, SearchWP, or"
-" another dedicated search plugin for the /?s= role."
+"and field operators automatically. Disable if using Relevanssi, SearchWP, or "
+"another dedicated search plugin for the /?s= role."
 msgstr ""
 "Заменяет стандартный поиск WordPress (/?s=…) движком PowerSearch для всех "
 "поисковых запросов по сайту. Автоматически применяет оценку релевантности, "
-"расширение по связям терминов и команды расширенного поиска. Отключите, если"
-" для роли /?s= используется Relevanssi, SearchWP или другой "
+"расширение по связям терминов и команды расширенного поиска. Отключите, если "
+"для роли /?s= используется Relevanssi, SearchWP или другой "
 "специализированный плагин поиска."
 
 #: includes/admin/settings.php:1736
@@ -2208,8 +2202,8 @@ msgstr ""
 #: includes/admin/settings.php:1754
 msgid ""
 "Applies to native WordPress search and to the PowerSearch shortcode when no "
-"match= attribute is set. In All mode the + operator is redundant (every term"
-" is already required); only - exclusions and quoted phrases add behavior "
+"match= attribute is set. In All mode the + operator is redundant (every term "
+"is already required); only - exclusions and quoted phrases add behavior "
 "beyond a plain search."
 msgstr ""
 "Применяется к стандартному поиску WordPress и к шорткоду PowerSearch, если "
@@ -2265,11 +2259,11 @@ msgstr ""
 
 #: includes/admin/settings.php:1805
 msgid "Valid orders: asc, desc (defaults to desc if omitted)"
-msgstr ""
-"Допустимые направления: asc, desc (по умолчанию desc, если не указано)"
+msgstr "Допустимые направления: asc, desc (по умолчанию desc, если не указано)"
 
 #: includes/admin/settings.php:1806
-msgid "Examples: \"date:desc,title:asc\", \"comment_count:desc\", \"modified:desc\""
+msgid ""
+"Examples: \"date:desc,title:asc\", \"comment_count:desc\", \"modified:desc\""
 msgstr "Примеры: «date:desc,title:asc», «comment_count:desc», «modified:desc»"
 
 #: includes/admin/settings.php:1813
@@ -2290,21 +2284,21 @@ msgstr "Совпадение в отрывке:"
 
 #: includes/admin/settings.php:1845
 msgid ""
-"These weights control how matches are scored in text search mode. The search"
-" system supports multiple sorting modes (controlled by the orderby "
+"These weights control how matches are scored in text search mode. The search "
+"system supports multiple sorting modes (controlled by the orderby "
 "parameter): (1) Text Relevance Mode (orderby=text_relevance) - sorts by "
 "keyword match quality using these weights, with selected terms acting as "
 "filters; (2) Term Relevance Mode (orderby=relevance) - sorts by taxonomy "
-"term match strength, with keyword text acting as a filter; (3) Other sorting"
-" (orderby=date, title, etc.) - standard WordPress sorting. Weight values "
+"term match strength, with keyword text acting as a filter; (3) Other sorting "
+"(orderby=date, title, etc.) - standard WordPress sorting. Weight values "
 "range from 0 to 1.0. Higher values give more importance to matches in that "
 "field."
 msgstr ""
 "Эти значения коэффициента определяют, как оцениваются совпадения в режиме "
 "текстового поиска. Система поиска поддерживает несколько режимов сортировки "
 "(управляются параметром orderby): (1) Режим текстовой релевантности "
-"(orderby=text_relevance) — сортировка по качеству совпадений ключевых слов с"
-" использованием этих значений коэффициента, при этом выбранные термины "
+"(orderby=text_relevance) — сортировка по качеству совпадений ключевых слов с "
+"использованием этих значений коэффициента, при этом выбранные термины "
 "действуют как фильтры; (2) Режим релевантности терминов (orderby=relevance) "
 "— сортировка по значимости совпадений терминов таксономии, при этом текст "
 "ключевых слов действует как фильтр; (3) Другая сортировка (orderby=date, "
@@ -2335,10 +2329,10 @@ msgstr "Расширять вторичные запросы от сторонн
 #: includes/admin/settings.php:1877
 msgid ""
 "When enabled, single-term taxonomy queries issued by facet plugins, "
-"WooCommerce layered navigation, page builders, and other third-party plugins"
-" are automatically expanded to include HyperTaxonomy inclusions. Also "
-"adjusts term counts shown in facet widgets to reflect the expanded post set."
-" Disable if a specific plugin conflicts."
+"WooCommerce layered navigation, page builders, and other third-party plugins "
+"are automatically expanded to include HyperTaxonomy inclusions. Also adjusts "
+"term counts shown in facet widgets to reflect the expanded post set. Disable "
+"if a specific plugin conflicts."
 msgstr ""
 "Когда включено, запросы к таксономиям по одному термину от плагинов "
 "фасетного поиска, многоуровневой навигации WooCommerce, конструкторов "
@@ -2562,8 +2556,8 @@ msgid ""
 "Post assigned to redirect target term (when redirect term is selected or "
 "text-matched)"
 msgstr ""
-"Запись, связанная с термином — целью перенаправления (когда перенаправляющий"
-" термин выбран или найден по тексту)"
+"Запись, связанная с термином — целью перенаправления (когда перенаправляющий "
+"термин выбран или найден по тексту)"
 
 #: includes/admin/settings.php:2329
 msgid "Explicit Selection:"
@@ -2598,8 +2592,8 @@ msgid ""
 "Note: Name match and description match weights for custom taxonomies are "
 "configured in the \"Custom (Flat)\" and \"Custom (Hierarchical)\" tabs."
 msgstr ""
-"Примечание: значения коэффициента для совпадений в названии и в описании для"
-" пользовательских таксономий настраиваются на вкладках «Пользовательская "
+"Примечание: значения коэффициента для совпадений в названии и в описании для "
+"пользовательских таксономий настраиваются на вкладках «Пользовательская "
 "(неиерархическая)» и «Пользовательская (иерархическая)»."
 
 #: includes/admin/settings.php:2336
@@ -2610,8 +2604,8 @@ msgid ""
 msgstr ""
 "Значения коэффициента — от 0 до 1.0. Более высокие значения дают большую "
 "релевантность. Используйте меньшие значения коэффициента для косвенных "
-"связей. При установке 0 как значения коэффициента, соответствующий тип связи"
-" не будет учитываться при поиске, из-за его нулевого влияния на результат."
+"связей. При установке 0 как значения коэффициента, соответствующий тип связи "
+"не будет учитываться при поиске, из-за его нулевого влияния на результат."
 
 #: includes/admin/settings.php:2337
 msgid "Note:"
@@ -2620,13 +2614,13 @@ msgstr "Примечание:"
 #: includes/admin/settings.php:2337
 msgid ""
 "Explicit weights for child-term, inclusion, and redirect-target matches "
-"(used for taxonomy-filter searches) are stored in the search index; when you"
-" save a change, the affected posts are reindexed automatically in the "
+"(used for taxonomy-filter searches) are stored in the search index; when you "
+"save a change, the affected posts are reindexed automatically in the "
 "background. Text weights (used for keyword searches) apply immediately."
 msgstr ""
 "Значения коэффициента для совпадений по дочерним терминам, включениям и "
-"целям перенаправления (используются при фильтрации по таксономии) хранятся в"
-" поисковом индексе; после сохранения изменений затронутые записи "
+"целям перенаправления (используются при фильтрации по таксономии) хранятся в "
+"поисковом индексе; после сохранения изменений затронутые записи "
 "автоматически переиндексируются в фоновом режиме. Значения коэффициента для "
 "текстового поиска (при поиске по ключевым словам) вступают в силу сразу же."
 
@@ -2709,8 +2703,8 @@ msgstr "Дочерний термин по иерархии"
 #: includes/admin/settings.php:2614
 msgid ""
 "These weights apply globally to all custom hierarchical taxonomies during "
-"indexed text search. Explicit selection weights are configured per-taxonomy."
-" The \"Match term descriptions\" checkbox can be overridden per-taxonomy in "
+"indexed text search. Explicit selection weights are configured per-taxonomy. "
+"The \"Match term descriptions\" checkbox can be overridden per-taxonomy in "
 "each taxonomy's own tab."
 msgstr ""
 "Эти значения коэффициента применяются глобально ко всем пользовательским "
@@ -2777,11 +2771,11 @@ msgstr "Кэширование закреплённых записей в арх
 
 #: includes/admin/settings.php:2723
 msgid ""
-"Sticky post lists shown on taxonomy archive pages. 0 = never expire (cleared"
-" when pins change)."
+"Sticky post lists shown on taxonomy archive pages. 0 = never expire (cleared "
+"when pins change)."
 msgstr ""
-"Списки закреплённых записей, показываемые на страницах архивов терминов. 0"
-" = никогда не истекает (очищается при изменении закреплений)."
+"Списки закреплённых записей, показываемые на страницах архивов терминов. 0 = "
+"никогда не истекает (очищается при изменении закреплений)."
 
 #: includes/admin/settings.php:2731
 msgid "Shortcode output cache:"
@@ -2789,8 +2783,8 @@ msgstr "Кэширование вывода шорткодов:"
 
 #: includes/admin/settings.php:2741
 msgid ""
-"[ht_post_list] and [ht_related_posts] rendered output. 0 = never expire (use"
-" Clear below when posts change)."
+"[ht_post_list] and [ht_related_posts] rendered output. 0 = never expire (use "
+"Clear below when posts change)."
 msgstr ""
 "Обработанный вывод [ht_post_list] и [ht_related_posts]. 0 = никогда не "
 "истекает (используйте «Очистить» ниже при изменении записей)."
@@ -2829,8 +2823,8 @@ msgstr "Блокировка одновременного редактирова
 
 #: includes/admin/settings.php:2826
 msgid ""
-"Show a warning when multiple editors edit the same term or relationship type"
-" simultaneously"
+"Show a warning when multiple editors edit the same term or relationship type "
+"simultaneously"
 msgstr ""
 "Показывать предупреждение, когда несколько редакторов одновременно "
 "редактируют один и тот же термин или тип связи"
@@ -2900,11 +2894,11 @@ msgstr ""
 #: includes/admin/settings.php:2878
 msgid ""
 "Suggests tags whose names match words in the post title, excerpt, or body, "
-"ordered by number of matches. Only tags not already assigned to the post are"
-" shown."
+"ordered by number of matches. Only tags not already assigned to the post are "
+"shown."
 msgstr ""
-"Предлагает метки, названия которых совпадают со словами в заголовке, отрывке"
-" или теле записи, отсортированные по количеству совпадений. Показываются "
+"Предлагает метки, названия которых совпадают со словами в заголовке, отрывке "
+"или теле записи, отсортированные по количеству совпадений. Показываются "
 "только метки, ещё не связанные с записью."
 
 #: includes/admin/settings.php:2883
@@ -2933,8 +2927,8 @@ msgstr "Всегда загружать ресурсы поиска (видже�
 
 #: includes/admin/settings.php:2921
 msgid ""
-"Enable if using page builders or dynamic content where search shortcodes may"
-" be loaded conditionally."
+"Enable if using page builders or dynamic content where search shortcodes may "
+"be loaded conditionally."
 msgstr ""
 "Включите, если используете конструкторы страниц или динамический контент, "
 "где шорткоды поиска могут загружаться условно."
@@ -2955,8 +2949,8 @@ msgid ""
 "vocabulary peer."
 msgstr ""
 "Сторонние сайты (включая TermConnect на удалённых установках WordPress) "
-"используют этот заголовок для обнаружения HyperTaxonomy и включения запросов"
-" с оценкой, синхронизации словаря и сопоставления терминов между сайтами. "
+"используют этот заголовок для обнаружения HyperTaxonomy и включения запросов "
+"с оценкой, синхронизации словаря и сопоставления терминов между сайтами. "
 "Отключите, чтобы отказаться от обнаружения в качестве словарного узла."
 
 #: includes/admin/settings.php:2943
@@ -2964,8 +2958,7 @@ msgid "Term Inclusion Relationships"
 msgstr "Связи включения терминов"
 
 #: includes/admin/settings.php:2950
-msgid ""
-"Include term inclusion and synonym relationships in REST term responses"
+msgid "Include term inclusion and synonym relationships in REST term responses"
 msgstr ""
 "Включать связи включения терминов и синонимов в ответы REST для терминов"
 
@@ -2977,12 +2970,11 @@ msgid ""
 "exposing vocabulary structure publicly. htax_relationships requires Custom "
 "Term Relationships and Relationship Types to also be enabled."
 msgstr ""
-"Раскрывает данные о включениях и синонимах для каждого термина. Используется"
-" темами и headless-клиентами, которые отображают связанные термины. "
-"Отключите на сайтах с глубокими графами связей, где важна производительность"
-" REST, или чтобы не раскрывать структуру словаря публично. "
-"htax_relationships требует, чтобы также были включены пользовательские связи"
-" терминов и типы связей."
+"Раскрывает данные о включениях и синонимах для каждого термина. Используется "
+"темами и headless-клиентами, которые отображают связанные термины. Отключите "
+"на сайтах с глубокими графами связей, где важна производительность REST, или "
+"чтобы не раскрывать структуру словаря публично. htax_relationships требует, "
+"чтобы также были включены пользовательские связи терминов и типы связей."
 
 #: includes/admin/settings.php:2959
 msgid "Custom Term Relationships and Relationship Types"
@@ -2990,23 +2982,23 @@ msgstr "Пользовательские связи терминов и типы
 
 #: includes/admin/settings.php:2966
 msgid ""
-"Expose custom relationship type definitions via REST and include custom term"
-" relationships in REST term responses"
+"Expose custom relationship type definitions via REST and include custom term "
+"relationships in REST term responses"
 msgstr ""
 "Предоставлять определения пользовательских типов связей через REST и "
 "включать пользовательские связи терминов в ответы REST для терминов"
 
 #: includes/admin/settings.php:2973
 msgid ""
-"Registers <code>GET htax/v1/relationship-types</code> and <code>GET "
-"htax/v1/term/{id}/relationships</code>, and adds the "
-"<code>htax_relationships</code> field to standard REST term responses. "
-"TermConnect uses these to sync custom relationship type definitions and term"
-" relationships from peer sites. Private types and remote-delegated types are"
-" always excluded regardless of this setting."
+"Registers <code>GET htax/v1/relationship-types</code> and <code>GET htax/v1/"
+"term/{id}/relationships</code>, and adds the <code>htax_relationships</code> "
+"field to standard REST term responses. TermConnect uses these to sync custom "
+"relationship type definitions and term relationships from peer sites. "
+"Private types and remote-delegated types are always excluded regardless of "
+"this setting."
 msgstr ""
-"Регистрирует <code>GET htax/v1/relationship-types</code> и <code>GET "
-"htax/v1/term/{id}/relationships</code>, а также добавляет поле "
+"Регистрирует <code>GET htax/v1/relationship-types</code> и <code>GET htax/v1/"
+"term/{id}/relationships</code>, а также добавляет поле "
 "<code>htax_relationships</code> в стандартные ответы REST для терминов. "
 "TermConnect использует их для синхронизации определений пользовательских "
 "типов связей и связей терминов со сторонних сайтов. Приватные типы и типы, "
@@ -3130,16 +3122,14 @@ msgstr "Ошибка при удалении значков. Попробуйт�
 
 #: includes/admin/settings.php:3517
 msgid ""
-"Are you sure you want to reset all relevance weights to their default "
-"values?"
+"Are you sure you want to reset all relevance weights to their default values?"
 msgstr ""
 "Вы уверены, что хотите сбросить все значения коэффициента релевантности к "
 "значениям по умолчанию?"
 
 #: includes/admin/settings.php:3518
 msgid "Relevance weights have been reset to default values."
-msgstr ""
-"Значения коэффициента релевантности сброшены к значениям по умолчанию."
+msgstr "Значения коэффициента релевантности сброшены к значениям по умолчанию."
 
 #: includes/admin/settings.php:3606
 msgid "All caches cleared successfully!"
@@ -3267,8 +3257,8 @@ msgstr ""
 #: includes/admin/tag-groups-migrate-ui.php:53
 msgid ""
 "Migrates term group data from Tag Groups plugin database tables to "
-"HyperTaxonomy. Tag Groups does not need to be active or installed - only the"
-" database data needs to be present (can be migrated via database backup "
+"HyperTaxonomy. Tag Groups does not need to be active or installed - only the "
+"database data needs to be present (can be migrated via database backup "
 "tools)."
 msgstr ""
 "Переносит данные групп терминов из таблиц базы данных плагина Tag Groups в "
@@ -3283,8 +3273,8 @@ msgid ""
 "the WordPress database tables where Tag Groups stores its data."
 msgstr ""
 "Примечание: плагин Tag Groups содержит функцию экспорта, но структура "
-"создаваемого им файла не содержит достаточно информации для полной миграции."
-" Данный инструмент читает данные непосредственно из таблиц, где плагин Tag "
+"создаваемого им файла не содержит достаточно информации для полной миграции. "
+"Данный инструмент читает данные непосредственно из таблиц, где плагин Tag "
 "Groups их хранит."
 
 #: includes/admin/tag-groups-migrate-ui.php:62
@@ -3338,8 +3328,8 @@ msgid ""
 "Group names will be preserved (or auto-generated if necessary), and renames "
 "on the Tag Groups side are detected and propagated on subsequent re-run"
 msgstr ""
-"Названия групп сохраняются (или создаются автоматически, при необходимости),"
-" а переименования в плагине Tag Groups обнаруживаются и воссоздаются при "
+"Названия групп сохраняются (или создаются автоматически, при необходимости), "
+"а переименования в плагине Tag Groups обнаруживаются и воссоздаются при "
 "последующих запусках."
 
 #: includes/admin/tag-groups-migrate-ui.php:109
@@ -3348,8 +3338,8 @@ msgid ""
 "Groups, where present, once when each group is migrated initially"
 msgstr ""
 "Иерархия родительских групп плагина Tag Groups Pro применяется к "
-"соответствующим группам терминов, где она есть, однократно — при изначальной"
-" миграции группы."
+"соответствующим группам терминов, где она есть, однократно — при изначальной "
+"миграции группы."
 
 #: includes/admin/tag-groups-migrate-ui.php:110
 msgid "All term-to-group assignments will be preserved"
@@ -3367,8 +3357,8 @@ msgid ""
 "the option to sync continuously."
 msgstr ""
 "Этот процесс не изменяет данные плагина Tag Groups, его можно запускать "
-"неограниченное количество раз. Если плагин Tag Groups ещё активен, повторите"
-" миграцию перед его отключением, чтобы учесть изменения, внесённые после "
+"неограниченное количество раз. Если плагин Tag Groups ещё активен, повторите "
+"миграцию перед его отключением, чтобы учесть изменения, внесённые после "
 "прошлого запуска, либо включите настройку для непрерывной синхронизации."
 
 #: includes/admin/tag-groups-migrate-ui.php:120
@@ -3377,8 +3367,8 @@ msgid ""
 "overwrite any edits made to them in HyperTaxonomy. Switch to Locked on the "
 "Sync subtab if you will keep re-running the migration."
 msgstr ""
-"Редактирование групп, мигрированных из плагина Tag Groups, не заблокировано."
-" Повторная миграция может перезаписать изменения, внесённые в них в "
+"Редактирование групп, мигрированных из плагина Tag Groups, не заблокировано. "
+"Повторная миграция может перезаписать изменения, внесённые в них в "
 "HyperTaxonomy. Если вы планируете регулярно повторять миграцию, "
 "рекомендуется выбрать режим «Заблокировано» на вкладке «Синхронизация»."
 
@@ -3407,8 +3397,8 @@ msgstr ""
 #: includes/admin/tag-groups-migrate-ui.php:148
 #: includes/admin/tag-groups-sync-ui.php:74
 msgid ""
-"Keep (recommended, default) — never remove a Term Groups assignment, even if"
-" it no longer exists in Tag Groups"
+"Keep (recommended, default) — never remove a Term Groups assignment, even if "
+"it no longer exists in Tag Groups"
 msgstr ""
 "Сохранять (рекомендуется, по умолчанию) — никогда не удалять связи групп "
 "терминов, даже если их больше нет в плагине Tag Groups."
@@ -3416,8 +3406,8 @@ msgstr ""
 #: includes/admin/tag-groups-migrate-ui.php:152
 #: includes/admin/tag-groups-sync-ui.php:78
 msgid ""
-"Mirror — make Term Groups match Tag Groups' current state exactly, including"
-" removals"
+"Mirror — make Term Groups match Tag Groups' current state exactly, including "
+"removals"
 msgstr ""
 "Зеркалировать — привести группы терминов в точное соответствие текущему "
 "состоянию плагина Tag Groups, включая удаления."
@@ -3563,13 +3553,13 @@ msgstr "Редактирование сопоставленных групп:"
 #: includes/admin/tag-groups-sync-ui.php:51
 msgid ""
 "Independent (default) — group names and membership stay fully editable in "
-"HyperTaxonomy. However, if they were migrated from Tag Groups, or if a group"
-" with the same name exists there, a subsequent migration can overwrite edits"
-" made here."
+"HyperTaxonomy. However, if they were migrated from Tag Groups, or if a group "
+"with the same name exists there, a subsequent migration can overwrite edits "
+"made here."
 msgstr ""
 "Независимо (по умолчанию) — названия групп и их состав остаются полностью "
-"редактируемыми в HyperTaxonomy. Однако, если они были созданы путём миграции"
-" из плагина Tag Groups, или если их названия совпадают с названиями групп, "
+"редактируемыми в HyperTaxonomy. Однако, если они были созданы путём миграции "
+"из плагина Tag Groups, или если их названия совпадают с названиями групп, "
 "существующих там, последующая миграция может перезаписать изменения, "
 "внесённые здесь."
 
@@ -3578,11 +3568,11 @@ msgid ""
 "Locked — make changes to group names or membership in Tag Groups instead — "
 "recommended for site admins who plan to use Tag Groups (rather than "
 "HyperTaxonomy) as their primary group management tool. Only mapped groups' "
-"names and term membership are locked in HyperTaxonomy, to prevent edits made"
-" here from getting lost during subsequent migration — while unmapped groups "
-"(that were created manually or imported rather than migrated, and with names"
-" do not clash with migrated groups' names) will not be locked and will not "
-"be affected during future migration."
+"names and term membership are locked in HyperTaxonomy, to prevent edits made "
+"here from getting lost during subsequent migration — while unmapped groups "
+"(that were created manually or imported rather than migrated, and with names "
+"do not clash with migrated groups' names) will not be locked and will not be "
+"affected during future migration."
 msgstr ""
 "Заблокировано — вносите изменения в названия и состав групп при помощи "
 "плагина Tag Groups — для администраторов сайтов, которые планируют "
@@ -3634,8 +3624,7 @@ msgstr ""
 msgid "Save Sync Settings"
 msgstr "Сохранить настройки синхронизации"
 
-#: includes/admin/tag-groups-sync-ui.php:120
-#: includes/admin/term-icons.php:1440
+#: includes/admin/tag-groups-sync-ui.php:120 includes/admin/term-icons.php:1440
 msgid "Saving…"
 msgstr "Идёт сохранение…"
 
@@ -3698,8 +3687,8 @@ msgid ""
 "If you take over, the other editor will lose access. Any unsaved changes "
 "they have will be lost."
 msgstr ""
-"Если вы перехватите редактирование, другой редактор потеряет доступ. Все его"
-" несохранённые изменения будут потеряны."
+"Если вы перехватите редактирование, другой редактор потеряет доступ. Все его "
+"несохранённые изменения будут потеряны."
 
 #: includes/admin/term-edit-lock.php:269
 msgid "Take over"
@@ -3751,8 +3740,8 @@ msgid ""
 "strong, em, a, code, br, p, ul, ol, li, blockquote, h3, h4, span."
 msgstr ""
 "Показывать описание термина (%s) над его закреплёнными записями, если они "
-"есть, используя возможности темы, когда они доступны. Разрешённые HTML-теги:"
-" strong, em, a, code, br, p, ul, ol, li, blockquote, h3, h4, span."
+"есть, используя возможности темы, когда они доступны. Разрешённые HTML-теги: "
+"strong, em, a, code, br, p, ul, ol, li, blockquote, h3, h4, span."
 
 #: includes/admin/term-edit.php:302
 msgid "Hide this term from public view"
@@ -3762,13 +3751,13 @@ msgstr "Скрыть этот термин от публичного просм�
 msgid ""
 "The group archive returns a 404 to unauthorized users and the group is "
 "excluded from REST API responses and sitemaps. Subgroups are hidden "
-"automatically. Does not affect posts appearing in term archives that include"
-" this group — group expansion is unchanged."
+"automatically. Does not affect posts appearing in term archives that include "
+"this group — group expansion is unchanged."
 msgstr ""
 "Архив группы возвращает ошибку 404 для неавторизованных пользователей, а "
 "группа исключается из ответов REST API и карт сайта. Подгруппы скрываются "
-"автоматически. Не влияет на записи, появляющиеся в архивах терминов, которые"
-" включают эту группу — раскрытие групп не изменяется."
+"автоматически. Не влияет на записи, появляющиеся в архивах терминов, которые "
+"включают эту группу — раскрытие групп не изменяется."
 
 #: includes/admin/term-edit.php:313
 msgid ""
@@ -3782,8 +3771,8 @@ msgstr ""
 "HyperTaxonomy → Отображение → Скрытые термины), архив термина возвращает "
 "ошибку 404, а сам термин считается несуществующим: он не показывается в "
 "метаданных записей, виджетах и общедоступных списках терминов, и по нему "
-"нельзя найти записи. Записи, связанные с этим термином, по-прежнему доступны"
-" через другие их термины."
+"нельзя найти записи. Записи, связанные с этим термином, по-прежнему доступны "
+"через другие их термины."
 
 #: includes/admin/term-edit.php:436
 #, php-format
@@ -3882,8 +3871,7 @@ msgstr "Дата"
 msgid "Last modified"
 msgstr "Время последнего изменения"
 
-#: includes/admin/term-edit.php:609
-#: includes/shortcodes/class-sort-order.php:41
+#: includes/admin/term-edit.php:609 includes/shortcodes/class-sort-order.php:41
 msgid "Title"
 msgstr "Заголовок"
 
@@ -3894,15 +3882,14 @@ msgstr "Заголовок"
 msgid "Author"
 msgstr "Автор"
 
-#: includes/admin/term-edit.php:611
-#: includes/shortcodes/class-sort-order.php:43
+#: includes/admin/term-edit.php:611 includes/shortcodes/class-sort-order.php:43
 msgid "Comments"
 msgstr "Количество комментариев"
 
 #: includes/admin/term-edit.php:616
 msgid ""
-"Override the default post sort order for this term's archive. Click + to add"
-" criteria; drag pills to reorder."
+"Override the default post sort order for this term's archive. Click + to add "
+"criteria; drag pills to reorder."
 msgstr ""
 "Переопределить порядок сортировки записей по умолчанию для архива этого "
 "термина. Нажмите «+», чтобы добавить критерии; порядок можно изменить при "
@@ -3967,8 +3954,8 @@ msgid ""
 "Overridden — this term is also excluded, so this direct include has no "
 "effect on the archive."
 msgstr ""
-"Переопределено — этот термин также исключён, поэтому это прямое включение не"
-" влияет на архив."
+"Переопределено — этот термин также исключён, поэтому это прямое включение не "
+"влияет на архив."
 
 #: includes/admin/term-edit.php:1303
 msgid "Redirects here"
@@ -4018,8 +4005,8 @@ msgstr "Термины-контейнеры (%s)"
 #, php-format
 msgid "Archives of each of these %1$s will include posts with this %2$s."
 msgstr ""
-"Архивы каждого из этих терминов (%1$s) будут включать записи с этим термином"
-" (%2$s)."
+"Архивы каждого из этих терминов (%1$s) будут включать записи с этим термином "
+"(%2$s)."
 
 #: includes/admin/term-edit.php:1760
 #, php-format
@@ -4054,8 +4041,8 @@ msgstr "Также применяется к пользовательским с
 
 #: includes/admin/term-edit.php:1923
 msgid ""
-"Arrows show which side added the link. You can remove links from either side"
-" here."
+"Arrows show which side added the link. You can remove links from either side "
+"here."
 msgstr ""
 "Стрелки показывают, какая сторона добавила связь. Здесь можно удалить связи "
 "с любой стороны."
@@ -4098,8 +4085,8 @@ msgid ""
 "Invalid file format. Please upload an image file in one of the supported "
 "formats."
 msgstr ""
-"Недопустимый формат файла. Пожалуйста, загрузите файл с изображением в одном"
-" из поддерживаемых форматов."
+"Недопустимый формат файла. Пожалуйста, загрузите файл с изображением в одном "
+"из поддерживаемых форматов."
 
 #: includes/admin/term-icons.php:616
 #, php-format
@@ -4128,8 +4115,8 @@ msgid "Could not determine the file format of the cropped image."
 msgstr "Не удалось определить формат файла обрезанного изображения."
 
 #: includes/admin/term-icons.php:1068
-#: includes/classes/class-search-index.php:1221
-#: includes/classes/class-search-index.php:1289
+#: includes/classes/class-search-index.php:1216
+#: includes/classes/class-search-index.php:1284
 msgid "Unauthorized access."
 msgstr "Несанкционированный доступ."
 
@@ -4182,19 +4169,19 @@ msgstr ""
 #: includes/admin/term-icons.php:1449
 #, php-format
 msgid ""
-"This SVG's natural size is %1$d×%2$d px, but the icon slot is %3$d×%4$d px —"
-" the proportions differ. It may appear stretched or letterboxed. Use it "
+"This SVG's natural size is %1$d×%2$d px, but the icon slot is %3$d×%4$d px — "
+"the proportions differ. It may appear stretched or letterboxed. Use it "
 "anyway?"
 msgstr ""
-"Естественный размер этого SVG — %1$d×%2$d px, а настройки значка — %3$d×%4$d"
-" px — пропорции различаются. Он может отображаться растянутым или с полями. "
+"Естественный размер этого SVG — %1$d×%2$d px, а настройки значка — %3$d×%4$d "
+"px — пропорции различаются. Он может отображаться растянутым или с полями. "
 "Всё равно использовать?"
 
 #: includes/admin/term-icons.php:1452
 #, php-format
 msgid ""
-"Drag the selection to choose which %1$d×%2$d px region to use. The selection"
-" size is fixed — only its position can be moved."
+"Drag the selection to choose which %1$d×%2$d px region to use. The selection "
+"size is fixed — only its position can be moved."
 msgstr ""
 "Перетащите рамку, чтобы выбрать, какую область %1$d×%2$d px использовать. "
 "Размер рамки фиксирован — можно перемещать только её положение."
@@ -4263,11 +4250,11 @@ msgstr "Следующая"
 msgid "Page %1$d of %2$d"
 msgstr "Страница %1$d из %2$d"
 
-#: includes/classes/class-search-index.php:1235
+#: includes/classes/class-search-index.php:1230
 msgid "Database error. Check logs."
 msgstr "Ошибка базы данных. Проверьте журналы."
 
-#: includes/classes/class-search-index.php:1251
+#: includes/classes/class-search-index.php:1246
 #, php-format
 msgid "Index cleared. Rebuilding %d posts..."
 msgstr "Индекс очищен. Идёт перестроение %d записей…"
@@ -4329,8 +4316,7 @@ msgstr "HyperTaxonomy требует PHP 7.4 или выше. У вас уста
 #: includes/core/compatibility.php:37
 #, php-format
 msgid ""
-"HyperTaxonomy requires WordPress 6.6 or higher. You are running WordPress "
-"%s."
+"HyperTaxonomy requires WordPress 6.6 or higher. You are running WordPress %s."
 msgstr ""
 "HyperTaxonomy требует WordPress 6.6 или выше. У вас установлен WordPress %s."
 
@@ -4345,8 +4331,8 @@ msgstr "Соединение с базой данных недоступно."
 
 #: includes/core/compatibility.php:62
 msgid ""
-"WordPress term meta table does not exist. Your WordPress installation may be"
-" incomplete."
+"WordPress term meta table does not exist. Your WordPress installation may be "
+"incomplete."
 msgstr ""
 "Таблица метаданных терминов WordPress не существует. Возможно, ваша "
 "установка WordPress неполна."
@@ -4360,11 +4346,11 @@ msgid "The plugin may not function correctly until these issues are resolved."
 msgstr ""
 "Плагин может работать некорректно, пока эти проблемы не будут устранены."
 
-#: includes/core/compatibility.php:142
+#: includes/core/compatibility.php:181
 msgid "HyperTaxonomy: Missing Required Files"
 msgstr "HyperTaxonomy: отсутствуют необходимые файлы"
 
-#: includes/core/compatibility.php:148
+#: includes/core/compatibility.php:187
 msgid "Please reinstall the plugin to restore missing files."
 msgstr ""
 "Пожалуйста, переустановите плагин, чтобы восстановить отсутствующие файлы."
@@ -4404,15 +4390,14 @@ msgstr ""
 #, php-format
 msgid "HyperTaxonomy database error during: %s. Check error logs for details."
 msgstr ""
-"Ошибка базы данных HyperTaxonomy во время: %s. Подробности в журналах "
-"ошибок."
+"Ошибка базы данных HyperTaxonomy во время: %s. Подробности в журналах ошибок."
 
 #: includes/core/post-editor-rest.php:75
 msgid "Post not found."
 msgstr "Запись не найдена."
 
-#: includes/core/relationship-types-rest.php:145
-#: includes/core/rest-api.php:465 includes/core/term-conversion.php:128
+#: includes/core/relationship-types-rest.php:145 includes/core/rest-api.php:465
+#: includes/core/term-conversion.php:128
 msgid "Term not found."
 msgstr "Термин не найден."
 
@@ -4480,8 +4465,7 @@ msgstr "Недопустимый идентификатор целевого т�
 
 #: includes/core/relationship-types.php:660
 msgid "A relationship cannot have group terms on both source and target."
-msgstr ""
-"Связь не может иметь термины-группы одновременно в источнике и в цели."
+msgstr "Связь не может иметь термины-группы одновременно в источнике и в цели."
 
 #: includes/core/relationship-types.php:665
 msgid "A term cannot include itself."
@@ -4498,8 +4482,8 @@ msgstr "Таксономия целевого термина не разреше
 #: includes/core/relationship-types.php:678
 msgid "Includes-type relationships must connect terms in the same taxonomy."
 msgstr ""
-"Типы связи на основе включения могут соединять только термины из одной и той"
-" же таксономии."
+"Типы связи на основе включения могут соединять только термины из одной и той "
+"же таксономии."
 
 #: includes/core/relationship-types.php:697
 msgid "Database error saving relationship."
@@ -4537,7 +4521,7 @@ msgstr "Перенаправляется на"
 msgid "Target of redirect from"
 msgstr "Является целью перенаправления"
 
-#: includes/core/search.php:877
+#: includes/core/search.php:881
 #, php-format
 msgid "%s result found"
 msgid_plural "%s results found"
@@ -4559,8 +4543,8 @@ msgstr ""
 
 #: includes/core/strength-models.php:319
 msgid ""
-"The built-in strength model is maintained by HyperTaxonomy and cannot be set"
-" directly."
+"The built-in strength model is maintained by HyperTaxonomy and cannot be set "
+"directly."
 msgstr ""
 "Встроенная модель значимости поддерживается HyperTaxonomy, и её значения "
 "нельзя задать напрямую."
@@ -4568,8 +4552,8 @@ msgstr ""
 #: includes/core/strength-models.php:324
 #, php-format
 msgid ""
-"Strength model \"%s\" is not registered. Call htax_register_strength_model()"
-" first."
+"Strength model \"%s\" is not registered. Call htax_register_strength_model() "
+"first."
 msgstr ""
 "Модель значимости «%s» не зарегистрирована. Сначала вызовите "
 "htax_register_strength_model()."
@@ -4754,8 +4738,8 @@ msgstr ""
 
 #: includes/core/term-conversion.php:221
 msgid ""
-"This term is already a redirect. Remove the redirect on the term edit screen"
-" before converting."
+"This term is already a redirect. Remove the redirect on the term edit screen "
+"before converting."
 msgstr ""
 "Этот термин уже является перенаправлением. Удалите характеристику "
 "перенаправления на странице редактирования термина перед преобразованием."
@@ -4936,8 +4920,7 @@ msgstr "comparison guide"
 
 #: includes/integrations/class-atcf-integration.php:142
 msgid ""
-"The distance filter field requires the As the Crow Flies plugin to be "
-"active."
+"The distance filter field requires the As the Crow Flies plugin to be active."
 msgstr ""
 "Поле фильтра по расстоянию требует активного плагина As the Crow Flies."
 
@@ -4995,8 +4978,8 @@ msgid ""
 "We couldn't determine your location, so the results are near the default "
 "location instead."
 msgstr ""
-"Не удалось определить ваше местоположение, поэтому показаны результаты рядом"
-" с местоположением, используемым по умолчанию."
+"Не удалось определить ваше местоположение, поэтому показаны результаты рядом "
+"с местоположением, используемым по умолчанию."
 
 #: includes/integrations/class-taxopress-integration.php:101
 #, php-format
@@ -5185,8 +5168,7 @@ msgid ""
 msgstr ""
 "Если задано, результаты загружаются через AJAX в контейнер с этим ID. "
 "Разместите шорткод [ht_search_results id=\"…\"] с тем же ID в другом месте "
-"страницы. Оставьте пустым для режима POST (результаты появляются под "
-"формой)."
+"страницы. Оставьте пустым для режима POST (результаты появляются под формой)."
 
 #: blocks/ht-power-search/src/index.js:132
 msgid "Country code for near: operator (ISO 3166-1, e.g. US, CA, GB)"
@@ -5219,8 +5201,8 @@ msgstr "Фильтр по группам"
 
 #: blocks/ht-query-group-filter/src/index.js:68
 msgid ""
-"Show only posts that have at least one term from any of the selected groups."
-" Leave empty to show all posts. Multiple groups use OR logic — the union of "
+"Show only posts that have at least one term from any of the selected groups. "
+"Leave empty to show all posts. Multiple groups use OR logic — the union of "
 "all matched terms."
 msgstr ""
 "Показывать только записи, у которых есть хотя бы один термин из любой "
@@ -5444,8 +5426,7 @@ msgstr "Переключение"
 
 #: blocks/ht-term-list/src/index.js:109
 msgid "Supports {total_count} and {group_names} placeholders."
-msgstr ""
-"Подставляет текущие значения переменных {total_count} и {group_names}."
+msgstr "Подставляет текущие значения переменных {total_count} и {group_names}."
 
 #: blocks/shared/components.js:148
 msgid "Date published"
@@ -5613,8 +5594,8 @@ msgstr "Формат"
 #: blocks/shared/post-list-edit.js:316
 msgid "ul/ol: title-only list. div: full card with thumbnail/excerpt/meta."
 msgstr ""
-"ul/ol: список только с заголовками. div: полная карточка с "
-"миниатюрой/отрывком/метаданными."
+"ul/ol: список только с заголовками. div: полная карточка с миниатюрой/"
+"отрывком/метаданными."
 
 #: blocks/shared/post-list-edit.js:319
 msgid "Unordered list (ul)"
@@ -5655,8 +5636,7 @@ msgstr "Полный"
 #: blocks/shared/post-list-edit.js:341
 msgid "Number of columns (div: CSS grid; ul/ol: multi-column text flow)."
 msgstr ""
-"Количество столбцов (div: CSS-сетка; ul/ol: многоколоночный текстовый "
-"поток)."
+"Количество столбцов (div: CSS-сетка; ul/ol: многоколоночный текстовый поток)."
 
 #: blocks/shared/post-list-edit.js:349 blocks/shared/term-display-edit.js:172
 msgid "Template"
@@ -5675,11 +5655,10 @@ msgid "No-results message"
 msgstr "Сообщение при отсутствии результатов"
 
 #: blocks/shared/post-list-edit.js:359
-msgid ""
-"Shown when the query returns no results. Leave empty to render nothing."
+msgid "Shown when the query returns no results. Leave empty to render nothing."
 msgstr ""
-"Показывается, когда запрос не возвращает результатов. Оставьте пустым, чтобы"
-" ничего не отображать."
+"Показывается, когда запрос не возвращает результатов. Оставьте пустым, чтобы "
+"ничего не отображать."
 
 #: blocks/shared/post-list-edit.js:366
 msgid "Frontend sort picker fields"
@@ -5742,8 +5721,7 @@ msgstr ""
 "начале."
 
 #: blocks/shared/term-display-edit.js:108
-msgid ""
-"One or more taxonomy slugs. Terms from all listed taxonomies are shown."
+msgid "One or more taxonomy slugs. Terms from all listed taxonomies are shown."
 msgstr ""
 "Один или несколько ярлыков таксономий. Показываются термины из всех "
 "перечисленных таксономий."
@@ -5799,20 +5777,30 @@ msgstr "HT Post List"
 
 #: blocks/ht-post-list/block.json
 msgctxt "block description"
-msgid "Display posts filtered by taxonomy terms with sorting, filtering, and full HyperTaxonomy features."
-msgstr "Выводит записи, отобранные по терминам таксономий, с сортировкой, фильтрацией и всеми функциями HyperTaxonomy."
+msgid ""
+"Display posts filtered by taxonomy terms with sorting, filtering, and full "
+"HyperTaxonomy features."
+msgstr ""
+"Выводит записи, отобранные по терминам таксономий, с сортировкой, "
+"фильтрацией и всеми функциями HyperTaxonomy."
 
-#: blocks/ht-post-list/block.json blocks/ht-power-search/block.json blocks/ht-related-posts/block.json
+#: blocks/ht-post-list/block.json blocks/ht-power-search/block.json
+#: blocks/ht-related-posts/block.json
 msgctxt "block keyword"
 msgid "posts"
 msgstr "posts"
 
-#: blocks/ht-post-list/block.json blocks/ht-related-posts/block.json blocks/ht-sort-order-options/block.json blocks/ht-term-cloud/block.json blocks/ht-term-groups/block.json blocks/ht-term-index/block.json blocks/ht-term-list/block.json
+#: blocks/ht-post-list/block.json blocks/ht-related-posts/block.json
+#: blocks/ht-sort-order-options/block.json blocks/ht-term-cloud/block.json
+#: blocks/ht-term-groups/block.json blocks/ht-term-index/block.json
+#: blocks/ht-term-list/block.json
 msgctxt "block keyword"
 msgid "taxonomy"
 msgstr "taxonomy"
 
-#: blocks/ht-post-list/block.json blocks/ht-related-posts/block.json blocks/ht-term-cloud/block.json blocks/ht-term-groups/block.json blocks/ht-term-index/block.json blocks/ht-term-list/block.json
+#: blocks/ht-post-list/block.json blocks/ht-related-posts/block.json
+#: blocks/ht-term-cloud/block.json blocks/ht-term-groups/block.json
+#: blocks/ht-term-index/block.json blocks/ht-term-list/block.json
 msgctxt "block keyword"
 msgid "terms"
 msgstr "terms"
@@ -5822,7 +5810,10 @@ msgctxt "block keyword"
 msgid "filter"
 msgstr "filter"
 
-#: blocks/ht-post-list/block.json blocks/ht-power-search/block.json blocks/ht-related-posts/block.json blocks/ht-sort-order-options/block.json blocks/ht-term-cloud/block.json blocks/ht-term-groups/block.json blocks/ht-term-index/block.json blocks/ht-term-list/block.json
+#: blocks/ht-post-list/block.json blocks/ht-power-search/block.json
+#: blocks/ht-related-posts/block.json blocks/ht-sort-order-options/block.json
+#: blocks/ht-term-cloud/block.json blocks/ht-term-groups/block.json
+#: blocks/ht-term-index/block.json blocks/ht-term-list/block.json
 msgctxt "block keyword"
 msgid "hypertaxonomy"
 msgstr "hypertaxonomy"
@@ -5834,8 +5825,15 @@ msgstr "HT PowerSearch"
 
 #: blocks/ht-power-search/block.json
 msgctxt "block description"
-msgid "A MySQL FULLTEXT search form with relevance scoring, field operators (title:, tags:, etc.), and boolean logic. Renders results inline (POST mode) or updates a separate container (AJAX mode)."
-msgstr "Форма поиска на основе MySQL FULLTEXT с оценкой релевантности, командами расширенного поиска (title:, tags: и др.) и логическими операторами. Выводит результаты на той же странице (режим POST) или обновляет отдельный контейнер (режим AJAX)."
+msgid ""
+"A MySQL FULLTEXT search form with relevance scoring, field operators "
+"(title:, tags:, etc.), and boolean logic. Renders results inline (POST mode) "
+"or updates a separate container (AJAX mode)."
+msgstr ""
+"Форма поиска на основе MySQL FULLTEXT с оценкой релевантности, командами "
+"расширенного поиска (title:, tags: и др.) и логическими операторами. Выводит "
+"результаты на той же странице (режим POST) или обновляет отдельный контейнер "
+"(режим AJAX)."
 
 #: blocks/ht-power-search/block.json blocks/ht-sort-order-options/block.json
 msgctxt "block keyword"
@@ -5854,8 +5852,12 @@ msgstr "HT Term Group Filter"
 
 #: blocks/ht-query-group-filter/block.json
 msgctxt "block description"
-msgid "Block editor extension that adds a Term Group filter to the core Query Loop and Latest Posts blocks."
-msgstr "Расширение редактора блоков, добавляющее фильтр по группам терминов в стандартные блоки «Цикл запроса» и «Последние записи»."
+msgid ""
+"Block editor extension that adds a Term Group filter to the core Query Loop "
+"and Latest Posts blocks."
+msgstr ""
+"Расширение редактора блоков, добавляющее фильтр по группам терминов в "
+"стандартные блоки «Цикл запроса» и «Последние записи»."
 
 #: blocks/ht-related-posts/block.json
 msgctxt "block title"
@@ -5864,8 +5866,12 @@ msgstr "HT Related Posts"
 
 #: blocks/ht-related-posts/block.json
 msgctxt "block description"
-msgid "Display posts related to the current post by shared taxonomy terms, with full HyperTaxonomy relevance scoring."
-msgstr "Выводит записи, связанные с текущей записью общими терминами таксономий, с полной оценкой релевантности HyperTaxonomy."
+msgid ""
+"Display posts related to the current post by shared taxonomy terms, with "
+"full HyperTaxonomy relevance scoring."
+msgstr ""
+"Выводит записи, связанные с текущей записью общими терминами таксономий, с "
+"полной оценкой релевантности HyperTaxonomy."
 
 #: blocks/ht-related-posts/block.json
 msgctxt "block keyword"
@@ -5879,8 +5885,13 @@ msgstr "HT Sort Order Options"
 
 #: blocks/ht-sort-order-options/block.json
 msgctxt "block description"
-msgid "A sort order picker for taxonomy archive and search results pages. Navigates to the same URL with the selected sort order as a query parameter."
-msgstr "Выбор порядка сортировки для архивов терминов и страниц результатов поиска. Открывает тот же URL-адрес с выбранным порядком сортировки в параметре запроса."
+msgid ""
+"A sort order picker for taxonomy archive and search results pages. Navigates "
+"to the same URL with the selected sort order as a query parameter."
+msgstr ""
+"Выбор порядка сортировки для архивов терминов и страниц результатов поиска. "
+"Открывает тот же URL-адрес с выбранным порядком сортировки в параметре "
+"запроса."
 
 #: blocks/ht-sort-order-options/block.json
 msgctxt "block keyword"
@@ -5904,8 +5915,12 @@ msgstr "HT Term Cloud"
 
 #: blocks/ht-term-cloud/block.json
 msgctxt "block description"
-msgid "Display a tag cloud with variable font sizes based on post count, with Term Groups filtering."
-msgstr "Выводит облако меток с размером шрифта пропорциональным числу записей и с фильтрацией по группам терминов."
+msgid ""
+"Display a tag cloud with variable font sizes based on post count, with Term "
+"Groups filtering."
+msgstr ""
+"Выводит облако меток с размером шрифта пропорциональным числу записей и с "
+"фильтрацией по группам терминов."
 
 #: blocks/ht-term-cloud/block.json
 msgctxt "block keyword"
@@ -5924,8 +5939,12 @@ msgstr "HT Term Groups"
 
 #: blocks/ht-term-groups/block.json
 msgctxt "block description"
-msgid "Display terms organized by their groups in a collapsible tree using native HTML details/summary elements."
-msgstr "Выводит термины, упорядоченные по группам, в виде сворачиваемого дерева на основе стандартных HTML-элементов details/summary."
+msgid ""
+"Display terms organized by their groups in a collapsible tree using native "
+"HTML details/summary elements."
+msgstr ""
+"Выводит термины, упорядоченные по группам, в виде сворачиваемого дерева на "
+"основе стандартных HTML-элементов details/summary."
 
 #: blocks/ht-term-groups/block.json
 msgctxt "block keyword"
@@ -5944,8 +5963,12 @@ msgstr "HT Term Index"
 
 #: blocks/ht-term-index/block.json
 msgctxt "block description"
-msgid "Display an alphabetical A–Z index of taxonomy terms with optional letter navigation."
-msgstr "Выводит алфавитный указатель терминов таксономии (А–Я) с дополнительной возможностью навигации по буквам."
+msgid ""
+"Display an alphabetical A–Z index of taxonomy terms with optional letter "
+"navigation."
+msgstr ""
+"Выводит алфавитный указатель терминов таксономии (А–Я) с дополнительной "
+"возможностью навигации по буквам."
 
 #: blocks/ht-term-index/block.json
 msgctxt "block keyword"
@@ -5964,8 +5987,12 @@ msgstr "HT Term List"
 
 #: blocks/ht-term-list/block.json
 msgctxt "block description"
-msgid "Display taxonomy terms as a filterable, optionally collapsible list with Term Groups support."
-msgstr "Выводит термины таксономии в виде списка с фильтрацией и дополнительной возможностью сворачивания, с поддержкой групп терминов."
+msgid ""
+"Display taxonomy terms as a filterable, optionally collapsible list with "
+"Term Groups support."
+msgstr ""
+"Выводит термины таксономии в виде списка с фильтрацией и дополнительной "
+"возможностью сворачивания, с поддержкой групп терминов."
 
 #: blocks/ht-term-list/block.json
 msgctxt "block keyword"

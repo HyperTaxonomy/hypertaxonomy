@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: hypertaxonomy 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-29 14:17-0400\n"
+"POT-Creation-Date: 2026-10-29 21:34-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -42,7 +42,7 @@ msgstr ""
 #: includes/admin/ajax.php:949 includes/admin/bulk-actions.php:240
 #: includes/admin/settings.php:3565 includes/admin/settings.php:3583
 #: includes/admin/term-icons.php:1062
-#: includes/classes/class-search-index.php:1216
+#: includes/classes/class-search-index.php:1211
 #: includes/integrations/class-taxopress-integration.php:126
 msgid "Security check failed."
 msgstr ""
@@ -3578,8 +3578,8 @@ msgid "Could not determine the file format of the cropped image."
 msgstr ""
 
 #: includes/admin/term-icons.php:1068
-#: includes/classes/class-search-index.php:1221
-#: includes/classes/class-search-index.php:1289
+#: includes/classes/class-search-index.php:1216
+#: includes/classes/class-search-index.php:1284
 msgid "Unauthorized access."
 msgstr ""
 
@@ -3702,11 +3702,11 @@ msgstr ""
 msgid "Page %1$d of %2$d"
 msgstr ""
 
-#: includes/classes/class-search-index.php:1235
+#: includes/classes/class-search-index.php:1230
 msgid "Database error. Check logs."
 msgstr ""
 
-#: includes/classes/class-search-index.php:1251
+#: includes/classes/class-search-index.php:1246
 #, php-format
 msgid "Index cleared. Rebuilding %d posts..."
 msgstr ""
@@ -3794,11 +3794,11 @@ msgstr ""
 msgid "The plugin may not function correctly until these issues are resolved."
 msgstr ""
 
-#: includes/core/compatibility.php:142
+#: includes/core/compatibility.php:181
 msgid "HyperTaxonomy: Missing Required Files"
 msgstr ""
 
-#: includes/core/compatibility.php:148
+#: includes/core/compatibility.php:187
 msgid "Please reinstall the plugin to restore missing files."
 msgstr ""
 
@@ -3958,7 +3958,7 @@ msgstr ""
 msgid "Target of redirect from"
 msgstr ""
 
-#: includes/core/search.php:877
+#: includes/core/search.php:881
 #, php-format
 msgid "%s result found"
 msgid_plural "%s results found"
@@ -5107,20 +5107,28 @@ msgstr ""
 
 #: blocks/ht-post-list/block.json
 msgctxt "block description"
-msgid "Display posts filtered by taxonomy terms with sorting, filtering, and full HyperTaxonomy features."
+msgid ""
+"Display posts filtered by taxonomy terms with sorting, filtering, and full "
+"HyperTaxonomy features."
 msgstr ""
 
-#: blocks/ht-post-list/block.json blocks/ht-power-search/block.json blocks/ht-related-posts/block.json
+#: blocks/ht-post-list/block.json blocks/ht-power-search/block.json
+#: blocks/ht-related-posts/block.json
 msgctxt "block keyword"
 msgid "posts"
 msgstr ""
 
-#: blocks/ht-post-list/block.json blocks/ht-related-posts/block.json blocks/ht-sort-order-options/block.json blocks/ht-term-cloud/block.json blocks/ht-term-groups/block.json blocks/ht-term-index/block.json blocks/ht-term-list/block.json
+#: blocks/ht-post-list/block.json blocks/ht-related-posts/block.json
+#: blocks/ht-sort-order-options/block.json blocks/ht-term-cloud/block.json
+#: blocks/ht-term-groups/block.json blocks/ht-term-index/block.json
+#: blocks/ht-term-list/block.json
 msgctxt "block keyword"
 msgid "taxonomy"
 msgstr ""
 
-#: blocks/ht-post-list/block.json blocks/ht-related-posts/block.json blocks/ht-term-cloud/block.json blocks/ht-term-groups/block.json blocks/ht-term-index/block.json blocks/ht-term-list/block.json
+#: blocks/ht-post-list/block.json blocks/ht-related-posts/block.json
+#: blocks/ht-term-cloud/block.json blocks/ht-term-groups/block.json
+#: blocks/ht-term-index/block.json blocks/ht-term-list/block.json
 msgctxt "block keyword"
 msgid "terms"
 msgstr ""
@@ -5130,7 +5138,10 @@ msgctxt "block keyword"
 msgid "filter"
 msgstr ""
 
-#: blocks/ht-post-list/block.json blocks/ht-power-search/block.json blocks/ht-related-posts/block.json blocks/ht-sort-order-options/block.json blocks/ht-term-cloud/block.json blocks/ht-term-groups/block.json blocks/ht-term-index/block.json blocks/ht-term-list/block.json
+#: blocks/ht-post-list/block.json blocks/ht-power-search/block.json
+#: blocks/ht-related-posts/block.json blocks/ht-sort-order-options/block.json
+#: blocks/ht-term-cloud/block.json blocks/ht-term-groups/block.json
+#: blocks/ht-term-index/block.json blocks/ht-term-list/block.json
 msgctxt "block keyword"
 msgid "hypertaxonomy"
 msgstr ""
@@ -5142,7 +5153,10 @@ msgstr ""
 
 #: blocks/ht-power-search/block.json
 msgctxt "block description"
-msgid "A MySQL FULLTEXT search form with relevance scoring, field operators (title:, tags:, etc.), and boolean logic. Renders results inline (POST mode) or updates a separate container (AJAX mode)."
+msgid ""
+"A MySQL FULLTEXT search form with relevance scoring, field operators "
+"(title:, tags:, etc.), and boolean logic. Renders results inline (POST mode) "
+"or updates a separate container (AJAX mode)."
 msgstr ""
 
 #: blocks/ht-power-search/block.json blocks/ht-sort-order-options/block.json
@@ -5162,7 +5176,9 @@ msgstr ""
 
 #: blocks/ht-query-group-filter/block.json
 msgctxt "block description"
-msgid "Block editor extension that adds a Term Group filter to the core Query Loop and Latest Posts blocks."
+msgid ""
+"Block editor extension that adds a Term Group filter to the core Query Loop "
+"and Latest Posts blocks."
 msgstr ""
 
 #: blocks/ht-related-posts/block.json
@@ -5172,7 +5188,9 @@ msgstr ""
 
 #: blocks/ht-related-posts/block.json
 msgctxt "block description"
-msgid "Display posts related to the current post by shared taxonomy terms, with full HyperTaxonomy relevance scoring."
+msgid ""
+"Display posts related to the current post by shared taxonomy terms, with "
+"full HyperTaxonomy relevance scoring."
 msgstr ""
 
 #: blocks/ht-related-posts/block.json
@@ -5187,7 +5205,9 @@ msgstr ""
 
 #: blocks/ht-sort-order-options/block.json
 msgctxt "block description"
-msgid "A sort order picker for taxonomy archive and search results pages. Navigates to the same URL with the selected sort order as a query parameter."
+msgid ""
+"A sort order picker for taxonomy archive and search results pages. Navigates "
+"to the same URL with the selected sort order as a query parameter."
 msgstr ""
 
 #: blocks/ht-sort-order-options/block.json
@@ -5212,7 +5232,9 @@ msgstr ""
 
 #: blocks/ht-term-cloud/block.json
 msgctxt "block description"
-msgid "Display a tag cloud with variable font sizes based on post count, with Term Groups filtering."
+msgid ""
+"Display a tag cloud with variable font sizes based on post count, with Term "
+"Groups filtering."
 msgstr ""
 
 #: blocks/ht-term-cloud/block.json
@@ -5232,7 +5254,9 @@ msgstr ""
 
 #: blocks/ht-term-groups/block.json
 msgctxt "block description"
-msgid "Display terms organized by their groups in a collapsible tree using native HTML details/summary elements."
+msgid ""
+"Display terms organized by their groups in a collapsible tree using native "
+"HTML details/summary elements."
 msgstr ""
 
 #: blocks/ht-term-groups/block.json
@@ -5252,7 +5276,9 @@ msgstr ""
 
 #: blocks/ht-term-index/block.json
 msgctxt "block description"
-msgid "Display an alphabetical A–Z index of taxonomy terms with optional letter navigation."
+msgid ""
+"Display an alphabetical A–Z index of taxonomy terms with optional letter "
+"navigation."
 msgstr ""
 
 #: blocks/ht-term-index/block.json
@@ -5272,7 +5298,9 @@ msgstr ""
 
 #: blocks/ht-term-list/block.json
 msgctxt "block description"
-msgid "Display taxonomy terms as a filterable, optionally collapsible list with Term Groups support."
+msgid ""
+"Display taxonomy terms as a filterable, optionally collapsible list with "
+"Term Groups support."
 msgstr ""
 
 #: blocks/ht-term-list/block.json

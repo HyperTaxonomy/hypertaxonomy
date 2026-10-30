@@ -12,6 +12,7 @@ nav_order: 1
 hypertaxonomy/
 ├── hypertaxonomy.php              # Main plugin file
 ├── package.json                   # npm dependencies (@wordpress/scripts)
+├── package-lock.json              # npm lockfile — pins the dependency tree for reproducible builds
 ├── README.md                      # Entry point with feature list and doc links
 ├── readme.txt                     # WordPress.org readme
 ├── uninstall.php                  # Uninstall handler
@@ -25,11 +26,15 @@ hypertaxonomy/
 │   │   ├── htax-tables.css             # List table styles
 │   │   └── htax-term-edit.css          # Term edit screen styles
 │   └── js/
+│       ├── htax-convert-terms.js       # Convert Terms admin page logic (AJAX checklist, target-select sync, validation)
+│       ├── htax-editor-prefs.js        # Post editor display preferences (More menu toggles, stored in core/preferences)
 │       ├── htax-group-admin.js         # Term Groups admin UI logic
 │       ├── htax-hierarchical-checklist.js  # Hierarchical checklist UI component
 │       ├── htax-post-edit.js           # Post edit screen logic
 │       ├── htax-settings.js            # Settings page logic
 │       ├── htax-tables.js              # List table filter logic, Screen Options sync, bulk group assignment
+│       ├── htax-tag-suggestions.js     # Content-based tag suggestion panels in the block editor sidebar
+│       ├── htax-term-edit-lock.js      # Heartbeat-based term edit locking (take-over / displacement dialog)
 │       └── htax-term-edit.js           # Term edit screen logic
 │
 ├── assets/                        # Frontend assets
@@ -42,6 +47,7 @@ hypertaxonomy/
 │   │   └── htax-term-icons.css         # Term icon styles
 │   └── js/
 │       ├── htax-filter-options.js      # Filter options panel logic
+│       ├── htax-geo.js                 # near:me browser-geolocation support (search widget + PowerSearch)
 │       ├── htax-power-search.js        # PowerSearch AJAX + sort-change listener
 │       ├── htax-post-list.js           # Post list AJAX pagination + sort-change listener
 │       ├── htax-search-widget.js       # Advanced search widget AJAX logic
@@ -51,92 +57,104 @@ hypertaxonomy/
 ├── docs/                          # Technical documentation (Just-the-Docs / Jekyll site)
 │   ├── _config.yml                     # Jekyll / Just-the-Docs configuration
 │   ├── index.md                        # Docs home / landing page
+│   ├── features.md                     # Feature overview
 │   ├── user-guide/                     # User Guide section (parent + child pages)
 │   ├── developer-reference/              # Developer Reference section (PHP API, hooks, REST, capabilities)
 │   ├── architecture/                   # Architecture section (this reference, split into child pages)
-│   └── contributing.md              # Guide for HyperTaxonomy contributors (Design Principles, Patterns, Blocks, Debug)
+│   ├── contributing.md              # Guide for HyperTaxonomy contributors (Design Principles, Patterns, Blocks, Debug)
+│   └── comparison.md                   # Feature comparison vs. PublishPress Tag Groups
 │
-└── includes/                      # All PHP functionality
-    │
-    ├── bootstrap.php              # Orchestrates file loading
-    │
-    ├── admin/                     # Admin-only code
-    │   ├── admin-menu.php         # Top-level "Terms" admin menu registration and highlighting
-    │   ├── ajax.php               # AJAX handlers (includes autocomplete helper functions)
-    │   ├── bulk-actions.php       # Bulk actions for term lists (visibility, icons, redirects)
-    │   ├── convert-terms.php      # Convert Terms admin UI and handler (cross-taxonomy term conversion)
-    │   ├── export-hypertaxonomy.php  # HyperTaxonomy export functionality
-    │   ├── export-ui.php          # Export / Import tab: Export subtab
-    │   ├── group-admin.php        # Term Groups admin UI and management
-    │   ├── import-hypertaxonomy.php  # HyperTaxonomy import functionality
-    │   ├── import-tag-groups-handler.php  # Tag Groups mapping, re-run locks, integration mode helpers
-    │   ├── import-ui.php          # Export / Import tab: Import subtab
-    │   ├── tag-groups-live-sync.php  # Tag Groups live sync hooks (Live integration mode only)
-    │   ├── tag-groups-migrate-ui.php # Export / Import tab: Migrate subtab (Tag Groups import)
-    │   ├── tag-groups-sync-ui.php    # Export / Import tab: Sync subtab (integration mode, removal handling)
-    │   ├── merge-terms.php        # Merge Terms admin UI and handler
-    │   ├── post-edit.php          # Post edit screen: assets, meta boxes, save handlers
-    │   ├── relationship-types-admin.php  # Term Relationship Types admin page: Custom and Inclusion-based 
-    │   ├── settings.php           # Settings page UI (HyperTaxonomy_Settings class)
-    │   ├── tables.php             # List tables: assets, columns, filters, row classes
-    │   ├── term-edit.php          # Term edit screen: assets, form fields, save handlers
-    │   ├── term-edit-lock.php     # Heartbeat-based concurrent edit locking (all taxonomies + RT edit page)
-    │   ├── term-filters.php       # Term filtering functionality (includes filter helper functions)
-    │   └── term-icons.php         # Term icon upload UI (HyperTaxonomy_Term_Icons class)
-    │
-    ├── classes/                   # Infrastructure classes
-    │   ├── class-activator.php       # Plugin activation
-    │   ├── class-blocks.php       # HyperTaxonomy_Blocks: registers all Gutenberg blocks (+ native block extensions)
-    │   ├── class-capabilities.php    # Capability management
-    │   ├── class-power-search.php    # PowerSearch form, AJAX endpoint, relevance scoring
-    │   ├── class-hierarchical-checklist.php  # Hierarchical term checklist UI component (Walker + render functions)
-    │   ├── class-search-index.php    # Search index builder and sync
-    │   ├── class-search-widget.php   # Advanced search widget system with 9 shortcodes & AJAX handlers
-    │   └── class-upgrader.php        # Database upgrades
-    │
-    ├── core/                      # Core functionality
-    │   ├── activation.php         # Activation/deactivation (10 functions)
-    │   ├── cache.php              # Caching & locks (26 functions - includes cache helper functions)
-    │   ├── compatibility.php      # Environment checks (6 functions)
-    │   ├── frontend.php           # Frontend display: hidden terms, CSS, icons, pills, archive display
-    │   ├── functions.php          # Core infrastructure (19 functions - logging, cache, plugin lifecycle, taxonomy config, tag creation gate)
-    │   ├── group-functions.php    # Term Groups membership functions (group assignment to terms)
-    │   ├── helpers.php            # Core utilities (13 functions - SQL, term validation, POST handling, notices, nonce, term description cleaning)
-    │   ├── integration-api.php    # Public integration API for third-party plugins
-    │   ├── relationship-types.php      # Relationship Type Registry: registration API, SQL helpers, persistence
-    │   ├── relationship-types-rest.php # REST endpoints: GET htax/v1/relationship-types, GET htax/v1/term/{id}/relationships (peer sync — public)
-    │   ├── post-editor-rest.php        # REST endpoints: GET htax/v1/suggested-tags, GET htax/v1/term-meta (editor UI — require edit_posts)
-    │   ├── rest-api.php                # REST field extensions on term/post objects + X-HyperTaxonomy header + sitemap filter
-    │   ├── search.php             # All search functions (24 functions - query handling, post text sync, AJAX formatting, utilities)
-    │   ├── search-state.php       # Search State API: POST/Redirect/GET token encode/decode for large searches
-    │   ├── strength-models.php    # Strength Model API: registration, scoring hooks for external relevance models
-    │   ├── taxonomies.php         # Custom taxonomy registration (registers 'group' taxonomy)
-    │   ├── term-archives.php      # Archive queries & sticky posts (12 functions - includes group archives)
-    │   ├── term-conversion.php    # Term taxonomy conversion (14 functions): native engine,  icon-transfer check, sticky transfer, redirect stub creation
-    │   ├── term-groups.php        # Term Groups inclusion/container functions
-    │   ├── term-merge.php         # Term merge logic (transfer posts and relationships, optional redirect stub)
-    │   ├── term-relationships.php # Synonyms/includes/redirects (36 functions - includes relationship helpers)
-    │   ├── native-blocks.php      # Native block extensions: group filter for core/query and core/latest-posts
-    │   └── term-visibility.php    # Term visibility logic (10 functions - hidden terms, write-time cascade, frontend query filtering)
-    │
-    ├── hooks/                     # WordPress hooks
-    │   ├── actions.php            # Action hook registrations
-    │   └── filters.php            # Filter hook registrations
-    │
-    ├── integrations/              # Third-party plugin integrations (loaded conditionally)
-    │   ├── class-atcf-integration.php  # As the Crow Flies integration
-    │   └── class-taxopress-integration.php  # PublishPress Taxonomies (TaxoPress) integration
-    │
-    └── shortcodes/                # Shortcode system
-        ├── class-filter-options.php     # [ht_filter_options] + child filter shortcodes + htax_build_filter_sql()
-        ├── class-post-list.php          # [ht_post_list] and [ht_related_posts] shortcodes
-        ├── class-shortcode-base.php     # Base class + shortcode helper functions
-        ├── class-sort-order.php         # [ht_sort_order_options] + htax_render_sort_order_picker()
-        ├── class-term-cloud.php         # [ht_term_cloud] shortcode
-        ├── class-term-display-base.php  # Base class for term display shortcodes
-        ├── class-term-groups.php        # [ht_term_groups] shortcode
-        ├── class-term-index.php         # [ht_term_index] shortcode
-        └── class-term-list.php          # [ht_term_list] shortcode
+├── includes/                      # All PHP functionality
+│   │
+│   ├── bootstrap.php              # Orchestrates file loading
+│   │
+│   ├── admin/                     # Admin-only code
+│   │   ├── admin-menu.php         # Top-level "Terms" admin menu registration and highlighting
+│   │   ├── ajax.php               # AJAX handlers (includes autocomplete helper functions)
+│   │   ├── bulk-actions.php       # Bulk actions for term lists (visibility, icons, redirects)
+│   │   ├── convert-terms.php      # Convert Terms admin UI and handler (cross-taxonomy term conversion)
+│   │   ├── export-hypertaxonomy.php  # HyperTaxonomy export functionality
+│   │   ├── export-ui.php          # Export / Import tab: Export subtab
+│   │   ├── group-admin.php        # Term Groups admin UI and management
+│   │   ├── import-hypertaxonomy.php  # HyperTaxonomy import functionality
+│   │   ├── import-tag-groups-handler.php  # Tag Groups mapping, re-run locks, integration mode helpers
+│   │   ├── import-ui.php          # Export / Import tab: Import subtab
+│   │   ├── tag-groups-live-sync.php  # Tag Groups live sync hooks (Live integration mode only)
+│   │   ├── tag-groups-migrate-ui.php # Export / Import tab: Migrate subtab (Tag Groups import)
+│   │   ├── tag-groups-sync-ui.php    # Export / Import tab: Sync subtab (integration mode, removal handling)
+│   │   ├── merge-terms.php        # Merge Terms admin UI and handler
+│   │   ├── post-edit.php          # Post edit screen: assets, meta boxes, save handlers
+│   │   ├── relationship-types-admin.php  # Term Relationship Types admin page: Custom and Inclusion-based 
+│   │   ├── settings.php           # Settings page UI (HyperTaxonomy_Settings class)
+│   │   ├── tables.php             # List tables: assets, columns, filters, row classes
+│   │   ├── term-edit.php          # Term edit screen: assets, form fields, save handlers
+│   │   ├── term-edit-lock.php     # Heartbeat-based concurrent edit locking (all taxonomies + RT edit page)
+│   │   ├── term-filters.php       # Term filtering functionality (includes filter helper functions)
+│   │   └── term-icons.php         # Term icon upload UI (HyperTaxonomy_Term_Icons class)
+│   │
+│   ├── classes/                   # Infrastructure classes
+│   │   ├── class-activator.php       # Plugin activation
+│   │   ├── class-blocks.php       # HyperTaxonomy_Blocks: registers all Gutenberg blocks (+ native block extensions)
+│   │   ├── class-capabilities.php    # Capability management
+│   │   ├── class-power-search.php    # PowerSearch form, AJAX endpoint, relevance scoring
+│   │   ├── class-hierarchical-checklist.php  # Hierarchical term checklist UI component (Walker + render functions)
+│   │   ├── class-search-index.php    # Search index builder and sync
+│   │   ├── class-search-widget.php   # Advanced search widget system with 9 shortcodes & AJAX handlers
+│   │   └── class-upgrader.php        # Database upgrades
+│   │
+│   ├── core/                      # Core functionality
+│   │   ├── activation.php         # Activation/deactivation (10 functions)
+│   │   ├── cache.php              # Caching & locks (26 functions - includes cache helper functions)
+│   │   ├── compatibility.php      # Environment checks (6 functions)
+│   │   ├── frontend.php           # Frontend display: hidden terms, CSS, icons, pills, archive display
+│   │   ├── functions.php          # Core infrastructure (19 functions - logging, cache, plugin lifecycle, taxonomy config, tag creation gate)
+│   │   ├── group-functions.php    # Term Groups membership functions (group assignment to terms)
+│   │   ├── helpers.php            # Core utilities (13 functions - SQL, term validation, POST handling, notices, nonce, term description cleaning)
+│   │   ├── integration-api.php    # Public integration API for third-party plugins
+│   │   ├── relationship-types.php      # Relationship Type Registry: registration API, SQL helpers, persistence
+│   │   ├── relationship-types-rest.php # REST endpoints: GET htax/v1/relationship-types, GET htax/v1/term/{id}/relationships (peer sync — public)
+│   │   ├── post-editor-rest.php        # REST endpoints: GET htax/v1/suggested-tags, GET htax/v1/term-meta (editor UI — require edit_posts)
+│   │   ├── rest-api.php                # REST field extensions on term/post objects + X-HyperTaxonomy header + sitemap filter
+│   │   ├── search.php             # All search functions (24 functions - query handling, post text sync, AJAX formatting, utilities)
+│   │   ├── search-state.php       # Search State API: POST/Redirect/GET token encode/decode for large searches
+│   │   ├── strength-models.php    # Strength Model API: registration, scoring hooks for external relevance models
+│   │   ├── taxonomies.php         # Custom taxonomy registration (registers 'group' taxonomy)
+│   │   ├── term-archives.php      # Archive queries & sticky posts (12 functions - includes group archives)
+│   │   ├── term-conversion.php    # Term taxonomy conversion (14 functions): native engine,  icon-transfer check, sticky transfer, redirect stub creation
+│   │   ├── term-groups.php        # Term Groups inclusion/container functions
+│   │   ├── term-merge.php         # Term merge logic (transfer posts and relationships, optional redirect stub)
+│   │   ├── term-relationships.php # Synonyms/includes/redirects (36 functions - includes relationship helpers)
+│   │   ├── native-blocks.php      # Native block extensions: group filter for core/query and core/latest-posts
+│   │   └── term-visibility.php    # Term visibility logic (10 functions - hidden terms, write-time cascade, frontend query filtering)
+│   │
+│   ├── hooks/                     # WordPress hooks
+│   │   ├── actions.php            # Action hook registrations
+│   │   └── filters.php            # Filter hook registrations
+│   │
+│   ├── integrations/              # Third-party plugin integrations (loaded conditionally)
+│   │   ├── class-atcf-integration.php  # As the Crow Flies integration
+│   │   └── class-taxopress-integration.php  # PublishPress Taxonomies (TaxoPress) integration
+│   │
+│   └── shortcodes/                # Shortcode system
+│       ├── class-filter-options.php     # [ht_filter_options] + child filter shortcodes + htax_build_filter_sql()
+│       ├── class-post-list.php          # [ht_post_list] and [ht_related_posts] shortcodes
+│       ├── class-shortcode-base.php     # Base class + shortcode helper functions
+│       ├── class-sort-order.php         # [ht_sort_order_options] + htax_render_sort_order_picker()
+│       ├── class-term-cloud.php         # [ht_term_cloud] shortcode
+│       ├── class-term-display-base.php  # Base class for term display shortcodes
+│       ├── class-term-groups.php        # [ht_term_groups] shortcode
+│       ├── class-term-index.php         # [ht_term_index] shortcode
+│       └── class-term-list.php          # [ht_term_list] shortcode
+│
+├── utils/                         # Packaging and translation-regeneration scripts (not shipped in the distributed zip)
+│   ├── package.sh                      # Builds dist/hypertaxonomy.zip; optionally rebuilds blocks and recompiles translations first
+│   ├── make-pot.sh                     # Regenerates languages/hypertaxonomy.pot from PHP/JS source + block.json metadata
+│   └── make-json.py                    # Regenerates each editor script's languages/*-{locale}-{handle}.json from a .po file
+│
+└── languages/                     # Translation files (.pot/.po/.mo are hand- or msgmerge-maintained; .mo and the JSON files below are build output)
+    ├── hypertaxonomy.pot                                          # Translation template (regenerated by make-pot.sh)
+    ├── hypertaxonomy-ru_RU.po / .mo                                # Russian translation (source .po + compiled .mo for PHP-side gettext)
+    └── hypertaxonomy-ru_RU-hypertaxonomy-{block}-editor-script.json  # Per-block editor-script translations (Jed 1.x), one per block with an editorScript
 
 blocks/                            # Gutenberg block build source and output
 ├── shared/

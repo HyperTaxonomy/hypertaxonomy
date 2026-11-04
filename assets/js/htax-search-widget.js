@@ -919,6 +919,24 @@
         }
 
         /**
+         * Terms in the option pool only because add_terms named them: the field's own, for
+         * good, plus those a controller action added, until removed or reversed.
+         */
+        _impliedTerms() {
+            this._actionTerms = this._actionTerms || new Set();
+            return new Set([...(this._groupMap().implied || []).map(Number), ...this._actionTerms]);
+        }
+
+        /**
+         * May this add_terms action add this term, which the pool doesn't cover?
+         * No for terms deleted or hidden from this viewer (absent from the group map).
+         */
+        _canJoinPool(id) {
+            const terms = this._groupMap().terms;
+            return !!(terms && terms[id]);
+        }
+
+        /**
          * Member term IDs of these groups from the group map, and how many groups it doesn't know.
          */
         _groupMemberIds(groupIds) {
@@ -1080,6 +1098,9 @@
             this.suggestOnFocus  = $wrapper.data('suggest-on-focus') !== false;
 
             // Internal state management
+            this._includeTerms = new Set();    // Terms declared by include_term_options
+            this._excludeTerms = new Set();    // Terms declared by exclude_term_options
+            this._optionsCleared = false;      // A clearOptions action emptied the pool
             this._availableTerms = new Set();  // Pool of selectable terms (for specific term IDs)
             this._selectedTerms = new Set();   // Currently selected terms
             this._termData = {}; // Store term info including icons
@@ -1233,6 +1254,7 @@
          * on demand. Specific-term lists are always populated synchronously.
          */
         processInitialOptions() {
+            this._mergeGroupMapTerms();
             if (this.prefetch) {
                 const includeGroups = this.$wrapper.data('include-group-options');
                 if (includeGroups) {
@@ -1307,6 +1329,14 @@
                     }
                     this._prefetchDone = true;
                     this._computeActiveOptions();
+                    // Anything added before the pool was known and outside it: add_groups terms
+                    // only, since add_terms terms are part of the pool.
+                    if (!(this.$wrapper.data('include-group-options') && this.$wrapper.data('include-descendant-options'))) {
+                        const implied = this._impliedTerms();
+                        [...this._selectedTerms]
+                            .filter(id => !this._allOptionsById.has(id) && !implied.has(id) && !this._includeTerms.has(id))
+                            .forEach(id => this.removeTerm(id));
+                    }
                     // Initial pills (add_terms) may have been created before term names arrived.
                     this._refreshPillLabels();
                     if (this._pendingAddDescendants.length > 0) {
@@ -1359,6 +1389,15 @@
                     .map(tid => this._allOptionsById.get(tid))
                     .filter(Boolean);
             }
+
+            // Individually included terms join the pool; excluded terms leave it.
+            const activeIds = new Set(this._activeOptions.map(o => o.id));
+            [...this._includeTerms, ...this._impliedTerms()].forEach(id => {
+                if (!activeIds.has(id) && this._termData[id]) {
+                    this._activeOptions.push(Object.assign({ id }, this._termData[id]));
+                }
+            });
+            this._activeOptions = this._activeOptions.filter(o => !this._excludeTerms.has(o.id));
         }
 
         /**
@@ -1378,7 +1417,13 @@
                 // Hidden field value takes precedence (from POST submission)
                 // Parse comma-separated IDs into array of integers
                 const termIds = hiddenValue.split(',').map(id => parseInt(id.trim())).filter(id => !isNaN(id));
-                this.addTerms(termIds);
+                // Restoring what the visitor already chose: not subject to the pool check.
+                this._mergeGroupMapTerms();
+                termIds.forEach(id => {
+                    this._availableTerms.add(id);
+                    this.addPill(id);
+                });
+                this.updateValue();
             } else {
                 // Use data attributes for initial configuration
 
@@ -1416,22 +1461,29 @@
          * Include terms in option pool
          */
         includeTermOptions(termIds) {
-            termIds.forEach(id => this._availableTerms.add(id));
-            this.updateAutocomplete();
+            this._optionsCleared = false;
+            termIds.forEach(id => {
+                this._availableTerms.add(id);
+                this._includeTerms.add(id);
+                this._excludeTerms.delete(id);
+            });
+            this._computeActiveOptions();
         }
-        
+
         /**
          * Exclude terms from option pool
          */
         excludeTermOptions(termIds) {
             termIds.forEach(id => {
                 this._availableTerms.delete(id);
+                this._includeTerms.delete(id);
+                this._excludeTerms.add(id);
                 // Auto-cleanup: remove from selection if no longer available
                 if (this._selectedTerms.has(id)) {
                     this.removeTerm(id);
                 }
             });
-            this.updateAutocomplete();
+            this._computeActiveOptions();
         }
 
         /**
@@ -1466,8 +1518,29 @@
         }
 
         _isKnownTerm(id) {
-            if (!this.prefetch) return true;
+            if (this._excludeTerms.has(id)) return false;
+            const map = this._groupMap();
+            if (map.check_terms && !(map.terms && map.terms[id])) return false;
+            if (this._impliedTerms().has(id)) return true;
+            if (this._optionsCleared) return false;
+            if (this._includeTerms.has(id)) return true;
+            if (!this.prefetch) {
+                // Only individual terms declared: the pool is exactly those terms.
+                const hasGroups = this.$wrapper.data('include-group-options') || this.$wrapper.data('include-descendant-options');
+                return this._includeTerms.size === 0 || !!hasGroups;
+            }
             return !this._prefetchDone || this._allOptionsById.has(id);
+        }
+
+        /**
+         * Copy term names and icons from the form's group map, for terms this field hasn't loaded.
+         */
+        _mergeGroupMapTerms() {
+            for (const [id, data] of Object.entries(this._groupMap().terms || {})) {
+                if (!this._termData[id]) {
+                    this._termData[id] = data;
+                }
+            }
         }
 
         /**
@@ -1502,16 +1575,26 @@
         }
 
         /**
-         * Add terms to selection. Only terms in the declared option pool are accepted;
-         * unknown terms are counted as skipped and returned.
+         * Add terms to selection. Terms outside the option pool are counted as skipped and
+         * returned, except that an explicit add_terms action brings them into the pool.
          */
-        addTerms(termIds) {
+        addTerms(termIds, explicit = false) {
             let skipped = 0;
+            this._mergeGroupMapTerms();
             termIds.forEach(id => {
-                if (!this._isKnownTerm(id)) { skipped++; return; }
+                if (!this._isKnownTerm(id)) {
+                    if (!explicit || this._excludeTerms.has(id) || !this._canJoinPool(id)) { skipped++; return; }
+                    this._actionTerms = this._actionTerms || new Set();
+                    this._actionTerms.add(id);
+                } else if (explicit && this.prefetch && !this._prefetchDone) {
+                    // Pool not loaded yet: keep this term when the prefetch drops outsiders.
+                    this._actionTerms = this._actionTerms || new Set();
+                    this._actionTerms.add(id);
+                }
                 this._availableTerms.add(id);
                 this.addPill(id);
             });
+            this._computeActiveOptions();
             this.updateValue();
             return skipped;
         }
@@ -1522,11 +1605,6 @@
          */
         addGroups(groupIds) {
             const { ids, unknown } = this._groupMemberIds(groupIds);
-            for (const [id, data] of Object.entries(this._groupMap().terms || {})) {
-                if (!this._termData[id]) {
-                    this._termData[id] = data;
-                }
-            }
             return unknown + (ids.length ? this.addTerms(ids) : 0);
         }
 
@@ -1547,9 +1625,13 @@
         removeTerms(termIds) {
             termIds.forEach(id => {
                 if (this._selectedTerms.has(id)) {
-                    this.removePill(this.$container.find(`.htax-pill[data-id="${id}"]`));
+                    this.removeTerm(id);
+                }
+                if (this._actionTerms && this._actionTerms.delete(id)) {
+                    this._availableTerms.delete(id);
                 }
             });
+            this._computeActiveOptions();
             this.updateValue();
             return 0;
         }
@@ -1567,8 +1649,7 @@
             
             // Silently remove invalid selections
             invalidTerms.forEach(id => {
-                this._selectedTerms.delete(id);
-                this.removePill(id);
+                this.removeTerm(id);
             });
         }
     
@@ -1616,7 +1697,7 @@
             }
 
             const prefetchSource = function(request, response) {
-                if (!self._prefetchDone) { response([]); return; }
+                if (!self._prefetchDone || self._optionsCleared) { response([]); return; }
 
                 const len = request.term.length;
                 const existingIds = new Set(self.getExistingIds());
@@ -1649,6 +1730,7 @@
             };
 
             const ajaxSource = function(request, response) {
+                if (self._optionsCleared) { response([]); return; }
                 const nonce = HTAX_Search.nonce || (self.form ? self.form.$form.find('#htax_search_nonce').val() : '');
                 const existingIds = new Set(self.getExistingIds());
 
@@ -1665,6 +1747,11 @@
                         action: 'htax_autocomplete_options',
                         taxonomy: self.taxonomy,
                         groups: groupIds.join(','),
+                        // With no declared pool every term is available, so naming some would narrow it.
+                        include_terms: (self._includeTerms.size > 0 || groupIds.length > 0)
+                            ? [...self._includeTerms, ...self._impliedTerms()].join(',')
+                            : '',
+                        exclude_terms: [...self._excludeTerms].join(','),
                         search: request.term,
                         show_icons: self.showIcons,
                         nonce
@@ -1997,6 +2084,10 @@
         /**
          * Remove a pill
          */
+        removeTerm(termId) {
+            this.removePill(this.$container.find(`.htax-pill[data-id="${termId}"]`));
+        }
+
         removePill($pill) {
             let termId = $pill.data('id');
             // Normalize termId to integer for consistent comparison
@@ -2161,18 +2252,29 @@
          */
         clearOptions() {
             this._availableTerms.clear();
-            this.validTerms = [];
-            this.updateAutocomplete();
+            this._includeTerms.clear();
+            this._activeGroups.clear();
+            this._optionsCleared = true;
         }
 
         /**
          * Reset options to initial defaults
          */
         resetOptions() {
-            // Reload from initial configuration
+            this._optionsCleared = false;
             this._availableTerms.clear();
-            this.loadInitialOptionConfiguration();
-            this.loadValidTerms();
+            this._includeTerms.clear();
+            this._excludeTerms.clear();
+            this._activeGroups.clear();
+            const includeTerms = this.$wrapper.data('include-term-options');
+            if (includeTerms) {
+                this.includeTermOptions(this.parseIdList(includeTerms));
+            }
+            const excludeTerms = this.$wrapper.data('exclude-term-options');
+            if (excludeTerms) {
+                this.excludeTermOptions(this.parseIdList(excludeTerms));
+            }
+            this._computeActiveOptions();
         }
 
         /**
@@ -2225,6 +2327,7 @@
             this.$container.find('.htax-checklist-item').each((i, el) => {
                 this._allOptionTermIds.add(parseInt($(el).data('term-id')));
             });
+            this._addImpliedOptions();
             this.bindEvents();
             this.initHierarchy();
             this.processInitialSelection();
@@ -2448,15 +2551,42 @@
             }
         }
 
+        /**
+         * Add an option for each of the field's add_terms terms the checklist didn't render.
+         */
+        _addImpliedOptions() {
+            const initial = new Set((this._groupMap().initial || []).map(Number));
+            (this._groupMap().implied || []).map(Number).forEach(id => this._addOption(id, initial.has(id)));
+        }
+
+        _addOption(id, checked) {
+            const terms = this._groupMap().terms;
+            const data = terms && terms[id];
+            if (this._allOptionTermIds.has(id) || !data) return;
+            const inputName = this.$container.find('.htax-checklist-item input').first().attr('name')
+                || `${this.name}_${this.form.$form.attr('id')}[]`;
+            const $input = $('<input type="checkbox">')
+                .attr({ name: inputName, value: id, 'data-term-name': data.name })
+                .prop('checked', checked);
+            const $label = $('<label>').append($input, document.createTextNode(' ' + data.name));
+            this.$container.append($('<div class="htax-checklist-item">').attr('data-term-id', id).append($label));
+            this._allOptionTermIds.add(id);
+        }
+
         _isKnownTerm(id) {
             return this._allOptionTermIds.has(id);
         }
 
-        addTerms(termIds) {
+        addTerms(termIds, explicit = false) {
             let skipped = 0;
             let changed = false;
             termIds.forEach(id => {
-                if (!this._isKnownTerm(id)) { skipped++; return; }
+                if (!this._isKnownTerm(id)) {
+                    if (!explicit || !this._canJoinPool(id)) { skipped++; return; }
+                    this._actionTerms = this._actionTerms || new Set();
+                    this._actionTerms.add(id);
+                    this._addOption(id, true);
+                }
                 this.$container.find(`.htax-checklist-item[data-term-id="${id}"] > label > input`).prop('checked', true);
                 changed = true;
             });
@@ -2473,7 +2603,12 @@
             let changed = false;
             termIds.forEach(id => {
                 if (!this._isKnownTerm(id)) return;
-                this.$container.find(`.htax-checklist-item[data-term-id="${id}"] > label > input`).prop('checked', false);
+                const $item = this.$container.find(`.htax-checklist-item[data-term-id="${id}"]`);
+                $item.find('> label > input').prop('checked', false);
+                if (this._actionTerms && this._actionTerms.delete(id)) {
+                    $item.remove();
+                    this._allOptionTermIds.delete(id);
+                }
                 changed = true;
             });
             if (changed) {
@@ -2627,6 +2762,12 @@
         // ---- Pool membership check ----
 
         _isKnownTerm(id) {
+            const map = this._groupMap();
+            if (map.check_terms && !(map.terms && map.terms[id])) return false;
+            if (this._excludedTermIds.has(id)) return false;
+            if (this._impliedTerms().has(id)) return true;
+            // No declared pool: any term may be added, same as a pills field.
+            if (this._allTermsByGroup.size === 0 && this._includedTermIds.size === 0) return true;
             if (this._includedTermIds.has(id)) return true;
             for (const termSet of this._allTermsByGroup.values()) {
                 if (termSet.has(id)) return true;
@@ -2636,10 +2777,14 @@
 
         // ---- Selection management (same semantics as PillsField / ChecklistField) ----
 
-        addTerms(termIds) {
+        addTerms(termIds, explicit = false) {
             let skipped = 0;
             termIds.forEach(id => {
-                if (!this._isKnownTerm(id)) { skipped++; return; }
+                if (!this._isKnownTerm(id)) {
+                    if (!explicit || this._excludedTermIds.has(id) || !this._canJoinPool(id)) { skipped++; return; }
+                    this._actionTerms = this._actionTerms || new Set();
+                    this._actionTerms.add(id);
+                }
                 this._selectedTerms.add(id);
             });
             this._computeValue();
@@ -2647,7 +2792,10 @@
         }
 
         removeTerms(termIds) {
-            termIds.forEach(id => this._selectedTerms.delete(id));
+            termIds.forEach(id => {
+                this._selectedTerms.delete(id);
+                if (this._actionTerms) this._actionTerms.delete(id);
+            });
             this._computeValue();
             return 0;
         }
@@ -2697,6 +2845,7 @@
                 }
             }
             this._includedTermIds.forEach(id => pool.add(id));
+            this._impliedTerms().forEach(id => pool.add(id));
             this._excludedTermIds.forEach(id => pool.delete(id));
             return pool;
         }
@@ -2786,6 +2935,9 @@
             this.minItemsMessage = $wrapper.data('min-items-message') || '';
             this.maxItemsMessage = $wrapper.data('max-items-message') || '';
             this.$validationMessage = $wrapper.find('.htax-validation-message');
+            if (!this.$validationMessage.length) {
+                this.$validationMessage = $('<div class="htax-validation-message" aria-live="polite">').hide().appendTo($wrapper);
+            }
 
             // Derive initial showWhen and enabled from PHP-rendered classes
             if ($wrapper.hasClass('htax-show-expanded')) {
@@ -3246,7 +3398,8 @@
                     
                 // Selection actions
                 case 'add_terms': {
-                    const skipped = field.addTerms(action.terms || []);
+                    // Undoing a remove_terms only restores a term that is still in the pool.
+                    const skipped = field.addTerms(action.terms || [], !action.isReverse);
                     this._handleNotFoundMessage(action, skipped);
                     break;
                 }

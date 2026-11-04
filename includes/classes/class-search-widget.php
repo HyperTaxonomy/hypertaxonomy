@@ -215,6 +215,8 @@ class HyperTaxonomy_Search_Widget {
      * @return array
      */
     private function fold_group_selection_atts( array $atts ): array {
+        // Terms named outright join the option pool; terms folded in from groups don't.
+        $atts['_explicit_add_terms'] = $atts['add_terms'] ?? '';
         $term_mode = 'term' === ( $atts['taxonomy_type'] ?? 'post' );
         foreach ( array( 'add', 'remove' ) as $op ) {
             if ( empty( $atts[ $op . '_groups' ] ) ) {
@@ -239,24 +241,38 @@ class HyperTaxonomy_Search_Widget {
      * a group's member terms in the field's taxonomy (descendant groups included); term
      * mode: the group itself. Pills also get names/icons for the members, since a pill may
      * be added for a term the field hasn't prefetched. Hidden fields resolve groups from
-     * their own pool map and are not included. Hidden terms are left out for viewers who
-     * can't see them.
+     * their own pool map.
+     *
+     * Also lists `implied`: terms named by the field's own add_terms. They belong to its
+     * initial option pool whatever else the pool declares, unless the field excludes them
+     * with exclude_term_options. Terms named by add_terms actions join the pool in the
+     * browser while added; `terms` carries their names. Hidden terms are left out for viewers
+     * who can't see them.
      *
      * @since 1.0.0
      * @param string $form_id Form ID.
      * @return string JSON script element, or '' when no field needs one.
      */
     private function render_group_members_map( string $form_id ): string {
-        $actions = self::$forms[ $form_id ]['group_actions'] ?? array();
-        $fields  = self::$forms[ $form_id ]['fields'] ?? array();
+        $actions      = self::$forms[ $form_id ]['group_actions'] ?? array();
+        $term_actions = self::$forms[ $form_id ]['term_actions'] ?? array();
+        $fields       = self::$forms[ $form_id ]['fields'] ?? array();
         $hidden  = htax_can_see_hidden_terms() ? array() : array_flip( htax_get_all_hidden_term_ids() );
         $map     = array();
 
-        foreach ( $actions as $target => $group_ids ) {
+        // Fields naming individual terms need those terms resolved up front too.
+        $named_fields = array_filter(
+            $fields,
+            static fn( $f ) => in_array( $f['type'] ?? '', array( 'pills', 'checklist', 'hidden' ), true )
+                && ( ! empty( $f['_explicit_add_terms'] ?? $f['add_terms'] ?? '' ) || ( 'pills' === $f['type'] && ! empty( $f['include_term_options'] ) ) )
+        );
+
+        foreach ( array_keys( $actions + $term_actions + $named_fields ) as $target ) {
             $field = $fields[ $target ] ?? null;
-            if ( ! $field || ! in_array( $field['type'] ?? '', array( 'pills', 'checklist' ), true ) ) {
+            if ( ! $field || ! in_array( $field['type'] ?? '', array( 'pills', 'checklist', 'hidden' ), true ) ) {
                 continue;
             }
+            $group_ids = 'hidden' === $field['type'] ? array() : ( $actions[ $target ] ?? array() );
             $term_mode = 'term' === ( $field['taxonomy_type'] ?? 'post' );
             $entry     = array( 'groups' => array(), 'terms' => array() );
             $all_ids   = array();
@@ -269,8 +285,33 @@ class HyperTaxonomy_Search_Widget {
                 $entry['groups'][ $gid ] = $ids;
                 $all_ids                 = array_merge( $all_ids, $ids );
             }
+            if ( 'checklist' === $field['type'] ) {
+                $all_ids = array(); // Rendered options already carry their own names.
+            }
 
-            if ( 'pills' === $field['type'] && $all_ids ) {
+            $excluded = ! empty( $field['exclude_term_options'] ) ? htax_parse_term_ids( $field['exclude_term_options'], $field['taxonomy'] ) : array();
+            // Fields register either before or after folding groups in; before, add_terms is still explicit.
+            $own_add  = $field['_explicit_add_terms'] ?? $field['add_terms'] ?? '';
+            $implied  = array_diff(
+                ! empty( $own_add ) ? array_map( 'intval', htax_parse_term_ids( $own_add, $field['taxonomy'] ) ) : array(),
+                array_map( 'intval', $excluded )
+            );
+            $named    = array_merge(
+                $implied,
+                $term_actions[ $target ] ?? array(),
+                ( 'pills' === $field['type'] && ! empty( $field['include_term_options'] ) ) ? htax_parse_term_ids( $field['include_term_options'], $field['taxonomy'] ) : array()
+            );
+            if ( 'checklist' === $field['type'] ) {
+                $named = array_diff( array_map( 'intval', $named ), array_map( 'intval', $excluded ) );
+            }
+            foreach ( array_map( 'intval', $named ) as $id ) {
+                if ( ! isset( $hidden[ $id ] ) ) {
+                    $all_ids[] = $id;
+                }
+            }
+            $entry['check_terms'] = ! empty( $term_actions[ $target ] );
+
+            if ( $all_ids ) {
                 $terms = get_terms( array(
                     'taxonomy'   => $field['taxonomy'],
                     'include'    => array_values( array_unique( $all_ids ) ),
@@ -279,6 +320,14 @@ class HyperTaxonomy_Search_Widget {
                 if ( ! is_wp_error( $terms ) && $terms ) {
                     $entry['terms'] = $this->build_terms_data( $terms, $field['taxonomy'], ! empty( $field['show_icons'] ) ? $field['show_icons'] : 'never' );
                 }
+            }
+
+            // Only terms that exist and this viewer may see.
+            $entry['implied'] = array_values( array_intersect( array_unique( $implied ), array_map( 'intval', array_keys( $entry['terms'] ) ) ) );
+            if ( 'checklist' === $field['type'] && $entry['implied'] ) {
+                // Options the checklist didn't render are added in the browser, checked if selected.
+                $field['_field_suffix'] = '_' . $form_id;
+                $entry['initial']       = array_values( array_intersect( $entry['implied'], array_map( 'intval', $this->get_default_terms_for_field( $field ) ) ) );
             }
             $map[ $target ] = $entry;
         }
@@ -766,6 +815,14 @@ class HyperTaxonomy_Search_Widget {
             if ( $form_id ) {
                 $known = self::$forms[ $form_id ]['group_actions'][ $atts['target'] ] ?? array();
                 self::$forms[ $form_id ]['group_actions'][ $atts['target'] ] = array_merge( $known, $action['groups'] );
+            }
+        }
+
+        if ( in_array( $atts['type'], array( 'add_terms', 'include_term_options' ), true ) && ! empty( $action['terms'] ) ) {
+            $form_id = $this->get_current_form_id();
+            if ( $form_id ) {
+                $known = self::$forms[ $form_id ]['term_actions'][ $atts['target'] ] ?? array();
+                self::$forms[ $form_id ]['term_actions'][ $atts['target'] ] = array_merge( $known, $action['terms'] );
             }
         }
 
@@ -3294,6 +3351,8 @@ class HyperTaxonomy_Search_Widget {
         $search     = isset( $_GET['search'] )     ? sanitize_text_field( wp_unslash( $_GET['search'] ) )       : '';
         $show_icons = isset( $_GET['show_icons'] ) ? sanitize_key( wp_unslash( $_GET['show_icons'] ) )          : 'never';
         $groups_raw = isset( $_GET['groups'] )     ? sanitize_text_field( wp_unslash( $_GET['groups'] ) )       : '';
+        $terms_in   = isset( $_GET['include_terms'] ) ? array_filter( array_map( 'intval', explode( ',', sanitize_text_field( wp_unslash( $_GET['include_terms'] ) ) ) ) ) : array();
+        $terms_out  = isset( $_GET['exclude_terms'] ) ? array_filter( array_map( 'intval', explode( ',', sanitize_text_field( wp_unslash( $_GET['exclude_terms'] ) ) ) ) ) : array();
 
         if ( ! taxonomy_exists( $taxonomy ) ) {
             wp_send_json_success( array() );
@@ -3308,7 +3367,11 @@ class HyperTaxonomy_Search_Widget {
                 $members     = htax_get_terms_in_groups( array( $gid ), $taxonomy );
                 $include_ids = array_merge( $include_ids, array_map( 'intval', array_keys( $members ) ) );
             }
-            $include_ids = array_unique( $include_ids );
+        }
+
+        // Groups and individually included terms form the pool together.
+        if ( $groups_raw !== '' || $terms_in ) {
+            $include_ids = array_diff( array_unique( array_merge( $include_ids, $terms_in ) ), $terms_out );
 
             // Filter out hidden terms.
             $include_ids = array_values( array_filter( $include_ids, function ( $id ) {
@@ -3338,6 +3401,12 @@ class HyperTaxonomy_Search_Widget {
 
         if ( ! empty( $include_ids ) ) {
             $args['include'] = $include_ids;
+        } else {
+            // Admin-ajax counts as admin, so the front-end hidden-term filter doesn't run here.
+            $hidden_ids = htax_can_see_hidden_terms( $taxonomy ) ? array() : htax_get_all_hidden_term_ids();
+            if ( $terms_out || $hidden_ids ) {
+                $args['exclude'] = array_values( array_unique( array_merge( $terms_out, array_map( 'intval', $hidden_ids ) ) ) );
+            }
         }
 
         $terms      = get_terms( $args );

@@ -91,7 +91,7 @@ Controllers share these same parameters — see the Controllers section below.
 | `exclude_term_options` | Term IDs to exclude from the option pool entirely | — |
 | `exclude_group_options` | **post:** member terms of these groups are excluded. **term:** these group IDs are excluded. | — |
 | `exclude_descendant_options` | **post:** member terms of descendant groups are excluded. **term:** keep these groups as options but prune their subtrees. Applied before `exclude_term_options`. | — |
-| `add_terms` | Term IDs to include in the field's initial selection | — |
+| `add_terms` | Term IDs to include in the field's initial selection. They join the option pool automatically (see below). | — |
 | `add_groups` | **post:** include member terms of these groups. **term:** include these group IDs directly. | — |
 | `add_descendants` | **post:** include member terms of all descendant groups (roots excluded). **term:** include all descendant group IDs (roots excluded). | — |
 | `remove_terms` | Term IDs to remove from the initial selection | — |
@@ -100,7 +100,9 @@ Controllers share these same parameters — see the Controllers section below.
 | `min_items` | Minimum selections required before the form can be submitted. When ≥ 1, the field label shows a `*` indicator (pills and checklist only — hidden fields have no label). | 0 |
 | `max_items` | Maximum selections allowed (0 = unlimited) | 0 |
 
-Controller `add_*` actions only add terms already in the declared option pool — terms outside the pool are silently skipped. See `not_found_message` on `[ht_option_action]` to surface this to users.
+**`add_terms` and the option pool.** A term named by a field's own `add_terms` is part of its initial option pool, even if the declared pool doesn't cover it, and stays there. A term named by an `add_terms` action joins the pool when the action adds it, and leaves when a `remove_terms` action removes it or the option is deselected, unless it was in the initial pool. On a checklist, a term outside the rendered options appears as an extra option at the end of the list while it's in the pool. The exceptions: a term in `exclude_term_options`, a deleted term, and a hidden term the visitor can't see are never added.
+
+Terms from `add_groups` and `add_descendants` don't get this: they're added only if already in the declared pool, and otherwise skipped silently. See `not_found_message` on `[ht_option_action]` to surface skipped terms to users. A field with no declared pool accepts any existing term in its taxonomy.
 
 All three field types follow the same `taxonomy_type` rules.
 
@@ -318,7 +320,7 @@ Controllers let users change what appears in other fields by making a selection.
 **Selection actions** — add or remove items from the target field's selection:
 `add_terms`, `add_groups`, `add_descendants`, `remove_terms`, `remove_groups`, `remove_descendants`
 
-`add_groups` / `remove_groups` act on the groups' member terms in the field's taxonomy (for `taxonomy_type="term"` fields, on the groups themselves); membership is resolved when the page renders. `add_*` actions only accept terms that are already in the target field's declared option pool; terms outside the pool are silently skipped (configure `not_found_message` to surface this). `remove_*` actions always succeed. `add_descendants` / `remove_descendants` expand each group ID to its descendant terms (checklist: traverses `data-parent-id` hierarchy; pills: uses the prefetched group map). Each action type is the automatic reversal of the other.
+`add_groups` / `remove_groups` act on the groups' member terms in the field's taxonomy (for `taxonomy_type="term"` fields, on the groups themselves); membership is resolved when the page renders. `add_groups` and `add_descendants` only accept terms that are already in the target field's declared option pool; terms outside the pool are silently skipped (configure `not_found_message` to surface this). `add_terms` terms join the pool automatically. `remove_*` actions always succeed. `add_descendants` / `remove_descendants` expand each group ID to its descendant terms (checklist: traverses `data-parent-id` hierarchy; pills: uses the prefetched group map). Each action type is the automatic reversal of the other.
 
 **Constraint actions:** `set_min_items`, `set_max_items`
 
@@ -335,7 +337,7 @@ Controllers let users change what appears in other fields by making a selection.
 | `terms` | Comma-separated term IDs (for term-based actions) | — |
 | `groups` | Comma-separated group IDs (for group-based actions) | — |
 | `value` | Value to set (for `set_min_items`, `set_max_items`, `set_show_when`) | — |
-| `not_found_message` | Message shown on this controller when an `add_terms` / `add_groups` / `add_descendants` action skips one or more terms not in the target field's option pool. Cleared automatically when the action reverses. | — |
+| `not_found_message` | Message shown on this controller when an action adds nothing for some of its terms: `add_groups` / `add_descendants` terms outside the target field's option pool, or `add_terms` terms that were deleted, excluded by the field, or are hidden from this visitor. Cleared automatically when the action reverses. | — |
 
 #### Complete Example
 

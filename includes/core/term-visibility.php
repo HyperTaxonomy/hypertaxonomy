@@ -65,8 +65,10 @@ function htax_can_see_hidden_terms( $taxonomy = '' ) {
  * - HyperTaxonomy itself, which applies visibility on its own and builds caches shared
  *   between viewers.
  * - WordPress's term queries and object term cache, which write to what get_term() returns
- *   (a null there is a fatal error) and store full term lists shared between viewers.
- *   get_the_terms() results are filtered afterward by htax_filter_get_the_terms().
+ *   (a null there is a fatal error) and store full term lists shared between viewers:
+ *   the per-post term cache, and the {taxonomy}_children option that holds each taxonomy's
+ *   hierarchy. get_the_terms() results are filtered afterward by htax_filter_get_the_terms().
+ * - Core functions that change data, which can run during a read request.
  * - The queried object, tax queries and term links, so that hidden archives still 404, posts
  *   carrying hidden terms are never excluded, and a visible child of a hidden parent keeps
  *   a working URL.
@@ -89,7 +91,24 @@ function htax_get_term_ids_hidden_from_caller(): array {
         return array();
     }
 
-    $real_term_callers = array( 'populate_terms', 'get_object_term_cache', 'update_object_term_cache', 'get_the_terms', 'get_queried_object', 'get_term_link', 'transform_query', 'term_exists' );
+    $real_term_callers = array(
+        'populate_terms',
+        'get_object_term_cache',
+        'update_object_term_cache',
+        'get_the_terms',
+        'is_object_in_term',
+        '_get_term_hierarchy',
+        'get_queried_object',
+        'get_term_link',
+        'transform_query',
+        'term_exists',
+        'wp_insert_term',
+        'wp_update_term',
+        'wp_delete_term',
+        'wp_insert_post',
+        'wp_delete_object_term_relationships',
+        '_update_term_count_on_transition_post_status',
+    );
     $core_dir          = wp_normalize_path( ABSPATH . WPINC );
     $plugin_dir        = wp_normalize_path( HTAX_PLUGIN_DIR );
 
@@ -114,7 +133,16 @@ function htax_get_term_ids_hidden_from_caller(): array {
  * @return WP_Term|mixed|null The term, or null when hidden from this caller.
  */
 function htax_hide_term_on_read( $term ) {
-    if ( $term instanceof WP_Term && in_array( (int) $term->term_id, htax_get_term_ids_hidden_from_caller(), true ) ) {
+    static $hidden = null;
+
+    if ( ! ( $term instanceof WP_Term ) || ! did_action( 'init' ) ) {
+        return $term;
+    }
+    // A page makes thousands of lookups: rule out visible terms before anything costlier.
+    if ( null === $hidden ) {
+        $hidden = array_flip( array_map( 'intval', htax_get_all_hidden_term_ids() ) );
+    }
+    if ( isset( $hidden[ (int) $term->term_id ] ) && htax_get_term_ids_hidden_from_caller() ) {
         return null;
     }
     return $term;

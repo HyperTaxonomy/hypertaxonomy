@@ -10,15 +10,7 @@ nav_order: 1
 
 Semantic term relationships for WordPress: inclusions, synonyms, redirects, term groups, rich archives, and faceted search — define a relationship once, and it propagates everywhere. Term inclusions and synonyms mean a post tagged "React" automatically surfaces in archives for "JSX", "hooks", and any other included term, without re-tagging. A denormalized search index keeps archives and search fast regardless of relationship depth, and the same relationships govern archive queries, the related-posts shortcode, the search widget, and the REST API.
 
-## Part of the HyperTaxonomy suite
-
-One of five interoperable WordPress plugins for richer, connected taxonomies. Each works on its own; together they share a common term model. Learn more at [hypertaxonomy.org](https://hypertaxonomy.org).
-
-- **HyperTaxonomy** (this plugin) — the core: term groups, inclusions, synonyms, redirects, icons, relevance-scored search, and enhanced archives.
-- **[TermConnect](https://hypertaxonomy.org/termconnect/)** — link terms to knowledge-base identifiers (Wikidata, GeoNames, LCSH…) and peer sites; delegated identity, shared vocabularies, and cross-site related content.
-- **[Social Hashtags & Mentions](https://hypertaxonomy.org/social-hashtags-mentions/)** — inline #hashtags and @mentions as taxonomy terms, linked to the social networks you enable (built on TermConnect).
-- **[As the Crow Flies](https://hypertaxonomy.org/as-the-crow-flies/)** — attach physical locations to terms and filter content by distance/proximity.
-- **[WP-SKOS](https://hypertaxonomy.org/wp-skos/)** — expose your taxonomies as SKOS linked data via a Skosmos-compatible REST API.
+Part of the [HyperTaxonomy suite](https://hypertaxonomy.org) of interoperable WordPress taxonomy plugins, and its core.
 
 ## Documentation map
 

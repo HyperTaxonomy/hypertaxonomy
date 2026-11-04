@@ -897,7 +897,7 @@ class HyperTaxonomy_Settings {
                             <p class="description" style="margin-left: 24px; margin-top: 4px;">
                                 <?php
                                     $plural = isset( $tax_obj->labels->name ) ? mb_strtolower( $tax_obj->labels->name, 'UTF-8' ) : $tax_slug;
-                                    printf( esc_html__( 'Allow hiding specific %s from post meta or show them to editors only.', 'hypertaxonomy' ), esc_html( $plural ) );
+                                    printf( esc_html__( 'Allow hiding specific %s from post meta or show them only to users who can edit posts.', 'hypertaxonomy' ), esc_html( $plural ) );
                                 ?>
                             </p>
                         </label>
@@ -1078,7 +1078,7 @@ class HyperTaxonomy_Settings {
                                    name="htax_settings[hidden_terms_visibility]"
                                    value="editors"
                                    <?php checked( $options['hidden_terms_visibility'], 'editors' ); ?> />
-                            <?php esc_html_e( 'Visible to editors and above only', 'hypertaxonomy' ); ?>
+                            <?php esc_html_e( 'Visible only to users who can edit posts', 'hypertaxonomy' ); ?>
                         </label><br>
 
                         <label>

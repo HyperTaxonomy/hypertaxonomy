@@ -305,6 +305,12 @@ Pills inherit border-radius from **Settings > HyperTaxonomy > Icons** per-taxono
 
 ## Hidden Terms
 
+For viewers who can't see them, hidden terms don't exist as far as your plugin or theme is concerned. On read requests outside wp-admin, `get_term()` and `get_term_by()` find nothing for them, and `get_terms()`, `get_tags()`, `get_categories()`, `wp_get_object_terms()`, `get_the_terms()` and `wp_count_terms()` leave them out, so you need no special handling. On writes, in wp-admin, and in cron and CLI you get the real terms.
+
+Posts are different: a post carrying a hidden term is never excluded, though `WP_Query` won't find posts *by* a hidden term for these viewers. `get_term_link()` and `term_exists()` still answer for a hidden term.
+
+If a user who can't see a hidden term saves a post carrying it, the term stays on the post.
+
 ### Automatic Filtering in Native Blocks
 
 For users who cannot see hidden terms, every frontend post query — the Query Loop block, the Latest Posts block, REST `/wp/v2/posts`, and any custom `WP_Query` — treats hidden terms as if they did not exist. The `htax_hide_terms_in_tax_query` hook (`parse_tax_query`) removes hidden terms from the query's taxonomy criteria: a query for a hidden term matches nothing, `include_children` skips hidden descendants, and `NOT IN` clauses are left as written. Posts that carry a hidden term are **not** removed — they are still found through their other terms and in unfiltered lists. No extra code is needed for standard block and shortcode usage.

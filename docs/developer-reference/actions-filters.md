@@ -224,7 +224,7 @@ add_action( 'htax_term_strengths_updated', function( $post_id, $model, $term_ids
 
 #### `htax_show_hidden_terms`
 
-Override the hidden terms visibility check. Return true to force visibility, false to force hidden, or the passed `$can_see` value to defer to the default logic.
+Override whether hidden terms appear in a post's displayed terms and term links (`get_the_terms` and the term link filters). Return true to show them, false to hide them, or the passed `$can_see` value to defer to the default logic. It doesn't change search, archives, or the REST API, which use `htax_can_see_hidden_terms()` directly.
 
 ```php
 add_filter( 'htax_show_hidden_terms', function( $can_see, $taxonomy ) {

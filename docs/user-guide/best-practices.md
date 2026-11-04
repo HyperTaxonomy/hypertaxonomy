@@ -226,7 +226,7 @@ A hidden term is invisible on all frontend output (archives, shortcodes, search 
 
 ```
 Editorial taxonomy: editorial_status
-Terms: Needs Update (hidden — visible to editors and admins only)
+Terms: Needs Update (hidden — visible to users who can edit posts)
        Awaiting Fact-Check (hidden)
        Tied to Annual Event (hidden)
 ```

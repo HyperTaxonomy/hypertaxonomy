@@ -47,10 +47,133 @@ function htax_can_see_hidden_terms( $taxonomy = '' ) {
         case 'all':
             return true;
         case 'editors':
-            return current_user_can( 'edit_others_posts' );
+            return current_user_can( 'edit_posts' );
         case 'none':
         default:
             return false;
+    }
+}
+
+/**
+ * Get the term IDs to hide from the code currently asking for terms.
+ *
+ * Hidden terms don't exist for a viewer who can't see them, including for plugins that know
+ * nothing about hidden terms. Applies only to front-end, REST and AJAX read requests: writes
+ * need the real terms, as do wp-admin, cron and CLI.
+ *
+ * Some callers keep the real terms:
+ * - HyperTaxonomy itself, which applies visibility on its own and builds caches shared
+ *   between viewers.
+ * - WordPress's term queries and object term cache, which write to what get_term() returns
+ *   (a null there is a fatal error) and store full term lists shared between viewers.
+ *   get_the_terms() results are filtered afterward by htax_filter_get_the_terms().
+ * - The queried object, tax queries and term links, so that hidden archives still 404, posts
+ *   carrying hidden terms are never excluded, and a visible child of a hidden parent keeps
+ *   a working URL.
+ *
+ * @since 1.0.0
+ * @return int[] Term IDs to hide; empty when nothing should be hidden.
+ */
+function htax_get_term_ids_hidden_from_caller(): array {
+    if ( ! did_action( 'init' ) || wp_doing_cron() || ( is_admin() && ! wp_doing_ajax() ) ) {
+        return array();
+    }
+    $method = isset( $_SERVER['REQUEST_METHOD'] ) ? strtoupper( sanitize_key( wp_unslash( $_SERVER['REQUEST_METHOD'] ) ) ) : '';
+    if ( 'GET' !== $method && 'HEAD' !== $method ) {
+        return array();
+    }
+
+    // Reads its list directly from the database, so this can't recurse into a term query.
+    $hidden = htax_get_all_hidden_term_ids();
+    if ( empty( $hidden ) || htax_can_see_hidden_terms() ) {
+        return array();
+    }
+
+    $real_term_callers = array( 'populate_terms', 'get_object_term_cache', 'update_object_term_cache', 'get_the_terms', 'get_queried_object', 'get_term_link', 'transform_query', 'term_exists' );
+    $core_dir          = wp_normalize_path( ABSPATH . WPINC );
+    $plugin_dir        = wp_normalize_path( HTAX_PLUGIN_DIR );
+
+    foreach ( array_slice( debug_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS, 16 ), 1 ) as $frame ) {
+        if ( in_array( $frame['function'], $real_term_callers, true ) ) {
+            return array();
+        }
+        // The first file outside WordPress core is the code asking.
+        $file = isset( $frame['file'] ) ? wp_normalize_path( $frame['file'] ) : $core_dir;
+        if ( 0 !== strpos( $file, $core_dir ) ) {
+            return 0 === strpos( $file, $plugin_dir ) ? array() : $hidden;
+        }
+    }
+    return $hidden;
+}
+
+/**
+ * Make a hidden term not found when looked up by someone who can't see it.
+ *
+ * @since 1.0.0
+ * @param WP_Term|mixed $term Term.
+ * @return WP_Term|mixed|null The term, or null when hidden from this caller.
+ */
+function htax_hide_term_on_read( $term ) {
+    if ( $term instanceof WP_Term && in_array( (int) $term->term_id, htax_get_term_ids_hidden_from_caller(), true ) ) {
+        return null;
+    }
+    return $term;
+}
+
+/**
+ * Leave hidden terms out of term queries for someone who can't see them.
+ *
+ * Covers everything built on WP_Term_Query: get_terms(), get_tags(), get_categories(),
+ * wp_get_object_terms(), wp_count_terms(), get_term_by(), tag clouds and term list blocks.
+ * Done in SQL because the term query cache is keyed on the SQL, so viewers don't share results.
+ *
+ * @since 1.0.0
+ * @param array $clauses Term query clauses.
+ * @return array Clauses.
+ */
+function htax_hide_terms_in_term_queries( $clauses ) {
+    $hidden = htax_get_term_ids_hidden_from_caller();
+    if ( $hidden ) {
+        $clauses['where'] .= ' AND t.term_id NOT IN (' . implode( ',', array_map( 'intval', $hidden ) ) . ')';
+    }
+    return $clauses;
+}
+
+/**
+ * Keep hidden terms on a post when someone who can't see them saves it.
+ *
+ * Their editor never showed those terms, so a save that replaces the post's terms would
+ * drop them without anyone having chosen to. Only applies to logged-in users: cron, CLI and
+ * imports remove terms deliberately. Removing a hidden term takes a user who can see it.
+ *
+ * @since 1.0.0
+ * @param int    $object_id  Object ID.
+ * @param array  $terms      Terms passed to wp_set_object_terms().
+ * @param array  $tt_ids     New term taxonomy IDs.
+ * @param string $taxonomy   Taxonomy.
+ * @param bool   $append     Whether terms were appended.
+ * @param array  $old_tt_ids Previous term taxonomy IDs.
+ * @return void
+ */
+function htax_keep_hidden_terms_on_save( $object_id, $terms, $tt_ids, $taxonomy, $append, $old_tt_ids ): void {
+    global $wpdb;
+
+    if ( $append || wp_doing_cron() || ! is_user_logged_in() || htax_can_see_hidden_terms( $taxonomy ) ) {
+        return;
+    }
+    $removed = array_values( array_diff( array_map( 'intval', (array) $old_tt_ids ), array_map( 'intval', (array) $tt_ids ) ) );
+    if ( empty( $removed ) ) {
+        return;
+    }
+
+    $placeholders = implode( ',', array_fill( 0, count( $removed ), '%d' ) );
+    $term_ids     = array_map( 'intval', $wpdb->get_col( $wpdb->prepare(
+        "SELECT term_id FROM {$wpdb->term_taxonomy} WHERE term_taxonomy_id IN ($placeholders)",
+        $removed
+    ) ) );
+    $keep = array_values( array_intersect( $term_ids, array_map( 'intval', htax_get_all_hidden_term_ids() ) ) );
+    if ( $keep ) {
+        wp_add_object_terms( $object_id, $keep, $taxonomy );
     }
 }
 

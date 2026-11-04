@@ -2559,17 +2559,59 @@
             (this._groupMap().implied || []).map(Number).forEach(id => this._addOption(id, initial.has(id)));
         }
 
+        /**
+         * Add an option in its place in the list: among its siblings by name, under its
+         * parent when the parent is listed.
+         */
         _addOption(id, checked) {
             const terms = this._groupMap().terms;
             const data = terms && terms[id];
             if (this._allOptionTermIds.has(id) || !data) return;
-            const inputName = this.$container.find('.htax-checklist-item input').first().attr('name')
+
+            const $items = this.$container.find('.htax-checklist-item');
+            const inputName = $items.find('input').first().attr('name')
                 || `${this.name}_${this.form.$form.attr('id')}[]`;
+            const parentId = parseInt(data.parent, 10) || 0;
+            const $parent = parentId ? $items.filter(`[data-term-id="${parentId}"]`) : $();
+            const indentOf = el => parseInt(el.style.paddingLeft, 10) || 0;
+
             const $input = $('<input type="checkbox">')
                 .attr({ name: inputName, value: id, 'data-term-name': data.name })
                 .prop('checked', checked);
-            const $label = $('<label>').append($input, document.createTextNode(' ' + data.name));
-            this.$container.append($('<div class="htax-checklist-item">').attr('data-term-id', id).append($label));
+            const $item = $('<div class="htax-checklist-item">')
+                .attr('data-term-id', id)
+                .append($('<label>').append($input, document.createTextNode(' ' + data.name)));
+            if ($items.filter('[data-parent-id]').length) {
+                $item.attr('data-parent-id', parentId).css('padding-left', ($parent.length ? indentOf($parent[0]) + 20 : 0) + 'px');
+            }
+
+            // Siblings: same parent, or at the top level when the parent isn't listed.
+            const $siblings = $parent.length
+                ? $items.filter(`[data-parent-id="${parentId}"]`)
+                : $items.filter((_, el) => {
+                    const p = parseInt($(el).data('parent-id'), 10) || 0;
+                    return !p || !$items.filter(`[data-term-id="${p}"]`).length;
+                });
+            const $next = $siblings.filter((_, el) =>
+                String($(el).find('input').first().data('term-name')).localeCompare(data.name, undefined, { sensitivity: 'base' }) > 0
+            ).first();
+
+            if ($next.length) {
+                $next.before($item);
+            } else if ($siblings.length) {
+                // After the last sibling and everything nested under it.
+                const last = $siblings.last()[0];
+                let $end = $(last);
+                $end.nextAll('.htax-checklist-item').each((_, el) => {
+                    if (indentOf(el) <= indentOf(last)) return false;
+                    $end = $(el);
+                });
+                $end.after($item);
+            } else if ($parent.length) {
+                $parent.after($item);
+            } else {
+                this.$container.append($item);
+            }
             this._allOptionTermIds.add(id);
         }
 

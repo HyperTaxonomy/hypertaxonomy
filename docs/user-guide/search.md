@@ -44,7 +44,7 @@ Container for all search widget shortcodes.
 - **1–2 characters** — prefix match, sorted by post count.
 - **3+ characters** — substring match, natural order.
 
-All states cap at 10 suggestions and exclude already-selected terms. The option pool must cover every term that could ever be selected, including those that only become visible under a specific controller state — `include_group_options` controller actions narrow the visible subset but never add terms outside the original pool.
+All states cap at 10 suggestions and exclude already-selected terms. The option pool must cover every term a visitor could pick from these suggestions, including those that only become visible under a specific controller state — `include_group_options` controller actions narrow the visible subset but never add terms outside the original pool. Only an `add_terms` action brings a term in from outside.
 
 **`[ht_checklist_field]`** — Checkbox list rendered as a tree or flat alphabetical list. Can show individual taxonomy terms (the default) or subgroups as the selectable options — the latter is useful when you want users to filter by a category of terms without exposing every individual term.
 
@@ -100,7 +100,7 @@ Controllers share these same parameters — see the Controllers section below.
 | `min_items` | Minimum selections required before the form can be submitted. When ≥ 1, the field label shows a `*` indicator (pills and checklist only — hidden fields have no label). | 0 |
 | `max_items` | Maximum selections allowed (0 = unlimited) | 0 |
 
-**`add_terms` and the option pool.** A term named by a field's own `add_terms` is part of its initial option pool, even if the declared pool doesn't cover it, and stays there. A term named by an `add_terms` action joins the pool when the action adds it, and leaves when a `remove_terms` action removes it or the option is deselected, unless it was in the initial pool. On a checklist, a term outside the rendered options appears as an extra option at the end of the list while it's in the pool. The exceptions: a term in `exclude_term_options`, a deleted term, and a hidden term the visitor can't see are never added.
+**`add_terms` and the option pool.** A term named by a field's own `add_terms` is part of its initial option pool, even if the declared pool doesn't cover it, and stays there. A term named by an `add_terms` action joins the pool when the action adds it, and leaves when a `remove_terms` action removes it or the option is deselected, unless it was in the initial pool. On a checklist, a term outside the rendered options appears as an extra option while it's in the pool: in name order among its siblings, under its parent if the parent is listed. The exceptions: a term in `exclude_term_options`, a deleted term, and a hidden term the visitor can't see are never added.
 
 Terms from `add_groups` and `add_descendants` don't get this: they're added only if already in the declared pool, and otherwise skipped silently. See `not_found_message` on `[ht_option_action]` to surface skipped terms to users. A field with no declared pool accepts any existing term in its taxonomy.
 
@@ -314,7 +314,7 @@ Controllers let users change what appears in other fields by making a selection.
 
 **`[ht_option_action]`** places an action inside an `[ht_search_option]`. When the option is selected the action fires; when it is deselected the action automatically reverses. Multiple actions per option are allowed and executed in a fixed priority order.
 
-**Option pool actions** — restrict which terms appear as options in the target field (pills and hidden fields; a checklist's options are fixed when the page renders):
+**Option pool actions** — restrict which terms appear as options in the target field (pills and hidden fields; a checklist's options are fixed when the page renders, apart from terms `add_terms` brings in):
 `include_term_options`, `include_group_options`, `exclude_term_options`, `exclude_group_options`
 
 **Selection actions** — add or remove items from the target field's selection:

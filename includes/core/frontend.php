@@ -20,17 +20,8 @@ function htax_filter_term_links( $term_links, $taxonomy = '' ) {
         return $term_links;
     }
 
-    // Check visibility setting
-    $options = get_option( 'htax_settings', array() );
-    $visibility = isset( $options['hidden_terms_visibility'] ) ? $options['hidden_terms_visibility'] : 'editors';
-
     // Determine if user can see hidden terms
-    $can_see_hidden = false;
-    if ( 'all' === $visibility ) {
-        $can_see_hidden = true;
-    } elseif ( 'editors' === $visibility ) {
-        $can_see_hidden = current_user_can( 'edit_others_posts' );
-    }
+    $can_see_hidden = htax_can_see_hidden_terms( $taxonomy );
 
     // Allow themes to override (taxonomy may be empty if not passed by filter)
     if ( apply_filters( 'htax_show_hidden_terms', $can_see_hidden, $taxonomy ) ) {

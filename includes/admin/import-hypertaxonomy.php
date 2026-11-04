@@ -387,7 +387,8 @@ function htax_process_import( $data, $options = array() ) {
     }
 
     // Import relationships
-    $table_name = $wpdb->prefix . 'htax_term_relationships';
+    $table_name  = $wpdb->prefix . 'htax_term_relationships';
+    $memberships = array();
 
     foreach ( $data['relationships'] as $rel_data ) {
         if ( ! isset( $rel_data['type'], $rel_data['source_taxonomy'], $rel_data['source_slug'], $rel_data['target_taxonomy'], $rel_data['target_slug'] ) ) {
@@ -464,6 +465,30 @@ function htax_process_import( $data, $options = array() ) {
         $source_id = $term_map[ $source_key ];
         $target_id = $term_map[ $target_key ];
 
+        // Redirects and group memberships have their own validation and caches, so they
+        // go through their dedicated APIs rather than a direct insert.
+        if ( 'redirect' === $rel_data['type'] ) {
+            $current = htax_get_redirect_target( $source_id );
+            if ( $current && (int) $current->term_id === (int) $target_id ) {
+                $stats['relationships_skipped']++;
+            } elseif ( htax_set_redirect( $source_id, $target_id ) ) {
+                $stats['relationships_created']++;
+            } else {
+                $stats['errors'][] = sprintf(
+                    /* translators: 1: source term slug, 2: target term slug */
+                    __( 'Could not create redirect: %1$s → %2$s', 'hypertaxonomy' ),
+                    $rel_data['source_slug'],
+                    $rel_data['target_slug']
+                );
+                $stats['relationships_skipped']++;
+            }
+            continue;
+        }
+        if ( 'member_of' === $rel_data['type'] ) {
+            $memberships[ $source_id ][] = (int) $target_id;
+            continue;
+        }
+
         // Check if relationship already exists
         $exists = $wpdb->get_var( $wpdb->prepare(
             "SELECT COUNT(*) FROM {$table_name}
@@ -508,6 +533,29 @@ function htax_process_import( $data, $options = array() ) {
         } else {
             $stats['relationships_created']++;
         }
+    }
+
+    // Apply group memberships per term, added to whatever the term already has.
+    foreach ( $memberships as $term_id => $group_ids ) {
+        $current = array_map( 'intval', htax_get_term_group_ids( $term_id ) );
+        $new     = array_values( array_diff( array_unique( $group_ids ), $current ) );
+        if ( empty( $new ) ) {
+            $stats['relationships_skipped'] += count( $group_ids );
+            continue;
+        }
+        $result = htax_set_term_groups( $term_id, array_merge( $current, $new ) );
+        if ( is_wp_error( $result ) ) {
+            $term              = get_term( $term_id );
+            $stats['errors'][] = sprintf(
+                /* translators: 1: term slug, 2: error message */
+                __( 'Could not set groups for %1$s: %2$s', 'hypertaxonomy' ),
+                $term ? $term->slug : $term_id,
+                $result->get_error_message()
+            );
+            $stats['relationships_skipped'] += count( $new );
+            continue;
+        }
+        $stats['relationships_created'] += count( $new );
     }
 
     // Import term-post assignments (if requested)

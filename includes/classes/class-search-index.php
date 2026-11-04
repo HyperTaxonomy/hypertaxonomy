@@ -2414,16 +2414,11 @@ function htax_build_post_search_index( $post_id, array $post_text = [] ) {
             continue;
         }
 
-        // get_the_tags() primes the term object cache; use it for post_tag to avoid
-        // a redundant DB lookup on warm-cache rebuilds.
-        if ( 'post_tag' === $taxonomy ) {
-            $objects         = get_the_tags( $post_id );
-            $direct_term_ids = $objects ? wp_list_pluck( $objects, 'term_id' ) : array();
-        } else {
-            $direct_term_ids = wp_get_object_terms( $post_id, $taxonomy, array( 'fields' => 'ids' ) );
-            if ( is_wp_error( $direct_term_ids ) || empty( $direct_term_ids ) ) {
-                continue;
-            }
+        // Not get_the_terms(): that hides terms from the current user, and the index must
+        // hold every term whoever triggers the rebuild.
+        $direct_term_ids = wp_get_object_terms( $post_id, $taxonomy, array( 'fields' => 'ids' ) );
+        if ( is_wp_error( $direct_term_ids ) || empty( $direct_term_ids ) ) {
+            continue;
         }
 
         htax_index_post_taxonomy_terms( $taxonomy, $direct_term_ids, $term_relationships, $indexed_pairs, $add_term_rel );

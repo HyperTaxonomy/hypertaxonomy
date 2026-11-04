@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-04 03:32-0500\n"
+"POT-Creation-Date: 2026-11-04 10:16-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -42,7 +42,7 @@ msgstr ""
 #: includes/admin/ajax.php:949 includes/admin/bulk-actions.php:240
 #: includes/admin/settings.php:3565 includes/admin/settings.php:3583
 #: includes/admin/term-icons.php:1062
-#: includes/classes/class-search-index.php:1211
+#: includes/classes/class-search-index.php:1213
 #: includes/integrations/class-taxopress-integration.php:126
 msgid "Security check failed."
 msgstr ""
@@ -623,7 +623,7 @@ msgstr ""
 
 #: includes/admin/import-hypertaxonomy.php:133
 #: includes/admin/import-hypertaxonomy.php:134
-#: includes/admin/import-hypertaxonomy.php:609
+#: includes/admin/import-hypertaxonomy.php:657
 msgid "Unknown"
 msgstr ""
 
@@ -657,81 +657,91 @@ msgstr ""
 msgid "Could not recreate relationship type \"%s\": %s"
 msgstr ""
 
-#: includes/admin/import-hypertaxonomy.php:407
+#: includes/admin/import-hypertaxonomy.php:408
 #, php-format
 msgid "Source taxonomy \"%s\" does not exist, skipping relationship: %s → %s"
 msgstr ""
 
-#: includes/admin/import-hypertaxonomy.php:418
+#: includes/admin/import-hypertaxonomy.php:419
 #, php-format
 msgid "Target taxonomy \"%s\" does not exist, skipping relationship: %s → %s"
 msgstr ""
 
-#: includes/admin/import-hypertaxonomy.php:438
+#: includes/admin/import-hypertaxonomy.php:439
 #, php-format
 msgid "Source term not found, skipping relationship: %s → %s"
 msgstr ""
 
-#: includes/admin/import-hypertaxonomy.php:455
+#: includes/admin/import-hypertaxonomy.php:456
 #, php-format
 msgid "Target term not found, skipping relationship: %s → %s"
 msgstr ""
 
-#: includes/admin/import-hypertaxonomy.php:502
+#: includes/admin/import-hypertaxonomy.php:479
+#, php-format
+msgid "Could not create redirect: %1$s → %2$s"
+msgstr ""
+
+#: includes/admin/import-hypertaxonomy.php:527
 #, php-format
 msgid "Error creating relationship from %s to %s: %s"
 msgstr ""
 
-#: includes/admin/import-hypertaxonomy.php:596
+#: includes/admin/import-hypertaxonomy.php:551
+#, php-format
+msgid "Could not set groups for %1$s: %2$s"
+msgstr ""
+
+#: includes/admin/import-hypertaxonomy.php:644
 msgid "Import Progress"
 msgstr ""
 
-#: includes/admin/import-hypertaxonomy.php:602
-#: includes/admin/import-hypertaxonomy.php:623
+#: includes/admin/import-hypertaxonomy.php:650
+#: includes/admin/import-hypertaxonomy.php:671
 #: includes/admin/tag-groups-migrate-ui.php:181
 msgid "Error:"
 msgstr ""
 
-#: includes/admin/import-hypertaxonomy.php:608
+#: includes/admin/import-hypertaxonomy.php:656
 #, php-format
 msgid "Importing from: %s"
 msgstr ""
 
-#: includes/admin/import-hypertaxonomy.php:613
+#: includes/admin/import-hypertaxonomy.php:661
 #, php-format
 msgid "Found %d terms and %d relationships to process..."
 msgstr ""
 
-#: includes/admin/import-hypertaxonomy.php:633
-#: includes/admin/import-hypertaxonomy.php:657
+#: includes/admin/import-hypertaxonomy.php:681
+#: includes/admin/import-hypertaxonomy.php:705
 msgid "Warnings:"
 msgstr ""
 
-#: includes/admin/import-hypertaxonomy.php:643
+#: includes/admin/import-hypertaxonomy.php:691
 msgid "Import Complete!"
 msgstr ""
 
-#: includes/admin/import-hypertaxonomy.php:646
+#: includes/admin/import-hypertaxonomy.php:694
 msgid "Terms Created:"
 msgstr ""
 
-#: includes/admin/import-hypertaxonomy.php:647
+#: includes/admin/import-hypertaxonomy.php:695
 msgid "Terms Updated:"
 msgstr ""
 
-#: includes/admin/import-hypertaxonomy.php:648
+#: includes/admin/import-hypertaxonomy.php:696
 msgid "Terms Skipped:"
 msgstr ""
 
-#: includes/admin/import-hypertaxonomy.php:649
+#: includes/admin/import-hypertaxonomy.php:697
 msgid "Relationships Created:"
 msgstr ""
 
-#: includes/admin/import-hypertaxonomy.php:650
+#: includes/admin/import-hypertaxonomy.php:698
 msgid "Relationships Skipped:"
 msgstr ""
 
-#: includes/admin/import-hypertaxonomy.php:653
+#: includes/admin/import-hypertaxonomy.php:701
 msgid "Posts Assigned:"
 msgstr ""
 
@@ -778,8 +788,8 @@ msgid "Please select a file to import"
 msgstr ""
 
 #: includes/admin/import-ui.php:79
-#: includes/classes/class-search-widget.php:2211
-#: includes/classes/class-search-widget.php:3666
+#: includes/classes/class-search-widget.php:2295
+#: includes/classes/class-search-widget.php:3766
 msgid "Loading..."
 msgstr ""
 
@@ -1258,7 +1268,7 @@ msgid "Delete failed."
 msgstr ""
 
 #: includes/admin/settings.php:78 includes/admin/settings.php:3164
-#: includes/core/frontend.php:956
+#: includes/core/frontend.php:947
 #, php-format
 msgid " (including: %s)"
 msgstr ""
@@ -1294,7 +1304,7 @@ msgid "Icons"
 msgstr ""
 
 #: includes/admin/settings.php:370
-#: includes/classes/class-search-widget.php:2108
+#: includes/classes/class-search-widget.php:2192
 msgid "Search"
 msgstr ""
 
@@ -1504,7 +1514,7 @@ msgstr ""
 
 #: includes/admin/settings.php:900
 #, php-format
-msgid "Allow hiding specific %s from post meta or show them to editors only."
+msgid "Allow hiding specific %s from post meta or show them only to users who can edit posts."
 msgstr ""
 
 #: includes/admin/settings.php:912
@@ -1621,7 +1631,7 @@ msgid "Hidden from all users"
 msgstr ""
 
 #: includes/admin/settings.php:1081
-msgid "Visible to editors and above only"
+msgid "Visible only to users who can edit posts"
 msgstr ""
 
 #: includes/admin/settings.php:1089
@@ -3600,8 +3610,8 @@ msgid "Could not determine the file format of the cropped image."
 msgstr ""
 
 #: includes/admin/term-icons.php:1068
-#: includes/classes/class-search-index.php:1216
-#: includes/classes/class-search-index.php:1284
+#: includes/classes/class-search-index.php:1218
+#: includes/classes/class-search-index.php:1286
 msgid "Unauthorized access."
 msgstr ""
 
@@ -3710,76 +3720,76 @@ msgid "Please enter at least %d characters."
 msgstr ""
 
 #: includes/classes/class-power-search.php:100
-#: includes/classes/class-search-widget.php:3673
+#: includes/classes/class-search-widget.php:3773
 msgid "Previous"
 msgstr ""
 
 #: includes/classes/class-power-search.php:101
-#: includes/classes/class-search-widget.php:3675
+#: includes/classes/class-search-widget.php:3775
 msgid "Next"
 msgstr ""
 
 #: includes/classes/class-power-search.php:102
-#: includes/classes/class-search-widget.php:3677
+#: includes/classes/class-search-widget.php:3777
 #: includes/shortcodes/class-post-list.php:921
 #, php-format
 msgid "Page %1$d of %2$d"
 msgstr ""
 
-#: includes/classes/class-search-index.php:1230
+#: includes/classes/class-search-index.php:1232
 msgid "Database error. Check logs."
 msgstr ""
 
-#: includes/classes/class-search-index.php:1246
+#: includes/classes/class-search-index.php:1248
 #, php-format
 msgid "Index cleared. Rebuilding %d posts..."
 msgstr ""
 
-#: includes/classes/class-search-widget.php:847
+#: includes/classes/class-search-widget.php:930
 msgid "Enter search terms..."
 msgstr ""
 
-#: includes/classes/class-search-widget.php:1017
+#: includes/classes/class-search-widget.php:1100
 msgid "Type to search..."
 msgstr ""
 
-#: includes/classes/class-search-widget.php:2083
+#: includes/classes/class-search-widget.php:2167
 msgid "Select..."
 msgstr ""
 
-#: includes/classes/class-search-widget.php:2133
+#: includes/classes/class-search-widget.php:2217
 msgid "Show advanced options"
 msgstr ""
 
-#: includes/classes/class-search-widget.php:2134
+#: includes/classes/class-search-widget.php:2218
 msgid "Hide advanced options"
 msgstr ""
 
-#: includes/classes/class-search-widget.php:2212
+#: includes/classes/class-search-widget.php:2296
 msgid "Search results navigation"
 msgstr ""
 
-#: includes/classes/class-search-widget.php:3667
+#: includes/classes/class-search-widget.php:3767
 msgid "No results found"
 msgstr ""
 
-#: includes/classes/class-search-widget.php:3668
+#: includes/classes/class-search-widget.php:3768
 msgid "An error occurred"
 msgstr ""
 
-#: includes/classes/class-search-widget.php:3669
+#: includes/classes/class-search-widget.php:3769
 msgid "Please enter at least 2 characters"
 msgstr ""
 
-#: includes/classes/class-search-widget.php:3671
+#: includes/classes/class-search-widget.php:3771
 msgid "Please enter at least {n} characters."
 msgstr ""
 
-#: includes/classes/class-search-widget.php:3678
+#: includes/classes/class-search-widget.php:3778
 msgid "Current Location"
 msgstr ""
 
-#: includes/classes/class-search-widget.php:3680
+#: includes/classes/class-search-widget.php:3780
 #, php-format
 msgid "by %s"
 msgstr ""
@@ -4223,7 +4233,7 @@ msgstr ""
 msgid "Could not resolve target term_taxonomy_id."
 msgstr ""
 
-#: includes/core/term-merge.php:271
+#: includes/core/term-merge.php:272
 msgid "Database error during term merge; all changes rolled back."
 msgstr ""
 

@@ -24,11 +24,13 @@ Mark individual terms as **hidden** to use them for internal organization withou
 - Inclusion relationships and redirects continue working normally for users with permission
 - Always visible in the WordPress admin regardless of the visibility setting
 
+Editing a post doesn't remove hidden terms the user can't see, which can happen under the `none` setting or with a custom role: the post keeps those terms. Only someone who can see a hidden term can remove it from a post.
+
 **Visibility setting** (Settings > HyperTaxonomy > Display > Hidden Terms):
 
 | Setting | Who can see hidden terms |
 |---------|-------------------------|
-| `editors` (default) | Users with the `edit_others_posts` capability (Editors and Administrators) |
+| `editors` (default) | Users with the `edit_posts` capability (Contributors, Authors, Editors and Administrators) |
 | `all` | Everyone (useful for testing only) |
 | `none` | No one (admin can still edit terms but they appear hidden everywhere) |
 

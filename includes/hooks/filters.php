@@ -36,6 +36,9 @@ add_action( 'init', function() {
 
 // Filter get_the_terms to mark hidden terms
 add_filter( 'get_the_terms', 'htax_filter_get_the_terms', 10, 3 );
+add_filter( 'get_term', 'htax_hide_term_on_read' );
+add_filter( 'terms_clauses', 'htax_hide_terms_in_term_queries' );
+add_action( 'set_object_terms', 'htax_keep_hidden_terms_on_save', 10, 6 );
 
 // Filter tag cloud to exclude hidden terms
 add_filter( 'wp_tag_cloud', 'htax_filter_tag_cloud', 10, 2 );

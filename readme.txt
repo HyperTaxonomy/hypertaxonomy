@@ -202,7 +202,7 @@ Mark individual terms as hidden for internal organization without public display
 
 **Who can see hidden terms** (Settings → HyperTaxonomy → Display → Hidden Terms):
 
-* **Visible to editors and above only** (default) — users with the `edit_others_posts` capability
+* **Visible only to users who can edit posts** (default) — users with the `edit_posts` capability: Contributors, Authors, Editors and Administrators
 * **Hidden from all users** — everyone excluded, including editors
 * **Visible to all users** — primarily for testing
 

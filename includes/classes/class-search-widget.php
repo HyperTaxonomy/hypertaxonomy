@@ -229,7 +229,33 @@ class HyperTaxonomy_Search_Widget {
             $atts[ $op . '_terms' ]  = implode( ',', array_unique( array_merge( $existing, array_map( 'intval', $ids ) ) ) );
             $atts[ $op . '_groups' ] = '';
         }
+
+        // The browser only understands IDs, and shouldn't learn about terms this viewer can't see.
+        foreach ( array( 'add_terms', 'remove_terms', 'include_term_options', 'exclude_term_options' ) as $key ) {
+            if ( ! empty( $atts[ $key ] ) ) {
+                $ids = htax_parse_term_ids( $atts[ $key ], $atts['taxonomy'] );
+                if ( 'add_terms' === $key || 'include_term_options' === $key ) {
+                    $ids = $this->filter_visible_term_ids( $ids, $atts['taxonomy'] );
+                }
+                $atts[ $key ] = implode( ',', $ids );
+            }
+        }
         return $atts;
+    }
+
+    /**
+     * Drop terms hidden from the current viewer.
+     *
+     * @since 1.0.0
+     * @param int[]  $term_ids Term IDs.
+     * @param string $taxonomy Taxonomy, for the visibility policy.
+     * @return int[]
+     */
+    private function filter_visible_term_ids( array $term_ids, string $taxonomy ): array {
+        if ( htax_can_see_hidden_terms( $taxonomy ) ) {
+            return array_values( $term_ids );
+        }
+        return array_values( array_diff( array_map( 'intval', $term_ids ), array_map( 'intval', htax_get_all_hidden_term_ids() ) ) );
     }
 
     /**
@@ -1639,6 +1665,7 @@ class HyperTaxonomy_Search_Widget {
             }
             $terms_data[ $term->term_id ] = array(
                 'name'              => wp_specialchars_decode( $term->name, ENT_QUOTES ),
+                'parent'            => (int) $term->parent,
                 'count'             => (int) $term->count,
                 'icon_url'          => $icon_url,
                 'placeholder_color' => $placeholder_color,
@@ -3161,9 +3188,7 @@ class HyperTaxonomy_Search_Widget {
         $all_term_ids = array_unique( $all_term_ids );
 
         // Remove hidden terms
-        $all_term_ids = array_values( array_filter( $all_term_ids, function( $id ) {
-            return ! htax_is_term_hidden( $id );
-        } ) );
+        $all_term_ids = $this->filter_visible_term_ids( $all_term_ids, $taxonomy );
 
         // Propagate hidden-term removal into groups map
         $visible_set = array_flip( $all_term_ids );
@@ -3232,6 +3257,8 @@ class HyperTaxonomy_Search_Widget {
                 $all_descendant_ids = array_values( array_diff( $all_descendant_ids, $subtree_remove ) );
             }
         }
+
+        $all_descendant_ids = $this->filter_visible_term_ids( $all_descendant_ids, $taxonomy );
 
         if ( empty( $all_descendant_ids ) ) {
             wp_send_json_success( array( 'terms' => new stdClass(), 'groups' => new stdClass() ) );
@@ -3314,6 +3341,12 @@ class HyperTaxonomy_Search_Widget {
             return;
         }
 
+        $group_ids = $this->filter_visible_term_ids( $group_ids, $taxonomy );
+        if ( empty( $group_ids ) ) {
+            wp_send_json_success( array( 'terms' => new stdClass(), 'groups' => new stdClass() ) );
+            return;
+        }
+
         $option_terms = get_terms( array(
             'taxonomy'               => $taxonomy,
             'include'                => $group_ids,
@@ -3374,9 +3407,7 @@ class HyperTaxonomy_Search_Widget {
             $include_ids = array_diff( array_unique( array_merge( $include_ids, $terms_in ) ), $terms_out );
 
             // Filter out hidden terms.
-            $include_ids = array_values( array_filter( $include_ids, function ( $id ) {
-                return ! htax_is_term_hidden( $id );
-            } ) );
+            $include_ids = $this->filter_visible_term_ids( $include_ids, $taxonomy );
 
             if ( empty( $include_ids ) ) {
                 wp_send_json_success( array() );

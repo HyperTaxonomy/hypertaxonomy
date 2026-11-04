@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: hypertaxonomy 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-04 03:32-0500\n"
+"POT-Creation-Date: 2026-11-04 10:16-0500\n"
 "PO-Revision-Date: 2026-11-04 03:30-0500\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -43,7 +43,7 @@ msgstr "Типы связей между терминами"
 #: includes/admin/ajax.php:949 includes/admin/bulk-actions.php:240
 #: includes/admin/settings.php:3565 includes/admin/settings.php:3583
 #: includes/admin/term-icons.php:1062
-#: includes/classes/class-search-index.php:1211
+#: includes/classes/class-search-index.php:1213
 #: includes/integrations/class-taxopress-integration.php:126
 msgid "Security check failed."
 msgstr "Проверка безопасности не пройдена."
@@ -695,7 +695,7 @@ msgstr ""
 
 #: includes/admin/import-hypertaxonomy.php:133
 #: includes/admin/import-hypertaxonomy.php:134
-#: includes/admin/import-hypertaxonomy.php:609
+#: includes/admin/import-hypertaxonomy.php:657
 msgid "Unknown"
 msgstr "Не распознано"
 
@@ -729,85 +729,95 @@ msgstr "Не удалось задать родительский термин �
 msgid "Could not recreate relationship type \"%s\": %s"
 msgstr "Не удалось воссоздать тип связи «%s»: %s"
 
-#: includes/admin/import-hypertaxonomy.php:407
+#: includes/admin/import-hypertaxonomy.php:408
 #, php-format
 msgid "Source taxonomy \"%s\" does not exist, skipping relationship: %s → %s"
 msgstr ""
 "Связь пропущена: %2$s → %3$s, потому что исходной таксономии «%1$s» не "
 "существует"
 
-#: includes/admin/import-hypertaxonomy.php:418
+#: includes/admin/import-hypertaxonomy.php:419
 #, php-format
 msgid "Target taxonomy \"%s\" does not exist, skipping relationship: %s → %s"
 msgstr ""
 "Связь пропущена: %2$s → %3$s, потому что целевой таксономии «%1$s» не "
 "существует"
 
-#: includes/admin/import-hypertaxonomy.php:438
+#: includes/admin/import-hypertaxonomy.php:439
 #, php-format
 msgid "Source term not found, skipping relationship: %s → %s"
 msgstr "Связь пропущена: %s → %s, потому что исходный термин не найден."
 
-#: includes/admin/import-hypertaxonomy.php:455
+#: includes/admin/import-hypertaxonomy.php:456
 #, php-format
 msgid "Target term not found, skipping relationship: %s → %s"
 msgstr "Связь пропущена: %s → %s, потому что целевой термин не найден."
 
-#: includes/admin/import-hypertaxonomy.php:502
+#: includes/admin/import-hypertaxonomy.php:479
+#, php-format
+msgid "Could not create redirect: %1$s → %2$s"
+msgstr "Не удалось создать перенаправление: %1$s → %2$s"
+
+#: includes/admin/import-hypertaxonomy.php:527
 #, php-format
 msgid "Error creating relationship from %s to %s: %s"
 msgstr "Ошибка при создании связи от %s к %s: %s"
 
-#: includes/admin/import-hypertaxonomy.php:596
+#: includes/admin/import-hypertaxonomy.php:551
+#, php-format
+msgid "Could not set groups for %1$s: %2$s"
+msgstr "Не удалось задать группы для %1$s: %2$s"
+
+#: includes/admin/import-hypertaxonomy.php:644
 msgid "Import Progress"
 msgstr "Ход импорта"
 
-#: includes/admin/import-hypertaxonomy.php:602
-#: includes/admin/import-hypertaxonomy.php:623
+#: includes/admin/import-hypertaxonomy.php:650
+#: includes/admin/import-hypertaxonomy.php:671
 #: includes/admin/tag-groups-migrate-ui.php:181
 msgid "Error:"
 msgstr "Ошибка:"
 
-#: includes/admin/import-hypertaxonomy.php:608
+#: includes/admin/import-hypertaxonomy.php:656
 #, php-format
 msgid "Importing from: %s"
 msgstr "Импорт из: %s"
 
-#: includes/admin/import-hypertaxonomy.php:613
+#: includes/admin/import-hypertaxonomy.php:661
 #, php-format
 msgid "Found %d terms and %d relationships to process..."
 msgstr "Найдено %d терминов и %d связей для обработки…"
 
-#: includes/admin/import-hypertaxonomy.php:633
-#: includes/admin/import-hypertaxonomy.php:657
+#: includes/admin/import-hypertaxonomy.php:681
+#: includes/admin/import-hypertaxonomy.php:705
 msgid "Warnings:"
 msgstr "Предупреждения:"
 
-#: includes/admin/import-hypertaxonomy.php:643
+#: includes/admin/import-hypertaxonomy.php:691
 msgid "Import Complete!"
 msgstr "Импорт завершён!"
 
-#: includes/admin/import-hypertaxonomy.php:646
+#: includes/admin/import-hypertaxonomy.php:694
 msgid "Terms Created:"
 msgstr "Создано терминов:"
 
-#: includes/admin/import-hypertaxonomy.php:647
+#: includes/admin/import-hypertaxonomy.php:695
 msgid "Terms Updated:"
 msgstr "Обновлено терминов:"
 
-#: includes/admin/import-hypertaxonomy.php:648
+#: includes/admin/import-hypertaxonomy.php:696
 msgid "Terms Skipped:"
 msgstr "Пропущено терминов:"
 
-#: includes/admin/import-hypertaxonomy.php:649
+#: includes/admin/import-hypertaxonomy.php:697
 msgid "Relationships Created:"
 msgstr "Создано связей между терминами:"
 
-#: includes/admin/import-hypertaxonomy.php:650
+#: includes/admin/import-hypertaxonomy.php:698
 msgid "Relationships Skipped:"
 msgstr "Пропущено связей между терминами:"
 
-#: includes/admin/import-hypertaxonomy.php:653
+#: includes/admin/import-hypertaxonomy.php:701
 msgid "Posts Assigned:"
 msgstr "Создано связей между терминами и записями:"
 
@@ -860,8 +870,8 @@ msgid "Please select a file to import"
 msgstr "Выберите файл для импорта"
 
 #: includes/admin/import-ui.php:79
-#: includes/classes/class-search-widget.php:2211
-#: includes/classes/class-search-widget.php:3666
+#: includes/classes/class-search-widget.php:2295
+#: includes/classes/class-search-widget.php:3766
 msgid "Loading..."
 msgstr "Идёт загрузка…"
 
@@ -1384,7 +1394,7 @@ msgid "Delete failed."
 msgstr "Не удалось удалить."
 
 #: includes/admin/settings.php:78 includes/admin/settings.php:3164
-#: includes/core/frontend.php:956
+#: includes/core/frontend.php:947
 #, php-format
 msgid " (including: %s)"
 msgstr " (включая: %s)"
@@ -1420,7 +1430,7 @@ msgid "Icons"
 msgstr "Значки"
 
 #: includes/admin/settings.php:370
-#: includes/classes/class-search-widget.php:2108
+#: includes/classes/class-search-widget.php:2192
 msgid "Search"
 msgstr "Поиск"
 
@@ -1674,10 +1684,10 @@ msgstr "Включить управление видимостью термин�
 
 #: includes/admin/settings.php:900
 #, php-format
-msgid "Allow hiding specific %s from post meta or show them to editors only."
+msgid "Allow hiding specific %s from post meta or show them only to users who can edit posts."
 msgstr ""
 "Разрешить скрытие отдельных терминов из таксономии «%s» в метаданных записей "
-"или показ их только редакторам."
+"или показ их только пользователям, которые могут редактировать записи."
 
 #: includes/admin/settings.php:912
 #, php-format
@@ -1816,8 +1826,8 @@ msgid "Hidden from all users"
 msgstr "Скрыты от всех пользователей"
 
 #: includes/admin/settings.php:1081
-msgid "Visible to editors and above only"
-msgstr "Видимы только редакторам и выше"
+msgid "Visible only to users who can edit posts"
+msgstr "Видимы только пользователям, которые могут редактировать записи"
 
 #: includes/admin/settings.php:1089
 msgid "Visible to all users"
@@ -4137,8 +4147,8 @@ msgid "Could not determine the file format of the cropped image."
 msgstr "Не удалось определить формат файла обрезанного изображения."
 
 #: includes/admin/term-icons.php:1068
-#: includes/classes/class-search-index.php:1216
-#: includes/classes/class-search-index.php:1284
+#: includes/classes/class-search-index.php:1218
+#: includes/classes/class-search-index.php:1286
 msgid "Unauthorized access."
 msgstr "Несанкционированный доступ."
 
@@ -4258,76 +4268,76 @@ msgid "Please enter at least %d characters."
 msgstr "Введите не менее %d символов."
 
 #: includes/classes/class-power-search.php:100
-#: includes/classes/class-search-widget.php:3673
+#: includes/classes/class-search-widget.php:3773
 msgid "Previous"
 msgstr "Предыдущая"
 
 #: includes/classes/class-power-search.php:101
-#: includes/classes/class-search-widget.php:3675
+#: includes/classes/class-search-widget.php:3775
 msgid "Next"
 msgstr "Следующая"
 
 #: includes/classes/class-power-search.php:102
-#: includes/classes/class-search-widget.php:3677
+#: includes/classes/class-search-widget.php:3777
 #: includes/shortcodes/class-post-list.php:921
 #, php-format
 msgid "Page %1$d of %2$d"
 msgstr "Страница %1$d из %2$d"
 
-#: includes/classes/class-search-index.php:1230
+#: includes/classes/class-search-index.php:1232
 msgid "Database error. Check logs."
 msgstr "Ошибка базы данных. Проверьте журналы."
 
-#: includes/classes/class-search-index.php:1246
+#: includes/classes/class-search-index.php:1248
 #, php-format
 msgid "Index cleared. Rebuilding %d posts..."
 msgstr "Индекс очищен. Идёт перестроение %d записей…"
 
-#: includes/classes/class-search-widget.php:847
+#: includes/classes/class-search-widget.php:930
 msgid "Enter search terms..."
 msgstr "Введите поисковый запрос…"
 
-#: includes/classes/class-search-widget.php:1017
+#: includes/classes/class-search-widget.php:1100
 msgid "Type to search..."
 msgstr "Введите текст для поиска…"
 
-#: includes/classes/class-search-widget.php:2083
+#: includes/classes/class-search-widget.php:2167
 msgid "Select..."
 msgstr "Выберите…"
 
-#: includes/classes/class-search-widget.php:2133
+#: includes/classes/class-search-widget.php:2217
 msgid "Show advanced options"
 msgstr "Показать расширенные параметры"
 
-#: includes/classes/class-search-widget.php:2134
+#: includes/classes/class-search-widget.php:2218
 msgid "Hide advanced options"
 msgstr "Скрыть расширенные параметры"
 
-#: includes/classes/class-search-widget.php:2212
+#: includes/classes/class-search-widget.php:2296
 msgid "Search results navigation"
 msgstr "Навигация по результатам поиска"
 
-#: includes/classes/class-search-widget.php:3667
+#: includes/classes/class-search-widget.php:3767
 msgid "No results found"
 msgstr "Результатов не найдено"
 
-#: includes/classes/class-search-widget.php:3668
+#: includes/classes/class-search-widget.php:3768
 msgid "An error occurred"
 msgstr "Произошла ошибка"
 
-#: includes/classes/class-search-widget.php:3669
+#: includes/classes/class-search-widget.php:3769
 msgid "Please enter at least 2 characters"
 msgstr "Введите не менее 2 символов"
 
-#: includes/classes/class-search-widget.php:3671
+#: includes/classes/class-search-widget.php:3771
 msgid "Please enter at least {n} characters."
 msgstr "Введите не менее {n} символов."
 
-#: includes/classes/class-search-widget.php:3678
+#: includes/classes/class-search-widget.php:3778
 msgid "Current Location"
 msgstr "Текущее местоположение"
 
-#: includes/classes/class-search-widget.php:3680
+#: includes/classes/class-search-widget.php:3780
 #, php-format
 msgid "by %s"
 msgstr "автор: %s"
@@ -4811,7 +4821,7 @@ msgstr "Исходный термин %d не найден в указанной
 msgid "Could not resolve target term_taxonomy_id."
 msgstr "Не удалось определить term_taxonomy_id целевого термина."
 
-#: includes/core/term-merge.php:271
+#: includes/core/term-merge.php:272
 msgid "Database error during term merge; all changes rolled back."
 msgstr "Ошибка базы данных во время слияния терминов; все изменения отменены."
 

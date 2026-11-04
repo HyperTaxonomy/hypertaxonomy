@@ -722,7 +722,12 @@ Loaded unconditionally (outside `is_admin()`) so the REST field is available dur
 
 **Frontend / shortcode caches:**
 - `htax_invalidate_contrib_cache( int $term_id )` - Delete all `htax_contrib_{term_id}_p*` pages; deduped per request via static array
-- `htax_invalidate_post_list_cache( int[] $term_ids )` - Pattern-delete `htax_pl_*` shortcode caches for given term IDs
+- `htax_invalidate_post_list_cache( int[] $term_ids )` - Pattern-delete `htax_pl_*` shortcode caches for given term IDs; over 100 terms clears all of them
+- `htax_invalidate_post_list_cache_for_term( int $term_id )` - `htax_term_archive_changed` action: invalidates post lists for that term
+- `htax_post_list_cache_on_comment_count( int $post_id )` - `wp_update_comment_count` action: invalidates post lists for a published post's index terms
+- `htax_post_list_cache_on_visibility_change( int $term_id )` - `htax_term_visibility_changed` action: invalidates post lists whose index rows involve that term
+- `htax_get_post_index_term_ids( int|int[] $post_ids ): int[]` - Distinct term IDs in the search index for one or more posts
+- `HyperTaxonomy_Transient_Batch` - Holds non-expiring transients set during its lifetime and writes them in one statement; created by term shortcode handlers
 - `htax_expand_term_ids_for_contrib_invalidation( int[] $term_ids, string $taxonomy ): int[]` - Expand a term ID list to include all terms whose contrib caches are affected: adds WP ancestors, group-expanded included terms, and reverse-included terms (terms that include any of the input terms). Called before firing `htax_term_archive_changed` so that the contrib-cache invalidation covers the full upstream fan-out.
 - `htax_tt_ids_to_term_ids( int[] $tt_ids ): int[]` - Convert term-taxonomy IDs to term IDs via a single `SELECT term_id FROM wp_term_taxonomy WHERE term_taxonomy_id IN (…)` query; used in `deleted_term_relationships` hook handlers that receive `$tt_ids` from WordPress.
 - `htax_get_post_index_term_ids( int $post_id ): int[]` - Return all term IDs associated with a post via the denormalized `wp_htax_search_terms` index; used to find which terms' contrib caches need invalidating when a post's term assignments change.

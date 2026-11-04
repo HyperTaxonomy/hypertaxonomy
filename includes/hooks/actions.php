@@ -243,6 +243,8 @@ add_action( 'htax_async_group_propagate', 'htax_invalidate_group_relationship_ca
 add_action( 'set_object_terms',          'htax_post_list_cache_on_object_terms_set',          10, 6 );
 add_action( 'deleted_term_relationships', 'htax_post_list_cache_on_term_relationships_deleted', 10, 3 );
 add_action( 'transition_post_status',    'htax_post_list_cache_on_post_status_change',          10, 3 );
+add_action( 'wp_update_comment_count',   'htax_post_list_cache_on_comment_count',               10, 1 );
+add_action( 'htax_term_visibility_changed', 'htax_post_list_cache_on_visibility_change',        20, 1 );
 
 // Clear AJAX caches (priority 15)
 add_action( 'edited_term', 'htax_clear_ajax_caches', 15, 1 );
@@ -261,6 +263,7 @@ add_action( 'update_option_posts_per_page', 'htax_invalidate_all_contrib_caches'
 // group membership changes (for terms that include the affected group), group
 // hierarchy changes (for terms referencing the affected groups), and redirects.
 add_action( 'htax_term_archive_changed', 'htax_invalidate_contrib_cache', 10, 1 );
+add_action( 'htax_term_archive_changed', 'htax_invalidate_post_list_cache_for_term', 10, 1 );
 
 // Fire htax_term_archive_changed for parent ancestor chains when a term's WP parent
 // changes (not covered by fine-grained HT relationship actions).

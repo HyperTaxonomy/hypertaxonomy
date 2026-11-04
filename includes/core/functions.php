@@ -374,7 +374,7 @@ function htax_get_cache_duration( $type = 'default' ) {
                    intval( $cache_settings['sticky_cache_duration'] ) : 0;
         case 'shortcode':
             return isset( $cache_settings['shortcode_cache_duration'] ) ?
-                   intval( $cache_settings['shortcode_cache_duration'] ) : 0;
+                   intval( $cache_settings['shortcode_cache_duration'] ) : HOUR_IN_SECONDS;
         default:
             return 0;
     }

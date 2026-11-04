@@ -2013,11 +2013,17 @@ class HyperTaxonomy_Search_Index_Manager {
             }
         }
 
+        $old_term_ids = htax_get_post_index_term_ids( $post_ids );
+
         htax_prewarm_redirect_cache();
         $post_text_map = htax_fetch_post_text_batch( $post_ids );
         foreach ( $post_ids as $post_id ) {
             htax_build_post_search_index( $post_id, $post_text_map[ $post_id ] ?? array() );
         }
+
+        // Clear post lists now the index is current: anything cached since the change that
+        // queued these posts, or missed because the index was still empty, was built from old rows.
+        htax_invalidate_post_list_cache( array_merge( $old_term_ids, htax_get_post_index_term_ids( $post_ids ) ) );
     }
 
 }

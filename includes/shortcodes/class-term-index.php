@@ -43,6 +43,8 @@ class HyperTaxonomy_Term_Index extends HyperTaxonomy_Term_Display_Base {
      * Main shortcode handler
      */
     public function shortcode_handler( $atts ) {
+        $transient_batch = new HyperTaxonomy_Transient_Batch();
+
         // Enqueue styles
         $this->enqueue_styles();
 

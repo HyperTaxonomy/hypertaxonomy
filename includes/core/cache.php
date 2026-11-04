@@ -188,6 +188,7 @@ function htax_cache_generation( string $family, bool $bump = false ): string {
  * @param string $family Family name, or 'all' for every HyperTaxonomy transient.
  */
 function htax_bump_cache_family( string $family ): void {
+    HyperTaxonomy_Transient_Batch::discard();
     if ( wp_using_ext_object_cache() ) {
         htax_cache_generation( $family, true );
         return;
@@ -221,6 +222,9 @@ function htax_transient_key( string $key ): string {
  * @return mixed Value, or false when absent.
  */
 function htax_get_transient( $key ) {
+    if ( HyperTaxonomy_Transient_Batch::has( (string) $key ) ) {
+        return HyperTaxonomy_Transient_Batch::get( (string) $key );
+    }
     return get_transient( htax_transient_key( (string) $key ) );
 }
 
@@ -234,6 +238,9 @@ function htax_get_transient( $key ) {
  * @return bool
  */
 function htax_set_transient( $key, $value, $expiration = 0 ) {
+    if ( 0 === (int) $expiration && HyperTaxonomy_Transient_Batch::add( (string) $key, $value ) ) {
+        return true;
+    }
     return set_transient( htax_transient_key( (string) $key ), $value, $expiration );
 }
 
@@ -245,7 +252,100 @@ function htax_set_transient( $key, $value, $expiration = 0 ) {
  * @return bool
  */
 function htax_delete_transient( $key ) {
+    HyperTaxonomy_Transient_Batch::forget( (string) $key );
     return delete_transient( htax_transient_key( (string) $key ) );
+}
+
+/**
+ * Holds new non-expiring HyperTaxonomy transients in memory and writes them together.
+ *
+ * Rendering a term shortcode from cold caches stores several values per term, and most of
+ * that render's time goes to committing those rows one at a time. Create an instance for the
+ * duration of such a render: reads see the held values straight away, and the rows are written
+ * in one statement when the last instance goes out of scope, so the wait is short and the
+ * result is the same as storing them individually.
+ *
+ * Has no effect under an external object cache, where each write is already cheap.
+ *
+ * @since 1.0.0
+ */
+final class HyperTaxonomy_Transient_Batch {
+
+    /** @var int Live instances. */
+    private static $depth = 0;
+
+    /** @var array Values to write, by transient key. */
+    private static $pending = array();
+
+    public function __construct() {
+        self::$depth++;
+    }
+
+    public function __destruct() {
+        self::$depth--;
+        if ( 0 === self::$depth ) {
+            self::write();
+        }
+    }
+
+    /**
+     * Hold a value if a batch is running.
+     *
+     * @param string $key   Transient key.
+     * @param mixed  $value Value.
+     * @return bool True if held, false if the caller should store it normally.
+     */
+    public static function add( string $key, $value ): bool {
+        if ( 0 === self::$depth || 0 !== strpos( $key, 'htax_' ) || wp_using_ext_object_cache() ) {
+            return false;
+        }
+        self::$pending[ $key ] = $value;
+        return true;
+    }
+
+    public static function has( string $key ): bool {
+        return array_key_exists( $key, self::$pending );
+    }
+
+    public static function get( string $key ) {
+        return self::$pending[ $key ];
+    }
+
+    public static function forget( string $key ): void {
+        unset( self::$pending[ $key ] );
+    }
+
+    /**
+     * Drop held values, because a bulk clear means they may no longer be current.
+     */
+    public static function discard(): void {
+        self::$pending = array();
+    }
+
+    private static function write(): void {
+        global $wpdb;
+
+        if ( empty( self::$pending ) ) {
+            return;
+        }
+        $pending       = self::$pending;
+        self::$pending = array();
+
+        foreach ( array_chunk( $pending, 500, true ) as $chunk ) {
+            $values = array();
+            foreach ( $chunk as $key => $value ) {
+                $values[] = $wpdb->prepare( '(%s, %s, %s)', '_transient_' . $key, maybe_serialize( $value ), 'on' );
+            }
+            $wpdb->query(
+                "INSERT INTO {$wpdb->options} (option_name, option_value, autoload) VALUES "
+                . implode( ', ', $values )
+                . ' ON DUPLICATE KEY UPDATE option_value = VALUES(option_value), autoload = VALUES(autoload)'
+            );
+        }
+
+        wp_cache_delete( 'alloptions', 'options' );
+        wp_cache_delete( 'notoptions', 'options' );
+    }
 }
 
 /**
@@ -1559,6 +1659,12 @@ function htax_invalidate_post_list_cache( $term_ids ) {
         return;
     }
 
+    // Past this size a pattern per term costs more than rebuilding what's cached.
+    if ( count( $term_ids ) > 100 ) {
+        htax_delete_transients_by_prefix( 'htax_pl_' );
+        return;
+    }
+
     $clauses = array();
     $values  = array();
     foreach ( $term_ids as $tid ) {
@@ -1622,15 +1728,63 @@ function htax_tt_ids_to_term_ids( $tt_ids ) {
  *
  * @since 1.0.0
  *
- * @param  int $post_id Post ID.
+ * @param  int|int[] $post_ids Post ID or IDs.
  * @return int[]
  */
-function htax_get_post_index_term_ids( $post_id ) {
+function htax_get_post_index_term_ids( $post_ids ) {
     global $wpdb;
+    $post_ids = array_map( 'intval', (array) $post_ids );
+    if ( empty( $post_ids ) ) {
+        return array();
+    }
     return array_map( 'intval', (array) $wpdb->get_col( $wpdb->prepare(
-        "SELECT DISTINCT term_id FROM {$wpdb->prefix}htax_search_terms WHERE post_id = %d",
-        (int) $post_id
+        "SELECT DISTINCT term_id FROM {$wpdb->prefix}htax_search_terms
+         WHERE post_id IN (" . implode( ',', array_fill( 0, count( $post_ids ), '%d' ) ) . ')',
+        $post_ids
     ) ) );
+}
+
+/**
+ * Invalidate post list caches for a term whose archive composition changed.
+ *
+ * @since 1.0.0
+ * @param int $term_id Term ID.
+ * @return void
+ */
+function htax_invalidate_post_list_cache_for_term( $term_id ) {
+    htax_invalidate_post_list_cache( array( (int) $term_id ) );
+}
+
+/**
+ * Invalidate post list caches for every list whose rows involve a term whose visibility changed.
+ *
+ * The index flags those rows directly, without a reindex, so nothing else clears these lists.
+ *
+ * @since 1.0.0
+ * @param int $term_id Term ID.
+ * @return void
+ */
+function htax_post_list_cache_on_visibility_change( $term_id ) {
+    global $wpdb;
+    $term_ids = $wpdb->get_col( $wpdb->prepare(
+        "SELECT DISTINCT term_id FROM {$wpdb->prefix}htax_search_terms WHERE source_term_id = %d OR term_id = %d",
+        (int) $term_id,
+        (int) $term_id
+    ) );
+    htax_invalidate_post_list_cache( array_merge( array( (int) $term_id ), (array) $term_ids ) );
+}
+
+/**
+ * Invalidate post list caches when a post's comment count changes, since lists can sort by it.
+ *
+ * @since 1.0.0
+ * @param int $post_id Post ID.
+ * @return void
+ */
+function htax_post_list_cache_on_comment_count( $post_id ) {
+    if ( 'publish' === get_post_status( $post_id ) ) {
+        htax_invalidate_post_list_cache( htax_get_post_index_term_ids( $post_id ) );
+    }
 }
 
 /**

@@ -411,9 +411,17 @@ Post text fields (title, content, excerpt) use **NATURAL LANGUAGE MODE** so that
 - `htax_ss_{hash}` - Search state of a POST-mode search too large for an inline results-page token (`htax_search_state_encode()`; the token is `k{hash}`, a 16-hex content hash). TTL 30 days (`HTAX_SEARCH_STATE_TTL`); an expired token makes the results URL render as if no search was submitted.
 - `htax_pl_t{ids}_f{ids}_p{page}_n{ppp}_m{max}_o{orderby}_x{excludes}` - Post list shortcode query results (see below)
 
+### Term Shortcode Cold Render
+
+Term shortcodes and blocks don't cache their output, because their HTML depends on terms, post counts, relationships, visibility, settings, language and third-party filters. They do read the per-term relationship transients (`htax_redir_*`, `htax_groups_*`, `htax_inc_*`), which a cold render stores for every term. `HyperTaxonomy_Transient_Batch` holds those values in memory for the duration of the render and writes them in one statement, since committing the rows individually is most of the cold cost. Reads see held values immediately, the stored rows are the same as individual writes, and a bulk clear discards anything held. It has no effect under an external object cache.
+
 ### Post List Shortcode Cache (`htax_pl_*`)
 
 The `[ht_post_list]` and `[ht_related_posts]` shortcodes cache the result of `query_posts_by_term_ids()` — the search-index query that returns a paginated list of post IDs with a total count. No TTL is set; caches are invalidated explicitly.
+
+**Expiry:** one hour by default (`shortcode_cache_duration`; 0 = never), as a safety net behind the invalidation below.
+
+**Invalidated by term ID when:** a post's terms change, its published state changes, or its comment count changes; a term's archive composition changes (`htax_term_archive_changed`: relationships, redirects, group membership, parent changes); a term's visibility changes; and when a reindex batch finishes, for the old and new index terms of its posts. That last step covers lists cached while the index was still out of date. More than 100 terms at once clears all `htax_pl_*` entries instead.
 
 **What is stored:**
 ```php

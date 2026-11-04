@@ -738,6 +738,8 @@ function htax_empty_filter_state(): array {
  * @return bool
  */
 function htax_filter_state_is_active( array $state ): bool {
+    $state = array_merge( htax_empty_filter_state(), $state );
+
     foreach ( $state['terms'] as $ids ) {
         if ( ! empty( $ids ) ) {
             return true;

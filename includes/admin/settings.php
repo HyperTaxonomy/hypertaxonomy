@@ -179,7 +179,7 @@ class HyperTaxonomy_Settings {
                 'autocomplete_cache_duration' => 5 * MINUTE_IN_SECONDS,
                 'relationship_cache_duration' => 0,
                 'sticky_cache_duration'       => 0,
-                'shortcode_cache_duration'    => 0,
+                'shortcode_cache_duration'    => HOUR_IN_SECONDS,
             ),
             'max_depth' => -1,
 
@@ -2733,7 +2733,7 @@ if ( function_exists( 'htax_the_archive_icon' ) ) {
                             <td>
                                 <input type="number"
                                        name="htax_settings[cache_settings][shortcode_cache_duration]"
-                                       value="<?php echo esc_attr( $cache_settings['shortcode_cache_duration'] ?? 0 ); ?>"
+                                       value="<?php echo esc_attr( $cache_settings['shortcode_cache_duration'] ?? HOUR_IN_SECONDS ); ?>"
                                        min="0" max="2592000" style="width: 80px;" />
                                 <?php esc_html_e( 'seconds', 'hypertaxonomy' ); ?>
                             </td>

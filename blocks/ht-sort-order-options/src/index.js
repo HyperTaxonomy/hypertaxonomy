@@ -10,6 +10,7 @@ import {
 import { InspectorControls, useBlockProps } from '@wordpress/block-editor';
 import { useSelect } from '@wordpress/data';
 import { SortOrderBuilder } from '../../shared/components';
+import '../../shared/editor.css';
 import metadata from '../block.json';
 
 // Fields available in this block (no relevance/ID — those only apply to search results).

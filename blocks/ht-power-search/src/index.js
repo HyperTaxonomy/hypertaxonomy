@@ -9,6 +9,7 @@ import {
 import { InspectorControls, useBlockProps } from '@wordpress/block-editor';
 import ServerSideRender from '@wordpress/server-side-render';
 import { SortOrderBuilder } from '../../shared/components';
+import '../../shared/editor.css';
 import metadata from '../block.json';
 
 

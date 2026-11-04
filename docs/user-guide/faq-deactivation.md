@@ -4,7 +4,7 @@ parent: User Guide
 nav_order: 10
 ---
 
-## 14. FAQ & Troubleshooting
+## FAQ & Troubleshooting
 
 ### Choosing Features
 
@@ -97,7 +97,7 @@ define( 'HTAX_DEBUG_VERBOSE', true ); // Adds backtraces to log entries
 
 ---
 
-## 15. Deactivation & Uninstall
+## Deactivation & Uninstall
 
 ### What Happens When You Deactivate
 

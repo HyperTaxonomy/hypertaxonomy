@@ -4,7 +4,7 @@ parent: User Guide
 nav_order: 2
 ---
 
-## 3. Requirements & Installation
+## Requirements & Installation
 
 | Requirement | Minimum Version |
 |-------------|----------------|
@@ -29,7 +29,7 @@ No additional plugins required. All features including Term Groups are built-in.
 
 ---
 
-## 4. Configuration
+## Configuration
 
 All settings are at **Settings > HyperTaxonomy**, organized into tabs.
 
@@ -55,8 +55,7 @@ The main configuration hub. A **General** subtab controls which taxonomies Hyper
 ### Display Tab
 
 - **Archive Titles** — Optionally show which terms are contributing to an archive's title (e.g. "JavaScript (including: React)")
-- **Archive Description** — Global gate for the per-term "Show description on archive" setting. When disabled, no term descriptions are output regardless of per-term preferences; saved per-term data is preserved.
-- **See Also Section** — *(Requires TermConnect)* Managed by the TermConnect plugin. When TermConnect is active, this controls whether the "See also" section appears on term archive pages with external knowledge-base links. Configure format and label in Settings → TermConnect.
+- **Archive Description** — Global gate for the per-term **Show Description** setting. When disabled, no term descriptions are output regardless of per-term preferences; saved per-term data is preserved.
 - **Sticky Posts** — Global gate: when disabled, no posts are pinned regardless of per-term or per-post settings. When enabled, configure: *Disable default sticky post styles* (if your theme provides its own) and *Maximum sticky posts per archive* (first page only, default 10).
 - **Hidden Terms** — Control which roles can see hidden terms on the frontend.
 - **Max Term Hierarchy Depth** — Default maximum nesting depth for `[ht_term_list]`, the Term List block, and the search widget's hierarchical checklists (`-1` = unlimited, `0` = top level only). Each can override this with its own `max_depth` attribute/setting.
@@ -158,7 +157,7 @@ Description Match weights are configured independently from Name Match weights. 
 - **Concurrent Edit Locking** — Enable/disable the simultaneous-edit warning overlay on term edit screens. Uses the WordPress heartbeat API. Disable if it conflicts with another plugin that also hooks into the heartbeat.
 - **Post Editor Restrictions** — Optionally prevent accidental creation of new tags in the native post editor, guarding against misspelled or duplicate tags. Editors can still create terms via the Terms admin screens.
 - **Content-Based Tag Suggestions** — When enabled (default), replaces WordPress's "most used tags" list in the Gutenberg editor sidebar with tags matched to the current post's content. Suggestions are drawn from tags not already assigned to the post, ranked by how often each tag's name appears in the title (shown first), excerpt (shown second), or body (shown third), with count descending within each group. A **Words to ignore** field accepts a comma-separated list of words that are stripped from the post text before matching — useful for excluding generic terms like "post" or "page" that would otherwise produce false matches.
-- **Search Widget Assets** — Force search widget CSS/JS to load on every page. Enable only when using page builders or AJAX-loaded content where the shortcode may not be present on initial load.
+- **Always load search assets** — Force the Search Widget and PowerSearch CSS/JS to load on every page. Enable only when using page builders or AJAX-loaded content where the shortcode may not be present on initial load.
 - **Uninstall** — Option to delete all HyperTaxonomy data when the plugin is uninstalled.
 - **Health Check** — System status report: database table presence, search index state, and configuration validity.
 

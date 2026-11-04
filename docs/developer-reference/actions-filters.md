@@ -4,7 +4,7 @@ parent: Developer Reference
 nav_order: 4
 ---
 
-## 4. Actions & Filters
+## Actions & Filters
 
 ### Actions Fired by HyperTaxonomy
 
@@ -245,7 +245,7 @@ add_filter( 'htax_archive_description_append', function( $append, $term ) {
 
 #### `htax_expanded_term_ids`
 
-Filter the expanded term ID list returned by `htax_get_expanded_term_ids()`. See [Integration API](#3-integration-api) for full documentation.
+Filter the expanded term ID list returned by `htax_get_expanded_term_ids()`. See [Integration API](php-api.html#integration-api) for full documentation.
 
 ```php
 add_filter( 'htax_expanded_term_ids', function( $ids, $term_id, $taxonomy ) {
@@ -255,7 +255,7 @@ add_filter( 'htax_expanded_term_ids', function( $ids, $term_id, $taxonomy ) {
 
 #### `htax_term_post_count`
 
-Filter the expansion-aware post count for a single term, fired by the `get_terms` filter when `expand_secondary_queries` is enabled. See [Integration API](#3-integration-api) for full documentation.
+Filter the expansion-aware post count for a single term, fired by the `get_terms` filter when `expand_secondary_queries` is enabled. See [Integration API](php-api.html#integration-api) for full documentation.
 
 ```php
 add_filter( 'htax_term_post_count', function( $count, $term_id, $taxonomy, $query_context ) {
@@ -279,6 +279,29 @@ add_filter( 'htax_strength_field_weights', function( $weights ) {
 ```
 
 **Default values:** `['floor' => 0.20, 'body' => 0.40, 'excerpt' => 0.20, 'title' => 0.20]`
+
+#### `htax_disable_frontend_styles`
+
+Return `true` to stop HyperTaxonomy printing its inline front-end styles, for a theme that styles those elements itself.
+
+```php
+add_filter( 'htax_disable_frontend_styles', '__return_true' );
+```
+
+#### `htax_allowed_description_html`
+
+Filters the HTML tags and attributes allowed in term descriptions (the `wp_kses` allowed-tags array).
+
+```php
+add_filter( 'htax_allowed_description_html', function( $allowed_tags ) {
+    $allowed_tags['figure'] = array( 'class' => true );
+    return $allowed_tags;
+} );
+```
+
+#### `htax_sync_remote_relationship_types`
+
+Handles the **Re-sync** action for a remote relationship type on the Term Relationships admin page, so the fetch can live in another plugin (TermConnect hooks it). Receives a result array and the source site URL; return `[ 'success' => bool, 'message' => string ]`.
 
 #### `htax_search_proximity_where`
 

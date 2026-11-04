@@ -8,7 +8,7 @@ nav_order: 4
 
 > For implementation patterns (nonce handling, AJAX detection, etc.), error handling patterns, and coding standards, see the [Contributing](../contributing.html).
 
-### 1. **Feature Flag Enforcement for Archive Expansion**
+### **Feature Flag Enforcement for Archive Expansion**
 
 One feature flag controls the entire archive expansion pipeline:
 
@@ -16,7 +16,7 @@ One feature flag controls the entire archive expansion pipeline:
 
 The flag is checked by `htax_taxonomy_has_feature()` at runtime, so enabling or disabling it takes effect immediately without a reindex.
 
-### 2. **Container Groups (Term Groups Integration)**
+### **Container Groups (Term Groups Integration)**
 
 Container Groups allow a term to be automatically included in all archives of terms belonging to specified Term Groups. This is useful for bulk relationships.
 
@@ -51,7 +51,7 @@ When fetching included terms for Term A:
 - Single source of truth
 - Efficient indexed lookups
 
-### 3. **Multi-Group Membership**
+### **Multi-Group Membership**
 
 Term Groups allows the same term to belong to multiple groups simultaneously. HyperTaxonomy fully supports this feature:
 
@@ -65,7 +65,7 @@ Term Groups allows the same term to belong to multiple groups simultaneously. Hy
 - Term "Vegetables" includes group "Healthy Foods"
 - Result: "Vegetables" archive includes "Apple" (via group 8)
 
-### 4. **Nested Group Expansion for Container Groups**
+### **Nested Group Expansion for Container Groups**
 
 When looking up container group inclusions for a term T, T's member groups are expanded **downward** to all descendant subgroups (via `htax_get_group_hierarchy()`), then any term B whose stored container group falls within that expanded set is included in T's archive.
 
@@ -79,7 +79,7 @@ The net effect: a term with a more specific container group (e.g. "PHP") automat
 - Also: "General-Tutorials" has "Programming" as its stored container group — also included in T's archive
 - A term U that is only a member of "PHP" would include "PHP-Tutorials" but NOT "General-Tutorials" (expanding "PHP" downward does not reach "Programming")
 
-### 5. **Parent Group Hierarchy Expansion**
+### **Parent Group Hierarchy Expansion**
 
 Term Groups support parent-child hierarchy. When a group is included by a term, HyperTaxonomy automatically expands it to include all member terms from the group and all its descendant groups using WordPress's native `get_terms()` with the `child_of` parameter.
 
@@ -143,7 +143,7 @@ PillsField supports two option-loading modes controlled by the `prefetch` shortc
   - `[ht_checklist_field include_group_options="5" max_group_depth="2"]` — 2 levels deep
   - `[ht_term_list include_groups="5" max_group_depth="0"]` — top-level only
 
-### 6. **Redirects**
+### **Redirects**
 
 **What Makes Redirects Special:**
 
@@ -207,7 +207,7 @@ When Physics redirect is removed:
 
 ---
 
-### 7. **Redirect Chain Prevention**
+### **Redirect Chain Prevention**
 
 When a term becomes a redirect, any terms redirecting TO it need to update their redirect target to prevent chains (e.g., Term C → Term A → Term B should become Term C → Term B).
 
@@ -222,7 +222,7 @@ When a term becomes a redirect, any terms redirecting TO it need to update their
 
 ---
 
-### 8. **Hierarchical Taxonomy Display Depth**
+### **Hierarchical Taxonomy Display Depth**
 
 For hierarchical taxonomies like categories, the `max_depth` parameter controls how many levels of the tree to display.
 
@@ -261,7 +261,7 @@ An icon-shaped color placeholder (color assigned deterministically from term slu
 
 During taxonomy conversion (a term moving from one taxonomy to another), icons are preserved when the source and destination taxonomies share the same configured icon dimensions; otherwise the icon is detached and must be re-uploaded.
 
-When icons are enabled for a taxonomy, icon URLs and dimensions are exposed in the WordPress REST API as the `htax_icon` field on the term object. The field is absent when no icon is set. See [REST API Functions](#rest-api-functions-includescorerest-apiphp) for the full field structure.
+When icons are enabled for a taxonomy, icon URLs and dimensions are exposed in the WordPress REST API as the `htax_icon` field on the term object. The field is absent when no icon is set. See [REST API](function-hook-reference.html#rest-api-includescorerest-apiphp) for the full field structure.
 
 ---
 
@@ -287,7 +287,7 @@ Because hidden is propagated to descendants at write time (see [Write-Time Casca
 | Filter SQL subqueries (`htax_build_filter_sql`) | Always `AND is_hidden = 0` | Filter terms are drawn from the always-excluded option lists above; the SQL must be consistent |
 | REST API term list (`rest_{$taxonomy}_query` filter) | Permission-aware — hidden term IDs added to `exclude` for unprivileged users | REST consumers may be headless clients or block editor components; same role threshold applies |
 | REST API single term (`rest_prepare_{$taxonomy}` filter) | Permission-aware — returns `WP_Error` (404) for unprivileged users; adds `htax_is_hidden: true` field for privileged users | Prevents direct URL enumeration of hidden terms |
-| Archive queries (`pre_get_posts` expansion in `htax_expand_term_archive`) | Permission-aware — hidden terms excluded from the expanded `tax_query` for unprivileged users | Archive expansion should not surface content that the user cannot see via direct navigation |
+| Archive queries (`pre_get_posts` expansion in `htax_modify_archive_query`) | Permission-aware — hidden terms excluded from the expanded `tax_query` for unprivileged users | Archive expansion should not surface content that the user cannot see via direct navigation |
 | Group archives (`pre_get_posts` via `htax_handle_group_archives`) | Permission-aware — `htax_build_group_tax_query()` excludes hidden terms for unprivileged users | Group archives must filter consistently with all other archive contexts |
 | Group archive page itself (the group's own `is_tax('group')` archive) | When the `visibility` feature is enabled for the `group` taxonomy: `htax_handle_redirects()` fires on `template_redirect` and returns a 404 for unprivileged users if the requested group is hidden. Same code path as regular hidden term archives. | Hidden group archives behave identically to hidden term archives from the visitor's perspective |
 | All frontend post queries (Query Loop block, Latest Posts block, REST `/wp/v2/posts`, custom `WP_Query`) | Permission-aware — `htax_hide_terms_in_tax_query` (`parse_tax_query`) removes hidden terms from the query's positive tax clauses for unprivileged users, as if the terms did not exist; posts carrying hidden terms remain discoverable through their other terms | A hidden term is invisible, not a quarantine: it must not be usable to find posts, but it must not hide content that is reachable otherwise |

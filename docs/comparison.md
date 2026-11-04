@@ -236,4 +236,4 @@ The plugins below address capabilities outside the scope of this comparison and 
 
 **TaxoPress** addresses a different problem entirely and is a natural complement to HyperTaxonomy rather than an alternative. TaxoPress (now PublishPress Taxonomies) and Tag Groups (now PublishPress Tag Groups) are both published by PublishPress as of their respective late-2026 rebrands, but remain independent plugins with no cross-dependency.
 
-For guidance on combining HyperTaxonomy with other plugins, see [Best Practices § Working Alongside Other Plugins](https://hypertaxonomy.org/hypertaxonomy/user-guide/best-practices.html#6-working-alongside-other-plugins).
+For guidance on combining HyperTaxonomy with other plugins, see [Best Practices § Working Alongside Other Plugins](https://hypertaxonomy.org/hypertaxonomy/user-guide/best-practices.html#working-alongside-other-plugins).

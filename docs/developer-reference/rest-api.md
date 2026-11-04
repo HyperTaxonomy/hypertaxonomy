@@ -4,7 +4,7 @@ parent: Developer Reference
 nav_order: 5
 ---
 
-## 9. REST API
+## REST API
 
 ### `X-HyperTaxonomy` response header
 
@@ -139,7 +139,7 @@ Hidden terms are fully protected:
 
 ---
 
-## 10. External Posts Platform API
+## External Posts Platform API
 
 This API is part of the **TermConnect** plugin. Peer site fetching, RSS/Atom feed aggregation, FOAF discovery, and cross-site scoring functions (`tc_external_*`) are documented in the [TermConnect Developer Reference](https://wordpress.org/plugins/termconnect/).
 

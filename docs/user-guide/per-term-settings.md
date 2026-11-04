@@ -4,7 +4,7 @@ parent: User Guide
 nav_order: 4
 ---
 
-## 6. Per-Term Settings
+## Per-Term Settings
 
 Settings that apply to individual terms independently of their relationships — visibility, icons, descriptions, sticky posts, and archive overrides.
 
@@ -94,9 +94,9 @@ Upload a custom icon image for any term to display alongside it in shortcodes, s
 
 ### Archive Descriptions
 
-Enable **Always Show Description** on any term to display its description as formatted HTML below the archive title. This allows rich, styled introductory text on term archive pages.
+Enable **Show Description** on any term to display its description as formatted HTML below the archive title. This allows rich, styled introductory text on term archive pages.
 
-To enable: Edit a term, expand **More options**, and check **Always Show Description**. The term's description field (standard WordPress) is then rendered as HTML on the archive page — above any sticky posts, if present. Requires **Archive Customization** enabled for the taxonomy (Settings > HyperTaxonomy > Features).
+To enable: Edit a term, expand **More options**, and check **Show Description**. The term's description field (standard WordPress) is then rendered as HTML on the archive page — above any sticky posts, if present. Requires **Archive Customization** enabled for the taxonomy (Settings > HyperTaxonomy > Features).
 
 The description field appears in the **More options** collapsible on both the Add New Term and Edit Term screens. Its helper text explains that the description is also indexed for PowerSearch autocomplete and relevance matching.
 

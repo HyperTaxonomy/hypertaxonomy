@@ -13,16 +13,16 @@ For integrating HyperTaxonomy in your theme or plugin, see the [Developer Refere
 
 ## Table of Contents
 
-1. [Design Principles](#1-design-principles)
-2. [Coding Standards](#2-coding-standards)
-3. [Implementation Patterns](#3-implementation-patterns)
-4. [Building Block Assets](#4-building-block-assets)
-5. [Error Handling](#5-error-handling)
-6. [Debug & Diagnostics](#6-debug--diagnostics)
+1. [Design Principles](#design-principles)
+2. [Coding Standards](#coding-standards)
+3. [Implementation Patterns](#implementation-patterns)
+4. [Building Block Assets](#building-block-assets)
+5. [Error Handling](#error-handling)
+6. [Debug & Diagnostics](#debug--diagnostics)
 
 ---
 
-## 1. Design Principles
+## Design Principles
 
 - **Separation of Concerns** — Core logic in `includes/core/`, admin UI in `includes/admin/`, frontend in `assets/`. Admin files load only in admin context, with two exceptions loaded unconditionally: `admin/post-edit.php` (the Gutenberg sidebar panel runs through the REST API, which executes outside `is_admin()`) and `admin/term-icons.php` (term icons are also rendered on the frontend).
 - **Dependency Injection via Hooks** — All hooks are registered after functions are defined. No global state dependencies; hook callbacks are easy to replace or override.
@@ -33,7 +33,7 @@ For integrating HyperTaxonomy in your theme or plugin, see the [Developer Refere
 
 ---
 
-## 2. Coding Standards
+## Coding Standards
 
 ### Naming Conventions
 
@@ -81,7 +81,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 ---
 
-## 3. Implementation Patterns
+## Implementation Patterns
 
 ### AJAX-Compatible Taxonomy Detection
 
@@ -202,7 +202,7 @@ add_action( 'htax_relationship_types', function () {
 
 **`core_type` mapping** — only `'includes'` is user-mappable. A type mapped to `'includes'` causes posts tagged with the *target* term to appear in the *source* term's archive, identical to a direct `includes` relationship. The target may be an ordinary term or a group — if a group, every member term's posts are included, same as group inclusion.
 
-**SQL expansion** — every query site that previously used `relationship_type = 'includes'` now uses `htax_relationship_type_sql_in( 'includes' )`, which returns a fragment like `relationship_type IN ('includes','wrote')`. The fragment is safe to embed directly in `$wpdb->prepare()` strings because slugs come from the in-memory registry and are individually passed through `esc_sql()`.
+**SQL expansion** — query sites match inclusions with `htax_relationship_type_sql_in( 'includes' )` rather than `relationship_type = 'includes'`, which returns a fragment like `relationship_type IN ('includes','wrote')`. The fragment is safe to embed directly in `$wpdb->prepare()` strings because slugs come from the in-memory registry and are individually passed through `esc_sql()`.
 
 **Saving / deleting rows** for user-defined types:
 
@@ -245,7 +245,7 @@ Order terms by `'parent'` for proper hierarchical display. Used in `HyperTaxonom
 
 ---
 
-## 4. Building Block Assets
+## Building Block Assets
 
 Nine Gutenberg block bundles are compiled from source files in `blocks/` using `@wordpress/scripts` (webpack). The compiled output in each block's `build/` directory is committed to the repository and is what WordPress loads at runtime. Each entry point is declared in `webpack.config.js` — add a new entry there when adding a new block.
 
@@ -284,17 +284,17 @@ npm run lint:js
 
 **Shared components** (`blocks/shared/components.js`): exports `TermTokenField` (pill-based term picker with search-as-you-type for any taxonomy), `GroupTokenField` (same for `htax_term_group`), `SortOrderBuilder` (composite sort order editor — field + direction rows with add/remove/reorder), `SORT_FIELDS`, and `SORT_FIELD_VALUES`. Imported by the post-list factory, the term-display factory, the individual sort-order-options and power-search blocks, and the query-group-filter extension.
 
-**Post-list family** (`htax-post-list`, `htax-related-posts`): each `src/index.js` calls `createEdit(blockName, opts)` from `post-list-edit.js`. Pass `{ showTermSourceFilters: false }` for Related Posts to hide include/exclude term/group controls.
+**Post-list family** (`ht-post-list`, `ht-related-posts`): each `src/index.js` calls `createEdit(blockName, opts)` from `post-list-edit.js`. Pass `{ showTermSourceFilters: false }` for Related Posts to hide include/exclude term/group controls.
 
 **External posts blocks** (`termconnect/peer-posts`, `termconnect/peer-browse`): these blocks are defined in the TermConnect plugin (its own `blocks/` directory), built with its own webpack config. See TermConnect developer documentation.
 
-**Term-display family** (`htax-term-list`, `htax-term-cloud`, `htax-term-index`, `htax-term-groups`): each `src/index.js` defines a small `DisplayPanel` component for its block-specific options and calls `createEdit(blockName, DisplayPanel, opts)` from `term-display-edit.js`. The shared factory handles the Term Source panel (taxonomy selector, hide-empty, include/exclude) for all four. Pass `{ isTermGroups: true }` for the Term Groups block to switch the taxonomy selector to a multi-taxonomy field and hide individual term filters.
+**Term-display family** (`ht-term-list`, `ht-term-cloud`, `ht-term-index`, `ht-term-groups`): each `src/index.js` defines a small `DisplayPanel` component for its block-specific options and calls `createEdit(blockName, DisplayPanel, opts)` from `term-display-edit.js`. The shared factory handles the Term Source panel (taxonomy selector, hide-empty, include/exclude) for all four. Pass `{ isTermGroups: true }` for the Term Groups block to switch the taxonomy selector to a multi-taxonomy field and hide individual term filters.
 
-**Sort-order-options** (`htax-sort-order-options`): standalone block with its own `Edit` component — no shared factory. Uses `useSelect('core/edit-site')` to detect FSE template context and shows an info notice when the block is placed outside a valid archive/search template. The PHP render callback (`render_sort_order_options`) guards on `htax_get_enabled_archive_taxonomy() || is_search()` and returns empty string outside those contexts; action is hardcoded to `navigate`.
+**Sort-order-options** (`ht-sort-order-options`): standalone block with its own `Edit` component — no shared factory. Uses `useSelect('core/edit-site')` to detect FSE template context and shows an info notice when the block is placed outside a valid archive/search template. The PHP render callback (`render_sort_order_options`) guards on `htax_get_enabled_archive_taxonomy() || is_search()` and returns empty string outside those contexts; action is hardcoded to `navigate`.
 
-**Fulltext-search** (`htax-power-search`): standalone block with its own `Edit` component — no shared factory. Uses `ServerSideRender` + `Disabled` to show a live preview of the search form in the editor. Inspector panels: Search Form (placeholder, button label, match mode, minimum query length), Results (posts per page, sort order, minimum relevance score, show thumbnail/excerpt/meta toggles), AJAX Mode (container ID), and Advanced (CSS class). The PHP render callback (`render_power_search`) calls `HyperTaxonomy_Power_Search::get_instance()->search_form_shortcode($atts)` with attributes mapped directly — identical output to the shortcode.
+**PowerSearch** (`ht-power-search`): standalone block with its own `Edit` component — no shared factory. Uses `ServerSideRender` + `Disabled` to show a live preview of the search form in the editor. Inspector panels: Search Form (placeholder, button label, match mode, minimum query length), Results (posts per page, sort order, minimum relevance score, show thumbnail/excerpt/meta toggles), AJAX Mode (container ID), and Advanced (CSS class). The PHP render callback (`render_power_search`) calls `HyperTaxonomy_Power_Search::get_instance()->search_form_shortcode($atts)` with attributes mapped directly — identical output to the shortcode.
 
-**Query-group-filter** (`htax-query-group-filter`): not a standalone block — a block editor plugin that extends both `core/query` and `core/latest-posts`. Uses `addFilter('blocks.registerBlockType')` to add `htax_filter_groups` attribute to the schema of both blocks, and `addFilter('editor.BlockEdit')` + `createHigherOrderComponent` to inject a `GroupTokenField` inspector panel into both block types. Has `"supports": {"inserter": false}` so it never appears in the block inserter. The `register_block_type` call in `class-blocks.php` has no render callback — registration exists solely to auto-enqueue the `editorScript`. The PHP query modifications are handled server-side in `includes/core/native-blocks.php`: `htax_query_loop_group_filter()` hooked to `query_loop_block_query_vars` for `core/query`, and `htax_latest_posts_group_filter()` hooked to `pre_render_block` for `core/latest-posts`.
+**Query-group-filter** (`ht-query-group-filter`): not a standalone block — a block editor plugin that extends both `core/query` and `core/latest-posts`. Uses `addFilter('blocks.registerBlockType')` to add `htax_filter_groups` attribute to the schema of both blocks, and `addFilter('editor.BlockEdit')` + `createHigherOrderComponent` to inject a `GroupTokenField` inspector panel into both block types. Has `"supports": {"inserter": false}` so it never appears in the block inserter. The `register_block_type` call in `class-blocks.php` has no render callback — registration exists solely to auto-enqueue the `editorScript`. The PHP query modifications are handled server-side in `includes/core/native-blocks.php`: `htax_query_loop_group_filter()` hooked to `query_loop_block_query_vars` for `core/query`, and `htax_latest_posts_group_filter()` hooked to `pre_render_block` for `core/latest-posts`.
 
 ### When to rebuild
 
@@ -304,7 +304,7 @@ When adding a new block, also add its directory name to the `blocks` array in `w
 
 ---
 
-## 5. Error Handling
+## Error Handling
 
 ### The `$throw_on_failure` Pattern
 
@@ -371,7 +371,7 @@ htax_add_admin_notice( sprintf( __( 'Failed: %s', 'hypertaxonomy' ), $e->getMess
 
 ---
 
-## 6. Debug & Diagnostics
+## Debug & Diagnostics
 
 ### Debug Logging
 

@@ -12,7 +12,7 @@ For feature descriptions and shortcode references see the rest of the [User Guid
 
 ---
 
-## 1. The Core Abstraction
+## The Core Abstraction
 
 The single most important concept: **HyperTaxonomy operates at the type level, not the instance level.**
 
@@ -35,7 +35,7 @@ The practical test for any relationship you are considering:
 
 ---
 
-## 2. Transitive vs. Non-Transitive Inclusion
+## Transitive vs. Non-Transitive Inclusion
 
 Before choosing a modeling pattern, it helps to understand the fundamental choice HyperTaxonomy makes about how inclusions chain together.
 
@@ -66,7 +66,7 @@ The patterns below all use non-transitive inclusions unless noted otherwise.
 
 ---
 
-## 3. Modeling Patterns
+## Modeling Patterns
 
 
 ### Pattern 1 — Broader / Narrower (Contextual Inclusion)
@@ -237,7 +237,7 @@ Hidden terms are also useful for staging content under a provisional topic label
 
 ---
 
-## 4. Taxonomy Design Principles
+## Taxonomy Design Principles
 
 ### Design for concepts, not for posts
 
@@ -289,7 +289,7 @@ This pattern also applies to categories and any custom taxonomy. A product categ
 
 ---
 
-## 5. Complex Modeling Scenarios
+## Complex Modeling Scenarios
 
 ### Knowledge Base / Technical Documentation
 
@@ -376,7 +376,7 @@ Taxonomies: product_category, product_brand, product_material, product_color
 
 ---
 
-## 6. Working Alongside Other Plugins
+## Working Alongside Other Plugins
 
 HyperTaxonomy operates at the vocabulary level — it defines what taxonomy terms mean in relation to each other. The plugins in this section operate at other levels: post structure, custom fields, page building, e-commerce, content automation, and search. Because they address different problems, they are genuinely complementary.
 
@@ -777,7 +777,7 @@ A common pattern: HT Related Posts for "more on this topic" (taxonomy-driven, th
 
 ---
 
-## 7. Integrating from a Plugin or Theme
+## Integrating from a Plugin or Theme
 
 For plugin and theme authors building their own HyperTaxonomy-aware code, HyperTaxonomy exposes three main extension points:
 
@@ -791,7 +791,7 @@ See the [Developer Reference](../developer-reference/) for full function referen
 
 ---
 
-## 8. No-Code Quick Reference
+## No-Code Quick Reference
 
 One of the advantages of HyperTaxonomy's Gutenberg block integration is that the relationship layer it adds does not require coding to use on frontend pages.
 
@@ -815,7 +815,7 @@ The Post List and Related Posts blocks in particular bridge the gap between Hype
 
 ---
 
-## 9. Performance Considerations
+## Performance Considerations
 
 ### Adding HyperTaxonomy to an existing stack does not multiply database queries
 

@@ -4,7 +4,7 @@ parent: Developer Reference
 nav_order: 2
 ---
 
-## 2. Capabilities & User Roles
+## Capabilities & User Roles
 
 HyperTaxonomy defines six custom capabilities. Always check capabilities using `HyperTaxonomy_Capabilities::current_user_can()` (or the standard `current_user_can()`) rather than hard-coding role checks.
 

@@ -101,14 +101,18 @@ hypertaxonomy/
 │   │   │   └── index.js                      # standalone Edit component; no shared factory; context-aware notice
 │   │   └── build/
 │   │       ├── index.js
-│   │       └── index.asset.php               # no extracted CSS for this block
+│   │       ├── index.asset.php
+│   │       ├── ht-sort-order-options.css
+│   │       └── ht-sort-order-options-rtl.css
 │   ├── ht-power-search/
 │   │   ├── block.json
 │   │   ├── src/
 │   │   │   └── index.js                      # standalone Edit component; ServerSideRender preview; no shared factory
 │   │   └── build/
 │   │       ├── index.js
-│   │       └── index.asset.php               # no extracted CSS for this block
+│   │       ├── index.asset.php
+│   │       ├── ht-power-search.css
+│   │       └── ht-power-search-rtl.css
 │   └── ht-query-group-filter/                # NOT a standalone block — extends core/query and core/latest-posts
 │       ├── block.json                        # supports.inserter:false; editorScript only (no render callback)
 │       ├── src/

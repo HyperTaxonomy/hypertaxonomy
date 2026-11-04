@@ -4,7 +4,7 @@ parent: User Guide
 nav_order: 8
 ---
 
-## 10. Archive & Results Controls
+## Archive & Results Controls
 
 ### [ht_sort_order_options]
 
@@ -192,7 +192,7 @@ When `[ht_filter_options]` is placed as a sibling to a result shortcode's output
 
 ---
 
-## 11. Gutenberg Block Extensions
+## Gutenberg Block Extensions
 
 HyperTaxonomy extends two native WordPress blocks — **Query Loop** and **Latest Posts** — with a Term Group filter panel. No new blocks are added to the inserter; the filter appears as an extra inspector panel on every existing block of either type.
 

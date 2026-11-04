@@ -4,7 +4,7 @@ parent: User Guide
 nav_order: 5
 ---
 
-## 7. Search Features
+## Search Features
 
 
 ### Advanced Search Widget
@@ -462,7 +462,7 @@ When none of these is available, `near:me` is ignored and the visitor is told th
 [ht_search_results id="search-results-cap" columns="2"]
 ```
 
-For AJAX mode, pair with `[ht_search_results id="…"]` — see the **[[ht_search_results]](#ht_search_results)** section below.
+For AJAX mode, pair with `[ht_search_results id="…"]` — see the **[[ht_search_results]](#ht_search_results--shared-ajax-results-container)** section below.
 
 ### [ht_search_results] — Shared AJAX Results Container
 

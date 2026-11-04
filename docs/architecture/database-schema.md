@@ -83,7 +83,7 @@ HyperTaxonomy adds the following indexes to native WordPress tables at activatio
 - `htax_post_date (post_date, post_status, post_type)` - helps date-ordered WP_Query archive results
 - `htax_post_modified (post_modified, post_status, post_type)` - helps modified-date-ordered WP_Query archive results
 
-Note: FULLTEXT indexes for post content scoring (`htax_ft_title`, `htax_ft_content`, `htax_ft_excerpt`, `htax_ft_combined`) are on `wp_htax_post_text` so that FULLTEXT operates on processed plain text rather than raw HTML post content. Processing preserves semantically useful content (link URLs, image alt text, abbreviation expansions) while stripping markup that would otherwise pollute search results.
+Note: FULLTEXT indexes for post content scoring (`htax_ft_pt_title`, `htax_ft_pt_body`, `htax_ft_pt_excerpt`, `htax_ft_pt_all`) are on `wp_htax_post_text` so that FULLTEXT operates on processed plain text rather than raw HTML post content. Processing preserves semantically useful content (link URLs, image alt text, abbreviation expansions) while stripping markup that would otherwise pollute search results.
 
 **`wp_terms`** (checked by index name before creation):
 - `htax_ft_term_name (name)` - FULLTEXT for term name scoring and required/excluded term lookups in search
@@ -312,7 +312,7 @@ The PowerSearch system uses MySQL FULLTEXT indexes for performance with support 
 
 *Cumulative Relevance Scoring:*
 
-Post text fields (title, content, excerpt) use **NATURAL LANGUAGE MODE** so that IDF (inverse document frequency) and document-length normalisation prevent a single high-frequency term from dominating results. A post with "gift" ×600 and an 86 KB body does not outrank a shorter post that covers all query terms meaningfully. Taxonomy term fields continue to use **BOOLEAN MODE** (small corpus, phrase/operator support required). Required and excluded term enforcement for all fields is handled via explicit WHERE clauses — not by relying on the score being zero.
+Post text fields (title, content, excerpt) use **NATURAL LANGUAGE MODE** so that IDF (inverse document frequency) and document-length normalization prevent a single high-frequency term from dominating results. A post with "gift" ×600 and an 86 KB body does not outrank a shorter post that covers all query terms meaningfully. Taxonomy term fields continue to use **BOOLEAN MODE** (small corpus, phrase/operator support required). Required and excluded term enforcement for all fields is handled via explicit WHERE clauses — not by relying on the score being zero.
 
 **Field Score Calculation:**
 - **title_score**: `MATCH(pt.title) AGAINST(nl_query IN NATURAL LANGUAGE MODE) * title_weight`

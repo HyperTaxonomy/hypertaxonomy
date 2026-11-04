@@ -4,7 +4,7 @@ parent: Developer Reference
 nav_order: 6
 ---
 
-## 11. As the Crow Flies Integration
+## As the Crow Flies Integration
 
 HyperTaxonomy ships a built-in integration with the [As the Crow Flies](https://wordpress.org/plugins/as-the-crow-flies/) (ATCF) plugin. ATCF attaches physical locations to taxonomy terms and provides radius-based proximity search. The integration is defined in `includes/integrations/class-atcf-integration.php` and is loaded automatically — no configuration required.
 
@@ -57,11 +57,11 @@ When **Share list of locations** is enabled for a taxonomy in Settings → Hyper
 ]
 ```
 
-Fields within each entry are sparse — only keys with non-empty values are included. `schema:geo` is absent when lat/lng are not set. This data is exposed for peer sites and linked-data consumers; cross-site term matching by location is handled separately via canonical-address URIs (see [Canonical-Address URIs for Cross-Site Term Matching](#canonical-address-uris-for-cross-site-term-matching) below). Renamed from `schema:location` (the colon in the key caused `_fields` ambiguity).
+Fields within each entry are sparse — only keys with non-empty values are included. `schema:geo` is absent when lat/lng are not set. This data is exposed for peer sites and linked-data consumers; cross-site term matching by location is handled separately via canonical-address URIs (see [Canonical-Address URIs for Cross-Site Term Matching](#canonical-address-uris-for-cross-site-term-matching) below).
 
 ### PowerSearch Proximity Operator (near:)
 
-When ATCF is active, `htax_parse_search_query()` recognises proximity operators in PowerSearch queries and in the search widget's text field:
+When ATCF is active, `htax_parse_search_query()` recognizes proximity operators in PowerSearch queries and in the search widget's text field:
 
 | Syntax | Reference point | 10-mile default |
 |---|---|---|
@@ -222,7 +222,7 @@ This is the canonical formatter for `htax_locations`. HyperTaxonomy calls it wit
 
 Cross-site matching of peer/FOAF terms by physical location works through **shared-identifier (URI) matching** — the same mechanism TermConnect uses for knowledge-base identifiers (Wikidata, GeoNames, LCSH) and Social Hashtags & Mentions handles.
 
-ATCF exposes a **canonical address** per location (country + postal code + normalized address line) via `ATCF_Locations::get_canonical_addresses()`. HyperTaxonomy's ATCF integration bridges this into TermConnect by contributing a **canonical-address URI** — e.g. `urn:atcf:place:US:62704:123-main-street` — to the term's TermConnect `_tc_uris` index through TermConnect's `tc_index_extra_uris` filter.
+ATCF exposes a **canonical address** per location (country + postal code + normalized address line) via `ATCF_Locations::get_normalized_addresses()`. HyperTaxonomy's ATCF integration bridges this into TermConnect by contributing a **canonical-address URI** — e.g. `urn:atcf:place:US:62704:123-main-street` — to the term's TermConnect `_tc_uris` index through TermConnect's `tc_index_extra_uris` filter.
 
 Because the URI is derived from the canonical address rather than the term slug or label, the same place matches across sites even when the terms have different slugs and labels. As the Crow Flies itself stays unaware of TermConnect; HyperTaxonomy — which integrates with both — does the bridging.
 

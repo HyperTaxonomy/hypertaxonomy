@@ -4,7 +4,7 @@ parent: User Guide
 nav_order: 7
 ---
 
-## 9. Display Shortcodes
+## Display Shortcodes
 
 Four built-in shortcodes for displaying terms on any page or widget. No dependencies required.
 

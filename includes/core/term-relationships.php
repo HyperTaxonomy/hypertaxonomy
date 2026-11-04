@@ -730,7 +730,7 @@ function htax_get_synonym_terms( $term, bool $include_redirect_data = false ) {
  * Cached as `htax_direct_rel_{slug}_{term_id}`.
  *
  * Valid for 'includes', 'excludes', and non-core types. Do NOT pass 'member_of'
- * (always T→G, use htax_get_term_groups()) or 'redirect' (use htax_get_redirect()).
+ * (always T→G, use htax_get_term_groups()) or 'redirect' (use htax_get_redirect_target()).
  *
  * @since 1.0.0
  * @param int    $term_id Term ID.
@@ -798,7 +798,7 @@ function htax_get_reverse_rel_term_ids( int $term_id, string $slug ): array {
  * Cached as `htax_direct_rel_grp_{slug}_{term_id}`.
  *
  * Valid for 'includes', 'excludes', and non-core types. Do NOT pass 'member_of'
- * (use htax_get_term_groups()) or 'redirect' (use htax_get_redirect()).
+ * (use htax_get_term_groups()) or 'redirect' (use htax_get_redirect_target()).
  *
  * @since 1.0.0
  * @param int    $term_id Term ID.

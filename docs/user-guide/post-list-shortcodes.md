@@ -4,7 +4,7 @@ parent: User Guide
 nav_order: 6
 ---
 
-## 8. Post List Shortcodes
+## Post List Shortcodes
 
 Two shortcodes for displaying posts from the local search index. For fetching posts from peer WordPress sites and RSS/Atom feeds, see the `[tc_peer_posts]` shortcode in the TermConnect documentation.
 

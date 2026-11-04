@@ -4,7 +4,7 @@ parent: Developer Reference
 nav_order: 3
 ---
 
-## 3. Integration API
+## Integration API
 
 `includes/core/integration-api.php` provides a stable public surface for third-party plugins that need to work with HyperTaxonomy's archive expansion logic. Internal cache-invalidation infrastructure (`htax_fire_term_archive_changed`, `htax_fire_archive_changed_on_hierarchy`) lives in `cache.php`.
 
@@ -74,7 +74,7 @@ add_action( 'htax_term_archive_changed', function( $term_id, $taxonomy ) {
 }, 10, 2 );
 ```
 
-See the `htax_term_archive_changed` entry in [Actions Fired by HyperTaxonomy](#actions-fired-by-hypertaxonomy) for the full list of triggers.
+See the `htax_term_archive_changed` entry in [Actions Fired by HyperTaxonomy](actions-filters.html#actions-fired-by-hypertaxonomy) for the full list of triggers.
 
 ### Post Editor Term Badges
 
@@ -114,7 +114,7 @@ Badge rendering is handled by `admin/js/htax-post-edit.js` and `admin/css/htax-p
 ---
 
 
-## 5. Term Icons API
+## Term Icons API
 
 HyperTaxonomy provides a complete PHP API for displaying terms as styled pills with icons. All icon functions accept either a WP_Term object or a term ID.
 
@@ -124,7 +124,7 @@ Icons are raster images (PNG, JPEG, WebP) or SVGs stored as standard WordPress m
 
 **Dimension enforcement** is applied at selection time in the admin UI (`htax-term-icons.js`):
 
-| Image dimensions | Behaviour |
+| Image dimensions | Behavior |
 |---|---|
 | Equal to configured large size | Accepted as-is; attachment ID stored directly. |
 | Larger in either dimension | Crop dialog opens. The user positions a fixed-size selection (no resize, only pan). On confirm, `wp_ajax_htax_crop_term_icon` calls `wp_crop_image()` and creates a new child attachment; the child's ID is stored as the icon. |
@@ -303,7 +303,7 @@ Pills inherit border-radius from **Settings > HyperTaxonomy > Icons** per-taxono
 
 > **Sort & Filter Controls (PHP rendering, DOM structure, JS events)** are documented in the Architecture section: [Sort & Filter Rendering](../architecture/sort-filter-rendering.html).
 
-## 7. Hidden Terms
+## Hidden Terms
 
 ### Automatic Filtering in Native Blocks
 
@@ -427,9 +427,9 @@ Hidden terms are excluded from REST API responses for users who cannot see them 
 ---
 
 
-## 8. Low-Level Relationship Data
+## Low-Level Relationship Data
 
-> **Integration use cases?** If you need to build a `tax_query` from a term's expanded post set, react to archive changes, or adjust term counts in facet navigation, start with [Section 3: Integration API](#3-integration-api) above. The functions below expose HyperTaxonomy's internal relationship model directly and are intended for plugins that need raw relationship data — custom admin UIs, relationship-based features, or building tooling on top of the graph.
+> **Integration use cases?** If you need to build a `tax_query` from a term's expanded post set, react to archive changes, or adjust term counts in facet navigation, start with [Integration API](#integration-api) above. The functions below expose HyperTaxonomy's internal relationship model directly and are intended for plugins that need raw relationship data — custom admin UIs, relationship-based features, or building tooling on top of the graph.
 
 All public functions are prefixed `htax_`. Check `function_exists()` before calling if your code must run without HyperTaxonomy active.
 
@@ -588,7 +588,7 @@ Results are cached in a transient (`htax_sticky_{term_id}`).
 
 ### Term Links
 
-External knowledge-base identifiers (Wikidata, Wikipedia, GeoNames, and more) attached to terms are managed by **TermConnect**. The Term Links API — `tc_get_term_links()`, `tc_get_term_link_uri()`, `tc_get_terms_by_link()`, `tc_get_platform_link_types()`, and related functions — is documented in the [TermConnect Developer Reference](https://wordpress.org/plugins/termconnect/).
+External knowledge-base identifiers (Wikidata, Wikipedia, GeoNames, and more) attached to terms are managed by **TermConnect**. The Term Links API — `tc_get_term_links()`, `tc_get_link_uri()`, `tc_get_terms_by_uri()`, `tc_get_platform_link_types()`, and related functions — is documented in the [TermConnect Developer Reference](https://hypertaxonomy.org/termconnect/developer-reference/term-links-api.html).
 
 HyperTaxonomy exposes three PHP abstraction filters. Provider plugins hook these to make their data available to same-site consumers (WP-SKOS, search, etc.) without those consumers needing to know the source plugin — and consumers read the matching `htax_get_*()` getter without knowing the provider:
 

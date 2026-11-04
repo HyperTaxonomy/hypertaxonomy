@@ -4,7 +4,7 @@ parent: User Guide
 nav_order: 1
 ---
 
-## 1. Introduction
+## Introduction
 
 ### Terms and Taxonomies
 
@@ -51,7 +51,7 @@ HyperTaxonomy adds **explicit term-to-term relationships** that work alongside â
 
 ---
 
-## 2. Core Concepts
+## Core Concepts
 
 ### Relationship Types
 

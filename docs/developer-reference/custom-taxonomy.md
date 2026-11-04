@@ -4,7 +4,7 @@ parent: Developer Reference
 nav_order: 1
 ---
 
-## 1. Custom Taxonomy Integration
+## Custom Taxonomy Integration
 
 ### Registering a Custom Taxonomy for HyperTaxonomy
 
@@ -50,7 +50,7 @@ if ( ! empty( $ids ) ) {
 
 HyperTaxonomy handles this automatically on native term archives when inclusions are enabled. This pattern is for custom queries in themes or plugins.
 
-For secondary queries in third-party plugins that should automatically expand alongside archive queries, see `htax_expand_secondary_query` in the [Integration API](#3-integration-api) section.
+For secondary queries in third-party plugins that should automatically expand alongside archive queries, see `htax_expand_secondary_query` in the [Integration API](php-api.html#integration-api) section.
 
 ### Category Hierarchy in Searches
 

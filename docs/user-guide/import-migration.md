@@ -4,7 +4,7 @@ parent: User Guide
 nav_order: 9
 ---
 
-## 12. Import & Export
+## Import & Export
 
 **Settings > HyperTaxonomy > Export / Import** has four subtabs: **Export**, **Import** (HyperTaxonomy JSON), **Migrate** (Tag Groups import), and **Sync** (how HyperTaxonomy stays in step with Tag Groups afterward).
 
@@ -28,7 +28,7 @@ What does not transfer: term icons, sticky post assignments, per-term settings (
 
 ---
 
-## 13. Migrating from Tag Groups
+## Migrating from Tag Groups
 
 Tag Groups was rebranded "PublishPress Tag Groups" in October 2026 (same plugin, same database format) — this section uses "Tag Groups" throughout, and applies equally to installs running either name.
 

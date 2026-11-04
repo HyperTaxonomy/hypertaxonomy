@@ -22,7 +22,7 @@ Terms are identified by slug for cross-site compatibility.
 2. Review the preview showing what will be imported
 3. Click **Import**
 
-What transfers: inclusion relationships, exclusion relationships, redirects, group memberships.
+What transfers: terms and their hierarchy (in any order in the file; parents are ignored on flat taxonomies), inclusion relationships, exclusion relationships, redirects, group memberships, and custom relationship types with their relationships.
 
 What does not transfer: term icons, sticky post assignments, per-term settings (show description, posts per page override).
 

@@ -43,7 +43,7 @@ function htax_latest_posts_group_filter( $pre_render, $parsed_block ) {
 
     $group_ids = array_values(
         array_filter(
-            array_map( 'intval', explode( ',', $group_ids_str ) )
+            array_map( 'intval', is_array( $group_ids_str ) ? $group_ids_str : explode( ',', (string) $group_ids_str ) )
         )
     );
 
@@ -108,7 +108,7 @@ function htax_query_loop_group_filter( $query_vars, $block, $page ) {
 
     $group_ids = array_values(
         array_filter(
-            array_map( 'intval', explode( ',', $group_ids_str ) )
+            array_map( 'intval', is_array( $group_ids_str ) ? $group_ids_str : explode( ',', (string) $group_ids_str ) )
         )
     );
 

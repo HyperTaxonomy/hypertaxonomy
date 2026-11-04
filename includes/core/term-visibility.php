@@ -47,7 +47,7 @@ function htax_can_see_hidden_terms( $taxonomy = '' ) {
         case 'all':
             return true;
         case 'editors':
-            return current_user_can( 'edit_posts' );
+            return current_user_can( 'edit_others_posts' );
         case 'none':
         default:
             return false;

@@ -216,7 +216,7 @@ Hidden term logic: permission checks, write-time cascade, and frontend query fil
 
 **Read / permission checks:**
 - `htax_is_term_hidden( $term_id )` - Returns true if the term has `_htax_is_hidden` meta set
-- `htax_can_see_hidden_terms( $taxonomy = '' )` - Returns true if the current user holds `manage_term_visibility` capability or meets the site-wide role threshold (editors / all / none)
+- `htax_can_see_hidden_terms( $taxonomy = '' )` - Returns true if the current user holds `manage_term_visibility` capability or meets the site-wide role threshold (`editors` = `edit_others_posts`, `all`, `none`)
 - `htax_get_all_hidden_term_ids()` - Returns all hidden term IDs from the DB; cached via persistent transient; invalidated on any visibility change
 - `htax_get_visible_term_ids( $term_ids )` - Filters an array of term IDs, removing hidden ones for unprivileged users
 - `htax_get_visible_wp_descendants( int $term_id, string $taxonomy )` - Returns WP descendants of a term excluding those marked hidden; relies on write-time cascade for completeness
@@ -632,7 +632,7 @@ Loaded unconditionally (outside `is_admin()`) so the REST field is available dur
 **Import (import-hypertaxonomy.php):**
 - `htax_validate_import_data( $data )` - Validate JSON structure and version
 - `htax_preview_import( $data )` - Analyze import file and return preview summary
-- `htax_process_import( $data, $options )` - Core import logic (3 phases: terms, relationships, post assignments)
+- `htax_process_import( $data, $options )` - Core import logic: terms, then a second pass for parents listed after their children (ignored on flat taxonomies), custom relationship types, relationships, post assignments
 - `htax_process_import_with_output( $data, $options )` - Import with HTML progress output
 - `htax_import_icon_from_url( $url )` - Match icons by filename from URL
 
@@ -911,7 +911,7 @@ The two priority-10 handlers are independent (different tables) and have no orde
 | Priority | Handler | Action |
 |----------|---------|--------|
 | 10 | `htax_cleanup_sticky_on_delete` | Delete sticky post meta (`delete_post` only) |
-| 10 | `on_post_delete` (search index) | Delete from search index (both hooks) |
+| 10 | `on_post_delete` (search index) | Delete from the search index and `wp_htax_post_text` (both hooks) |
 
 ### Event: `save_post`
 

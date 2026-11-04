@@ -99,7 +99,9 @@ class HyperTaxonomy_Search_Index_Manager {
      * When post is deleted
      */
     public function on_post_delete( $post_id ) {
+        global $wpdb;
         $this->remove_post_from_search_index( $post_id );
+        $wpdb->delete( $wpdb->prefix . 'htax_post_text', array( 'post_id' => $post_id ), array( '%d' ) );
     }
 
     /**

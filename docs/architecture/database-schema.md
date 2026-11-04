@@ -59,7 +59,7 @@ All of these are removed on uninstall (the dismissals for every user; the `htax/
   - `max_sticky_posts` - Global maximum sticky posts per archive (default: 10)
   - `disable_sticky_styles` - Whether to disable default sticky post styles
   - `show_contributing_terms` - Show contributing terms in archive titles
-  - `hidden_terms_visibility` - Hidden term visibility setting (all/editors/none)
+  - `hidden_terms_visibility` - Hidden term visibility setting (all/editors/none); `editors` means users with `edit_others_posts`
   - `expand_secondary_queries` - Enable automatic expansion of secondary/third-party queries (default: off); when on, `htax_expand_secondary_query` and `htax_adjust_term_counts` become active
   - *(Post editor display preferences are now per-user, stored in the Gutenberg `core/preferences` store under `htax/post-edit` — not in `htax_settings`. The five toggles (Inclusion Badges, Container Badges, Redirect Indicators, Hidden Terms, Sticky Pushpins) are accessible via the block editor's ··· menu.)*
   - `advertise_ht_presence` (bool, default `true`) — whether to add the `X-HyperTaxonomy` header to REST responses; disabling opts the site out of peer discovery
@@ -250,7 +250,7 @@ Why a separate table? MySQL's FULLTEXT index operates on the raw stored text. `w
 Storing the sort columns (`post_date_gmt`, `post_modified_gmt`, `post_author`, `comment_count`, `last_comment_gmt`) in the same table eliminates the JOIN to `wp_posts` on every query. The table stores published, draft, pending, future, and private posts. All public-facing queries filter `pt.post_status = 'publish'`; the draft rows exist so the post editor can query content-based tag suggestions against the same table.
 
 - Columns: `post_id` (PK), `post_status`, `post_type`, `post_date_gmt`, `post_modified_gmt`, `post_author`, `comment_count`, `last_comment_gmt` (NULL = no approved comments), `title` (plain text), `body` (`post_content` processed by `htax_extract_post_body()`), `excerpt`
-- Populated on rebuild via PHP loop across published + draft + pending + future + private posts; kept in sync by `htax_sync_post_text_row` (`save_post` hook, uses `htax_extract_post_body()`) and `htax_sync_post_text_comment` (`wp_update_comment_count` hook, updates `comment_count` + `last_comment_gmt` in one write)
+- Populated on rebuild via PHP loop across published + draft + pending + future + private posts; kept in sync by `htax_sync_post_text_row` (`save_post` hook, uses `htax_extract_post_body()`) and `htax_sync_post_text_comment` (`wp_update_comment_count` hook, updates `comment_count` + `last_comment_gmt` in one write); the row is removed when the post is trashed or deleted (`on_post_delete`)
 - FULLTEXT indexes: `htax_ft_pt_title (title)`, `htax_ft_pt_body (body)`, `htax_ft_pt_excerpt (excerpt)`, `htax_ft_pt_all (title, body, excerpt)`
 - B-tree indexes: `htax_pt_status_type`, `htax_pt_date`, `htax_pt_modified`, `htax_pt_comments`, `htax_pt_last_comment`
 

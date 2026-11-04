@@ -132,6 +132,7 @@ function htax_merge_terms( array $source_ids, int $target_id, string $taxonomy, 
 
         $source_data[ $source_id ] = array(
             'name'      => $source_term->name,
+            'slug'      => $source_term->slug,
             'tt_id'     => $source_tt_id,
             'group_ids' => array_map( 'intval', $group_ids ),
         );
@@ -271,19 +272,34 @@ function htax_merge_terms( array $source_ids, int $target_id, string $taxonomy, 
         return new WP_Error( 'htax_merge_db_error', __( 'Database error during term merge; all changes rolled back.', 'hypertaxonomy' ) );
     }
 
+    $wpdb->query( 'COMMIT' );
+
     // ----------------------------------------------------------------
-    // 5. Create redirect stubs (optional) — inside the transaction
-    //    Stubs are created before COMMIT so that the transaction covers
-    //    both relationship transfers and redirect creation atomically.
-    //    If stub creation returns a WP_Error the transaction is rolled
-    //    back before any term is deleted.
+    // 5. Delete source terms
+    //    - on_term_deleted() (priority 5) removes search index entries
+    //    - htax_cleanup_deleted_term() (priority 10) removes all relationship rows
     // ----------------------------------------------------------------
 
-    $redirects_created  = 0;
-    $resolved_target_id = $target_id;
+    $terms_deleted = 0;
+    foreach ( $source_ids as $source_id ) {
+        $result = wp_delete_term( $source_id, $taxonomy );
+        if ( ! is_wp_error( $result ) && $result ) {
+            $terms_deleted++;
+        }
+    }
+
+    // ----------------------------------------------------------------
+    // 6. Create redirect stubs (optional)
+    //    After the deletes: a stub takes its source term's name and slug,
+    //    which are only free once the source term is gone.
+    // ----------------------------------------------------------------
+
+    $redirects_created = 0;
+
     if ( $create_redirect ) {
         // Resolve target's redirect chain to find the ultimate non-redirect term.
-        $hops = 0;
+        $resolved_target_id = $target_id;
+        $hops               = 0;
         while ( $hops < 10 ) {
             $next = htax_get_redirect_target( $resolved_target_id );
             if ( ! $next ) {
@@ -301,29 +317,11 @@ function htax_merge_terms( array $source_ids, int $target_id, string $taxonomy, 
                 $resolved_target_id,
                 $taxonomy
             );
-            if ( is_wp_error( $stub_id ) ) {
-                $wpdb->query( 'ROLLBACK' );
-                return $stub_id;
-            }
             if ( $stub_id ) {
+                // Keep the old archive URL when the source had a custom slug.
+                wp_update_term( $stub_id, $taxonomy, array( 'slug' => $data['slug'] ) );
                 $redirects_created++;
             }
-        }
-    }
-
-    $wpdb->query( 'COMMIT' );
-
-    // ----------------------------------------------------------------
-    // 6. Delete source terms
-    //    - on_term_deleted() (priority 5) removes search index entries
-    //    - htax_cleanup_deleted_term() (priority 10) removes all relationship rows
-    // ----------------------------------------------------------------
-
-    $terms_deleted = 0;
-    foreach ( $source_ids as $source_id ) {
-        $result = wp_delete_term( $source_id, $taxonomy );
-        if ( ! is_wp_error( $result ) && $result ) {
-            $terms_deleted++;
         }
     }
 

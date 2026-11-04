@@ -29,7 +29,7 @@ function htax_filter_term_links( $term_links, $taxonomy = '' ) {
     if ( 'all' === $visibility ) {
         $can_see_hidden = true;
     } elseif ( 'editors' === $visibility ) {
-        $can_see_hidden = current_user_can( 'edit_posts' );
+        $can_see_hidden = current_user_can( 'edit_others_posts' );
     }
 
     // Allow themes to override (taxonomy may be empty if not passed by filter)

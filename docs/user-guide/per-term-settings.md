@@ -28,7 +28,7 @@ Mark individual terms as **hidden** to use them for internal organization withou
 
 | Setting | Who can see hidden terms |
 |---------|-------------------------|
-| `editors` (default) | Users with `edit_posts` capability |
+| `editors` (default) | Users with the `edit_others_posts` capability (Editors and Administrators) |
 | `all` | Everyone (useful for testing only) |
 | `none` | No one (admin can still edit terms but they appear hidden everywhere) |
 
@@ -178,7 +178,7 @@ Permanently consolidate duplicate or outdated terms into a single canonical term
 - Inclusion and exclusion relationships involving source terms are transferred to the target term
 - Source terms are deleted
 
-**Redirect stubs (recommended):** When enabled, a new redirect term is created with each source term's name, pointing to the target. Old archive URLs (e.g. `/tag/old-name/`) then 301-redirect to the target's archive, preserving SEO value and preventing broken links. If the target term is itself a redirect, stubs point directly to the chain's final destination.
+**Redirect stubs (recommended):** When enabled, a new redirect term is created with each source term's name and slug, pointing to the target. Old archive URLs (e.g. `/tag/old-name/`) then 301-redirect to the target's archive, preserving SEO value and preventing broken links. If the target term is itself a redirect, stubs point directly to the chain's final destination.
 
 **Warning:** This operation is permanent and cannot be undone. Back up your database before merging.
 

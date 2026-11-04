@@ -181,6 +181,9 @@ function htax_process_import( $data, $options = array() ) {
     // Term ID mapping (slug+taxonomy => term_id)
     $term_map = array();
 
+    // Terms whose parent isn't in the database yet: the file may list children first.
+    $pending_parents = array();
+
     // Import terms
     foreach ( $data['terms'] as $term_data ) {
         if ( ! isset( $term_data['taxonomy'], $term_data['slug'], $term_data['name'] ) ) {
@@ -213,10 +216,14 @@ function htax_process_import( $data, $options = array() ) {
                 );
 
                 // Handle parent
-                if ( isset( $term_data['parent_slug'] ) && $term_data['parent_slug'] ) {
+                if ( ! is_taxonomy_hierarchical( $taxonomy ) ) {
+                    $args['parent'] = 0;
+                } elseif ( isset( $term_data['parent_slug'] ) && $term_data['parent_slug'] ) {
                     $parent_term = get_term_by( 'slug', $term_data['parent_slug'], $taxonomy );
                     if ( $parent_term ) {
                         $args['parent'] = $parent_term->term_id;
+                    } else {
+                        $pending_parents[ $existing_term->term_id ] = array( $taxonomy, $term_data['parent_slug'] );
                     }
                 } else {
                     $args['parent'] = 0;
@@ -249,10 +256,13 @@ function htax_process_import( $data, $options = array() ) {
             );
 
             // Handle parent
-            if ( isset( $term_data['parent_slug'] ) && $term_data['parent_slug'] ) {
+            $missing_parent = '';
+            if ( is_taxonomy_hierarchical( $taxonomy ) && isset( $term_data['parent_slug'] ) && $term_data['parent_slug'] ) {
                 $parent_term = get_term_by( 'slug', $term_data['parent_slug'], $taxonomy );
                 if ( $parent_term ) {
                     $args['parent'] = $parent_term->term_id;
+                } else {
+                    $missing_parent = $term_data['parent_slug'];
                 }
             }
 
@@ -271,6 +281,10 @@ function htax_process_import( $data, $options = array() ) {
 
             $term_id = $result['term_id'];
             $stats['terms_created']++;
+
+            if ( '' !== $missing_parent ) {
+                $pending_parents[ $term_id ] = array( $taxonomy, $missing_parent );
+            }
         }
 
         // Store term ID mapping
@@ -326,6 +340,31 @@ function htax_process_import( $data, $options = array() ) {
         }
     }
 
+    // Now that every term exists, set the parents that were listed after their children.
+    foreach ( $pending_parents as $child_id => $pending ) {
+        list( $taxonomy, $parent_slug ) = $pending;
+        $parent_term = get_term_by( 'slug', $parent_slug, $taxonomy );
+        if ( ! $parent_term ) {
+            $stats['errors'][] = sprintf(
+                /* translators: 1: parent term slug, 2: taxonomy */
+                __( 'Parent term "%1$s" not found in %2$s', 'hypertaxonomy' ),
+                $parent_slug,
+                $taxonomy
+            );
+            continue;
+        }
+        $result = wp_update_term( $child_id, $taxonomy, array( 'parent' => $parent_term->term_id ) );
+        if ( is_wp_error( $result ) ) {
+            $stats['errors'][] = sprintf(
+                /* translators: 1: parent term slug, 2: taxonomy, 3: error message */
+                __( 'Could not set parent "%1$s" in %2$s: %3$s', 'hypertaxonomy' ),
+                $parent_slug,
+                $taxonomy,
+                $result->get_error_message()
+            );
+        }
+    }
+
     // Register any custom relationship types from the export that are not yet known locally.
     // Skips core types and types already registered.
     if ( ! empty( $data['relationship_types'] ) && is_array( $data['relationship_types'] ) ) {
@@ -336,7 +375,7 @@ function htax_process_import( $data, $options = array() ) {
             if ( htax_get_relationship_type( $slug ) ) {
                 continue; // Already registered (built-in or previously imported).
             }
-            $result = htax_set_custom_relationship_type( $slug, $type_args );
+            $result = htax_set_custom_relationship_type( $slug, $type_args, true );
             if ( is_wp_error( $result ) ) {
                 $stats['errors'][] = sprintf(
                     __( 'Could not recreate relationship type "%s": %s', 'hypertaxonomy' ),

@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: hypertaxonomy 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-30 08:34-0400\n"
-"PO-Revision-Date: 2026-10-30 08:49-0400\n"
+"POT-Creation-Date: 2026-11-04 03:32-0500\n"
+"PO-Revision-Date: 2026-11-04 03:30-0500\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: ru\n"
@@ -695,109 +695,119 @@ msgstr ""
 
 #: includes/admin/import-hypertaxonomy.php:133
 #: includes/admin/import-hypertaxonomy.php:134
-#: includes/admin/import-hypertaxonomy.php:570
+#: includes/admin/import-hypertaxonomy.php:609
 msgid "Unknown"
 msgstr "Не распознано"
 
-#: includes/admin/import-hypertaxonomy.php:196
+#: includes/admin/import-hypertaxonomy.php:199
 #, php-format
 msgid "Taxonomy \"%s\" does not exist, skipping term \"%s\""
 msgstr "Термин «%2$s» пропущен, потому что таксономии «%1$s» не существует"
 
-#: includes/admin/import-hypertaxonomy.php:229
+#: includes/admin/import-hypertaxonomy.php:236
 #, php-format
 msgid "Error updating term \"%s\" in %s: %s"
 msgstr "Ошибка при обновлении термина «%s» в %s: %s"
 
-#: includes/admin/import-hypertaxonomy.php:263
+#: includes/admin/import-hypertaxonomy.php:273
 #, php-format
 msgid "Error creating term \"%s\" in %s: %s"
 msgstr "Ошибка при создании термина «%s» в %s: %s"
 
-#: includes/admin/import-hypertaxonomy.php:342
+#: includes/admin/import-hypertaxonomy.php:350
+#, php-format
+msgid "Parent term \"%1$s\" not found in %2$s"
+msgstr "Родительский термин «%1$s» не найден в %2$s"
+
+#: includes/admin/import-hypertaxonomy.php:360
+#, php-format
+msgid "Could not set parent \"%1$s\" in %2$s: %3$s"
+msgstr "Не удалось задать родительский термин «%1$s» в %2$s: %3$s"
+
+#: includes/admin/import-hypertaxonomy.php:381
 #, php-format
 msgid "Could not recreate relationship type \"%s\": %s"
 msgstr "Не удалось воссоздать тип связи «%s»: %s"
 
-#: includes/admin/import-hypertaxonomy.php:368
+#: includes/admin/import-hypertaxonomy.php:407
 #, php-format
 msgid "Source taxonomy \"%s\" does not exist, skipping relationship: %s → %s"
 msgstr ""
 "Связь пропущена: %2$s → %3$s, потому что исходной таксономии «%1$s» не "
 "существует"
 
-#: includes/admin/import-hypertaxonomy.php:379
+#: includes/admin/import-hypertaxonomy.php:418
 #, php-format
 msgid "Target taxonomy \"%s\" does not exist, skipping relationship: %s → %s"
 msgstr ""
 "Связь пропущена: %2$s → %3$s, потому что целевой таксономии «%1$s» не "
 "существует"
 
-#: includes/admin/import-hypertaxonomy.php:399
+#: includes/admin/import-hypertaxonomy.php:438
 #, php-format
 msgid "Source term not found, skipping relationship: %s → %s"
 msgstr "Связь пропущена: %s → %s, потому что исходный термин не найден."
 
-#: includes/admin/import-hypertaxonomy.php:416
+#: includes/admin/import-hypertaxonomy.php:455
 #, php-format
 msgid "Target term not found, skipping relationship: %s → %s"
 msgstr "Связь пропущена: %s → %s, потому что целевой термин не найден."
 
-#: includes/admin/import-hypertaxonomy.php:463
+#: includes/admin/import-hypertaxonomy.php:502
 #, php-format
 msgid "Error creating relationship from %s to %s: %s"
 msgstr "Ошибка при создании связи от %s к %s: %s"
 
-#: includes/admin/import-hypertaxonomy.php:557
+#: includes/admin/import-hypertaxonomy.php:596
 msgid "Import Progress"
 msgstr "Ход импорта"
 
-#: includes/admin/import-hypertaxonomy.php:563
-#: includes/admin/import-hypertaxonomy.php:584
+#: includes/admin/import-hypertaxonomy.php:602
+#: includes/admin/import-hypertaxonomy.php:623
 #: includes/admin/tag-groups-migrate-ui.php:181
 msgid "Error:"
 msgstr "Ошибка:"
 
-#: includes/admin/import-hypertaxonomy.php:569
+#: includes/admin/import-hypertaxonomy.php:608
 #, php-format
 msgid "Importing from: %s"
 msgstr "Импорт из: %s"
 
-#: includes/admin/import-hypertaxonomy.php:574
+#: includes/admin/import-hypertaxonomy.php:613
 #, php-format
 msgid "Found %d terms and %d relationships to process..."
 msgstr "Найдено %d терминов и %d связей для обработки…"
 
-#: includes/admin/import-hypertaxonomy.php:594
-#: includes/admin/import-hypertaxonomy.php:618
+#: includes/admin/import-hypertaxonomy.php:633
+#: includes/admin/import-hypertaxonomy.php:657
 msgid "Warnings:"
 msgstr "Предупреждения:"
 
-#: includes/admin/import-hypertaxonomy.php:604
+#: includes/admin/import-hypertaxonomy.php:643
 msgid "Import Complete!"
 msgstr "Импорт завершён!"
 
-#: includes/admin/import-hypertaxonomy.php:607
+#: includes/admin/import-hypertaxonomy.php:646
 msgid "Terms Created:"
 msgstr "Создано терминов:"
 
-#: includes/admin/import-hypertaxonomy.php:608
+#: includes/admin/import-hypertaxonomy.php:647
 msgid "Terms Updated:"
 msgstr "Обновлено терминов:"
 
-#: includes/admin/import-hypertaxonomy.php:609
+#: includes/admin/import-hypertaxonomy.php:648
 msgid "Terms Skipped:"
 msgstr "Пропущено терминов:"
 
-#: includes/admin/import-hypertaxonomy.php:610
+#: includes/admin/import-hypertaxonomy.php:649
 msgid "Relationships Created:"
 msgstr "Создано связей между терминами:"
 
-#: includes/admin/import-hypertaxonomy.php:611
+#: includes/admin/import-hypertaxonomy.php:650
 msgid "Relationships Skipped:"
 msgstr "Пропущено связей между терминами:"
 
-#: includes/admin/import-hypertaxonomy.php:614
+#: includes/admin/import-hypertaxonomy.php:653
 msgid "Posts Assigned:"
 msgstr "Создано связей между терминами и записями:"
 
@@ -1398,7 +1408,7 @@ msgstr "HyperTaxonomy"
 msgid "Features"
 msgstr "Функции"
 
-#: includes/admin/settings.php:368 blocks/ht-sort-order-options/src/index.js:80
+#: includes/admin/settings.php:368 blocks/ht-sort-order-options/src/index.js:81
 #: blocks/ht-term-cloud/src/index.js:19 blocks/ht-term-groups/src/index.js:21
 #: blocks/ht-term-index/src/index.js:20 blocks/ht-term-list/src/index.js:22
 #: blocks/shared/post-list-edit.js:288
@@ -1422,7 +1432,7 @@ msgstr "Кэширование"
 msgid "Export / Import"
 msgstr "Экспорт / Импорт"
 
-#: includes/admin/settings.php:373 blocks/ht-power-search/src/index.js:130
+#: includes/admin/settings.php:373 blocks/ht-power-search/src/index.js:131
 msgid "Advanced"
 msgstr "Расширенные настройки"
 
@@ -3872,7 +3882,7 @@ msgstr "Добавить критерий сортировки"
 #: includes/shortcodes/class-filter-options.php:139
 #: includes/shortcodes/class-filter-options.php:1076
 #: includes/shortcodes/class-sort-order.php:39
-#: blocks/ht-sort-order-options/src/index.js:17
+#: blocks/ht-sort-order-options/src/index.js:18
 msgid "Date"
 msgstr "Дата"
 
@@ -3881,7 +3891,7 @@ msgid "Last modified"
 msgstr "Время последнего изменения"
 
 #: includes/admin/term-edit.php:609 includes/shortcodes/class-sort-order.php:41
-#: blocks/ht-sort-order-options/src/index.js:19 blocks/shared/components.js:150
+#: blocks/ht-sort-order-options/src/index.js:20 blocks/shared/components.js:150
 msgid "Title"
 msgstr "Заголовок"
 
@@ -3889,12 +3899,12 @@ msgstr "Заголовок"
 #: includes/shortcodes/class-filter-options.php:184
 #: includes/shortcodes/class-filter-options.php:1088
 #: includes/shortcodes/class-sort-order.php:42
-#: blocks/ht-sort-order-options/src/index.js:20 blocks/shared/components.js:151
+#: blocks/ht-sort-order-options/src/index.js:21 blocks/shared/components.js:151
 msgid "Author"
 msgstr "Автор"
 
 #: includes/admin/term-edit.php:611 includes/shortcodes/class-sort-order.php:43
-#: blocks/ht-sort-order-options/src/index.js:21
+#: blocks/ht-sort-order-options/src/index.js:22
 msgid "Comments"
 msgstr "Количество комментариев"
 
@@ -4203,8 +4213,8 @@ msgstr ""
 #: includes/shortcodes/class-sort-order.php:100
 #: includes/shortcodes/class-sort-order.php:190
 #: includes/shortcodes/class-sort-order.php:191
-#: blocks/ht-sort-order-options/src/index.js:105
-#: blocks/ht-sort-order-options/src/index.js:113
+#: blocks/ht-sort-order-options/src/index.js:106
+#: blocks/ht-sort-order-options/src/index.js:114
 msgid "Sort"
 msgstr "Сортировка"
 
@@ -5015,7 +5025,7 @@ msgstr "встроенную функцию слияния терминов Hype
 #: includes/shortcodes/class-filter-options.php:162
 #: includes/shortcodes/class-filter-options.php:1082
 #: includes/shortcodes/class-sort-order.php:40
-#: blocks/ht-sort-order-options/src/index.js:18
+#: blocks/ht-sort-order-options/src/index.js:19
 msgid "Modified"
 msgstr "Дата изменения"
 
@@ -5056,12 +5066,12 @@ msgid "Next »"
 msgstr "Следующая »"
 
 #: includes/shortcodes/class-sort-order.php:44
-#: blocks/ht-sort-order-options/src/index.js:22
+#: blocks/ht-sort-order-options/src/index.js:23
 msgid "Latest Comment"
 msgstr "Самый свежий комментарий"
 
 #: includes/shortcodes/class-sort-order.php:45
-#: blocks/ht-sort-order-options/src/index.js:23
+#: blocks/ht-sort-order-options/src/index.js:24
 msgid "Latest Activity"
 msgstr "Самая свежая запись или комментарий"
 
@@ -5085,83 +5095,83 @@ msgstr "Таксономия групп терминов не зарегистр
 msgid "No valid taxonomies specified."
 msgstr "Не указано ни одной допустимой таксономии."
 
-#: blocks/ht-power-search/src/index.js:36
+#: blocks/ht-power-search/src/index.js:37
 msgid "Search Form"
 msgstr "Форма поиска"
 
-#: blocks/ht-power-search/src/index.js:38
+#: blocks/ht-power-search/src/index.js:39
 msgid "Placeholder text"
 msgstr "Текст-заполнитель"
 
-#: blocks/ht-power-search/src/index.js:45
+#: blocks/ht-power-search/src/index.js:46
 msgid "Button label (empty = Enter key only)"
 msgstr "Подпись кнопки (пусто = только клавиша Enter)"
 
-#: blocks/ht-power-search/src/index.js:52
+#: blocks/ht-power-search/src/index.js:53
 msgid "Match mode"
 msgstr "Режим интерпретации запроса"
 
-#: blocks/ht-power-search/src/index.js:55
+#: blocks/ht-power-search/src/index.js:56
 msgid "Any word (OR)"
 msgstr "Любое слово (дизъюнкция — «ИЛИ»)"
 
-#: blocks/ht-power-search/src/index.js:56
+#: blocks/ht-power-search/src/index.js:57
 msgid "All words (AND)"
 msgstr "Все слова (конъюнкция — «И»)"
 
-#: blocks/ht-power-search/src/index.js:62
+#: blocks/ht-power-search/src/index.js:63
 msgid "Minimum query length"
 msgstr "Минимальная длина запроса"
 
-#: blocks/ht-power-search/src/index.js:70
+#: blocks/ht-power-search/src/index.js:71
 msgid "Results"
 msgstr "Результаты"
 
-#: blocks/ht-power-search/src/index.js:72
+#: blocks/ht-power-search/src/index.js:73
 msgid "Search in"
 msgstr "Искать в"
 
-#: blocks/ht-power-search/src/index.js:75
+#: blocks/ht-power-search/src/index.js:76
 msgid "All fields"
 msgstr "Все поля"
 
-#: blocks/ht-power-search/src/index.js:76
+#: blocks/ht-power-search/src/index.js:77
 msgid "Title only"
 msgstr "Только в заголовке"
 
-#: blocks/ht-power-search/src/index.js:77
+#: blocks/ht-power-search/src/index.js:78
 msgid "Content only"
 msgstr "Только в содержимом"
 
-#: blocks/ht-power-search/src/index.js:78
+#: blocks/ht-power-search/src/index.js:79
 msgid "Excerpt only"
 msgstr "Только в отрывке"
 
-#: blocks/ht-power-search/src/index.js:79
+#: blocks/ht-power-search/src/index.js:80
 msgid "Tags only"
 msgstr "Только в метках"
 
-#: blocks/ht-power-search/src/index.js:80
+#: blocks/ht-power-search/src/index.js:81
 msgid "Categories only"
 msgstr "Только в рубриках"
 
-#: blocks/ht-power-search/src/index.js:86 blocks/shared/post-list-edit.js:189
+#: blocks/ht-power-search/src/index.js:87 blocks/shared/post-list-edit.js:189
 msgid "Posts per page"
 msgstr "Количество записей на странице"
 
-#: blocks/ht-power-search/src/index.js:94
+#: blocks/ht-power-search/src/index.js:95
 msgid "Max results across all pages (0 = no cap)"
 msgstr "Максимум результатов на всех страницах (0 = без ограничения)"
 
-#: blocks/ht-power-search/src/index.js:102 blocks/shared/post-list-edit.js:201
+#: blocks/ht-power-search/src/index.js:103 blocks/shared/post-list-edit.js:201
 msgid "Sort order"
 msgstr "Порядок сортировки"
 
-#: blocks/ht-power-search/src/index.js:109
+#: blocks/ht-power-search/src/index.js:110
 msgid "Minimum relevance score (0–1)"
 msgstr "Минимальная оценка релевантности (0–1)"
 
-#: blocks/ht-power-search/src/index.js:117
+#: blocks/ht-power-search/src/index.js:118
 msgid ""
 "Display options (thumbnail, columns, format, etc.) are configured on the "
 "[ht_search_results] shortcode placed separately on the page."
@@ -5169,15 +5179,15 @@ msgstr ""
 "Параметры отображения (миниатюра, столбцы, формат и т. д.) настраиваются в "
 "шорткоде [ht_search_results], размещённом отдельно на странице."
 
-#: blocks/ht-power-search/src/index.js:120
+#: blocks/ht-power-search/src/index.js:121
 msgid "AJAX Mode"
 msgstr "Режим AJAX"
 
-#: blocks/ht-power-search/src/index.js:122
+#: blocks/ht-power-search/src/index.js:123
 msgid "AJAX container ID"
 msgstr "ID контейнера AJAX"
 
-#: blocks/ht-power-search/src/index.js:123
+#: blocks/ht-power-search/src/index.js:124
 msgid ""
 "If set, results load via AJAX into this container ID. Place a "
 "[ht_search_results id=\"…\"] shortcode with the same ID elsewhere on the "
@@ -5187,12 +5197,12 @@ msgstr ""
 "Разместите шорткод [ht_search_results id=\"…\"] с тем же ID в другом месте "
 "страницы. Оставьте пустым для режима POST (результаты появляются под формой)."
 
-#: blocks/ht-power-search/src/index.js:132
+#: blocks/ht-power-search/src/index.js:133
 msgid "Country code for near: operator (ISO 3166-1, e.g. US, CA, GB)"
 msgstr ""
 "Код страны для оператора near: (в формате ISO 3166-1, например: US, CA, GB)"
 
-#: blocks/ht-power-search/src/index.js:133
+#: blocks/ht-power-search/src/index.js:134
 msgid ""
 "Used to validate postal codes in near:XXXXX queries and look up the correct "
 "centroid. Default: US."
@@ -5200,8 +5210,8 @@ msgstr ""
 "Используется для проверки почтовых индексов в запросах near:XXXXX и поиска "
 "правильного центроида. По умолчанию: US."
 
-#: blocks/ht-power-search/src/index.js:140
-#: blocks/ht-sort-order-options/src/index.js:119
+#: blocks/ht-power-search/src/index.js:141
+#: blocks/ht-sort-order-options/src/index.js:120
 #: blocks/ht-term-cloud/src/index.js:73 blocks/ht-term-groups/src/index.js:65
 #: blocks/ht-term-index/src/index.js:79 blocks/ht-term-list/src/index.js:116
 #: blocks/shared/post-list-edit.js:424
@@ -5227,44 +5237,44 @@ msgstr ""
 "нескольких групп используется дизъюнкция, т.е. логическое объединение всех "
 "совпавших терминов."
 
-#: blocks/ht-sort-order-options/src/index.js:69
+#: blocks/ht-sort-order-options/src/index.js:70
 msgid "Sort Fields"
 msgstr "Поля сортировки"
 
-#: blocks/ht-sort-order-options/src/index.js:82
+#: blocks/ht-sort-order-options/src/index.js:83
 msgid "Initial state"
 msgstr "Начальное состояние"
 
-#: blocks/ht-sort-order-options/src/index.js:85
+#: blocks/ht-sort-order-options/src/index.js:86
 msgid "Expanded"
 msgstr "Развёрнуто"
 
-#: blocks/ht-sort-order-options/src/index.js:86
+#: blocks/ht-sort-order-options/src/index.js:87
 msgid "Collapsed"
 msgstr "Свёрнуто"
 
-#: blocks/ht-sort-order-options/src/index.js:92
+#: blocks/ht-sort-order-options/src/index.js:93
 msgid "Default sort"
 msgstr "Сортировка по умолчанию"
 
-#: blocks/ht-sort-order-options/src/index.js:103
+#: blocks/ht-sort-order-options/src/index.js:104
 msgid "Button label (collapsed)"
 msgstr "Подпись кнопки (в свёрнутом виде)"
 
-#: blocks/ht-sort-order-options/src/index.js:111
+#: blocks/ht-sort-order-options/src/index.js:112
 msgid "Button label (expanded)"
 msgstr "Подпись кнопки (в развёрнутом виде)"
 
-#: blocks/ht-sort-order-options/src/index.js:130
+#: blocks/ht-sort-order-options/src/index.js:131
 msgid "Renders on taxonomy archive and search results pages only."
 msgstr ""
 "Отображается только на страницах архивов терминов и результатов поиска."
 
-#: blocks/ht-sort-order-options/src/index.js:133
+#: blocks/ht-sort-order-options/src/index.js:134
 msgid "HT Sort Order Options"
 msgstr "HT Sort Order Options"
 
-#: blocks/ht-sort-order-options/src/index.js:137
+#: blocks/ht-sort-order-options/src/index.js:138
 msgid "(no fields selected)"
 msgstr "(поля не выбраны)"
 

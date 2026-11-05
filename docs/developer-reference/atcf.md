@@ -12,9 +12,9 @@ HyperTaxonomy ships a built-in integration with the [As the Crow Flies](https://
 
 ### Detection
 
-The integration class checks `function_exists( 'atcf_get_term_ids_within_radius' )` on `plugins_loaded`. Hook registrations that require ATCF are only registered when ATCF is active. The `[htax_distance_field]` shortcode is registered unconditionally so the tag is recognized in page content at all times; if ATCF is inactive when the shortcode renders, site administrators see a notice and other users see nothing.
+The integration class checks `function_exists( 'atcf_get_term_ids_within_radius' )` on `plugins_loaded`. Hook registrations that require ATCF are only registered when ATCF is active. The `[ht_distance_field]` shortcode is registered unconditionally so the tag is recognized in page content at all times; if ATCF is inactive when the shortcode renders, site administrators see a notice and other users see nothing.
 
-### [htax_distance_field] Shortcode
+### [ht_distance_field] Shortcode
 
 Registered by `HyperTaxonomy_ATCF_Integration::register_distance_shortcode()` (handler `render_distance_shortcode()`). When the form is submitted, the integration hooks `htax_pre_search_fields` to intercept the field before the SQL query runs and replace it with a resolved list of matching term IDs.
 
@@ -29,9 +29,9 @@ The `_atcf_lat` / `_atcf_lng` fields are read by `near:me` PowerSearch queries, 
 
 `htax_allowed_field_types` is also hooked to add `'distance'` to the accepted field type list.
 
-Full attribute reference: see [[htax_distance_field]](../user-guide/search.html#htax_distance_field--location-based-distance-filter) in the User Guide.
+Full attribute reference: see [[ht_distance_field]](../user-guide/search.html#ht_distance_field--location-based-distance-filter) in the User Guide.
 
-The `expand` attribute (`all` / `none` / comma-separated `container,hierarchy,redirect`) is available on all search widget field types — `[ht_pills_field]`, `[ht_checklist_field]`, `[ht_hidden_field]`, and `[htax_distance_field]`. It controls which `relationship_type` values are included in the `wp_htax_search_terms` lookup for that field. Normalization is handled by `HyperTaxonomy_Search_Widget::normalize_expand_types()` at query time; `[htax_distance_field]` passes the raw value through unchanged when resolving term IDs.
+The `expand` attribute (`all` / `none` / comma-separated `container,hierarchy,redirect`) is available on all search widget field types — `[ht_pills_field]`, `[ht_checklist_field]`, `[ht_hidden_field]`, and `[ht_distance_field]`. It controls which `relationship_type` values are included in the `wp_htax_search_terms` lookup for that field. Normalization is handled by `HyperTaxonomy_Search_Widget::normalize_expand_types()` at query time; `[ht_distance_field]` passes the raw value through unchanged when resolving term IDs.
 
 ### Location Data in REST Responses (`htax_locations`)
 
@@ -230,7 +230,7 @@ Because the URI is derived from the canonical address rather than the term slug 
 
 ### JavaScript Event
 
-When `[htax_distance_field]` inserts its distance filter element into the search widget form, it fires a custom event:
+When `[ht_distance_field]` inserts its distance filter element into the search widget form, it fires a custom event:
 
 ```javascript
 document.addEventListener( 'atcf:termFilterInserted', function( e ) {

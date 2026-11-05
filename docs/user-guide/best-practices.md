@@ -598,7 +598,7 @@ TaxoPress features HyperTaxonomy does not replicate: auto-linking term names in 
 
 **Moving from, or alongside, Tag Groups:** HyperTaxonomy's importer reads Tag Groups' (or PublishPress Tag Groups' — same database format) group and term-assignment data directly from its database tables — no export step, and Tag Groups doesn't need to stay active for a one-time migration. Leaving Tag Groups behind: run the migration once, then deactivate it. Keeping Tag Groups as your group-management tool: choose Locked mode with continuous sync instead, so HyperTaxonomy's groups stay current automatically.
 
-See [vs. Tag Groups](../comparison.html) for a detailed side-by-side.
+See [Comparing to Tag Groups](../comparison.html) for a detailed side-by-side.
 
 ---
 

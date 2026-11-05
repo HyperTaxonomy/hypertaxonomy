@@ -212,7 +212,7 @@ For full behavior details, cascade rules, and known limitations with native cate
 
 == Search Widget Configuration ==
 
-The HyperTaxonomy search widget builds faceted search forms from nested shortcodes — a container (`[ht_search_form]`), input fields (`[ht_pills_field]`, `[ht_checklist_field]`, `[ht_text_field]`, `[ht_hidden_field]`, `[htax_distance_field]` for geo distance filtering with [As the Crow Flies](https://wordpress.org/plugins/as-the-crow-flies/)), dynamic controllers (`[ht_search_controller]` / `[ht_search_option]` / `[ht_option_action]`), and an AJAX results container (`[ht_search_results]`).
+The HyperTaxonomy search widget builds faceted search forms from nested shortcodes — a container (`[ht_search_form]`), input fields (`[ht_pills_field]`, `[ht_checklist_field]`, `[ht_text_field]`, `[ht_hidden_field]`, `[ht_distance_field]` for geo distance filtering with [As the Crow Flies](https://wordpress.org/plugins/as-the-crow-flies/)), dynamic controllers (`[ht_search_controller]` / `[ht_search_option]` / `[ht_option_action]`), and an AJAX results container (`[ht_search_results]`).
 
 **Example (POST mode):**
 ```

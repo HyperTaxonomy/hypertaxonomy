@@ -130,7 +130,7 @@ hypertaxonomy/
 │   ├── developer-reference/                  # Developer Reference section (PHP API, hooks, REST, capabilities)
 │   ├── architecture/                         # Architecture section (this reference, split into child pages)
 │   ├── contributing.md                       # Guide for HyperTaxonomy contributors (Design Principles, Patterns, Blocks, Debug)
-│   └── comparison.md                         # Feature comparison vs. PublishPress Tag Groups
+│   └── comparison.md                         # Comparing to Tag Groups
 │
 ├── includes/                                 # All PHP functionality
 │   │

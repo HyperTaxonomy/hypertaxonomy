@@ -417,9 +417,9 @@ Conditionally loaded when `function_exists( 'atcf_get_term_ids_within_radius' )`
 
 The integration touches **no ATCF database tables directly** — all location data is retrieved via ATCF's public API (`atcf_get_locations_within_radius()`, `atcf_get_term_ids_with_locations()`, `atcf_get_postal_centroid()`, `ATCF_Locations::get_aggregated()`). The only direct DB queries HT performs are against WP's own `term_relationships` and `term_taxonomy` tables to map term IDs to post IDs.
 
-The `[htax_distance_field]` shortcode is registered unconditionally (so the tag is always recognized in content). When ATCF is inactive at render time, the shortcode outputs a notice for admins and nothing for other users.
+The `[ht_distance_field]` shortcode is registered unconditionally (so the tag is always recognized in content). When ATCF is inactive at render time, the shortcode outputs a notice for admins and nothing for other users.
 
-**JavaScript event fired by `[htax_distance_field]`:**
+**JavaScript event fired by `[ht_distance_field]`:**
 - `atcf:termFilterInserted` — dispatched on `document` after the distance filter element is rendered into the form. `e.detail.fieldName` is the field's `name` attribute; `e.detail.formId` is the enclosing `[ht_search_form]` id.
 
 **`htax_search_proximity_where` filter (PowerSearch + search widget):**

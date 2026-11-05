@@ -23,17 +23,20 @@ For cross-site content — fetching related posts from peer WordPress sites, RSS
 - **Term Relationships** — Semantic connections between terms, optionally mapped to core inclusion
 - **Term Redirects** — 301 redirects with automatic chain collapsing and circular detection
 - **Term Icons** — Media library icons with colored icon-shaped placeholders; SVG support
-- **Search Widget** — Modular form builder (pills, checklists, text fields, geo distance filter) with AJAX/POST modes; `[htax_distance_field]` adds postal code and geolocation filtering when [As the Crow Flies](https://wordpress.org/plugins/as-the-crow-flies/) is active
-- **PowerSearch** — Field operators (`title:`, `tags:`, etc.), boolean operators, configurable scope; proximity operator (`near:`, with `-near:` to exclude) when [As the Crow Flies](https://wordpress.org/plugins/as-the-crow-flies/) is active
+- **Search Widget** — Modular form builder (pills, checklists, text fields, geo distance filter) with AJAX/POST modes; `[ht_distance_field]` adds postal code and geolocation filtering when [As the Crow Flies](https://wordpress.org/plugins/as-the-crow-flies/) is active
+- **PowerSearch** — Field operators (`title:`, `tags:`, etc.), required, optional, and excluded term modifiers, any/all match modes, configurable scope; proximity operator (`near:`, with `-near:` to exclude) when [As the Crow Flies](https://wordpress.org/plugins/as-the-crow-flies/) is active
 - **Content-Based Tag Suggestions** — Gutenberg editor suggests unassigned tags based on post content, ranked by prominence
 - **Sticky Posts** — Pin posts to specific term archives
+- **Per-Term Archive Settings** — Set a description, pagination, and default sort order for each term's archive
+- **Archive Sort & Filter Controls** — Let visitors re-sort and filter posts on archive pages
 - **Hidden Terms** — Role-based term visibility with full index integration
 - **Merge Terms** — Consolidate duplicate terms, transferring posts and relationships with optional 301 redirect stubs
 - **Taxonomy Conversion** — Move terms between taxonomies with optional 301 redirect stubs to keep old archive URLs working
 - **Display Shortcodes & Blocks** — Term lists, tag clouds, alphabetical indexes, and group hierarchies for any taxonomy
 - **Post List Shortcodes & Blocks** — Display filtered post lists and related posts using shortcodes or Gutenberg blocks
+- **Native Block Extensions** — A Term Group filter on the core Query Loop and Latest Posts blocks
 - **External Posts** — Fetch related posts from peer WordPress sites and RSS/Atom feeds via **TermConnect** (`[tc_peer_posts]`)
-- **Integration API** — Automatic inclusion expansion for third-party queries and REST endpoint for programmatic access
+- **Integration API** — Automatic inclusion expansion for third-party queries, plus REST endpoints and extra term fields in standard REST responses
 - **Import / Export** — JSON-based data migration; Tag Groups migrator included
 
 ## Documentation

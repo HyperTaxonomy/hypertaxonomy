@@ -218,7 +218,7 @@ Toggles the form between collapsed and expanded states. Fields with `show_when="
 [ht_search_toggle text_collapsed="Show filters" text_expanded="Hide filters"]
 ```
 
-#### [htax_distance_field] — Location-Based Distance Filter
+#### [ht_distance_field] — Location-Based Distance Filter
 
 Adds a distance filter to a search widget form that lets visitors narrow results by proximity (postal code or geolocation). Requires the [As the Crow Flies](https://wordpress.org/plugins/as-the-crow-flies/) (ATCF) plugin to be active. If ATCF is not active, site administrators see an admin notice in place of the field; the shortcode renders nothing for other users.
 
@@ -246,7 +246,7 @@ Must be placed inside `[ht_search_form]`.
 
 ```
 [ht_search_form id="store-finder"]
-  [htax_distance_field taxonomy="retailer" radius="5,10,25,50" unit="miles" no_location="exclude"]
+  [ht_distance_field taxonomy="retailer" radius="5,10,25,50" unit="miles" no_location="exclude"]
 [/ht_search_form]
 ```
 
@@ -259,9 +259,9 @@ By default (`expand="all"`), when the distance filter resolves a set of in-range
 Use `expand="none"` to restrict results to posts directly tagged with the in-range terms only, ignoring inclusions and hierarchy. Use a comma-separated list to allow only specific relationship types:
 
 ```
-[htax_distance_field taxonomy="retailer" radius="5,10,25" expand="none"]
-[htax_distance_field taxonomy="retailer" radius="5,10,25" expand="container"]
-[htax_distance_field taxonomy="retailer" radius="5,10,25" expand="container,hierarchy"]
+[ht_distance_field taxonomy="retailer" radius="5,10,25" expand="none"]
+[ht_distance_field taxonomy="retailer" radius="5,10,25" expand="container"]
+[ht_distance_field taxonomy="retailer" radius="5,10,25" expand="container,hierarchy"]
 ```
 
 **Geolocation UX (`input="zip,geolocation"` or `input="geolocation"`):**

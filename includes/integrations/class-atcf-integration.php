@@ -112,10 +112,10 @@ class HyperTaxonomy_ATCF_Integration {
     // --------------------------------------------------------------------------
 
     /**
-     * Register [htax_distance_field] shortcode for use in search widget forms.
+     * Register [ht_distance_field] shortcode for use in search widget forms.
      */
     public static function register_distance_shortcode(): void {
-        add_shortcode( 'htax_distance_field', array( __CLASS__, 'render_distance_shortcode' ) );
+        add_shortcode( 'ht_distance_field', array( __CLASS__, 'render_distance_shortcode' ) );
     }
 
     /**
@@ -162,7 +162,7 @@ class HyperTaxonomy_ATCF_Integration {
             'include_descendant_options' => '', // root term ID or slug
             'exclude_descendant_options' => '',
             'expand'                     => 'all', // 'all' = taxonomy feature defaults; 'none' = direct only; or comma-list
-        ), $atts, 'htax_distance_field' );
+        ), $atts, 'ht_distance_field' );
 
         // Normalise: filterby is an alias for taxonomy.
         if ( '' === $a['taxonomy'] && '' !== $a['filterby'] ) {

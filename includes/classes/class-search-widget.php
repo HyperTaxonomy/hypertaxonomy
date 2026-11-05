@@ -3108,7 +3108,7 @@ class HyperTaxonomy_Search_Widget {
             ";
         }
 
-        $total_count = $wpdb->get_var( $wpdb->prepare( $count_sql, ...$query_params ) );
+        $total_count = $wpdb->get_var( ! empty( $query_params ) ? $wpdb->prepare( $count_sql, ...$query_params ) : $count_sql );
 
         // Format results
         $post_ids = array_map( function( $row ) {

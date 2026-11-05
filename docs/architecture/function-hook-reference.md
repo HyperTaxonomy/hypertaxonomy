@@ -185,7 +185,7 @@ Functions that accept `$include_redirect_data`:
 - `htax_clear_redirect_target_cache( int $term_id = 0 )` - Delete a term's `htax_redir_` transient and its per-request copy (0 = every term's per-request copy); `htax_set_redirect()` / `htax_remove_redirect()` call it before firing their actions so index handlers see the new state
 - `htax_clear_redirect_term_ids_cache()` - Clear the `htax_redirect_terms` transient and its per-request copy
 - `htax_get_ids_of_redirects_to( $target_id, $taxonomies = null )` - Get terms redirecting to target (cross-taxonomy)
-- `htax_prewarm_redirect_cache()` - Bulk-fetch all redirect rows in one query, then batch-fetch target term objects by taxonomy, and populate `htax_redir_{id}` transients. Call before bulk index loops to convert O(n) lazy queries into 1 + 1-per-taxonomy queries.
+- `htax_prewarm_redirect_cache()` - Bulk-fetch all redirect rows in one query, then batch-check target terms by taxonomy, and populate `htax_redir_{id}` transients. Call before bulk index loops to convert O(n) lazy queries into 1 + 1-per-taxonomy queries.
 - `htax_set_redirect( int|WP_Term $term, int|WP_Term $target )` - Set redirect with circular detection and chain resolution
 - `htax_remove_redirect( $term_id )` - Remove redirect from term
 - `htax_save_redirect( $term_id, $tt_id )` - Save redirect settings (called by orchestrator)
@@ -259,7 +259,8 @@ Public integration API for third-party plugins.
 
 - `htax_get_expanded_term_ids( int $term_id )` - Returns the complete flat list of term IDs whose posts appear in a term's archive: self + WP descendants (via `htax_get_visible_wp_descendants`) + all HyperTaxonomy-contributed terms from `htax_build_expanded_tax_query` (inclusions pre-expanded to include their own WP descendants). WP descendants of the primary term are always added explicitly regardless of whether HyperTaxonomy contributions are present. Taxonomy is looked up automatically. Applies `htax_expanded_term_ids` filter.
 - `htax_expand_secondary_query( WP_Query $query )` - `pre_get_posts` handler (priority 10) that expands single-term tax_query clauses for enabled taxonomies in secondary/third-party queries. Controlled by `htax_expand_terms` query var or `expand_secondary_queries` global setting. Skips the main archive query.
-- `htax_adjust_term_counts( array $terms, ?array $taxonomies, array $args )` - `get_terms` filter. Replaces native WP counts with expansion-aware counts. Frontend only, active only when `expand_secondary_queries` is on.
+- `htax_count_expanded_term_posts( string $taxonomy, array $entries ): array` - Distinct post counts for expanded terms, in statements of at most `HTAX_TERM_COUNT_BATCH_ROWS` rows; terms whose query failed are left out
+- `htax_adjust_term_counts( array $terms, ?array $taxonomies, array $args )` - `get_terms` filter; skips post term queries (`object_ids`). Replaces native WP counts with expansion-aware counts. Frontend only, active only when `expand_secondary_queries` is on.
 
 ### Frontend Display (includes/core/frontend.php)
 

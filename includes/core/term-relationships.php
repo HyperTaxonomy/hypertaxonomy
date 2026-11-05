@@ -2752,7 +2752,8 @@ function htax_clear_redirect_term_ids_cache(): void {
  * Get redirect target for a term.
  *
  * Returns the full WP_Term object for the redirect target, which includes both
- * term_id and taxonomy - useful for cross-taxonomy redirects.
+ * term_id and taxonomy - useful for cross-taxonomy redirects. The transient holds only the
+ * target's ID, so the term's fields are always current.
  *
  * @param int $term_id Term ID
  * @return WP_Term|false Redirect target term object or false if not a redirect
@@ -2770,7 +2771,14 @@ function htax_get_redirect_target( $term_id ) {
     $cached = htax_get_transient( $cache_key );
     if ( false !== $cached ) {
         // Cache stores false as 'none' string to distinguish from cache miss
-        return $static_cache[ $term_id ] = ( 'none' === $cached ) ? false : $cached;
+        if ( 'none' === $cached ) {
+            return $static_cache[ $term_id ] = false;
+        }
+        $cached_target = htax_get_valid_term( (int) $cached );
+        if ( $cached_target ) {
+            return $static_cache[ $term_id ] = $cached_target;
+        }
+        // The target doesn't resolve right now: fall through and look at the redirect row.
     }
 
     global $wpdb;
@@ -2809,8 +2817,8 @@ function htax_get_redirect_target( $term_id ) {
     // If the target taxonomy is HT-disabled (registered but turned off in settings), treat as
     // no redirect and cache 'none'. on_taxonomy_enabled_state_changed calls htax_clear_all_caches()
     // on re-enable, so the stale 'none' entry is cleared before redirects need to work again.
-    // For unregistered taxonomies, leave the cached WP_Term in place so that when the plugin
-    // that owns the taxonomy is reactivated the redirect resumes on the very next request.
+    // For unregistered taxonomies, cache nothing so that when the plugin that owns the
+    // taxonomy is reactivated the redirect resumes on the very next request.
     if ( ! htax_is_taxonomy_enabled( $target_term->taxonomy ) ) {
         if ( taxonomy_exists( $target_term->taxonomy ) ) {
             htax_set_transient( $cache_key, 'none', htax_get_cache_duration( 'relationship' ) );
@@ -2818,8 +2826,8 @@ function htax_get_redirect_target( $term_id ) {
         return $static_cache[ $term_id ] = false;
     }
 
-    // Cache the WP_Term object (eager invalidation - no TTL)
-    htax_set_transient( $cache_key, $target_term, htax_get_cache_duration( 'relationship' ) );
+    // Cache the target's ID (eager invalidation - no TTL)
+    htax_set_transient( $cache_key, (int) $target_term->term_id, htax_get_cache_duration( 'relationship' ) );
 
     return $static_cache[ $term_id ] = $target_term;
 }
@@ -2874,7 +2882,7 @@ function htax_prewarm_redirect_cache() {
         if ( false !== htax_get_transient( $cache_key ) ) {
             continue;
         }
-        $target = $target_terms[ (int) $row->target_term_id ] ?? 'none';
+        $target = isset( $target_terms[ (int) $row->target_term_id ] ) ? (int) $row->target_term_id : 'none';
         htax_set_transient( $cache_key, $target, htax_get_cache_duration( 'relationship' ) );
     }
 }

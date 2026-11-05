@@ -61,6 +61,8 @@ Only single-term clauses are expanded. Multi-term clauses are treated as facet f
 
 A `get_terms` filter that replaces native WordPress term counts with expansion-aware counts. Active on the frontend only, and only when `expand_secondary_queries` is enabled. This ensures that term counts shown in facet navigation (WooCommerce layered nav, custom filter panels) reflect the expanded post set rather than direct assignments alone.
 
+It doesn't apply to a post's own terms (`wp_get_object_terms()`, `get_the_terms()`), which keep their native counts. If a count query fails, the term keeps its native count.
+
 Per-term counts can be further customized via the `htax_term_post_count` filter.
 
 ### `htax_term_archive_changed` action

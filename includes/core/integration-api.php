@@ -189,7 +189,9 @@ function htax_expand_secondary_query( WP_Query $query ): void {
  * archive (i.e., posts assigned to any of the HT-contributed term IDs).
  *
  * Skipped entirely in admin and AJAX contexts, and when the expand_secondary_queries
- * global setting is not enabled.
+ * global setting is not enabled. Also skipped for a post's terms (object_ids): WordPress runs
+ * those queries to prime its term cache, which keeps only IDs, so counting would be wasted, and
+ * get_the_terms() reads terms back from that cache with their native counts anyway.
  *
  * @since 1.0.0
  * @param WP_Term[]|int[]|string[] $terms      Array of term objects, IDs, or names.
@@ -206,7 +208,7 @@ function htax_adjust_term_counts( array $terms, ?array $taxonomies, array $args 
         return $terms;
     }
 
-    if ( is_admin() || wp_doing_ajax() || null === $taxonomies ) {
+    if ( is_admin() || wp_doing_ajax() || null === $taxonomies || ! empty( $args['object_ids'] ) ) {
         return $terms;
     }
 
@@ -278,53 +280,20 @@ function htax_adjust_term_counts( array $terms, ?array $taxonomies, array $args 
         return $terms;
     }
 
-    // Second pass: one batched COUNT query per taxonomy using a UNION ALL derived table
-    // that maps each source term to its expanded term IDs. Compatible with MySQL 5.7+ / MariaDB 10.2+.
+    // Second pass: batched COUNT queries per taxonomy.
     $counts = array(); // $index => post count
-
     foreach ( $by_taxonomy as $taxonomy => $entries ) {
-        // Build reverse map for fast lookup after the query.
-        $term_id_to_index = array();
-        $union_rows       = array();
-        $union_args       = array();
-
-        foreach ( $entries as $index => $entry ) {
-            $term_id_to_index[ $entry['term']->term_id ] = $index;
-            foreach ( $entry['expanded_ids'] as $expanded_id ) {
-                $union_rows[] = 'SELECT %d AS source_term_id, %d AS expanded_id';
-                $union_args[] = $entry['term']->term_id;
-                $union_args[] = $expanded_id;
-            }
-        }
-
-        $union_sql    = implode( ' UNION ALL ', $union_rows );
-        $union_args[] = $taxonomy;
-
-        $rows = $wpdb->get_results(
-            $wpdb->prepare(
-                "SELECT m.source_term_id, COUNT(DISTINCT tr.object_id) AS post_count
-                 FROM ( {$union_sql} ) AS m
-                 INNER JOIN {$wpdb->term_taxonomy} tt ON tt.term_id = m.expanded_id AND tt.taxonomy = %s
-                 INNER JOIN {$wpdb->term_relationships} tr ON tr.term_taxonomy_id = tt.term_taxonomy_id
-                 GROUP BY m.source_term_id",
-                $union_args
-            )
-        );
-
-        if ( ! empty( $rows ) ) {
-            foreach ( $rows as $row ) {
-                $source_term_id = (int) $row->source_term_id;
-                if ( isset( $term_id_to_index[ $source_term_id ] ) ) {
-                    $counts[ $term_id_to_index[ $source_term_id ] ] = (int) $row->post_count;
-                }
-            }
-        }
+        $counts += htax_count_expanded_term_posts( $taxonomy, $entries );
     }
 
     // Third pass: write counts back to the term objects and apply per-term filter.
     foreach ( $by_taxonomy as $taxonomy => $entries ) {
         foreach ( $entries as $index => $entry ) {
-            $count = isset( $counts[ $index ] ) ? $counts[ $index ] : 0;
+            // No answer means the query failed: keep the term's native count.
+            if ( ! isset( $counts[ $index ] ) ) {
+                continue;
+            }
+            $count = $counts[ $index ];
 
             /**
              * Filters the expansion-aware post count for a term.
@@ -341,6 +310,103 @@ function htax_adjust_term_counts( array $terms, ?array $taxonomies, array $args 
 
     $running = false;
     return $terms;
+}
+
+/**
+ * Most rows in one expanded term count statement.
+ *
+ * @since 1.0.0
+ */
+const HTAX_TERM_COUNT_BATCH_ROWS = 500;
+
+/**
+ * Count distinct posts per source term across each term's expanded IDs.
+ *
+ * Uses UNION ALL derived tables mapping source terms to expanded IDs, compatible with
+ * MySQL 5.7+ / MariaDB 10.2+. A long UNION can exhaust MySQL's thread stack, so each statement
+ * is limited to HTAX_TERM_COUNT_BATCH_ROWS rows, keeping a term's rows together; a term with
+ * more rows than that gets its own IN query.
+ *
+ * @since 1.0.0
+ * @param string $taxonomy Taxonomy slug.
+ * @param array  $entries  Index => array( 'term' => WP_Term, 'expanded_ids' => int[] ).
+ * @return int[] Index => post count. Terms whose query failed are left out.
+ */
+function htax_count_expanded_term_posts( string $taxonomy, array $entries ): array {
+    global $wpdb;
+
+    $counts  = array();
+    $batch   = array();
+    $in_rows = 0;
+
+    $run_batch = static function ( array $batch ) use ( $wpdb, $taxonomy, &$counts ) {
+        $union_rows       = array();
+        $union_args       = array();
+        $term_id_to_index = array();
+        foreach ( $batch as $index => $entry ) {
+            $term_id_to_index[ $entry['term']->term_id ] = $index;
+            foreach ( $entry['expanded_ids'] as $expanded_id ) {
+                $union_rows[] = 'SELECT %d AS source_term_id, %d AS expanded_id';
+                $union_args[] = $entry['term']->term_id;
+                $union_args[] = $expanded_id;
+            }
+        }
+        $union_args[] = $taxonomy;
+
+        $union_sql = implode( ' UNION ALL ', $union_rows );
+        $rows      = $wpdb->get_results(
+            $wpdb->prepare(
+                "SELECT m.source_term_id, COUNT(DISTINCT tr.object_id) AS post_count
+                 FROM ( {$union_sql} ) AS m
+                 INNER JOIN {$wpdb->term_taxonomy} tt ON tt.term_id = m.expanded_id AND tt.taxonomy = %s
+                 INNER JOIN {$wpdb->term_relationships} tr ON tr.term_taxonomy_id = tt.term_taxonomy_id
+                 GROUP BY m.source_term_id",
+                $union_args
+            )
+        );
+        if ( '' !== $wpdb->last_error ) {
+            return;
+        }
+        // Terms the query returned no row for have no posts.
+        $counts += array_fill_keys( array_values( $term_id_to_index ), 0 );
+        foreach ( (array) $rows as $row ) {
+            $counts[ $term_id_to_index[ (int) $row->source_term_id ] ] = (int) $row->post_count;
+        }
+    };
+
+    foreach ( $entries as $index => $entry ) {
+        $row_count = count( $entry['expanded_ids'] );
+
+        if ( $row_count > HTAX_TERM_COUNT_BATCH_ROWS ) {
+            $ids   = array_map( 'intval', $entry['expanded_ids'] );
+            $count = $wpdb->get_var(
+                $wpdb->prepare(
+                    "SELECT COUNT(DISTINCT tr.object_id)
+                     FROM {$wpdb->term_taxonomy} tt
+                     INNER JOIN {$wpdb->term_relationships} tr ON tr.term_taxonomy_id = tt.term_taxonomy_id
+                     WHERE tt.taxonomy = %s AND tt.term_id IN (" . implode( ',', $ids ) . ')',
+                    $taxonomy
+                )
+            );
+            if ( '' === $wpdb->last_error ) {
+                $counts[ $index ] = (int) $count;
+            }
+            continue;
+        }
+
+        if ( $batch && $in_rows + $row_count > HTAX_TERM_COUNT_BATCH_ROWS ) {
+            $run_batch( $batch );
+            $batch   = array();
+            $in_rows = 0;
+        }
+        $batch[ $index ] = $entry;
+        $in_rows        += $row_count;
+    }
+    if ( $batch ) {
+        $run_batch( $batch );
+    }
+
+    return $counts;
 }
 
 /**

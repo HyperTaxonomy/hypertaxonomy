@@ -174,6 +174,55 @@ If multiple text fields are detected during shortcode rendering, a visible warni
 
 ---
 
+### Search Widget Fields
+
+**Group-descendant checklist (`include_descendant_options` + `filterby`):**
+- When `include_descendant_options` is set on a checklist field, `render_checklist_field()` routes to `render_descendant_options_checklist()`.
+- `include_descendant_options="936"` expands root group 936 via `htax_get_group_hierarchy()`, then removes the roots themselves — only descendants appear as checkboxes.
+- `taxonomy` should be a term-organizing taxonomy registered with no post object types (e.g. `"group"`): the displayed options are group terms. `filterby="post_tag"` (or a comma-separated taxonomy list) tells the query layer which post taxonomies to expand selected group IDs into at query time; omit to expand across every HyperTaxonomy-enabled taxonomy that is attached to a post type.
+- `exclude_term_options` removes specific group term IDs from the displayed set.
+- `hierarchical="true"` renders a nested tree via `render_descendant_option_tree()`; `"false"` renders a flat alphabetical list via `render_descendant_option_item()`. Each item carries `data-term-id` and `data-parent-id` attributes.
+- Submitted values are group IDs. Term-organizing taxonomies have no post types, so the search index holds no rows for them; `HyperTaxonomy_Search_Widget::expand_term_type_fields()` (called at the start of `get_posts_by_custom_sql()`, covering both AJAX and POST searches) detects such fields by `empty( $tax_object->object_type )` and expands the selected group IDs (with descendant groups) via `htax_get_terms_in_groups()` into member terms of each taxonomy in the field's `filterby` list — or of every indexed HyperTaxonomy taxonomy when `filterby` is omitted. A post is "in" a group when it carries a member term in any target taxonomy. With `match="any"` / `"none"` the field covers the members of all selected groups: one target taxonomy replaces the field in place; several become an `OR` sub-group with one field per taxonomy (`group_member_structure()`). With `match="all"` the post must be in every selected group: the field becomes an `AND` sub-group with one any-match member structure per selected group (fields named `{field}_g{group_id}`). A group with no members becomes term `0`, so it matches nothing rather than being ignored.
+- `addDescendants(groupIds)` / `removeDescendants(groupIds)` — available both as controller action handlers and as initial-state shortcode attributes (`add_descendants`, `remove_descendants`). `_getDescendantItemIds(parentId)` recurses via `data-parent-id` DOM attributes to collect all descendant item IDs. After setting checked state, `_resetImpliedState()` clears the `htax-implied-by-parent` class and re-enables disabled inputs, then `initHierarchy()` re-applies the parent→child implied-state machinery from scratch. For PillsField, `addDescendants(groupIds)` resolves term IDs from `_allOptionsByGroup` (or queues them in `_pendingAddDescendants` if prefetch is still in flight).
+
+**PillsField option-pool architecture:**
+
+PillsField supports two option-loading modes controlled by the `prefetch` shortcode attribute (default `"true"`).
+
+**`prefetch="true"` (default) — one upfront load, client-side filtering:**
+- On page load JS makes **one** AJAX call (`htax_prefetch_options`) to fetch all member terms of the groups declared in `include_group_options`, receiving `{ terms: {id: {name, count, icon_url, placeholder_color}}, groups: {groupId: [termIds]} }`. `count` is the native WP post count from `wp_term_taxonomy.count`.
+- Results are stored in `_allOptionsById` (Map termId→`{id, name, count, icon_url, placeholder_color}`) and `_allOptionsByGroup` (Map groupId→Set<termId>). Group membership is hierarchy-expanded at index time (PHP calls `htax_get_terms_in_groups` which expands descendants), so `_allOptionsByGroup.get(gid)` contains all terms belonging to gid's full subtree.
+- `_activeGroups` (Set) tracks which groups are currently allowed by controller actions. Starts empty (= no restriction = full universe active).
+- `_computeActiveOptions()` derives `_activeOptions[]` from `_activeGroups ∩ _allOptionsById`; called after every `includeGroupOptions()`/`excludeGroupOptions()` call.
+- Autocomplete is **client-side only** — no per-keystroke AJAX. When `suggestOnFocus` is true (default), the dropdown opens immediately on focus (`minLength: 0`). When false (`suggest_on_focus="false"`), `minLength` is 1 so the dropdown only opens after the user types. Suggestion filtering is 3-tier: **0 chars** = all active unselected options sorted by `count` DESC; **1–2 chars** = prefix match (`name.startsWith`) sorted by `count` DESC; **3+ chars** = substring match (`name.includes`) in natural order. All tiers cap at 10 results.
+- `excludeGroupOptions()` computes removals client-side (no AJAX needed) using `_allOptionsByGroup`.
+- `addDescendants(groupIds)` / `removeDescendants(groupIds)` — **selection** actions (not pool restriction): add or remove as selected pills all terms in `_allOptionsByGroup` for the given group IDs. If called before prefetch completes, group IDs are queued in `_pendingAddDescendants` / `_pendingRemoveDescendants` and flushed in the prefetch success callback.
+
+**`prefetch="false"` — AJAX-on-demand autocomplete:**
+- No upfront option load; hidden terms are left out of responses for visitors who can't see them. The autocomplete input sends a request to `htax_autocomplete_options` on each keystroke (debounced 300 ms). `suggest_on_focus="false"` is implicit in this mode — `minLength` is already 1 by default when `suggestOnFocus` is false, so no empty-string AJAX call fires on focus.
+- `_activeGroups` is still maintained by controller actions (same `includeGroupOptions()`/`excludeGroupOptions()` calls), so the server receives only the currently-active group IDs as a filter.
+- Server-side handler (`ajax_autocomplete_options`): accepts `taxonomy`, `search`, `show_icons`, `groups` (comma-separated active group IDs), and `include_terms` / `exclude_terms` (comma-separated term IDs). Group members and `include_terms` form the pool: minus `exclude_terms` and hidden terms, it's passed to `get_terms()` as `include`. With no pool, `exclude_terms` plus any hidden terms the viewer can't see are passed as `exclude`. Returns up to 20 results ordered by name when a search string is present, or by post count when the input is empty.
+- Term data returned by AJAX is cached in `_termData[id]` so `addPill()` can reference it immediately after selection without a second round-trip.
+- `_isKnownTerm()` always returns `true` in this mode (no local universe to check against).
+- `excludeGroupOptions()` is a no-op in this mode (server already filters by active groups on each request).
+- `_pendingAddDescendants` / `_pendingRemoveDescendants` queues are not used in this mode (no prefetch callback to flush them into).
+
+**PillsField placeholder:**
+- `_originalPlaceholder` is saved from the input element's `placeholder` attribute at construction time. `enforceConstraints()` restores it when the count drops below the maximum (avoiding stale "Maximum items reached" text persisting after a pill is removed). The fallback `'Type to search...'` is only used when the shortcode `placeholder` attribute was not set.
+
+**Search form state preservation (POST round-trip):**
+- On POST form submission, `preparePostSubmission()` serializes the full UI state in two ways:
+  1. `htax_field_data` JSON hidden input — hierarchical structure of field→term selections, built by `collectFieldDataHierarchical()` using each field's `getValue()` result.
+  2. `htax_ui_state` JSON hidden input — flat map of `controller:name → show_when` and `enabled:controller:name → true/false` entries, written by `saveUiState()`.
+- PHP restoration on re-render: `get_saved_ui_state()` (static-cached) parses `htax_ui_state`; controllers restore their `show_when` and `enabled` state; fields restore only their `enabled` state (not `show_when` — controller actions during JS `init()` re-derive field visibility from scratch).
+- **Locked controller checkboxes:** when a checkbox controller's `min_items` constraint is at its limit, the last checked option's input gets `disabled` via `enforceConstraints()`. Browsers omit disabled inputs from POST. `preparePostSubmission()` compensates by appending a hidden `<input class="htax-locked-proxy">` for every `input[type="checkbox"].htax-locked`, so `get_post_controller_values()` sees the value in `$_POST[$name]` on the next render.
+- **Keyboard navigation in autocomplete:** jQuery UI autocomplete handles Up/Down arrow navigation and Enter selection natively. The custom `select` callback calls `addPill()` and clears the input; the `focus` callback (autocomplete's item-focus event, not DOM focus) prevents the input text from being replaced with the highlighted item's label while navigating.
+
+**Validation messages for `[ht_pills_field]` / `[ht_checklist_field]`:**
+- `min_items_message` — shown when fewer than `min_items` items are selected; falls back to a built-in string ("Please select at least N items.").
+- `max_items_message` — shown when more than `max_items` items are selected; falls back to a built-in string ("Please select no more than N items.").
+- Messages appear in a `<div class="htax-validation-message">` rendered immediately after the pills/checklist container. The error styling (`htax-error` class + red border on the container) is set on submit and cleared automatically as soon as the constraint is satisfied without requiring another submit attempt.
+
 ### PowerSearch — Scoring and Execution
 
 The PowerSearch system uses MySQL FULLTEXT indexes for performance with support for field-specific operators, minimum score thresholds, search scope restriction, and dynamic ordering.

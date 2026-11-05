@@ -4,27 +4,23 @@ parent: Architecture
 nav_order: 5
 ---
 
-## Feature Implementation Notes
+# Feature Implementation
 
 > For implementation patterns (nonce handling, AJAX detection, etc.), error handling patterns, and coding standards, see the [Contributing](../contributing.html).
 
-### **Feature Flag Enforcement for Archive Expansion**
+## Feature Flag Enforcement for Archive Expansion
 
 One feature flag controls the entire archive expansion pipeline:
 
-- **`term_relationships`** — gates all expansion. When not enabled for a taxonomy, `htax_build_expanded_tax_query()` returns `null` immediately and no expansion of any kind occurs. This flag covers direct inclusion/container relationships, group-based relationships (Included Groups & Container Groups), and custom relationship types. Corresponds to "Enable term relationships" in the per-taxonomy Features settings.
+- **`term_relationships`** — gates all expansion. When not enabled for a taxonomy, `htax_build_expanded_tax_query()` returns `null` immediately and no expansion of any kind occurs. This flag covers direct inclusion/container relationships, group-based relationships (Included Groups & Container Groups), and custom relationship types. Corresponds to "Enable relationships for {taxonomy}" in the per-taxonomy Features settings.
 
 The flag is checked by `htax_taxonomy_has_feature()` at runtime, so enabling or disabling it takes effect immediately without a reindex.
 
-### **Container Groups (Term Groups Integration)**
+## Container Groups (Term Groups Integration)
 
 Container Groups allow a term to be automatically included in all archives of terms belonging to specified Term Groups. This is useful for bulk relationships.
 
-**Normalized Architecture - Intent Storage:**
-- Relationships stored as INTENT, expanded dynamically at query time via SQL JOINs
-- **Included Groups**: `source=Term, target=GroupX, type='includes', target_taxonomy='group'`
-- **Container Groups**: `source=GroupX, target=Term, type='includes', source_taxonomy='group'` (REVERSE includes)
-- No eager expansion needed - SQL computes final relationships on demand
+Relationships are stored as intent and expanded at query time. See [Custom Database Tables](database-schema.html#custom-database-tables) for the row formats.
 
 **Query Expansion:**
 When fetching included terms for Term A:
@@ -32,26 +28,15 @@ When fetching included terms for Term A:
 2. Query included group members via JOIN:
    - Find groups A includes: `source=A, target=GroupX, type='includes', target_taxonomy='group'`
    - JOIN to find members: `source=Member, target=GroupX, type='member_of'`
-3. Return UNION of both result sets, filtered by ancestors
+3. Return the union of both result sets, without self, ancestors, or descendants
 
-**Hierarchy Filtering:**
-- Ancestors filtered out at query time using `get_ancestors()` upfront
-- SQL exclusion list prevents infinite loops
-- Descendants allowed (redundant but harmless)
-- Enables proper SQL pagination with LIMIT/OFFSET
+**Hierarchy Filtering:** self, ancestors, and descendants never appear in the result. See [Hierarchy Conflicts](#hierarchy-conflicts).
 
 **Restrictions:**
 - A relationship cannot have a group term on both sides (group+group rows are always invalid).
-- Can be disabled per-taxonomy by turning off the "Term Relationships" feature in Settings → HyperTaxonomy → Features. This gates all archive expansion including group-based relationships.
+- Can be disabled per-taxonomy by turning off its relationships feature (`term_relationships`) in Settings → HyperTaxonomy → Features. This gates all archive expansion including group-based relationships.
 
-**Benefits:**
-- No sync functions needed - simpler codebase
-- No stale data - always accurate at query time
-- Proper SQL pagination support
-- Single source of truth
-- Efficient indexed lookups
-
-### **Multi-Group Membership**
+## Multi-Group Membership
 
 Term Groups allows the same term to belong to multiple groups simultaneously. HyperTaxonomy fully supports this feature:
 
@@ -65,7 +50,7 @@ Term Groups allows the same term to belong to multiple groups simultaneously. Hy
 - Term "Vegetables" includes group "Healthy Foods"
 - Result: "Vegetables" archive includes "Apple" (via group 8)
 
-### **Nested Group Expansion for Container Groups**
+## Nested Group Expansion for Container Groups
 
 When looking up container group inclusions for a term T, T's member groups are expanded **downward** to all descendant subgroups (via `htax_get_group_hierarchy()`), then any term B whose stored container group falls within that expanded set is included in T's archive.
 
@@ -79,71 +64,16 @@ The net effect: a term with a more specific container group (e.g. "PHP") automat
 - Also: "General-Tutorials" has "Programming" as its stored container group — also included in T's archive
 - A term U that is only a member of "PHP" would include "PHP-Tutorials" but NOT "General-Tutorials" (expanding "PHP" downward does not reach "Programming")
 
-### **Parent Group Hierarchy Expansion**
+## Parent Group Hierarchy Expansion
 
-Term Groups support parent-child hierarchy. When a group is included by a term, HyperTaxonomy automatically expands it to include all member terms from the group and all its descendant groups using WordPress's native `get_terms()` with the `child_of` parameter.
+Term Groups support parent-child hierarchy. When a group is included by a term, HyperTaxonomy automatically expands it to include all member terms from the group and all its descendant groups using `htax_get_group_hierarchy()`.
 
 **Behavior:**
 - Including a parent group automatically includes members of all descendant groups
 - Multi-level: grandchildren, great-grandchildren, etc. are all expanded
 - Transparent to users — select parent group, get all terms from child groups automatically
 
-**Group-descendant checklist (`include_descendant_options` + `filterby`):**
-- When `include_descendant_options` is set on a checklist field, `render_checklist_field()` routes to `render_descendant_options_checklist()`.
-- `include_descendant_options="936"` expands root group 936 via `htax_get_group_hierarchy()`, then removes the roots themselves — only descendants appear as checkboxes.
-- `taxonomy` should be a term-organizing taxonomy registered with no post object types (e.g. `"group"`): the displayed options are group terms. `filterby="post_tag"` (or a comma-separated taxonomy list) tells the query layer which post taxonomies to expand selected group IDs into at query time; omit to expand across every HyperTaxonomy-enabled taxonomy that is attached to a post type.
-- `exclude_term_options` removes specific group term IDs from the displayed set.
-- `hierarchical="true"` renders a nested tree via `render_descendant_option_tree()`; `"false"` renders a flat alphabetical list via `render_descendant_option_item()`. Each item carries `data-term-id` and `data-parent-id` attributes.
-- Submitted values are group IDs. Term-organizing taxonomies have no post types, so the search index holds no rows for them; `HyperTaxonomy_Search_Widget::expand_term_type_fields()` (called at the start of `get_posts_by_custom_sql()`, covering both AJAX and POST searches) detects such fields by `empty( $tax_object->object_type )` and expands the selected group IDs (with descendant groups) via `htax_get_terms_in_groups()` into member terms of each taxonomy in the field's `filterby` list — or of every indexed HyperTaxonomy taxonomy when `filterby` is omitted. A post is "in" a group when it carries a member term in any target taxonomy. With `match="any"` / `"none"` the field covers the members of all selected groups: one target taxonomy replaces the field in place; several become an `OR` sub-group with one field per taxonomy (`group_member_structure()`). With `match="all"` the post must be in every selected group: the field becomes an `AND` sub-group with one any-match member structure per selected group (fields named `{field}_g{group_id}`). A group with no members becomes term `0`, so it matches nothing rather than being ignored.
-- `addDescendants(groupIds)` / `removeDescendants(groupIds)` — available both as controller action handlers and as initial-state shortcode attributes (`add_descendants`, `remove_descendants`). `_getDescendantItemIds(parentId)` recurses via `data-parent-id` DOM attributes to collect all descendant item IDs. After setting checked state, `_resetImpliedState()` clears the `htax-implied-by-parent` class and re-enables disabled inputs, then `initHierarchy()` re-applies the parent→child implied-state machinery from scratch. For PillsField, `addDescendants(groupIds)` resolves term IDs from `_allOptionsByGroup` (or queues them in `_pendingAddDescendants` if prefetch is still in flight).
-
-**PillsField option-pool architecture:**
-
-PillsField supports two option-loading modes controlled by the `prefetch` shortcode attribute (default `"true"`).
-
-**`prefetch="true"` (default) — one upfront load, client-side filtering:**
-- On page load JS makes **one** AJAX call (`htax_prefetch_options`) to fetch all member terms of the groups declared in `include_group_options`, receiving `{ terms: {id: {name, count, icon_url, placeholder_color}}, groups: {groupId: [termIds]} }`. `count` is the native WP post count from `wp_term_taxonomy.count`.
-- Results are stored in `_allOptionsById` (Map termId→`{id, name, count, icon_url, placeholder_color}`) and `_allOptionsByGroup` (Map groupId→Set<termId>). Group membership is hierarchy-expanded at index time (PHP calls `htax_get_terms_in_groups` which expands descendants), so `_allOptionsByGroup.get(gid)` contains all terms belonging to gid's full subtree.
-- `_activeGroups` (Set) tracks which groups are currently allowed by controller actions. Starts empty (= no restriction = full universe active).
-- `_computeActiveOptions()` derives `_activeOptions[]` from `_activeGroups ∩ _allOptionsById`; called after every `includeGroupOptions()`/`excludeGroupOptions()` call.
-- Autocomplete is **client-side only** — no per-keystroke AJAX. When `suggestOnFocus` is true (default), the dropdown opens immediately on focus (`minLength: 0`). When false (`suggest_on_focus="false"`), `minLength` is 1 so the dropdown only opens after the user types. Suggestion filtering is 3-tier: **0 chars** = all active unselected options sorted by `count` DESC; **1–2 chars** = prefix match (`name.startsWith`) sorted by `count` DESC; **3+ chars** = substring match (`name.includes`) in natural order. All tiers cap at 10 results.
-- `excludeGroupOptions()` computes removals client-side (no AJAX needed) using `_allOptionsByGroup`.
-- `addDescendants(groupIds)` / `removeDescendants(groupIds)` — **selection** actions (not pool restriction): add or remove as selected pills all terms in `_allOptionsByGroup` for the given group IDs. If called before prefetch completes, group IDs are queued in `_pendingAddDescendants` / `_pendingRemoveDescendants` and flushed in the prefetch success callback.
-
-**`prefetch="false"` — AJAX-on-demand autocomplete:**
-- No upfront option load; hidden terms are left out of responses for visitors who can't see them. The autocomplete input sends a request to `htax_autocomplete_options` on each keystroke (debounced 300 ms). `suggest_on_focus="false"` is implicit in this mode — `minLength` is already 1 by default when `suggestOnFocus` is false, so no empty-string AJAX call fires on focus.
-- `_activeGroups` is still maintained by controller actions (same `includeGroupOptions()`/`excludeGroupOptions()` calls), so the server receives only the currently-active group IDs as a filter.
-- Server-side handler (`ajax_autocomplete_options`): accepts `taxonomy`, `search`, `show_icons`, `groups` (comma-separated active group IDs), and `include_terms` / `exclude_terms` (comma-separated term IDs). Group members and `include_terms` form the pool: minus `exclude_terms` and hidden terms, it's passed to `get_terms()` as `include`. With no pool, `exclude_terms` plus any hidden terms the viewer can't see are passed as `exclude`. Returns up to 20 results ordered by name when a search string is present, or by post count when the input is empty.
-- Term data returned by AJAX is cached in `_termData[id]` so `addPill()` can reference it immediately after selection without a second round-trip.
-- `_isKnownTerm()` always returns `true` in this mode (no local universe to check against).
-- `excludeGroupOptions()` is a no-op in this mode (server already filters by active groups on each request).
-- `_pendingAddDescendants` / `_pendingRemoveDescendants` queues are not used in this mode (no prefetch callback to flush them into).
-
-**PillsField placeholder:**
-- `_originalPlaceholder` is saved from the input element's `placeholder` attribute at construction time. `enforceConstraints()` restores it when the count drops below the maximum (avoiding stale "Maximum items reached" text persisting after a pill is removed). The fallback `'Type to search...'` is only used when the shortcode `placeholder` attribute was not set.
-
-**Search form state preservation (POST round-trip):**
-- On POST form submission, `preparePostSubmission()` serializes the full UI state in two ways:
-  1. `htax_field_data` JSON hidden input — hierarchical structure of field→term selections, built by `collectFieldDataHierarchical()` using each field's `getValue()` result.
-  2. `htax_ui_state` JSON hidden input — flat map of `controller:name → show_when` and `enabled:controller:name → true/false` entries, written by `saveUiState()`.
-- PHP restoration on re-render: `get_saved_ui_state()` (static-cached) parses `htax_ui_state`; controllers restore their `show_when` and `enabled` state; fields restore only their `enabled` state (not `show_when` — controller actions during JS `init()` re-derive field visibility from scratch).
-- **Locked controller checkboxes:** when a checkbox controller's `min_items` constraint is at its limit, the last checked option's input gets `disabled` via `enforceConstraints()`. Browsers omit disabled inputs from POST. `preparePostSubmission()` compensates by appending a hidden `<input class="htax-locked-proxy">` for every `input[type="checkbox"].htax-locked`, so `get_post_controller_values()` sees the value in `$_POST[$name]` on the next render.
-- **Keyboard navigation in autocomplete:** jQuery UI autocomplete handles Up/Down arrow navigation and Enter selection natively. The custom `select` callback calls `addPill()` and clears the input; the `focus` callback (autocomplete's item-focus event, not DOM focus) prevents the input text from being replaced with the highlighted item's label while navigating.
-
-**Validation messages for `[ht_pills_field]` / `[ht_checklist_field]`:**
-- `min_items_message` — shown when fewer than `min_items` items are selected; falls back to a built-in string ("Please select at least N items.").
-- `max_items_message` — shown when more than `max_items` items are selected; falls back to a built-in string ("Please select no more than N items.").
-- Messages appear in a `<div class="htax-validation-message">` rendered immediately after the pills/checklist container. The error styling (`htax-error` class + red border on the container) is set on submit and cleared automatically as soon as the constraint is satisfied without requiring another submit attempt.
-
-**Depth Control:**
-- `max_group_depth` parameter available in `[ht_checklist_field]` and `[ht_term_list]` shortcodes (default: `-1` = unlimited)
-- `-1` = unlimited depth; `0` = top-level group members only; `1–99` = explicit depth
-- Examples:
-  - `[ht_checklist_field include_group_options="5"]` — unlimited depth
-  - `[ht_checklist_field include_group_options="5" max_group_depth="2"]` — 2 levels deep
-  - `[ht_term_list include_groups="5" max_group_depth="0"]` — top-level only
-
-### **Redirects**
+## Redirects
 
 **What Makes Redirects Special:**
 
@@ -181,7 +111,7 @@ Setup:
   - 10 posts tagged "ML", 20 posts tagged "Machine Learning"
 
 Results:
-  - Visit /tag/ml/ → Redirects to /tag/machine-learning/ (shows 30 posts: 10 from ML + 20 from ML itself)
+  - Visit /tag/ml/ → Redirects to /tag/machine-learning/ (shows 30 posts: 10 from ML + 20 from Machine Learning itself)
   - Visit /tag/ai/ → Shows 30 posts (10 from ML + 20 from Machine Learning)
 
 Note: The "Machine Learning includes ML" relationship is optional but typical - it ensures posts
@@ -205,11 +135,7 @@ When Physics redirect is removed:
   - hierarchy(Science, Quantum) RESTORED
 ```
 
----
-
-### **Redirect Chain Prevention**
-
-When a term becomes a redirect, any terms redirecting TO it need to update their redirect target to prevent chains (e.g., Term C → Term A → Term B should become Term C → Term B).
+### Redirect Chain Prevention
 
 **Example:**
 - Term A redirects to Term B
@@ -218,11 +144,9 @@ When a term becomes a redirect, any terms redirecting TO it need to update their
 - **Result:**
   - C's redirect updates: C → D (prevents chain C → A → D)
 
-**Implementation:** See redirect chain prevention logic in `includes/core/term-relationships.php`
+**Implementation:** the cascade in `htax_set_redirect()`, in `includes/core/term-relationships.php`.
 
----
-
-### **Hierarchical Taxonomy Display Depth**
+## Hierarchical Taxonomy Display Depth
 
 For hierarchical taxonomies like categories, the `max_depth` parameter controls how many levels of the tree to display.
 
@@ -232,12 +156,17 @@ For hierarchical taxonomies like categories, the `max_depth` parameter controls 
 - Convention: `-1` for unlimited, `0` for top-level only, `1-99` for limited depth
 - **Only supported by:** `[ht_checklist_field]` and `[ht_term_list]`
 
+**Group Depth Control:**
+- `max_group_depth` parameter on `[ht_checklist_field]` (default: `-1`), controlling how far `include_group_options` expands into child groups
+- `-1` = all descendant groups; `0` = only the listed groups; `1–99` = that many levels of child groups
+
 **Examples:**
 - `[ht_checklist_field taxonomy="category"]` - uses global setting (unlimited by default)
 - `[ht_checklist_field taxonomy="category" max_depth="0"]` - show only top-level categories (no children)
 - `[ht_checklist_field taxonomy="category" max_depth="2"]` - show only 2 levels
 - `[ht_term_list taxonomy="category" max_depth="3"]` - limit to 3 levels deep
-- `[ht_term_list taxonomy="category" max_depth="-1"]` - force unlimited (override setting)
+- `[ht_term_list taxonomy="category" max_depth="-1"]` - use the global setting
+- `[ht_checklist_field include_group_options="5" max_group_depth="2"]` - expand 2 levels of child groups
 
 **Implementation:**
 - Hierarchical rendering stops at specified depth
@@ -271,7 +200,7 @@ When icons are enabled for a taxonomy, icon URLs and dimensions are exposed in t
 
 **Tier 1 — Index building:** When the search index is built for a post, each relationship row in `wp_htax_search_terms` records the `is_hidden` flag. The flag is `1` if either the directly-assigned source term (`source_term_id`) or the relationship target term (`term_id`) is hidden. Covers all relationship types: direct, container, hierarchy, redirect_target.
 
-Because hidden is propagated to descendants at write time (see [Write-Time Cascade](#write-time-cascade) below), a term's `_htax_is_hidden` meta is always authoritative — no runtime ancestor traversal is needed anywhere in the codebase.
+Because hidden is propagated to descendants at write time (see [Write-Time Cascade](#write-time-cascade) below), a term's `_htax_is_hidden` meta is always authoritative, and visibility checks need no runtime ancestor traversal. The admin UI does walk a term's ancestors, to disable the un-hide option when a parent is hidden.
 
 **Tier 2 — Runtime filtering:** At query time, hidden term handling differs by context:
 
@@ -313,14 +242,33 @@ Hidden status is propagated to descendants at write time, not derived at runtime
 **Activation repair scans.** Write-time hooks only fire when HyperTaxonomy is active. Changes made while HyperTaxonomy is deactivated — via WP admin, WP-CLI, CSV importer, or another plugin — bypass these hooks and can leave state inconsistent. Several idempotent scans run on every activation:
 
 - `htax_repair_visibility_cascade()` — re-propagates hidden status to descendants of hidden terms that drifted out of sync (e.g. a term reparented under a hidden ancestor while HyperTaxonomy was inactive).
-- `htax_repair_orphaned_term_relationships()` — five-pass repair of `wp_htax_term_relationships`: removes rows whose source or target no longer exists; clears stale `_htax_auto_redirect` meta; enforces taxonomy constraints and self-relation rules for all core and custom types; removes duplicate redirect rows (multiple targets for the same source). Covers terms deleted via WP-CLI, bulk DB imports, or any path that bypasses `delete_term`.
+- `htax_repair_orphaned_term_relationships()` — six-pass repair of `wp_htax_term_relationships`: removes rows whose source or target no longer exists; clears stale `_htax_auto_redirect` meta; enforces taxonomy constraints and self-relation rules for all core and custom types; removes duplicate redirect rows (multiple targets for the same source); removes duplicate rows for symmetric custom types. Covers terms deleted via WP-CLI, bulk DB imports, or any path that bypasses `delete_term`.
 - `htax_repair_orphaned_sticky_meta()` — removes `_htax_sticky_{term_id}` post meta entries whose term no longer exists. Covers terms deleted while HyperTaxonomy was inactive.
 
-**Term taxonomy conversion — two paths.**
+### Hiding Terms from Other Code
+
+`htax_hide_term_on_read()` (`get_term` filter) and `htax_hide_terms_in_term_queries()` (`terms_clauses` filter) make a hidden term not exist for a viewer who can't see it, so plugins that know nothing about hidden terms need no handling. Both ask `htax_get_term_ids_hidden_from_caller()`, which applies to front-end, REST and AJAX GET/HEAD requests only: wp-admin, cron, CLI and write requests get the real terms. Within those requests a backtrace (taken for term queries when the site has hidden terms and the viewer can't see them, and for lookups only when the term itself is hidden, since a page makes thousands of lookups) identifies callers that keep the real terms: HyperTaxonomy's own code, which applies visibility itself and builds caches shared between viewers, so search and display logic are unaffected; `WP_Term_Query::populate_terms()`, where core writes to what `get_term()` returns and a null is a fatal error; `get_object_term_cache()`, `update_object_term_cache()`, `get_the_terms()` and `is_object_in_term()`, which store full lists shared between viewers (`htax_filter_get_the_terms()` then filters per viewer); `_get_term_hierarchy()`, which stores each taxonomy's hierarchy in the persistent `{taxonomy}_children` option; core functions that change data (`wp_insert_term()`, `wp_update_term()`, `wp_delete_term()`, `wp_insert_post()`, `wp_set_object_terms()`, `wp_remove_object_terms()`, `wp_delete_object_term_relationships()`, the term count update), which can run during a read request; `get_queried_object()`, so hidden archives still 404; `WP_Tax_Query::transform_query()`, so posts carrying hidden terms are never excluded; `get_ancestors()` and `Walker_Category`, which walk a visible term's ancestors; and `get_term_link()` and `get_term_parents_list()` only while looking up a hidden ancestor of a visible term (they read it without checking, and a null ancestor is a fatal error in `get_term_parents_list()`), not when asked about the hidden term itself. `get_term_link()` is checked against its argument; `get_term_parents_list()` overwrites its argument while looping, so `htax_note_visible_term_ancestors()` (`get_ancestors` filter) records the hidden ancestors of visible terms for the request. Core write functions include `wp_set_object_terms()` and `wp_remove_object_terms()`, which call `term_exists()`. The SQL exclusion is safe with the term query cache, whose key includes the SQL.
+
+`htax_keep_hidden_terms_on_save()` (`set_object_terms` action) puts hidden terms back when a logged-in user who can't see them saves a post, since their editor never showed those terms. Cron, CLI and imports aren't affected.
+
+### Visibility Change Propagation
+
+When `htax_term_visibility_changed` fires, a single SQL UPDATE recalculates `is_hidden` for all affected rows — no reindexing needed:
+```sql
+UPDATE wp_htax_search_terms
+SET is_hidden = (source_is_hidden OR term_is_hidden)
+WHERE source_term_id = $term_id OR term_id = $term_id
+```
+
+**Group taxonomy exception:** When `htax_term_visibility_changed` fires for a term in the `group` taxonomy, `HyperTaxonomy_Search_Index_Manager::on_term_visibility_changed()` returns early without running this UPDATE. Group expansion and archive contribution are visibility-independent by design — all users see the same expanded post sets regardless of whether they can see a hidden group's archive. The `is_hidden` flag in `wp_htax_search_terms` reflects the *content* term's visibility (e.g. whether a tag is hidden), not the group's visibility.
+
+## Term Taxonomy Conversion
+
+There are two paths.
 
 *Native path (`htax_convert_term` / `htax_convert_terms_batch`).* Creates a new clean term in the target taxonomy and moves post assignments via a single `UPDATE wp_term_relationships` query. The handling of the old term then diverges:
 
-- **With redirect stub** (`$create_redirect = true`, the default): the old term stays in the old taxonomy and becomes the redirect stub pointing to the new term. It keeps its original slug — so `/old-tax/old-slug` correctly finds the stub and HyperTaxonomy's `template_redirect` handler fires the 301 redirect. All old metadata (icon, group memberships, HyperTaxonomy relationships) remains on the stub; it is in the correct taxonomy for all of it. The new term starts with no inherited metadata. Because the old term's `term_id` is unchanged, child terms' `parent` pointers remain valid with no re-parenting needed. Slug uniqueness follows WordPress's own rule: per-taxonomy. If no term in the target taxonomy already has the slug, the new term receives the original slug — the stub in the old taxonomy retains the same slug, which is valid since they live in different taxonomies. The redirect is stored as a `redirect` row in `wp_htax_term_relationships` (source = stub, target = new term) plus `_htax_auto_redirect = 1` term meta on the stub. `htax_find_auto_redirect_to_term()` detects existing stubs by querying `wp_htax_term_relationships` for this combination, enabling reverse conversion.
+- **With redirect stub** (`$create_redirect = true`, the default): the old term stays in the old taxonomy and becomes the redirect stub pointing to the new term. It keeps its original slug — so `/old-tax/old-slug` correctly finds the stub and HyperTaxonomy's `template_redirect` handler fires the 301 redirect. Group memberships and HyperTaxonomy relationships stay on the stub, which is in the correct taxonomy for them. The new term gets the hidden status, a copy of the icon when `htax_should_transfer_icon()` allows it, and the sticky posts. Because the old term's `term_id` is unchanged, child terms' `parent` pointers remain valid with no re-parenting needed. Slug uniqueness follows WordPress's own rule: per-taxonomy. If no term in the target taxonomy already has the slug, the new term receives the original slug — the stub in the old taxonomy retains the same slug, which is valid since they live in different taxonomies. The redirect is stored as a `redirect` row in `wp_htax_term_relationships` (source = stub, target = new term) plus `_htax_auto_redirect = 1` term meta on the stub. `htax_find_auto_redirect_to_term()` detects existing stubs by querying `wp_htax_term_relationships` for this combination, enabling reverse conversion.
 - **Without redirect stub** (`$create_redirect = false`): fires the same WordPress hook sequence as wpcat2tag — `wp_insert_term()` (fires `created_term`) → `UPDATE wp_term_relationships` → `wp_delete_term()` (fires `delete_term`) → `wp_update_term()` to claim the original slug. This ordering means plugins that detect term conversions by watching standard WordPress hooks (WPML, Polylang, etc.) recognize HyperTaxonomy's native no-redirect conversion automatically, without needing HyperTaxonomy-specific integration. A flag (`$GLOBALS['htax_native_conversion_in_progress']`) suppresses HyperTaxonomy's own external-detection hooks during this sequence to prevent double-firing.
 
 Reverse conversion is detected at the start of `htax_convert_term()` via `htax_find_auto_redirect_to_term()`, which queries `wp_htax_term_relationships` for a `redirect` row pointing from the target taxonomy to the source term combined with `_htax_auto_redirect = 1` term meta. If such a stub is found, `htax_restore_converted_term()` moves posts back to the stub, removes the redirect row and meta, and deletes the replacement term — restoring the original term to its exact pre-conversion state.
@@ -335,24 +283,15 @@ Pre-conversion guards: name collision in target taxonomy (rejects — consistent
 
 **WordPress navigation menus.** `htax_update_nav_menu_items_for_converted_term()` runs from both paths. It finds `nav_menu_item` posts with `_menu_item_type = taxonomy`, `_menu_item_object = $old_taxonomy`, `_menu_item_object_id = $old_term_id` and updates the taxonomy slug (and object_id when term_id changes in the external path), preventing broken archive URLs.
 
-**Third-party plugin data.** In the native redirect path the old term remains in the old taxonomy as a stub, so plugins that store data keyed by `(taxonomy_slug, term_id)` (Yoast SEO `wp_yoast_indexable`, WPML `wp_icl_translations`) continue to find it correctly under the old taxonomy. The new term starts fresh with a new `term_id`. In the no-redirect path the old term is deleted; those plugins' records are orphaned and must be updated via the `htax_term_converted` hook. `wp_termmeta` data (ACF field values, etc.) follows the term_id: it stays on the stub in the redirect path, and is removed with the old term in the no-redirect path — the new term starts clean in both cases.
+**Third-party plugin data.** In the native redirect path the old term remains in the old taxonomy as a stub, so plugins that store data keyed by `(taxonomy_slug, term_id)` (Yoast SEO `wp_yoast_indexable`, WPML `wp_icl_translations`) continue to find it correctly under the old taxonomy. The new term starts fresh with a new `term_id`. In the no-redirect path the old term is deleted; those plugins' records are orphaned and must be updated via the `htax_term_converted` hook. Other plugins' `wp_termmeta` data (ACF field values, etc.) follows the term_id: it stays on the stub in the redirect path, and is removed with the old term in the no-redirect path — the new term starts clean in both cases.
 
 **`htax_term_converted` action.** Fires at the end of both paths with signature `($new_term_id, $old_taxonomy, $new_taxonomy, $old_term_id)`. `$old_term_id` is the stub (redirect path) or the deleted term (no-redirect / external paths). Plugins use this to update taxonomy-keyed records.
 
-**Redirect stubs** created by the external path via `htax_create_redirect_term()` inherit the hidden status of the target term and validate that the intended parent is still in the old taxonomy before setting it (batch-safe).
+## Term Merge
 
-### Visibility Change Propagation
+`htax_merge_terms()` creates redirect stubs with `htax_create_redirect_term()` after deleting the source terms, because a stub takes its source's name and slug. That step runs after the transaction, so a failed stub doesn't undo the merge: it just isn't counted in `redirects_created`.
 
-When `htax_term_visibility_changed` fires, a single SQL UPDATE recalculates `is_hidden` for all affected rows — no reindexing needed:
-```sql
-UPDATE wp_htax_search_terms
-SET is_hidden = (source_is_hidden OR term_is_hidden)
-WHERE source_term_id = $term_id OR term_id = $term_id
-```
-
-**Group taxonomy exception:** When `htax_term_visibility_changed` fires for a term in the `group` taxonomy, `HyperTaxonomy_Search_Index::on_term_visibility_changed()` returns early without running this UPDATE. Group expansion and archive contribution are visibility-independent by design — all users see the same expanded post sets regardless of whether they can see a hidden group's archive. The `is_hidden` flag in `wp_htax_search_terms` reflects the *content* term's visibility (e.g. whether a tag is hidden), not the group's visibility.
-
----
+When a term merge transfers source terms' `member_of` group memberships to the target (`htax_merge_terms()` in term-merge.php), the set of affected group IDs is expanded to include group ancestors (group expansion is hierarchical, so a child group's member-list cache feeds its ancestors' expansions). For each affected group it deletes the `htax_grp_{group_id}_` transients, refreshes the group term count, and cleans the term cache, then fires `htax_term_groups_changed` once for the target term so the search index and other membership-change listeners stay consistent.
 
 ## Conflict Detection
 
@@ -361,7 +300,7 @@ HyperTaxonomy automatically prevents or resolves several classes of relationship
 | Conflict | Behavior |
 |----------|----------|
 | Self-inclusion | Silently removed from save data before writing |
-| Circular redirects (A→B→A) | Auto-resolved by flipping direction; no error shown |
+| Circular redirects (A→B→A) | Auto-resolved: the target's redirect is removed so the new one can save, with an info notice |
 | Redirect chains (A→B→C) | Resolved to A→C at save time; chains never stored |
 | Hierarchy/inclusion conflicts | Removed automatically on `edited_term` hook, admin notice shown |
 | Self-redirects | Rejected with admin notice; redirect not saved |
@@ -401,21 +340,16 @@ This keeps HyperTaxonomy inclusions and containers disjoint from the native WP h
 
 5. **Query time (safety net)** — `htax_get_included_terms()` and `htax_get_container_terms()` still apply the exclusions at read time, so any row that slips past the write-time gates (direct `$wpdb` writes, third-party plugins) is silently ignored rather than producing incorrect results.
 
-The shared helper is `htax_remove_hierarchy_conflict_rows( int $term_id, string $taxonomy ): bool` in term-relationships.php, used by all four active enforcement points.
+The shared helper is `htax_remove_hierarchy_conflict_rows( int $term_id, string $taxonomy ): bool` in term-relationships.php, used by the hierarchy change, term merge, and activation sweep enforcement points.
 
 **Cache invalidation for group-based hierarchy interactions:**
 
-- When a term joins or leaves a group, `htax_update_group_membership_caches()` step 4 clears the joining/leaving term M's own caches (including `htax_inc_M`, `htax_cont_M`, `htax_crel_*/htax_crel_rev_*_M`). Step 5 calls `htax_invalidate_group_relationship_caches($all_affected_groups)`, which covers: (A) `htax_inc_T` for terms T that include the affected group or its ancestors (fwd T→G); (B) `htax_cont_T` for terms T that are targeted by container rows on the affected group or its ancestors/descendants (rev G→T); (C) `htax_crel_{slug}_T` and (D) `htax_crel_rev_{slug}_T` for the same two sets. The rev/container direction uses the full union of ancestors + descendants because M's path 3 expansion reaches descendant groups.
+- When a term joins or leaves a group, `htax_update_group_membership_caches()` step 4 clears the joining/leaving term M's own caches (including `htax_inc_M`, `htax_cont_M`, `htax_crel_*/htax_crel_rev_*_M`). Step 5 schedules `htax_invalidate_group_relationship_caches($all_affected_groups)` on the `htax_async_group_propagate` cron event, which covers: (A) `htax_inc_T` for terms T that include the affected group or its ancestors (fwd T→G); (B) `htax_cont_T` for terms T that are targeted by container rows on the affected group or its ancestors/descendants (rev G→T); (C) `htax_crel_{slug}_T` and (D) `htax_crel_rev_{slug}_T` for the same two sets. The rev/container direction uses the full union of ancestors + descendants because M's path 3 expansion reaches descendant groups.
 - When group members are edited via the group admin screen (`htax_save_terms_in_group`), `htax_delete_transients_by_prefix('htax_grp_{group_id}_')` clears all `htax_grp_{group_id}_{taxonomy}` caches across all taxonomies, then `htax_invalidate_group_relationship_caches` covers the downstream `htax_inc_*` / `htax_crel_*/htax_crel_rev_*` caches.
 - When G→T container-group rows are added/removed (either via the term edit screen Container Groups field or `htax_save_terms_with_container_group`), `htax_clear_member_caches_for_groups([G], 'inc')` clears `htax_inc_M` for all members of G and G's ancestor groups. This is necessary because path 3 of `htax_get_included_terms(M)` expands M's member groups downward, so members of ancestor groups of G also see G→T container rows.
 - When T→G included-group rows are added/removed (either via the term edit screen Included Groups field or `htax_save_terms_with_included_group`), `htax_clear_member_caches_for_groups([G], 'cont')` clears `htax_cont_M` for all members of G and G's descendant groups, keeping the container view consistent with the inclusion view.
 - When custom-type T→G or G→T group rows change in `htax_save_term_relationships`, `htax_clear_member_caches_for_groups` is called with `'crel_rev'` or `'crel'` respectively to clear the affected member caches. Additionally, when only custom-type group rows change (no term-to-term rows change), `$custom_types_changed` is set so that `htax_delete_term_transients(T)` runs and T's own `htax_crel_*/htax_crel_rev_*` caches are cleared.
 - When a group's parent changes, `htax_invalidate_caches_on_group_reparent()` (hooked to `edited_term` priority 12) calls `htax_invalidate_group_relationship_caches([old_parent, new_parent])` and then `htax_clear_member_caches_for_groups([old_parent, new_parent], 'inc')`. The first call clears `htax_inc_*`/`htax_cont_*`/`htax_crel_*/htax_crel_rev_*` for terms T that have rows pointing to the affected parent chains. The second clears `htax_inc_M` for members of the old and new parent groups and their ancestor groups, covering the members whose path-3 downward expansion previously (or now) reaches through the reparented group to its container rows.
-- `htax_hide_term_on_read()` (`get_term` filter) and `htax_hide_terms_in_term_queries()` (`terms_clauses` filter) make a hidden term not exist for a viewer who can't see it, so plugins that know nothing about hidden terms need no handling. Both ask `htax_get_term_ids_hidden_from_caller()`, which applies to front-end, REST and AJAX GET/HEAD requests only: wp-admin, cron, CLI and write requests get the real terms. Within those requests a backtrace (taken for term queries when the site has hidden terms and the viewer can't see them, and for lookups only when the term itself is hidden, since a page makes thousands of lookups) identifies callers that keep the real terms: HyperTaxonomy's own code, which applies visibility itself and builds caches shared between viewers, so search and display logic are unaffected; `WP_Term_Query::populate_terms()`, where core writes to what `get_term()` returns and a null is a fatal error; `get_object_term_cache()`, `update_object_term_cache()`, `get_the_terms()` and `is_object_in_term()`, which store full lists shared between viewers (`htax_filter_get_the_terms()` then filters per viewer); `_get_term_hierarchy()`, which stores each taxonomy's hierarchy in the persistent `{taxonomy}_children` option; core functions that change data (`wp_insert_term()`, `wp_update_term()`, `wp_delete_term()`, `wp_insert_post()`, `wp_set_object_terms()`, `wp_remove_object_terms()`, `wp_delete_object_term_relationships()`, the term count update), which can run during a read request; `get_queried_object()`, so hidden archives still 404; `WP_Tax_Query::transform_query()`, so posts carrying hidden terms are never excluded; `get_ancestors()` and `Walker_Category`, which walk a visible term's ancestors; and `get_term_link()` and `get_term_parents_list()` only while looking up a hidden ancestor of a visible term (they read it without checking, and a null ancestor is a fatal error in `get_term_parents_list()`), not when asked about the hidden term itself. `get_term_link()` is checked against its argument; `get_term_parents_list()` overwrites its argument while looping, so `htax_note_visible_term_ancestors()` (`get_ancestors` filter) records the hidden ancestors of visible terms for the request. Core write functions include `wp_set_object_terms()` and `wp_remove_object_terms()`, which call `term_exists()`. The SQL exclusion is safe with the term query cache, whose key includes the SQL.
-- `htax_keep_hidden_terms_on_save()` (`set_object_terms` action) puts hidden terms back when a logged-in user who can't see them saves a post, since their editor never showed those terms. Cron, CLI and imports aren't affected.
-- `htax_merge_terms()` creates redirect stubs after deleting the source terms, because a stub takes its source's name and slug. That step runs after the transaction, so a failed stub doesn't undo the merge: it just isn't counted in `redirects_created`.
-- When a term merge transfers source terms' `member_of` group memberships to the target (`htax_merge_terms()` in term-merge.php), the set of affected group IDs is expanded to include group ancestors (group expansion is hierarchical, so a child group's member-list cache feeds its ancestors' expansions). For each affected group it deletes the `htax_grp_{group_id}_` transients, refreshes the group term count, and cleans the term cache, then fires `htax_term_groups_changed` once for the target term so the search index and other membership-change listeners stay consistent.
-
 Functions:
 - `htax_cleanup_hierarchy_conflicts( $term_id, $tt_id, $taxonomy )` — runs on `edited_term` priority 20; detects parent change via pre-edit cache, removes conflicting direct rows if any, fires `htax_includes_changed` for affected ancestors
 - `htax_fire_archive_changed_on_hierarchy( $term_id, $tt_id, $taxonomy )` — runs on `edited_term` priority 11; detects parent change, deletes `htax_inc_` and `htax_cont_` transients for all terms in old and new parent chains, then fires `htax_term_archive_changed` for each
@@ -424,7 +358,7 @@ Functions:
 
 ### Redirect Constraints
 
-- **No circular redirects:** A→B is blocked if B already redirects (directly or transitively) back to A
+- **No circular redirects:** When A→B is set and B already redirects (directly or transitively) back to A, B's redirect is removed so the new one can save, and an info notice explains it
 - **No redirect chains:** When A→B exists and B's redirect target changes to C, A is automatically updated to A→C
 - **No self-redirect:** A term cannot redirect to itself
 - **Cross-taxonomy supported:** Redirects can point to a term in a different taxonomy (e.g. a tag redirecting to a category). `htax_get_redirect_target()` validates the target taxonomy at resolution time.
@@ -432,6 +366,3 @@ Functions:
 ### Group Conflicts
 
 Multi-group membership is fully supported — no conflicts arise. When a term belongs to multiple groups and one group is included by another term, the inclusion set is expanded correctly through all applicable groups.
-
----
-

@@ -30,7 +30,7 @@ Editing a post doesn't remove hidden terms the user can't see, which can happen 
 
 | Setting | Who can see hidden terms |
 |---------|-------------------------|
-| `editors` (default) | Users with the `edit_posts` capability (Contributors, Authors, Editors and Administrators) |
+| `post_editors` (default) | Users with the `edit_posts` capability (Contributors, Authors, Editors and Administrators) |
 | `all` | Everyone (useful for testing only) |
 | `none` | No one (admin can still edit terms but they appear hidden everywhere) |
 

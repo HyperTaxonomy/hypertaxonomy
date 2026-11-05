@@ -76,7 +76,7 @@ class HyperTaxonomy_Settings {
             // Display
             'show_contributing_terms'    => true,
             'contributing_terms_template' => __( ' (including: %s)', 'hypertaxonomy' ),
-            'hidden_terms_visibility'    => 'editors',  // Options: 'all', 'editors', 'none'
+            'hidden_terms_visibility'    => 'post_editors',  // Options: 'all', 'post_editors', 'none'
             'show_archive_description'   => true,   // Global gate for per-term _htax_show_description
             'show_sticky_posts'          => true,   // Global display gate for sticky post archives
             'disable_sticky_styles'      => false,
@@ -1076,8 +1076,8 @@ class HyperTaxonomy_Settings {
                         <label>
                             <input type="radio"
                                    name="htax_settings[hidden_terms_visibility]"
-                                   value="editors"
-                                   <?php checked( $options['hidden_terms_visibility'], 'editors' ); ?> />
+                                   value="post_editors"
+                                   <?php checked( $options['hidden_terms_visibility'], 'post_editors' ); ?> />
                             <?php esc_html_e( 'Visible only to users who can edit posts', 'hypertaxonomy' ); ?>
                         </label><br>
 
@@ -3165,10 +3165,10 @@ if ( function_exists( 'htax_the_archive_icon' ) ) {
             }
             $sanitized['contributing_terms_template'] = $template;
 
-            $valid_visibility = array( 'all', 'editors', 'none' );
+            $valid_visibility = array( 'all', 'post_editors', 'none' );
             $sanitized['hidden_terms_visibility'] = isset( $input['hidden_terms_visibility'] ) &&
                 in_array( $input['hidden_terms_visibility'], $valid_visibility ) ?
-                $input['hidden_terms_visibility'] : 'editors';
+                $input['hidden_terms_visibility'] : 'post_editors';
 
             $sanitized['disable_sticky_styles'] = ! empty( $input['disable_sticky_styles'] );
 

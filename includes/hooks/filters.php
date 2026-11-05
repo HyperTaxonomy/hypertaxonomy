@@ -38,6 +38,7 @@ add_action( 'init', function() {
 add_filter( 'get_the_terms', 'htax_filter_get_the_terms', 10, 3 );
 add_filter( 'get_term', 'htax_hide_term_on_read' );
 add_filter( 'terms_clauses', 'htax_hide_terms_in_term_queries' );
+add_filter( 'get_ancestors', 'htax_note_visible_term_ancestors', 10, 2 );
 add_action( 'set_object_terms', 'htax_keep_hidden_terms_on_save', 10, 6 );
 
 // Filter tag cloud to exclude hidden terms

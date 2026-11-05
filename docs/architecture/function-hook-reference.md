@@ -217,10 +217,12 @@ Hidden term logic: permission checks, write-time cascade, and frontend query fil
 **Read / permission checks:**
 - `htax_is_term_hidden( $term_id )` - Returns true if the term has `_htax_is_hidden` meta set
 - `htax_get_term_ids_hidden_from_caller(): array` - Term IDs to hide from the code asking for terms; empty for HyperTaxonomy's own code, for core callers that need real terms, and outside front-end, REST and AJAX read requests
+- `htax_is_requested_term( WP_Term $term, $asked ): bool` - Whether a term is the one `get_term_link()` was asked for, rather than an ancestor it is resolving
+- `htax_note_visible_term_ancestors( $ancestors, $object_id )` - `get_ancestors` filter: records hidden ancestors of a visible term for the request, for `get_term_parents_list()`
 - `htax_hide_term_on_read( $term )` - `get_term` filter: null for a term hidden from the caller
 - `htax_hide_terms_in_term_queries( $clauses )` - `terms_clauses` filter: excludes terms hidden from the caller from `WP_Term_Query`
 - `htax_keep_hidden_terms_on_save( $object_id, $terms, $tt_ids, $taxonomy, $append, $old_tt_ids )` - `set_object_terms` action: restores hidden terms a logged-in user who can't see them would otherwise remove by saving
-- `htax_can_see_hidden_terms( $taxonomy = '' )` - Returns true if the current user holds `manage_term_visibility` capability or meets the site-wide role threshold (`editors` = `edit_posts`, `all`, `none`)
+- `htax_can_see_hidden_terms( $taxonomy = '' )` - Returns true if the current user holds `manage_term_visibility` capability or meets the site-wide role threshold (`post_editors` = `edit_posts`, `all`, `none`)
 - `htax_get_all_hidden_term_ids()` - Returns all hidden term IDs from the DB; cached via persistent transient; invalidated on any visibility change
 - `htax_get_visible_term_ids( $term_ids )` - Filters an array of term IDs, removing hidden ones for unprivileged users
 - `htax_get_visible_wp_descendants( int $term_id, string $taxonomy )` - Returns WP descendants of a term excluding those marked hidden; relies on write-time cascade for completeness

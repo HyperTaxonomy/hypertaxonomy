@@ -106,7 +106,7 @@ Post list, display, PowerSearch, and sort-order shortcodes each have a correspon
 3. **Container Groups** — Term B specifies Term Group H as one of its container groups → Posts with Term B appear in the archive of every term that's a member of H
 4. **Bidirectional Inclusion (Synonyms)** — Term A includes Term B and Term B includes Term A → Posts with either term appear in both archives
 5. **Redirects** — Term A redirects to Term B → Visiting Term A's archive redirects to Term B's archive with 301 status
-6. **Hidden Terms** — Terms that exist in the taxonomy for organizational purposes, but are shown only to admins or editors
+6. **Hidden Terms** — Terms that exist in the taxonomy for organizational purposes, but are shown only to users who can edit posts
 7. **Custom Relationship Types** — Two kinds: *Inclusion-based* types participate in archive expansion and search indexing automatically (same taxonomy required for source and target, groups expanded to their members); *Custom* types store the relationship only and leave behavior to your theme or plugin
 
 **Non-transitive by design:** Inclusion relationships do not chain — if A includes B and B includes C, A does not automatically include C. Each inclusion is explicit and intentional. Use native category hierarchy where cascading inclusion is appropriate.

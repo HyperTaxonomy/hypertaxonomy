@@ -41,12 +41,12 @@ function htax_can_see_hidden_terms( $taxonomy = '' ) {
 
     // Fall back to the site-wide settings-based role threshold.
     $options    = get_option( 'htax_settings', array() );
-    $visibility = isset( $options['hidden_terms_visibility'] ) ? $options['hidden_terms_visibility'] : 'editors';
+    $visibility = isset( $options['hidden_terms_visibility'] ) ? $options['hidden_terms_visibility'] : 'post_editors';
 
     switch ( $visibility ) {
         case 'all':
             return true;
-        case 'editors':
+        case 'post_editors':
             return current_user_can( 'edit_posts' );
         case 'none':
         default:
@@ -69,14 +69,17 @@ function htax_can_see_hidden_terms( $taxonomy = '' ) {
  *   the per-post term cache, and the {taxonomy}_children option that holds each taxonomy's
  *   hierarchy. get_the_terms() results are filtered afterward by htax_filter_get_the_terms().
  * - Core functions that change data, which can run during a read request.
- * - The queried object, tax queries and term links, so that hidden archives still 404, posts
- *   carrying hidden terms are never excluded, and a visible child of a hidden parent keeps
- *   a working URL.
+ * - The queried object and tax queries, so that hidden archives still 404 and posts carrying
+ *   hidden terms are never excluded.
+ * - Core functions walking a visible term's ancestors, which read each ancestor without checking:
+ *   get_ancestors(), Walker_Category, and get_term_link() and get_term_parents_list() (fatal on a
+ *   null ancestor). Asking those last two about the hidden term itself finds nothing.
  *
  * @since 1.0.0
+ * @param WP_Term|null $term The term being looked up, when the caller is a single-term lookup.
  * @return int[] Term IDs to hide; empty when nothing should be hidden.
  */
-function htax_get_term_ids_hidden_from_caller(): array {
+function htax_get_term_ids_hidden_from_caller( ?WP_Term $term = null ): array {
     if ( ! did_action( 'init' ) || wp_doing_cron() || ( is_admin() && ! wp_doing_ajax() ) ) {
         return array();
     }
@@ -99,22 +102,36 @@ function htax_get_term_ids_hidden_from_caller(): array {
         'is_object_in_term',
         '_get_term_hierarchy',
         'get_queried_object',
-        'get_term_link',
+        'get_ancestors',
         'transform_query',
-        'term_exists',
         'wp_insert_term',
         'wp_update_term',
         'wp_delete_term',
         'wp_insert_post',
+        'wp_set_object_terms',
+        'wp_remove_object_terms',
         'wp_delete_object_term_relationships',
         '_update_term_count_on_transition_post_status',
     );
     $core_dir          = wp_normalize_path( ABSPATH . WPINC );
     $plugin_dir        = wp_normalize_path( HTAX_PLUGIN_DIR );
 
-    foreach ( array_slice( debug_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS, 16 ), 1 ) as $frame ) {
+    // Arguments are only needed for a single-term lookup, which reaches here only for a hidden term.
+    foreach ( array_slice( debug_backtrace( $term ? 0 : DEBUG_BACKTRACE_IGNORE_ARGS, 16 ), 1 ) as $frame ) {
         if ( in_array( $frame['function'], $real_term_callers, true ) ) {
             return array();
+        }
+        if ( 'Walker_Category' === ( $frame['class'] ?? '' ) ) {
+            return array();
+        }
+        if ( $term && 'get_term_link' === $frame['function'] && ! htax_is_requested_term( $term, $frame['args'][0] ?? null ) ) {
+            return array();
+        }
+        if ( $term && 'get_term_parents_list' === $frame['function'] ) {
+            $ancestors = htax_request_cache( 'visible_term_ancestors' );
+            if ( isset( $ancestors[ (int) $term->term_id ] ) ) {
+                return array();
+            }
         }
         // The first file outside WordPress core is the code asking.
         $file = isset( $frame['file'] ) ? wp_normalize_path( $frame['file'] ) : $core_dir;
@@ -123,6 +140,46 @@ function htax_get_term_ids_hidden_from_caller(): array {
         }
     }
     return $hidden;
+}
+
+/**
+ * Note the ancestors of a visible term, which get_term_parents_list() is about to read unchecked.
+ *
+ * That function overwrites its own argument while looping, so a backtrace can't tell which term it
+ * was asked about. It returns early for a term hidden from the viewer, so it only reaches
+ * get_ancestors() for a term they can see.
+ *
+ * @since 1.0.0
+ * @param int[]      $ancestors Ancestor IDs.
+ * @param int|string $object_id Term ID.
+ * @return int[] Ancestor IDs, unchanged.
+ */
+function htax_note_visible_term_ancestors( $ancestors, $object_id ) {
+    $hidden = array_flip( array_map( 'intval', htax_get_all_hidden_term_ids() ) );
+    if ( ! isset( $hidden[ (int) $object_id ] ) ) {
+        $noted = &htax_request_cache( 'visible_term_ancestors' );
+        foreach ( (array) $ancestors as $ancestor_id ) {
+            if ( isset( $hidden[ (int) $ancestor_id ] ) ) {
+                $noted[ (int) $ancestor_id ] = true;
+            }
+        }
+    }
+    return $ancestors;
+}
+
+/**
+ * Check whether a term is the one get_term_link() was asked for, rather than one of its ancestors.
+ *
+ * @since 1.0.0
+ * @param WP_Term $term  Term being looked up.
+ * @param mixed   $asked get_term_link()'s first argument: a term object, ID or slug.
+ * @return bool
+ */
+function htax_is_requested_term( WP_Term $term, $asked ): bool {
+    if ( is_object( $asked ) ) {
+        return (int) $asked->term_id === (int) $term->term_id;
+    }
+    return (string) $asked === (string) $term->term_id || (string) $asked === $term->slug;
 }
 
 /**
@@ -142,7 +199,7 @@ function htax_hide_term_on_read( $term ) {
     if ( null === $hidden ) {
         $hidden = array_flip( array_map( 'intval', htax_get_all_hidden_term_ids() ) );
     }
-    if ( isset( $hidden[ (int) $term->term_id ] ) && htax_get_term_ids_hidden_from_caller() ) {
+    if ( isset( $hidden[ (int) $term->term_id ] ) && htax_get_term_ids_hidden_from_caller( $term ) ) {
         return null;
     }
     return $term;

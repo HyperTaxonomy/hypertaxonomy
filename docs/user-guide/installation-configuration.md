@@ -45,7 +45,7 @@ The main configuration hub. A **General** subtab controls which taxonomies Hyper
 |---------|----------------|
 | Search Enhancement | Include this taxonomy in relevance-scored search, weighted by relationship type (direct assignment, child term, inclusion, redirect target). Enables per-taxonomy weight configuration in the Search tab. |
 | Term Icons | Icon upload per term; icons appear in search widgets, term archives, and post meta (theme support required). |
-| Visibility | Hide specific terms from post meta or restrict them to editors only. |
+| Visibility | Hide specific terms from post meta or restrict them to users who can edit posts. |
 | Redirects | 301 redirect support for term archive pages. |
 | Group Assignment | Term Groups membership for this taxonomy (required for Tag Groups / PublishPress Tag Groups import). |
 | Term Relationships | Inclusion/container relationships, group-based relationships, and custom relationship types. When disabled, no archive expansion occurs for that taxonomy. |

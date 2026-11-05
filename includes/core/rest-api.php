@@ -1145,7 +1145,7 @@ function htax_rest_get_post_matched_slugs( array $post ): ?array {
  */
 function htax_filter_sitemap_terms_query( $args, $taxonomy ) {
     $options    = get_option( 'htax_settings', array() );
-    $visibility = isset( $options['hidden_terms_visibility'] ) ? $options['hidden_terms_visibility'] : 'editors';
+    $visibility = isset( $options['hidden_terms_visibility'] ) ? $options['hidden_terms_visibility'] : 'post_editors';
 
     if ( 'all' === $visibility ) {
         return $args;

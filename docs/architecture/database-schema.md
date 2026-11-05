@@ -59,7 +59,7 @@ All of these are removed on uninstall (the dismissals for every user; the `htax/
   - `max_sticky_posts` - Global maximum sticky posts per archive (default: 10)
   - `disable_sticky_styles` - Whether to disable default sticky post styles
   - `show_contributing_terms` - Show contributing terms in archive titles
-  - `hidden_terms_visibility` - Hidden term visibility setting (all/editors/none); `editors` means users with `edit_posts`
+  - `hidden_terms_visibility` - Hidden term visibility setting (all/post_editors/none); `post_editors` means users with `edit_posts`
   - `expand_secondary_queries` - Enable automatic expansion of secondary/third-party queries (default: off); when on, `htax_expand_secondary_query` and `htax_adjust_term_counts` become active
   - *(Post editor display preferences are now per-user, stored in the Gutenberg `core/preferences` store under `htax/post-edit` — not in `htax_settings`. The five toggles (Inclusion Badges, Container Badges, Redirect Indicators, Hidden Terms, Sticky Pushpins) are accessible via the block editor's ··· menu.)*
   - `advertise_ht_presence` (bool, default `true`) — whether to add the `X-HyperTaxonomy` header to REST responses; disabling opts the site out of peer discovery

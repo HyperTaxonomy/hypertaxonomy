@@ -31,7 +31,7 @@ Public API + plugin lifecycle functions. Does not contain internal utilities —
 - `htax_get_indexed_post_types()` - Get post types included in the search index (default: `['post', 'page']`)
 - `htax_get_taxonomy_features()` - Get feature configuration for a taxonomy
 - `htax_taxonomy_has_feature()` - Check if specific feature is enabled for taxonomy
-- `htax_get_cache_duration($type)` - Get cache duration from settings; types: `term` (default 2 hours), `search` (default 30 min), `autocomplete` (default 5 min), `relationship` (default 0 = never expire, explicit invalidation), `sticky` (default 0), `shortcode` (default 0)
+- `htax_get_cache_duration($type)` - Get cache duration from settings; types: `term` (default 2 hours), `search` (default 30 min), `autocomplete` (default 5 min), `relationship` (default 0 = never expire, explicit invalidation), `sticky` (default 0), `shortcode` (default 1 hour)
 - `htax_generate_transient_key()` - Safe transient key generation
 - `htax_debug_info()` - Display debug information on archive pages (`wp_footer`)
 - `htax_get_current_taxonomy()` - Get current taxonomy from screen or request
@@ -512,9 +512,9 @@ Reference locations are resolved via `ATCF_Locations::get_aggregated()`, which e
 - `htax_rest_get_relationship_types( WP_REST_Request $request ): WP_REST_Response` - Lists relationship type definitions
 - `htax_rest_get_term_relationships( WP_REST_Request $request )` - Returns a term's effective outbound relationships
 
-**`_fields` awareness.** All HT-added fields are gated by `htax_rest_field_requested( ?WP_REST_Request $request, string $field ): bool`. Returns `false` if: (a) the field is globally disabled by the Relationship Data in REST Responses setting (`htax_includes`, `htax_synonyms`), OR (b) a `_fields` parameter was supplied and does not include this field. Returns `true` when `_fields` is absent. Callers should specify `_fields` to avoid unused computation; TermConnect does this in all outbound requests.
+**`_fields` awareness.** All HT-added fields are gated by `htax_rest_field_requested( ?WP_REST_Request $request, string $field ): bool`. Returns `false` if: (a) the field is globally disabled by the Term Inclusion Relationships setting (`htax_includes`, `htax_synonyms`), OR (b) a `_fields` parameter was supplied and does not include this field. Returns `true` when `_fields` is absent. Callers should specify `_fields` to avoid unused computation; TermConnect does this in all outbound requests.
 
-**All term fields now available on peer collection responses.** Every field listed in the build-helpers above is available on both individual and peer collection responses when requested in `_fields`. Relationship-specific fields (`htax_includes`, `htax_relationships`) are additionally gated by the Peer Relationship Delegation API Advanced setting. `htax_synonyms` and `htax_includes` are gated by the Relationship Data in REST Responses setting. `htax_locations` is gated by the share_locations feature flag.
+**All term fields are available on peer collection responses.** Every field listed in the build-helpers above is available on both individual and peer collection responses when requested in `_fields`. Relationship-specific fields (`htax_includes`, `htax_relationships`) are additionally gated by the Custom Term Relationships and Relationship Types Advanced setting. `htax_synonyms` and `htax_includes` are gated by the Term Inclusion Relationships setting. `htax_locations` is gated by the share_locations feature flag.
 
 **`htax_relationships` is also available on individual term responses** (not just peer collection), gated by `_fields`.
 

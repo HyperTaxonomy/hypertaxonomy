@@ -35,7 +35,6 @@ function htax_uninstall_cleanup() {
     delete_option( 'htax_custom_relationship_types' );
     delete_option( 'htax_pending_reindex' );
     delete_option( 'htax_cleaned_panel_prefs_2' );
-    delete_option( 'htax_invalidate_all_contrib_caches' );
 
     // Tag Groups import / live-sync state.
     delete_option( 'htax_tag_groups_integration_mode' );

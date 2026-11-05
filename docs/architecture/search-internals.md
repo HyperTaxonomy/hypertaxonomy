@@ -174,6 +174,146 @@ If multiple text fields are detected during shortcode rendering, a visible warni
 
 ---
 
+### PowerSearch — Scoring and Execution
+
+The PowerSearch system uses MySQL FULLTEXT indexes for performance with support for field-specific operators, minimum score thresholds, search scope restriction, and dynamic ordering.
+
+*Query Parsing (htax_parse_search_query in search.php, called from perform_indexed_text_search):*
+- Regex pattern: `/([+\-]?)\b(title|content|body|excerpt|tags?|categories?|terms?|...):("([^"]+)"|(\S+))/i`
+- Singular aliases accepted: `tag:` = `tags:`, `category:` = `categories:`, `term:` = `terms:`, `body:` = `content:`
+- Extracts field-specific terms with modifiers into arrays: title, body, excerpt, tags, categories, terms, general
+- Each term stored as: `array('term' => 'word', 'required' => bool, 'excluded' => bool)`
+- Modifiers: `+` (required, also adds HAVING score > 0 for that field), `-` (excluded), no prefix (optional)
+- Supports quoted phrases: `title:"exact phrase"` or `+title:"exact phrase"`
+- General terms (no operator) match in all allowed fields
+- Helper functions in search.php: `htax_build_boolean_query_string()` converts to MySQL BOOLEAN MODE syntax (taxonomy scoring, WHERE enforcement); `htax_build_natural_language_query_string()` produces operator-stripped bare words for NL MODE post text scoring
+
+*Search Scope Restriction (search_in parameter):*
+- Default: `'all'` (searches title, content, excerpt, all enabled taxonomies)
+- Valid values: `all`, `title`, `content`, `excerpt`, `tags`, `categories`, `terms`, or specific taxonomy slugs
+- Filters parsed query to remove restricted field operators (silently ignored)
+- Admin can restrict search scope for security or UX reasons
+
+*Match Modes:*
+- `match="any"` (default): OR logic - terms optional unless prefixed with `+`
+- `match="all"`: AND logic - auto-adds `+` to all non-excluded terms
+- Exclusions (`-`) work in both modes
+
+*Dynamic Ordering (orderby parameter):*
+- Format: `field:direction,field:direction,...`
+- Supported fields: `relevance`, `date`, `modified`, `title`, `author`, `comment_count`, `last_comment`, `last_activity`, `ID`
+- Example: `relevance:desc,date:desc,title:asc`
+
+*Query Execution (perform_indexed_text_search in class-power-search.php):*
+1. Check 60-second transient cache; return cached result on hit. The cache key (`htax_ft_…`) is an MD5 of the query, the config, the hidden-terms visibility flag, and the resolved proximity condition. Including the flag prevents cross-user contamination: a result set computed for a user who can see hidden terms is never served to one who cannot, and vice versa. Including the proximity condition keeps `near:me` results separate per location.
+2. Get match mode from config; if not set, read the site-wide default from `htax_settings[default_match_mode]` via `htax_get_default_match_mode()` (configurable in Settings → Search → Default Match Mode; built-in default: 'any')
+3. Parse search_in parameter and build allowed fields map
+4. Parse query with htax_parse_search_query() (supports field operators including singular aliases)
+5. Filter parsed query based on search_in restrictions
+6. If match='all', mark all non-excluded terms as required
+7. Read relevance multipliers from settings; auto-populate per-taxonomy defaults for newly enabled taxonomies
+8. Build NATURAL LANGUAGE MODE MATCH() clauses for `wp_htax_post_text` fields (title, body, excerpt) using `htax_build_natural_language_query_string()` — operators stripped, excluded terms omitted.
+9. Add WHERE enforcement for required and phrase terms (runs before both combined and field-specific taxonomy paths):
+   - **Required general terms** (`+word` or multi-word quoted phrases): pre-fetch term IDs matching the term via BOOLEAN MODE FULLTEXT on `wp_terms.name` and `wp_term_taxonomy.description`; add `WHERE (MATCH(pt.title, pt.body, pt.excerpt) AGAINST(term IN BOOLEAN MODE) > 0 OR pt.post_id IN (taxonomy lookup))`. Quoted phrases always get this enforcement regardless of `+` prefix, because NL MODE cannot represent phrase constraints.
+   - **Required field-specific text terms** (`+title:word`, `+content:word`, `+excerpt:word`): `WHERE MATCH(pt.field) AGAINST(term IN BOOLEAN MODE) > 0`.
+10. Build taxonomy LEFT JOINs. Each subquery may contain up to three UNION branches per relationship type:
+   - **Branch A (exact match)**: `hst.strength AS score` for terms whose `LOWER(name) = LOWER(search_string)` — no FULLTEXT scan, IDs pre-fetched via `htax_get_exact_match_term_ids()`. Posts where the matched term is more central to the content rank higher. These terms are excluded from Branch B to prevent double-scoring. Branch A fires: always for field-specific operators (`tags:target`); only for quoted general terms (`"target"`) to avoid mistaking post-content searches for term-label lookups.
+   - **Branch B (name)**: `MATCH(t.name) AGAINST(query IN BOOLEAN MODE) * name_weight * hst.strength` — FT scan on `wp_terms.name` via `htax_ft_term_name`; JOIN to `htax_search_terms` on `source_term_id`. `name_weight` (text weight) remains dynamic; `hst.strength` adds per-post centrality signal. Exact-match IDs excluded.
+   - **Branch C (description)**: `MATCH(tt.description) AGAINST(query IN BOOLEAN MODE) * description_weight * hst.strength` — only when `use_description=true` for that taxonomy.
+   - `MAX(branch_score)` per `(post_id, source_term_id)` — across branches, across the several index rows through which a post can reach one matched term (several of its terms included in it, or several relationship types), in every variant of both paths — so a term counts once per post, at its strongest, never more than a direct match on it. `SUM` across terms yields the field score. In the field-specific path each relationship-type subquery returns `(post_id, source_term_id, score)` rows and `sum_term_scores_sql()` takes the MAX across relationship types before summing.
+   - **Combined scan** (general queries with no field operators): single LEFT JOIN covering all taxonomies and rel-types, with separate CASE expressions for name/description text weights (the explicit relationship weight is baked into `hst.strength`, not applied in the CASE). If all indexed taxonomies have `use_description=false`, the description branch is omitted entirely. All taxonomy scores collapse into `terms_score`.
+   - **Field-specific path** (explicit `tags:` / `categories:` / `terms:` or custom-taxonomy operators): separate LEFT JOIN per field (tags, categories, terms, custom taxonomies).
+   - **Required field-taxonomy term enforcement** (`+tags:word`, `+categories:word`, etc.): FULLTEXT queries for taxonomy fields use OR mode so individual term-name rows can match independently. Each required term is enforced by a pre-fetched `WHERE pt.post_id IN (SELECT post_id FROM htax_search_terms WHERE source_term_id IN (...))` clause. This correctly handles multiple required terms in the same field (`+tags:A +tags:B` → posts carrying both tags).
+   - **Excluded term enforcement** (`-word` and `-field:word`): matching term IDs are pre-fetched and added as `WHERE pt.post_id NOT IN (SELECT post_id ... WHERE source_term_id IN (...))`. For general unqualified excluded terms (`-word`) — in both the combined and the field-specific path — a second NOT IN against `MATCH(pt.title, pt.body, pt.excerpt)` ensures posts where the excluded word appears in any text field are also removed, even when another field still scores positively. Field-specific excluded terms (`-tags:word`, `-terms:word`) only apply the taxonomy layer — post text is not checked.
+11. Calculate overall relevance as sum of all field scores; apply HAVING clause (min score thresholds)
+12. Apply dynamic ORDER BY; execute with LIMIT/OFFSET
+13. For paginated requests: run count query with same structure but no LIMIT
+14. Store result in 60-second transient; return
+
+*Cumulative Relevance Scoring:*
+
+Post text fields (title, content, excerpt) use **NATURAL LANGUAGE MODE** so that IDF (inverse document frequency) and document-length normalization prevent a single high-frequency term from dominating results. A very long post that repeats one query word hundreds of times does not outrank a shorter post that covers all query terms meaningfully. Taxonomy term fields continue to use **BOOLEAN MODE** (small corpus, phrase/operator support required). Required and excluded term enforcement for all fields is handled via explicit WHERE clauses — not by relying on the score being zero.
+
+**Field Score Calculation:**
+- **title_score**: `MATCH(pt.title) AGAINST(nl_query IN NATURAL LANGUAGE MODE) * title_weight`
+- **content_score**: `MATCH(pt.body) AGAINST(nl_query IN NATURAL LANGUAGE MODE) * content_weight`
+- **excerpt_score**: `MATCH(pt.excerpt) AGAINST(nl_query IN NATURAL LANGUAGE MODE) * excerpt_weight`
+  - All three fields come from `wp_htax_post_text` (`pt`), processed by `htax_extract_post_body()` — link URLs are appended as `[URL]`, img alt text and abbr expansions are preserved, then all remaining HTML is stripped. All public queries filter `pt.post_status = 'publish'`.
+  - `nl_query` = query terms with `+`/`-` operators stripped and excluded terms removed; produced by `htax_build_natural_language_query_string()` (in search.php). NL MODE does not support phrase syntax, so multi-word phrases contribute their individual words to the score; phrase presence is enforced separately via a WHERE guard (see below).
+- **tags_score / categories_score / terms_score / custom taxonomy scores**: up to three branches per relationship type. `hst.strength` encodes the per-row relevance contribution (TF-based for direct rows; `source_tf × explicit_weight` for indirect rows — see the [`wp_htax_search_terms` schema](database-schema.html#custom-database-tables)):
+  - Branch A (exact, conditional): `hst.strength AS score` when `LOWER(t.name) = LOWER(search_string)`. Posts where the matched term is central to the content rank higher. Fires for all non-excluded field-operator terms, and for quoted general terms (e.g. `"target"`). Unquoted general terms do not trigger exact matching.
+  - Branch B (name, always active): `MATCH(t.name) AGAINST(query IN BOOLEAN MODE) * name_weight * hst.strength`. Text weight (name_weight) stays dynamic; strength adds centrality. Exact-match term IDs excluded when Branch A is active.
+  - Branch C (description, when `use_description=true`): `MATCH(tt.description) AGAINST(query IN BOOLEAN MODE) * description_weight * hst.strength`. Description weight defaults to ~70% of name weight.
+  - `MAX(branch_score)` per `(post_id, source_term_id)` — a term scores once per post, via its strongest branch, index row and relationship type; `SUM` across terms per post yields the field score.
+  - Relationship types: direct, hierarchy (hierarchical taxonomies), container, redirect_target — all gated by feature flags at query time
+  - **Combined general scan** uses a single LEFT JOIN with CASE expressions for name/description text weights (explicit weight is baked into `hst.strength`, not in the CASE); all taxonomy scores collapse into `terms_score`. **Field-specific path** produces separate tags_score, categories_score, terms_score columns.
+
+**Overall Relevance:**
+- relevance = title_score + content_score + excerpt_score + tags_score + categories_score + terms_score
+- Multiple matching terms in the same field are cumulative (e.g., matching 3 terms in title gives higher title_score than matching 1)
+- General terms (no field operator) contribute to the title, content and excerpt scores, and score each taxonomy **once**: in that taxonomy's own field when the query has one, otherwise in `terms_score`. Combined scan: custom-taxonomy fields in the query (`colors:x`) are filtered out of the scan (`$general_field_taxonomies`). Field-specific path: tags and categories always have their own field when there are general words, so `terms_score` scores them — and custom-field taxonomies — with `terms:` words only.
+- Score range: 0-1+ (can exceed 1 when multiple terms match with high weights)
+
+*Minimum Score Thresholds:*
+- **min_score**: Overall minimum relevance threshold (default 0.01)
+- **min_title_score**: Minimum weighted score for title matches (default 0)
+- **min_content_score**: Minimum weighted score for content matches (default 0)
+- **min_excerpt_score**: Minimum weighted score for excerpt matches (default 0)
+- **min_tags_score**: Minimum cumulative score across all tag relationships (default 0)
+- **min_categories_score**: Minimum cumulative score across all category relationships (default 0)
+- **min_terms_score**: Minimum cumulative score across ALL taxonomy relationships (default 0) — compared in HAVING against `tags_score + categories_score + terms_score + <custom>_score`, which don't overlap (see above). Applied in the combined path and whenever the field-specific path builds `terms_score`.
+- Valid range: 0.0 to 1.0+ (same scale as relevance multiplier settings)
+- Each threshold is independent - all non-zero thresholds must be met (AND logic in HAVING clause)
+- Applied via HAVING clause after weighted score calculation
+
+*Query Examples:*
+```
+"+photography wordpress tutorial" (match="any")
+  → "photography" REQUIRED, "wordpress" and "tutorial" optional (boost score)
+
+"title:wordpress photography" (match="any")
+  → Both optional, posts with both rank higher
+
+"+title:\"getting started\" react" (match="any")
+  → "getting started" phrase REQUIRED in title, "react" optional anywhere
+
+"+tags:javascript content:tutorial" (match="any")  [tag: also accepted]
+  → "javascript" REQUIRED in tags (HAVING tags_score > 0 enforced), "tutorial" optional in post content
+
+"photography -stock" (match="any")
+  → Posts with "photography" but NOT "stock"
+
+"wordpress react tutorial" (match="all")
+  → All three terms REQUIRED (auto-adds + to each)
+
+"+tags:javascript tutorial" (match="any")
+  → "javascript" tag REQUIRED (no javascript tag → excluded even if text mentions javascript), "tutorial" optional in any field
+```
+
+*Field operator aliases (all case-insensitive):*
+- `tag:` = `tags:`, `category:` = `categories:`, `term:` = `terms:`
+- `body:` = `content:`
+
+### Index Management
+
+- htax_build_post_search_index($post_id): Indexes single post, called on publish/update
+- htax_index_post_terms($post_id, $relationships): Stores post-term association rows; handles any enabled taxonomy generically — hierarchy ancestors for any `is_taxonomy_hierarchical()` taxonomy, containers for any `term_relationships`-enabled taxonomy
+- Bulk reindex via admin AJAX: empty `wp_htax_post_text`, clear `wp_htax_search_terms` with `clear_search_terms_for_rebuild()`, which keeps external models' scores for posts that will be reindexed, then reindex all published posts (all enabled taxonomies processed uniformly)
+- Delete on post deletion: removes the post's rows from `wp_htax_search_terms` and `wp_htax_post_text`
+- `htax_expand_term_hierarchy($term_ids, $taxonomy)`: Helper to expand term IDs to include all descendants for any taxonomy
+- `htax_upsert_search_rows($table_name, $placeholders, $values, $error_context)`: Shared helper for the standard 6-column upsert (`post_id, term_id, source_term_id, taxonomy, relationship_type, is_hidden`) with `ON DUPLICATE KEY UPDATE is_hidden = VALUES(is_hidden)`. Used by the hierarchy, container, includes, and redirect index writers. New rows get the column-default `strength` and `model`, so every caller also queues the affected posts for reindex to compute their strengths. The variant that includes `strength` (full reindex path) does not use this helper.
+
+### Strength Models (includes/core/strength-models.php)
+
+- Registry (in memory, per request): `htax_register_strength_model( $key, $args )`, `htax_unregister_strength_model( $key )`, `htax_get_strength_models()`, `htax_validate_strength_model_key( $key )`. `htax_tf` and every other `htax_`-prefixed key are reserved: registering or unregistering them returns false.
+- Selection: `htax_get_strength_model( $purpose )` returns `htax_settings['strength_model']` when that model is registered, otherwise `htax_tf`. `htax_strength_model_sql( $alias, $purpose )` builds the ` AND {alias}.model = '…'` condition. The Settings sanitizer only accepts a new selection with full coverage; code writing `htax_settings` directly bypasses that check.
+- Writes: `htax_set_term_strengths( $model, $post_id, $strengths )` (validates every score and term first, then writes direct + derived rows in one `INSERT … ON DUPLICATE KEY UPDATE`; returns `true|WP_Error`), `htax_remove_term_strengths( $model, $post_id = 0, $term_ids = [] )` (returns rows removed or `WP_Error`). Both refuse `htax_tf` and fire `htax_term_strengths_updated`.
+- Coverage: `htax_get_strength_model_coverage( $model )` (per taxonomy: `htax_tf` direct pairs vs. the model's direct pairs, via a primary-key self-join), `htax_strength_model_has_full_coverage( $model )`.
+- Internal helpers shared with `htax_index_post_terms()`: `htax_derive_indirect_strength()`, `htax_collect_strength_rows()`, `htax_write_strength_rows()`, `htax_get_external_direct_strengths()`.
+- `htax_get_stored_strength_models()`: distinct external model keys with stored rows, registered or not.
+- Admin: Settings → Search → Strength Model / Index Coverage / Index Rebuild render one panel per registered model plus one per *inactive* model (stored rows, not registered), and the dropdown shows the model in effect (`render_search_tab()`). Inactive models are listed only so their scores can be cleared: the sanitizer never saves an unregistered key. The form sends `strength_model_changed` (set to 1 by JS on change); when it is 0 the saved selection is left alone, so saving the tab while a selected provider is inactive keeps its selection. A note under the dropdown appears when the saved model differs from the one in effect.
+- Clear Scores calls `htax_ajax_clear_strength_model()` (`admin/ajax.php`, nonce `htax-clear-strength-model`), which also switches the selection back to `htax_tf` if the cleared model was selected.
+
 ## Performance Architecture
 
 ### Reindex Queue System

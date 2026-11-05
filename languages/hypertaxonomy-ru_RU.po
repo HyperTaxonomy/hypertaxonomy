@@ -5956,7 +5956,7 @@ msgid ""
 "Display a tag cloud with variable font sizes based on post count, with Term "
 "Groups filtering."
 msgstr ""
-"Выводит облако меток с размером шрифта пропорциональным числу записей и с "
+"Выводит облако меток с размером шрифта, пропорциональным числу записей и с "
 "фильтрацией по группам терминов."
 
 #: blocks/ht-term-cloud/block.json

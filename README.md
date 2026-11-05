@@ -4,7 +4,7 @@
 
 Semantic term relationships for WordPress: inclusions, synonyms, redirects, term groups, rich archives, and faceted search — define once, propagates everywhere.
 
-Term inclusions and synonyms mean a post tagged "React" automatically surfaces in archives for "JSX", "hooks", and any other included term — without re-tagging. A denormalized search index keeps archives and search fast regardless of relationship depth. The same relationships govern archive queries, the related posts shortcode, the search widget, and the REST API.
+Term inclusions and synonyms mean a post tagged "React" automatically surfaces in archives for "JSX", "hooks", and any other term that includes it — without re-tagging. A denormalized search index keeps archives and search fast. The same relationships govern archive queries, the related posts shortcode, the search widget, and the REST API.
 
 For cross-site content — fetching related posts from peer WordPress sites, RSS/Atom feeds, and external knowledge-base link types (Wikidata, GeoNames, etc.) — see the companion plugin **TermConnect**, which extends HyperTaxonomy's term vocabulary across the web.
 
@@ -46,7 +46,7 @@ The full documentation is published as a [Just-the-Docs](https://just-the-docs.c
 - [User Guide](docs/user-guide/) — Features, configuration, shortcodes, search, import/migration, and a best-practices modeling guide
 - [Developer Reference](docs/developer-reference/) — PHP API, actions/filters, capabilities, REST API for theme/plugin developers
 - [Architecture Reference](docs/architecture/) — Internal architecture, database schema, query design, hook execution, performance
-- [Contributing](docs/contributing.md) — Design principles, patterns, building blocks, debug tools for HyperTaxonomy contributors
+- [Contributing](docs/contributing.md) — Design principles, coding standards, implementation patterns, block builds, error handling, and debug tools for HyperTaxonomy contributors
 
 ## Translations
 

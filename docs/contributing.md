@@ -241,19 +241,7 @@ npm start
 npm run lint:js
 ```
 
-**Shared components** (`blocks/shared/components.js`): exports `TermTokenField` (pill-based term picker with search-as-you-type for any taxonomy), `GroupTokenField` (same for the `group` taxonomy), `SortOrderBuilder` (composite sort order editor — field + direction rows with add/remove/reorder), `SORT_FIELDS`, and `SORT_FIELD_VALUES`. Imported by the post-list factory, the term-display factory, the individual sort-order-options and power-search blocks, and the query-group-filter extension.
-
-**Post-list family** (`ht-post-list`, `ht-related-posts`): each `src/index.js` calls `createEdit(blockName, opts)` from `post-list-edit.js`. Pass `{ showTermSourceFilters: false }` for Related Posts to hide include/exclude term/group controls.
-
-**External posts blocks** (`termconnect/peer-posts`, `termconnect/peer-browse`): these blocks are defined in the TermConnect plugin (its own `blocks/` directory), built with its own webpack config. See TermConnect developer documentation.
-
-**Term-display family** (`ht-term-list`, `ht-term-cloud`, `ht-term-index`, `ht-term-groups`): each `src/index.js` defines a small `DisplayPanel` component for its block-specific options and calls `createEdit(blockName, DisplayPanel, opts)` from `term-display-edit.js`. The shared factory handles the Term Source panel (taxonomy selector, hide-empty, include/exclude) for all four. Pass `{ isTermGroups: true }` for the Term Groups block to switch the taxonomy selector to a multi-taxonomy field and hide individual term filters.
-
-**Sort-order-options** (`ht-sort-order-options`): standalone block with its own `Edit` component — no shared factory. Uses `useSelect('core/edit-site')` to detect FSE template context and shows an info notice when the block is placed outside a valid archive/search template. The PHP render callback (`render_sort_order_options`) guards on `htax_get_enabled_archive_taxonomy() || is_search()` and returns empty string outside those contexts; action is hardcoded to `navigate`.
-
-**PowerSearch** (`ht-power-search`): standalone block with its own `Edit` component — no shared factory. Uses `ServerSideRender` + `Disabled` to show a live preview of the search form in the editor. Inspector panels: Search Form (placeholder, button label, match mode, minimum query length), Results (search in, posts per page, max results, sort order, minimum relevance score), AJAX Mode (container ID), and Advanced (country code for the `near:` operator, CSS class). The PHP render callback (`render_power_search`) calls `HyperTaxonomy_Power_Search::get_instance()->search_form_shortcode($atts)` with attributes mapped directly — identical output to the shortcode.
-
-**Query-group-filter** (`ht-query-group-filter`): not a standalone block — a block editor plugin that extends both `core/query` and `core/latest-posts`. Uses `addFilter('blocks.registerBlockType')` to add `htax_filter_groups` attribute to the schema of both blocks, and `addFilter('editor.BlockEdit')` + `createHigherOrderComponent` to inject a `GroupTokenField` inspector panel into both block types. Has `"supports": {"inserter": false}` so it never appears in the block inserter. The `register_block_type` call in `class-blocks.php` has no render callback — registration exists solely to auto-enqueue the `editorScript`. The PHP query modifications are handled server-side in `includes/core/native-blocks.php`: `htax_query_loop_group_filter()` hooked to `query_loop_block_query_vars` for `core/query`, and `htax_latest_posts_group_filter()` hooked to `pre_render_block` for `core/latest-posts`.
+For how each block renders and how the shared editor components fit together, see [Block Build Pipeline](architecture/file-structure.html#block-build-pipeline).
 
 ### When to rebuild
 

@@ -664,7 +664,7 @@ Loaded unconditionally (outside `is_admin()`) so the REST field is available dur
 
 **AJAX Handlers (includes/admin/ajax.php)**
 - `htax_ajax_get_group_terms()` - Get terms from Term Groups
-- `htax_ajax_search_terms()` - Autocomplete search (6-bucket ranking); accepts `taxonomies[]`, optional `include_groups` / `exclude_groups` (comma-separated group IDs expanded to term IDs via `htax_get_terms_in_groups()` to restrict the option pool); results cached via `htax_get_cache_duration('autocomplete')`
+- `htax_ajax_search_terms()` - Autocomplete search (6-bucket ranking); searches every taxonomy in `taxonomies[]`, labeling results by taxonomy when there is more than one; optional `include_groups` / `exclude_groups` (comma-separated group IDs expanded to term IDs via `htax_get_terms_in_groups()` to restrict the option pool); results cached via `htax_get_cache_duration('autocomplete')`
 - `htax_ajax_get_group_term_ids()` (`wp_ajax_htax_get_group_term_ids`, also `nopriv`) — Returns all term IDs belonging to the given `groups` (comma-separated) for `taxonomy`. Rate-limited; nonce required for admin users. Used by the search widget JS to determine which selected pills to animate-remove when a group is excluded from the option pool.
 - `htax_ajax_import_tag_groups_init()` (`wp_ajax_htax_import_tag_groups_init`) - Chunked import, first request: resolves/creates/renames groups, applies hierarchy, detects deletions. Accepts `mode` (`mirror`|`keep`) for this run only; the choice is chosen per run in the import modal and not persisted.
 - `htax_ajax_import_tag_groups_batch()` (`wp_ajax_htax_import_tag_groups_batch`) - Chunked import, batch request: assigns one batch of terms. Accepts `group_mapping`, `offset`, `batch_size`, `mode`.

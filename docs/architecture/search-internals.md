@@ -4,6 +4,8 @@ parent: Architecture
 nav_order: 6
 ---
 
+# Search Internals
+
 ## Search Query Architecture
 
 ### Two Systems
@@ -51,15 +53,15 @@ AND pt.post_id IN (
 )
 ```
 
-Moving exclusion and required-all enforcement before LIMIT ensures that page sizes and total counts are accurate — post-SQL PHP filtering was the source of a pagination accuracy bug in earlier versions.
+Enforcing exclusion and required-all conditions before LIMIT keeps page sizes and total counts accurate.
 
-**AJAX path**: `ajax_search_posts()` passes the raw `$fields` structure (field_name → field_data with `terms`, `taxonomy`, `match`, and optional `expand_types` keys) directly to `get_posts_by_custom_sql()`. The WP-style tax_query produced by `build_taxonomy_query_with_hierarchy()` is used only for the POST/`pre_get_posts` path.
+**AJAX path**: `ajax_search_posts()` passes the raw `$fields` structure (field_name → field_data with `terms`, `taxonomy`, `match`, and optional `expand_types` keys) directly to `get_posts_by_custom_sql()`, which POST searches also use.
 
 **`relationship_type IN (...)`** is computed per field by `HyperTaxonomy_Search_Widget::normalize_expand_types()`. By default it includes all types active for the taxonomy (`direct` always; `hierarchy` when hierarchical; `container` when `term_relationships` feature enabled; `redirect_target` when `redirects` feature enabled). A field carrying `expand_types` overrides this: `"all"` → feature-flag defaults; `"none"` → `direct` only; comma-separated tokens (`container`, `hierarchy`, `redirect`) → explicit subset. The `expand` shortcode attribute on `[ht_pills_field]`, `[ht_checklist_field]`, `[ht_hidden_field]`, and `[ht_distance_field]` sets this value.
 
 ### PowerSearch — Double-Nested Subquery
 
-MySQL does not allow referencing column aliases from the same SELECT in a HAVING clause. The double-nested structure works around this:
+MySQL does not allow one expression in a SELECT to reference a column alias from the same SELECT, so `relevance` can't be computed from the field scores directly. The double-nested structure works around this:
 ```sql
 SELECT scored.*,
        (title_score + content_score + excerpt_score + tags_score + categories_score + terms_score) AS relevance
@@ -88,7 +90,7 @@ The same double-nested structure is used for the count query (wrapped in an addi
 
 Score thresholds on taxonomy fields don't change the path. `min_terms_score` compares the sum of all taxonomy columns (`tags_score + categories_score + terms_score` plus custom-taxonomy fields) — in a plain query that is just the combined `terms_score`.
 
-**One taxonomy match, one field.** General words score each taxonomy once: in its own field when the query has one, otherwise in `terms_score`. A custom-taxonomy operator (`colors:x`) removes its taxonomy from the combined scan; in the field-specific path the tags and categories fields score general words, so `terms_score` scores `post_tag`, `category` and custom-field taxonomies with `terms:` words only (general exclusions kept in its term-name query) and skips them when there are none. Before 2026-10-29 these matches counted in two fields. `min_tags_score` / `min_categories_score` set `$split_tax_scores`: the same scan also carries each scored row's source-term taxonomy and returns per-taxonomy sub-totals (`tags_part`, `cats_part`), selected as `tags_threshold_score` / `categories_threshold_score` and compared in HAVING. Those columns are deliberately not relevance parts — `terms_score` already includes them — so a threshold query ranks exactly like the same query without the threshold, just filtered. (Before 2026-10-29 these thresholds switched to the per-field path, which was 2–3× slower on common words, counted tag and category matches twice in relevance, and didn't enforce general `-word` exclusions at post level.)
+**One taxonomy match, one field.** General words score each taxonomy once: in its own field when the query has one, otherwise in `terms_score`. A custom-taxonomy operator (`colors:x`) removes its taxonomy from the combined scan; in the field-specific path the tags and categories fields score general words, so `terms_score` scores `post_tag`, `category` and custom-field taxonomies with `terms:` words only (general exclusions kept in its term-name query) and skips them when there are none. `min_tags_score` / `min_categories_score` set `$split_tax_scores`: the same scan also carries each scored row's source-term taxonomy and returns per-taxonomy sub-totals (`tags_part`, `cats_part`), selected as `tags_threshold_score` / `categories_threshold_score` and compared in HAVING. Those columns are deliberately not relevance parts — `terms_score` already includes them — so a threshold query ranks exactly like the same query without the threshold, just filtered.
 
 **One term, one score per post.** A post can reach a matched (source) term through several index rows — one per term it carries that leads there, and one per relationship type (primary key `post_id, term_id, source_term_id, relationship_type, model`). Every taxonomy scoring variant — combined scan and field-specific path alike — takes `MAX(score)` per `(post_id, source_term_id)` before summing, so a term reached through several paths counts once, at its strongest, and never outweighs a direct match on it. In the field-specific path the MAX also spans relationship types: each relationship-type subquery from `build_term_search_subqueries()` returns per-term rows, and `sum_term_scores_sql()` takes the MAX across them before the per-post SUM. Adding the source taxonomy to that grouping (for the threshold sub-totals) changes no group, since a source term has one taxonomy.
 
@@ -110,21 +112,20 @@ For shortcode reference and configuration see the [User Guide § Advanced Search
 - `match='any'` fields: score = SUM across terms of a per-term noisy-OR combination of `strength` (see "Relevance aggregation" in [Database Schema](database-schema.html)) — relationship-type weights baked into `strength` at index time; HAVING field_score > 0
 - `match='all'` fields: scored the same way, AND enforced via `WHERE IN … HAVING COUNT >= N` before LIMIT
 - `match='none'` fields: no scoring subquery, no HAVING condition; enforced via `WHERE NOT IN` before LIMIT — excluded terms never reach the result set regardless of page position
-- AND relations: field scores are summed; HAVING requires each scoring field score > 0
-- OR relations: maximum field score is used
+- Field scores are summed in both relations; AND relations require each scoring field score > 0 in HAVING, and OR relations require at least one
 
 **Hierarchy and Inclusion Expansion (post scoring):**
-Before scoring a post against the selected term IDs in a field, the widget expands the selected IDs via `get_terms_with_hierarchy($term_ids, $taxonomy)`. This expansion applies to any taxonomy that is hierarchical (`is_taxonomy_hierarchical()`) or has the `term_relationships` feature enabled. It follows both WP parent–child hierarchy (descendants) and HyperTaxonomy inclusion relationships, so selecting a parent term or container matches posts assigned to any child or included term. Results are cached per taxonomy + term ID set within the request.
+The search index already holds a row for each way a post reaches a term (`direct`, `hierarchy`, `container`, `redirect_target`), so selecting a parent term or container matches posts assigned to any child or included term. The widget filters those rows by `relationship_type` rather than expanding the selected term IDs.
 
 #### Field Group Boolean Logic
 ```
 Top Level: AND (all fields must match)
 ├── Field 1
 ├── Field 2
-└── htax_field_group (relation="OR")
+└── [ht_field_group relation="OR"]
     ├── Field 3 (any of these)
     ├── Field 4 (any of these)
-    └── htax_field_group (relation="AND")
+    └── [ht_field_group relation="AND"]
         ├── Field 5 (all of these)
         └── Field 6 (all of these)
 ```
@@ -139,7 +140,11 @@ The search widget performs PHP-based validation during shortcode rendering to de
 
 `[ht_text_field]` must be a direct child of `[ht_search_form]`, not nested inside a `[ht_field_group]`. The text field is a global filter applied to the full result set independently of the AND/OR taxonomy group structure.
 
+#### Nested Field Groups
+
 Nested `[ht_field_group]` tags are paired by `HyperTaxonomy_Search_Widget::render_form_content()`, which renders the content of `[ht_search_form]` and of every group: WordPress's shortcode parser would close an enclosing `[ht_field_group]` at the first `[/ht_field_group]` it meets, so groups are matched with a depth counter instead and rendered through `field_group_shortcode()` (which recurses back into `render_form_content()`), while text between groups goes through `do_shortcode()` as usual. Each group renders a `.htax-field-group` element, and the JS collects the nesting from the DOM.
+
+#### Initial Selection and Actions
 
 Initial selection attributes are resolved server-side. `fold_group_selection_atts()` also converts `add_terms`, `remove_terms`, `include_term_options` and `exclude_term_options` from slugs to IDs, since the JS only reads IDs, and drops terms hidden from the viewer from `add_terms` and `include_term_options` (`filter_visible_term_ids()`). A tampered request naming a hidden term finds nothing anyway: search queries apply `htax_get_hidden_term_filter_clause()`. `HyperTaxonomy_Search_Widget::fold_group_selection_atts()` (called by the pills, checklist and hidden field shortcodes) folds `add_groups` / `remove_groups` into `add_terms` / `remove_terms` — member terms of the groups in the field's taxonomy in post mode, the group IDs themselves in term mode (`taxonomy_type="term"`) — and clears the `*_groups` attributes, so the JS only ever receives term IDs (`data-add-terms` / `data-remove-terms`). The checklist marks `add_terms` minus `remove_terms` as checked when rendering; pills and hidden fields apply the two lists in JS. Pills seed their `*_termdata` input with the names and icons of the initial selection, so its pills are labeled even without a prefetched option pool.
 
@@ -147,13 +152,19 @@ Term actions and field-level term attributes use the same map. `fold_group_selec
 
 Controller group actions are resolved from a per-form map. `option_action_shortcode()` records the group IDs of every `add_groups` / `remove_groups` / `include_group_options` / `exclude_group_options` action per target field in `self::$forms[ $form_id ]['group_actions']`; after the form content has rendered (so every field and controller is known), `render_group_members_map()` outputs `<script type="application/json" class="htax-group-members">` with `{ field: { groups: { gid: [term IDs] }, terms: { id: {name, count, icon_url, placeholder_color} } } }` for pills and checklist targets — members in the field's taxonomy (descendant groups included) in post mode, the group itself in term mode; `terms` (pills only) labels pills for terms the field hasn't prefetched; hidden terms are omitted for viewers who can't see them. Hidden fields resolve groups from their own `data-groups-map` and are not included. `SearchForm` parses the map into `form.groupMembers`; `FieldBase._groupMemberIds()` resolves group IDs from it. PillsField `addGroups` / `removeGroups` add/remove the members (seeding `_termData` from `terms`) and merges the map into `_allOptionsByGroup` after prefetch so `include_group_options` / `exclude_group_options` can narrow the pool to groups outside the declared universe (the active set is still intersected with the prefetched universe). ChecklistField `addGroups` / `removeGroups` check/uncheck the members; checklist options are fixed at render time, so pool actions don't apply to it. Every checklist item — hierarchical and flat — carries `data-term-id`, which the selection actions use to find it.
 
-Result loading: the AJAX handlers load the SQL page with `WP_Query( post__in, orderby=post__in, post_type=htax_get_indexed_post_types(), ignore_sticky_posts=true )`. The SQL has already applied every filter and the LIMIT, so this query must neither drop posts (a missing `post_type` defaults to `post`; `'any'` drops types excluded from search) nor add them (an argument-less query is "home", where WordPress prepends every sticky post).
+#### Result Loading
+
+The AJAX handlers load the SQL page with `WP_Query( post__in, orderby=post__in, post_type=htax_get_indexed_post_types(), ignore_sticky_posts=true )`. The SQL has already applied every filter and the LIMIT, so this query must neither drop posts (a missing `post_type` defaults to `post`; `'any'` drops types excluded from search) nor add them (an argument-less query is "home", where WordPress prepends every sticky post).
+
+#### Submitted Format
 
 JS always submits the hierarchical format: all taxonomy fields and declared `[ht_field_group]` sub-groups are placed into an implicit root AND group (`{relation, fields, groups}`). The text field is collected separately under a top-level `text_search` key — it is not part of the AND/OR group structure.
 
 `extract_text_search_from_fields()` checks `$field_data['text_search']` first (JS-submitted hierarchical format). It falls through to a flat-field iteration (`type === 'text'`) only for the no-JS POST fallback, where PHP constructs the field data directly from `$_POST`.
 
 `has_taxonomy_terms_in_fields()` handles the hierarchical format by recursing into `fields` and `groups`; the flat-iteration fallback covers the no-JS POST case.
+
+#### Multiple Text Field Warning
 
 If multiple text fields are detected during shortcode rendering, a visible warning is injected inside the form:
 
@@ -230,8 +241,8 @@ The PowerSearch system uses MySQL FULLTEXT indexes for performance with support 
 *Query Parsing (htax_parse_search_query in search.php, called from perform_indexed_text_search):*
 - Regex pattern: `/([+\-]?)\b(title|content|body|excerpt|tags?|categories?|terms?|...):("([^"]+)"|(\S+))/i`
 - Singular aliases accepted: `tag:` = `tags:`, `category:` = `categories:`, `term:` = `terms:`, `body:` = `content:`
-- Extracts field-specific terms with modifiers into arrays: title, body, excerpt, tags, categories, terms, general
-- Each term stored as: `array('term' => 'word', 'required' => bool, 'excluded' => bool)`
+- Extracts field-specific terms with modifiers into arrays: title, body, excerpt, tags, categories, terms, general, plus parsed `near:` tokens under `proximity`
+- Each term stored as: `array('term' => 'word', 'required' => bool, 'excluded' => bool, 'quoted' => bool, 'slug_match' => bool)`
 - Modifiers: `+` (required, also adds HAVING score > 0 for that field), `-` (excluded), no prefix (optional)
 - Supports quoted phrases: `title:"exact phrase"` or `+title:"exact phrase"`
 - General terms (no operator) match in all allowed fields
@@ -290,12 +301,8 @@ Post text fields (title, content, excerpt) use **NATURAL LANGUAGE MODE** so that
   - All three fields come from `wp_htax_post_text` (`pt`), processed by `htax_extract_post_body()` — link URLs are appended as `[URL]`, img alt text and abbr expansions are preserved, then all remaining HTML is stripped. All public queries filter `pt.post_status = 'publish'`.
   - `nl_query` = query terms with `+`/`-` operators stripped and excluded terms removed; produced by `htax_build_natural_language_query_string()` (in search.php). NL MODE does not support phrase syntax, so multi-word phrases contribute their individual words to the score; phrase presence is enforced separately via a WHERE guard (see below).
 - **tags_score / categories_score / terms_score / custom taxonomy scores**: up to three branches per relationship type. `hst.strength` encodes the per-row relevance contribution (TF-based for direct rows; `source_tf × explicit_weight` for indirect rows — see the [`wp_htax_search_terms` schema](database-schema.html#custom-database-tables)):
-  - Branch A (exact, conditional): `hst.strength AS score` when `LOWER(t.name) = LOWER(search_string)`. Posts where the matched term is central to the content rank higher. Fires for all non-excluded field-operator terms, and for quoted general terms (e.g. `"target"`). Unquoted general terms do not trigger exact matching.
-  - Branch B (name, always active): `MATCH(t.name) AGAINST(query IN BOOLEAN MODE) * name_weight * hst.strength`. Text weight (name_weight) stays dynamic; strength adds centrality. Exact-match term IDs excluded when Branch A is active.
-  - Branch C (description, when `use_description=true`): `MATCH(tt.description) AGAINST(query IN BOOLEAN MODE) * description_weight * hst.strength`. Description weight defaults to ~70% of name weight.
-  - `MAX(branch_score)` per `(post_id, source_term_id)` — a term scores once per post, via its strongest branch, index row and relationship type; `SUM` across terms per post yields the field score.
+  - The branches and the `MAX` / `SUM` aggregation are described in step 10 above. Description weight defaults to about 70% of name weight.
   - Relationship types: direct, hierarchy (hierarchical taxonomies), container, redirect_target — all gated by feature flags at query time
-  - **Combined general scan** uses a single LEFT JOIN with CASE expressions for name/description text weights (explicit weight is baked into `hst.strength`, not in the CASE); all taxonomy scores collapse into `terms_score`. **Field-specific path** produces separate tags_score, categories_score, terms_score columns.
 
 **Overall Relevance:**
 - relevance = title_score + content_score + excerpt_score + tags_score + categories_score + terms_score
@@ -339,10 +346,6 @@ Post text fields (title, content, excerpt) use **NATURAL LANGUAGE MODE** so that
   → "javascript" tag REQUIRED (no javascript tag → excluded even if text mentions javascript), "tutorial" optional in any field
 ```
 
-*Field operator aliases (all case-insensitive):*
-- `tag:` = `tags:`, `category:` = `categories:`, `term:` = `terms:`
-- `body:` = `content:`
-
 ### Index Management
 
 - htax_build_post_search_index($post_id): Indexes single post, called on publish/update
@@ -367,9 +370,9 @@ Post text fields (title, content, excerpt) use **NATURAL LANGUAGE MODE** so that
 
 ### Reindex Queue System
 
-Posts are queued via `queue_post_reindex()` rather than processed immediately. The queue deduplicates post IDs automatically; all queued posts are processed once at `shutdown`. Result: 2–5× improvement when a term edit triggers multiple change events for the same posts.
+Posts are queued via `queue_post_reindex()` rather than processed immediately. At `shutdown`, the request's queue is deduplicated and added to the `htax_pending_reindex` option, and the `htax_process_reindex_batch` cron event works through it in batches of `REINDEX_BATCH_SIZE` (100) posts per run.
 
-Example: User edits term name — no reindex triggered because term text is read from `wp_terms` at query time. User also changes includes → `htax_includes_changed` queues affected posts → shutdown processes each post once.
+Example: User edits term name — no reindex triggered because term text is read from `wp_terms` at query time. User also changes includes → `htax_includes_changed` queues affected posts → each post is reindexed once.
 
 ### Incremental Index Updates
 
@@ -398,18 +401,18 @@ Example: Adding 1 container to a term that already has 10 containers and 100 aff
 
 ### Async Processing for Large Batches
 
-When `batch_reindex_posts()` receives >100 posts, the post list is stored in WordPress options and a WP Cron event is scheduled for immediate background processing. The current request returns immediately (non-blocking), preventing PHP timeouts on shared hosting.
+`batch_reindex_posts()` always defers to WP Cron, whatever the batch size, so reindexing never runs in the request that queued it. This prevents PHP timeouts on shared hosting.
 
 ### Change Detection
 
 Hooks skip unnecessary work before doing any computation:
 - `on_taxonomy_hierarchy_changed` — skips non-hierarchical taxonomies, group taxonomy, and cases where the parent did not change
-- `on_term_relationships_deleted` — skips if `set_object_terms` is currently running
-- `on_terms_changed` — compares current index state with new term assignments before acting
+- `htax_post_list_cache_on_term_relationships_deleted` — skips if `set_object_terms` is currently running
+- `on_term_relationships_added` — compares the indexed source terms with the post's actual terms and acts only on the difference
 
 ### Cache Layers
 
-Three distinct clearing functions with distinct purposes (cannot be consolidated):
+These clearing functions have distinct purposes and can't be consolidated:
 
 | Priority | Handler | Scope |
 |----------|---------|-------|
@@ -427,7 +430,7 @@ Three distinct clearing functions with distinct purposes (cannot be consolidated
 - **Archive queries with many synonyms** — each synonym adds its posts to the expanded set; the index handles this in a single indexed lookup but the result size grows
 - **Autocomplete search** (`htax_run_term_autocomplete_search`) — double-sided `LIKE '%…%'` scan on `wp_terms`; cached aggressively, acceptable for admin use
 - **Sticky post prepending** — runs an additional query per archive page; has a per-term transient that invalidates on post save and assignment changes
-- **Transient table growth** — `[ht_post_list]` cache keys are hashed and scoped to affected term sets; on very high write-volume sites monitor `wp_options` row count for `_transient_htax_pl_*`
+- **Transient table growth** — `[ht_post_list]` cache keys contain the term IDs they depend on; on very high write-volume sites monitor `wp_options` row count for `_transient_htax_pl_*`
 
 ---
 
@@ -474,6 +477,8 @@ Algorithm:
 
 ## AJAX Endpoints
 
+These are the term and group autocomplete endpoints. For the other handlers, see the [Function Reference](function-reference.html).
+
 ### wp_ajax_htax_get_group_terms
 Get terms from specified Term Groups
 
@@ -481,35 +486,24 @@ Get terms from specified Term Groups
 Admin-only group term autocomplete. Requires `htax-autocomplete` nonce and `manage_term_relationships` capability. Returns bucket-sorted results via `htax_run_term_autocomplete_search()`.
 
 ### wp_ajax_htax_search_terms
-Unified autocomplete for the term edit screen inclusions UI. Requires `htax-autocomplete` nonce and `manage_term_relationships` capability. Accepts `taxonomies[]` (array of taxonomy slugs to search alongside the `group` taxonomy). Groups appear at the top of results (prefixed with a filled-square marker in JS). Term results are deduplicated by ID across taxonomies. Hidden terms are filtered out for users without `manage_term_visibility`.
+Autocomplete for the term edit screen's relationship fields. Requires `htax-autocomplete` nonce and `manage_term_relationships` capability. Searches every enabled taxonomy in `taxonomies[]`. With more than one, each label names its taxonomy, and results are ordered by names starting with the search, then names containing it, then description matches. Groups are added through their own checklist, not this endpoint. Hidden terms are filtered out for users who can't see them.
 
 **Request parameters:**
-- `taxonomies[]` — array of enabled taxonomy slugs to search (at least one required)
+- `taxonomies[]` — taxonomy slugs to search (`taxonomy` is accepted for one; default `post_tag`)
 - `term` — search string (minimum 2 characters)
 - `exclude_terms[]` — term IDs to exclude from results
-- `exclude_groups[]` — group IDs to exclude from results
-- `current` — current term ID (auto-added to exclude_terms)
+- `include_groups` / `exclude_groups` — comma-separated group IDs; their member terms form the pool, or are left out of it
+- `current` — current term ID, excluded along with its ancestors and descendants
 - `nonce` — `htax-autocomplete` nonce
 
-Each result item: `{ id, value, label, item_type: 'term'|'group' }`
+Each result item: `{ id, value, label }`, plus `icon_url` when the term has an icon.
 
 ## Security Measures
 
 1. **ABSPATH Checks:** All files check for direct access
-2. **Nonce Verification:** All AJAX and form submissions
+2. **Nonce Verification:** AJAX and form submissions
 3. **Capability Checks:** HyperTaxonomy custom capabilities (e.g., `manage_term_relationships`, `manage_term_redirects`) for term edits
-4. **SQL Injection Prevention:** $wpdb->prepare() everywhere
+4. **SQL Injection Prevention:** `$wpdb->prepare()` for SQL with variable values
 5. **XSS Prevention:** esc_html(), esc_attr(), wp_kses()
 6. **CSRF Protection:** WordPress nonces
 7. **Data Sanitization:** sanitize_text_field(), wp_unslash()
-
-## Credits
-- **Author:** Eugene Weinstein
-- **License:** GPLv2 or later
-- **Requires:** WordPress 6.6+, PHP 7.4+, MySQL 5.7+ (MariaDB 10.3+)
-- **Version:** 1.0.0
-
-## Support
-- **Documentation:** https://wordpress.org/plugins/hypertaxonomy/#description
-- **Support Forum:** https://wordpress.org/support/plugin/hypertaxonomy/
-- **Plugin page:** https://hypertaxonomy.org/hypertaxonomy/

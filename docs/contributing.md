@@ -24,12 +24,12 @@ For integrating HyperTaxonomy in your theme or plugin, see the [Developer Refere
 
 ## Design Principles
 
-- **Separation of Concerns** — Core logic in `includes/core/`, admin UI in `includes/admin/`, frontend in `assets/`. Admin files load only in admin context, with two exceptions loaded unconditionally: `admin/post-edit.php` (the Gutenberg sidebar panel runs through the REST API, which executes outside `is_admin()`) and `admin/term-icons.php` (term icons are also rendered on the frontend).
-- **Dependency Injection via Hooks** — All hooks are registered after functions are defined. No global state dependencies; hook callbacks are easy to replace or override.
+- **Separation of Concerns** — Core logic in `includes/core/`, admin UI in `includes/admin/`, shortcodes in `includes/shortcodes/`, frontend PHP in `includes/core/frontend.php`, frontend CSS and JS in `assets/`. Admin files load only in admin context, with two exceptions loaded unconditionally: `admin/post-edit.php` (the Gutenberg sidebar panel runs through the REST API, which executes outside `is_admin()`) and `admin/term-icons.php` (term icons are also rendered on the frontend).
+- **Hooks Registered Last** — `includes/bootstrap.php` loads `includes/hooks/actions.php` and `includes/hooks/filters.php` after the files that define their callbacks. Most callbacks are named functions, so other code can remove or replace them.
 - **Caching Strategy** — Three layers: static request-scope cache (unbounded per-request arrays; `htax_get_valid_term()` uses a bounded variant capped at 500 entries with FIFO eviction), transients (database-backed, survive page loads), object cache (Redis/Memcached when available). Selective invalidation — narrow keys are cleared on specific events rather than broad cache flushes.
 - **Graceful Degradation** — Term Groups is built-in; no external plugin dependency. Features gate themselves via `htax_taxonomy_has_feature()` so disabling a feature at the settings level has immediate effect without code changes.
-- **Security** — ABSPATH checks on every file, nonce verification on all AJAX and form saves, `current_user_can()` / HyperTaxonomy capability checks before writes, `$wpdb->prepare()` everywhere, `wp_unslash()` before sanitization on all `$_POST` reads.
-- **Atomicity** — Functions that modify multiple database rows acquire all MySQL named locks first, perform all writes inside a transaction, release locks in a `finally` block. Either everything succeeds or nothing does.
+- **Security** — ABSPATH checks on every file, nonce verification on AJAX and form saves, `current_user_can()` / HyperTaxonomy capability checks before writes, `$wpdb->prepare()` for SQL that includes variable values, and `wp_unslash()` before sanitizing `$_POST` strings.
+- **Atomicity** — Functions that replace related rows do their writes inside a MySQL transaction and check for a database error after each write. If any write fails, the transaction rolls back. See [Transactions](#transactions).
 
 ---
 
@@ -89,16 +89,8 @@ When adding custom columns to term list tables, the taxonomy must be detected fr
 
 ```php
 function htax_add_custom_column( $columns ) {
-    $current_screen = get_current_screen();
-    if ( $current_screen && isset( $current_screen->taxonomy ) ) {
-        $taxonomy = $current_screen->taxonomy;
-    } elseif ( isset( $_REQUEST['taxonomy'] ) ) {
-        $taxonomy = sanitize_key( $_REQUEST['taxonomy'] );
-    } else {
-        return $columns;
-    }
-
-    if ( ! htax_is_taxonomy_enabled( $taxonomy ) ) {
+    $taxonomy = htax_get_current_taxonomy();
+    if ( false === $taxonomy ) {
         return $columns;
     }
 
@@ -107,83 +99,50 @@ function htax_add_custom_column( $columns ) {
 }
 ```
 
-`get_current_screen()` returns null during AJAX requests; WordPress passes `taxonomy` in `$_REQUEST` instead. Without this pattern, custom columns appear blank when adding terms via the inline AJAX form. Used in: `htax_add_icon_column()`, `htax_add_hidden_column()`, `htax_add_redirect_column()`, `htax_add_term_groups_column()` (`includes/admin/tables.php`).
+`get_current_screen()` returns null during AJAX requests; WordPress passes `taxonomy` in `$_REQUEST` instead. Without this check, custom columns appear blank when adding terms via the inline AJAX form. `htax_get_current_taxonomy()` handles both cases and returns false for a taxonomy HyperTaxonomy doesn't manage. Used in: `htax_add_icon_column()`, `htax_add_hidden_column()`, `htax_add_redirect_column()`, `htax_add_term_groups_column()` (`includes/admin/tables.php`).
 
-### Dual Nonce Verification
+### Term Save Nonce Verification
 
-When saving term metadata, requests can arrive from the edit form or the AJAX quick-add form. Each uses a different nonce:
+Term metadata saves can come from the edit form, the AJAX quick-add form, or Quick Edit. Each uses a different nonce, and `htax_verify_term_nonce( $term_id )` (`includes/core/helpers.php`) accepts any of them:
 
-```php
-$nonce_verified = false;
+| Source | Field | Action |
+|---|---|---|
+| Edit form | `_wpnonce` | `update-tag_{term_id}` |
+| AJAX add form | `_wpnonce_add-tag` | `add-tag` |
+| Quick Edit | `_inline_edit` | `taxinlineeditnonce` |
 
-if ( isset( $_POST['_wpnonce'] ) ) {
-    $nonce_verified = wp_verify_nonce(
-        sanitize_text_field( wp_unslash( $_POST['_wpnonce'] ) ),
-        'update-tag_' . $term_id
-    );
-}
-
-if ( ! $nonce_verified && isset( $_POST['_wpnonce_add-tag'] ) ) {
-    $nonce_verified = wp_verify_nonce(
-        sanitize_text_field( wp_unslash( $_POST['_wpnonce_add-tag'] ) ),
-        'add-tag'
-    );
-}
-
-if ( ! $nonce_verified ) {
-    return;
-}
-```
-
-Edit form: `_wpnonce` / action `update-tag_{term_id}`. AJAX add form: `_wpnonce_add-tag` / action `add-tag`. See `htax_save_term_relationships()` in `includes/core/term-relationships.php`.
+`htax_save_term_data()` in `includes/core/term-relationships.php` verifies the nonce once, then calls the individual save functions. It returns silently for requests that aren't one of these form submissions, such as REST, WP-CLI, and importers.
 
 ### Early Hook Priority for AJAX Compatibility
 
-WordPress fires `create_{$taxonomy}` before the AJAX response is built, and `created_{$taxonomy}` after the term is fully created. Registering at both priorities ensures metadata is available in all contexts:
+`wp_ajax_add_tag` builds the new table row between `wp_insert_term()` and `created_{$taxonomy}`, so metadata saved on `created_{$taxonomy}` would be missing from that row. New terms are therefore saved early on `create_{$taxonomy}`, while edits run late so that Tag Groups has already saved its group assignments:
 
 ```php
 // Priority 5: runs before the AJAX response is assembled
 add_action( "create_{$taxonomy}", 'htax_save_term_data', 5, 2 );
 
-// Priority 20: runs after full creation (compatible with Tag Groups — now "PublishPress Tag
-// Groups" as of its Oct 2026 rebrand — which saves at the default priority 10)
-add_action( "created_{$taxonomy}", 'htax_save_term_data', 20, 2 );
+// Priority 20: runs after Tag Groups, which saves at the default priority 10
+add_action( "edited_{$taxonomy}", 'htax_save_term_data', 20, 2 );
 ```
 
-Using only `created_{$taxonomy}` causes metadata to be missing in AJAX responses. See `includes/hooks/actions.php`.
+See `includes/hooks/actions.php`.
 
 ### Screen Options Column Visibility Sync
 
-Custom filter dropdowns should hide when their corresponding columns are hidden via Screen Options. Use a `MutationObserver` on column header class changes to keep them in sync:
+Custom filter dropdowns should hide when their corresponding columns are hidden via Screen Options. `syncFilterVisibility()` in `admin/js/htax-tables.js` maps each column to its filter, then runs on page load, when a `MutationObserver` on the table header sees a class change, and when the Screen Options controls are used:
 
 ```javascript
 var columnFilterMap = {
-    'column-htax_redirect':     '#htax_redirect_filter',
-    'column-htax_icon':         '#htax_icon_filter',
-    'column-htax_hidden':       '#htax_visibility_filter',
-    'column-htax_term_groups':  '#htax_group_filter'
+    'column-htax_redirect':    '#htax_redirect_filter',
+    'column-htax_icon':        '#htax_icon_filter',
+    'column-htax_hidden':      '#htax_visibility_filter',
+    'column-htax_term_groups': '.htax-group-filter-wrapper'
 };
-
-function syncFilterVisibility() {
-    $.each( columnFilterMap, function( columnClass, filterId ) {
-        var $col = $( '.wp-list-table thead th.' + columnClass );
-        var isHidden = $col.hasClass( 'hidden' ) || $col.css( 'display' ) === 'none';
-        $( filterId ).toggle( ! isHidden );
-    } );
-}
-
-new MutationObserver( function( mutations ) {
-    if ( mutations.some( m => m.attributeName === 'class' ) ) {
-        syncFilterVisibility();
-    }
-} ).observe( document.body, { attributes: true, subtree: true } );
 ```
-
-See `admin/js/htax-tables.js`.
 
 ### Relationship Type Registry
 
-All `relationship_type` SQL queries throughout HyperTaxonomy use `htax_relationship_type_sql_in()` rather than a hard-coded equality check. This ensures that user-defined types mapped to a core type automatically participate in archive expansion, index queries, and admin display.
+Queries for inclusions use `htax_relationship_type_sql_in( 'includes' )` rather than a hard-coded equality check. This ensures that user-defined types mapped to `includes` automatically participate in archive expansion, index queries, and admin display. Types with no user-defined mappings, such as `member_of` and `redirect`, use plain equality.
 
 **Registering a type in PHP** (hook into `htax_relationship_types`, which fires at init priority 0 after all built-in types are registered):
 
@@ -217,7 +176,7 @@ if ( is_wp_error( $result ) ) {
 htax_remove_term_relationship( $source_term_id, $target_term_id, 'wrote' );
 ```
 
-Both actions (`htax_relationship_saved`, `htax_relationship_deleted`) automatically queue a search index rebuild for both terms. Core relationship types (`includes`, `member_of`, `redirect`, `excludes`) are managed by the built-in save handlers and cannot be written via these helpers.
+For types mapped to `includes`, both actions (`htax_relationship_saved`, `htax_relationship_deleted`) queue a search index rebuild for both terms. These helpers also accept `includes` and `excludes`. They reject `redirect` and `member_of`, which must go through `htax_set_redirect()` and `htax_set_term_groups()`.
 
 ### Transients
 
@@ -237,7 +196,7 @@ class HyperTaxonomy_Walker_Checklist extends Walker {
 }
 
 // Walker::walk( $elements, $max_depth, ...$args )
-// 0 = show all levels; -1 causes hierarchy-detection issues
+// 0 = show all levels; -1 displays every term flat, with no hierarchy
 $walker->walk( $terms, 0, $args );
 ```
 
@@ -282,7 +241,7 @@ npm start
 npm run lint:js
 ```
 
-**Shared components** (`blocks/shared/components.js`): exports `TermTokenField` (pill-based term picker with search-as-you-type for any taxonomy), `GroupTokenField` (same for `htax_term_group`), `SortOrderBuilder` (composite sort order editor — field + direction rows with add/remove/reorder), `SORT_FIELDS`, and `SORT_FIELD_VALUES`. Imported by the post-list factory, the term-display factory, the individual sort-order-options and power-search blocks, and the query-group-filter extension.
+**Shared components** (`blocks/shared/components.js`): exports `TermTokenField` (pill-based term picker with search-as-you-type for any taxonomy), `GroupTokenField` (same for the `group` taxonomy), `SortOrderBuilder` (composite sort order editor — field + direction rows with add/remove/reorder), `SORT_FIELDS`, and `SORT_FIELD_VALUES`. Imported by the post-list factory, the term-display factory, the individual sort-order-options and power-search blocks, and the query-group-filter extension.
 
 **Post-list family** (`ht-post-list`, `ht-related-posts`): each `src/index.js` calls `createEdit(blockName, opts)` from `post-list-edit.js`. Pass `{ showTermSourceFilters: false }` for Related Posts to hide include/exclude term/group controls.
 
@@ -292,7 +251,7 @@ npm run lint:js
 
 **Sort-order-options** (`ht-sort-order-options`): standalone block with its own `Edit` component — no shared factory. Uses `useSelect('core/edit-site')` to detect FSE template context and shows an info notice when the block is placed outside a valid archive/search template. The PHP render callback (`render_sort_order_options`) guards on `htax_get_enabled_archive_taxonomy() || is_search()` and returns empty string outside those contexts; action is hardcoded to `navigate`.
 
-**PowerSearch** (`ht-power-search`): standalone block with its own `Edit` component — no shared factory. Uses `ServerSideRender` + `Disabled` to show a live preview of the search form in the editor. Inspector panels: Search Form (placeholder, button label, match mode, minimum query length), Results (posts per page, sort order, minimum relevance score, show thumbnail/excerpt/meta toggles), AJAX Mode (container ID), and Advanced (CSS class). The PHP render callback (`render_power_search`) calls `HyperTaxonomy_Power_Search::get_instance()->search_form_shortcode($atts)` with attributes mapped directly — identical output to the shortcode.
+**PowerSearch** (`ht-power-search`): standalone block with its own `Edit` component — no shared factory. Uses `ServerSideRender` + `Disabled` to show a live preview of the search form in the editor. Inspector panels: Search Form (placeholder, button label, match mode, minimum query length), Results (search in, posts per page, max results, sort order, minimum relevance score), AJAX Mode (container ID), and Advanced (country code for the `near:` operator, CSS class). The PHP render callback (`render_power_search`) calls `HyperTaxonomy_Power_Search::get_instance()->search_form_shortcode($atts)` with attributes mapped directly — identical output to the shortcode.
 
 **Query-group-filter** (`ht-query-group-filter`): not a standalone block — a block editor plugin that extends both `core/query` and `core/latest-posts`. Uses `addFilter('blocks.registerBlockType')` to add `htax_filter_groups` attribute to the schema of both blocks, and `addFilter('editor.BlockEdit')` + `createHigherOrderComponent` to inject a `GroupTokenField` inspector panel into both block types. Has `"supports": {"inserter": false}` so it never appears in the block inserter. The `register_block_type` call in `class-blocks.php` has no render callback — registration exists solely to auto-enqueue the `editorScript`. The PHP query modifications are handled server-side in `includes/core/native-blocks.php`: `htax_query_loop_group_filter()` hooked to `query_loop_block_query_vars` for `core/query`, and `htax_latest_posts_group_filter()` hooked to `pre_render_block` for `core/latest-posts`.
 
@@ -306,56 +265,45 @@ When adding a new block, also add its directory name to the `blocks` array in `w
 
 ## Error Handling
 
-### The `$throw_on_failure` Pattern
+### Choosing an Approach
 
-Functions that perform cleanup or relationship updates accept an optional `$throw_on_failure` parameter:
+| Approach | Use for | Examples |
+|---|---|---|
+| Exceptions caught in the same function | Transactions, where a failed write must trigger a rollback | `htax_save_term_relationships()` |
+| `WP_Error` | API-facing functions, and functions that need to return error messages | `htax_set_term_groups()`, `htax_merge_terms()` |
+| `false` | Internal helpers and validation, where the caller doesn't need details | `htax_set_redirect()` |
 
-```php
-function htax_cleanup_operation( $params, $throw_on_failure = false ) {
-    if ( $failure_occurred ) {
-        if ( $throw_on_failure ) {
-            throw new Exception( 'Operation failed: reason' );
-        } else {
-            htax_log_error( 'Operation failed but continuing', $context );
-            return false;
-        }
-    }
-    return true;
-}
-```
+Don't mix approaches within a function. Never let an exception escape a WordPress hook callback: catch it, log it with `htax_log_error()`, and show the user an admin notice.
 
-**Use `$throw_on_failure = true`** for user-initiated operations that should fail atomically (admin form saves, AJAX actions, bulk operations).
+### Transactions
 
-**Use `$throw_on_failure = false`** (default) for hook-triggered operations that must be resilient (edited_term callbacks, cache invalidation, background cleanup). Never throw exceptions from WordPress hook callbacks.
-
-### 3-Phase Atomic Locking
+`$wpdb` doesn't throw on query errors. It sets `$wpdb->last_error`, and the next query clears it, so **check after every write**. A single check at the end only sees the last query, and an earlier failure would be committed. `htax_throw_on_db_error()` throws when the last query failed, and logs the SQL error:
 
 ```php
-$acquired_locks = array();
+global $wpdb;
 
-// PHASE 1: Acquire ALL locks or fail atomically
-foreach ( $items as $item ) {
-    $lock_key = "htax_redirect_{$item}";
-    if ( ! htax_acquire_lock( $lock_key, 5 ) ) {
-        foreach ( $acquired_locks as $key ) { htax_release_lock( $key ); }
-        if ( $throw_on_failure ) {
-            throw new Exception( 'Failed to acquire lock: ' . $item );
-        }
-        return false;
-    }
-    $acquired_locks[] = $lock_key;
-}
-
-// PHASE 2: Perform all updates (all locks held)
 try {
-    // ... all database updates ...
-} finally {
-    // PHASE 3: Release ALL locks (always runs, even on exception)
-    foreach ( $acquired_locks as $key ) { htax_release_lock( $key ); }
+    $wpdb->query( 'START TRANSACTION' );
+
+    $wpdb->delete( $table, $where );
+    htax_throw_on_db_error( 'delete old rows' );
+
+    $wpdb->query( $insert_sql );
+    htax_throw_on_db_error( 'insert new rows' );
+
+    $wpdb->query( 'COMMIT' );
+} catch ( Exception $e ) {
+    $wpdb->query( 'ROLLBACK' );
+    htax_add_admin_notice( sprintf( __( 'Failed: %s', 'hypertaxonomy' ), $e->getMessage() ), 'error' );
+    return;
 }
+
+// Clear caches and fire actions only after the commit.
 ```
 
-Used in `htax_save_redirect()` and `htax_save_term_relationships()` (MySQL `START TRANSACTION` + `ROLLBACK` on failure).
+Functions that return `WP_Error` can check `$wpdb->last_error` after each write instead, as `htax_set_term_groups()` does, or keep the first error, as `htax_merge_terms()` does.
+
+MySQL commits an open transaction when another one starts, so don't call a function that starts its own transaction from inside a transaction. Transactions are used in `htax_save_term_relationships()`, `htax_set_redirect()`, `htax_set_term_groups()`, `htax_merge_terms()`, and the group screen saves in `includes/admin/group-admin.php`. In a merge, the source terms are deleted after the commit, so a failure at that point can't roll back the moved posts and relationships.
 
 ### Bulk Operations
 
@@ -380,8 +328,8 @@ Enable detailed logging by adding to `wp-config.php`:
 ```php
 define( 'WP_DEBUG', true );
 define( 'WP_DEBUG_LOG', true );
-define( 'HTAX_DEBUG_VERBOSE', true ); // Adds backtraces to log entries
-define( 'HTAX_QUERY_MONITOR', true ); // Logs slow queries to debug.log
+define( 'HTAX_DEBUG_VERBOSE', true ); // Adds backtraces to errors, and to debug messages that request one
+define( 'HTAX_QUERY_MONITOR', true ); // Logs queries over 10ms that mention htax or term
 ```
 
 Logs are written to `wp-content/debug.log`.
@@ -395,7 +343,7 @@ htax_log_debug( 'Message', [ 'context_key' => $value ] );
 htax_log_error( 'Error message', [ 'term_id' => $term_id, 'error' => $e->getMessage() ] );
 ```
 
-`htax_log_debug()` only writes when `WP_DEBUG` is true. `htax_log_error()` always writes.
+`htax_log_debug()` only writes when `WP_DEBUG` and `WP_DEBUG_LOG` are both true. `htax_log_error()` always writes. `HTAX_QUERY_MONITOR` starts monitoring at the first `htax_log_debug()` call in a request.
 
 ### Request-Level Timing Traces
 
@@ -421,13 +369,16 @@ Remove `define('HTAX_TIMING', true)` before production deployment. The `htax_tra
 
 ### Archive Debug Info
 
-Append `?htax_debug=1` to any term archive URL while logged in as an administrator to display a debug panel showing:
+Append `?htax_debug=1` to any term archive URL while logged in as an administrator to display a debug panel at the bottom of the page showing:
 
-- Active term and taxonomy
-- Included term IDs and their source relationships
-- Container terms
-- Applied exclusions
-- Whether each relationship was served from cache
+- Current term
+- Included term IDs and names
+- The archive's tax query
+- Posts found
+- Contributing terms on the current page
+- Sticky post IDs
+
+When `WP_DEBUG` is on, a second panel adds the term ID, taxonomy, expanded term IDs and names, posts found, and the SQL query.
 
 ### Rebuilding the Search Index
 
@@ -435,8 +386,8 @@ The search index covers all post types returned by `htax_get_indexed_post_types(
 
 The index can be rebuilt from:
 
-- **Admin UI:** Settings > HyperTaxonomy > Advanced > Rebuild Search Index
-- **AJAX action:** `wp_ajax_htax_rebuild_indexes` (truncates both tables, returns total post count) / `wp_ajax_htax_bulk_rebuild` (processes one batch of 50 posts through both tables)
+- **Admin UI:** Settings > HyperTaxonomy > Search > General > Rebuild Search Index
+- **AJAX action:** `wp_ajax_htax_rebuild_indexes` (empties `wp_htax_post_text` and the built-in model's rows in `wp_htax_search_terms`, returns total post count) / `wp_ajax_htax_bulk_rebuild` (processes one batch of 50 posts through both tables)
 
 To trigger a single-post reindex programmatically:
 

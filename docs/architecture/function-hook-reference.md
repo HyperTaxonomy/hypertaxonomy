@@ -31,8 +31,7 @@ Public API + plugin lifecycle functions. Does not contain internal utilities —
 - `htax_taxonomy_has_feature()` - Check if specific feature is enabled for taxonomy
 - `htax_get_cache_duration($type)` - Get cache duration from settings; types: `search` (default 30 min), `autocomplete` (default 5 min), `relationship` (default 0 = never expire, explicit invalidation), `sticky` (default 0), `shortcode` (default 0)
 - `htax_generate_transient_key()` - Safe transient key generation
-- `htax_debug_info()` - Display debug information on archive pages
-- `htax_get_group_type($taxonomy)` - Get Term Groups group type suffix for taxonomy
+- `htax_debug_info()` - Display debug information on archive pages (`wp_footer`)
 - `htax_get_current_taxonomy()` - Get current taxonomy from screen or request
 
 **Compatibility (includes/core/compatibility.php)**
@@ -187,7 +186,7 @@ Functions that accept `$include_redirect_data`:
 - `htax_get_ids_of_redirects_to( $target_id, $taxonomies = null )` - Get terms redirecting to target (cross-taxonomy)
 - `htax_prewarm_redirect_cache()` - Bulk-fetch all redirect rows in one query, then batch-check target terms by taxonomy, and populate `htax_redir_{id}` transients. Call before bulk index loops to convert O(n) lazy queries into 1 + 1-per-taxonomy queries.
 - `htax_set_redirect( int|WP_Term $term, int|WP_Term $target )` - Set redirect with circular detection and chain resolution
-- `htax_remove_redirect( $term_id )` - Remove redirect from term
+- `htax_remove_redirect( $term_id )` - Remove redirect from term; returns false, with no hook fired, if the delete fails
 - `htax_save_redirect( $term_id, $tt_id )` - Save redirect settings (called by orchestrator)
 
 **Write operations:**
@@ -766,7 +765,8 @@ Shared internal utilities used throughout the plugin. Not part of the public API
 - `htax_log_debug()` - Debug logging (WP_DEBUG + WP_DEBUG_LOG, supports verbose backtrace mode)
 - `htax_log_error()` - Error logging (always logs, supports verbose backtrace mode)
 - `htax_get_filtered_backtrace()` - Generate filtered backtrace string (excludes logging frames)
-- `htax_handle_db_error()` - Check wpdb->last_error; returns `$default` (and logs) on error, returns `false` when no error. Callers use `if ( false !== $err = htax_handle_db_error(...) ) { return $err; }` to short-circuit on failure.
+- `htax_handle_db_error()` - Check wpdb->last_error; returns `$default` (and logs) on error
+- `htax_throw_on_db_error()` - Check wpdb->last_error after a write inside a transaction; logs and throws `RuntimeException` on error, returns `false` when no error. Callers use `if ( false !== $err = htax_handle_db_error(...) ) { return $err; }` to short-circuit on failure.
 
 **Meta Key Helpers:**
 - `htax_get_sticky_assignment_key(int $term_id)` - Get the post meta key for a sticky term assignment (`_htax_sticky_{term_id}`); taxonomy is omitted because WordPress term IDs are globally unique

@@ -1,5 +1,5 @@
 ---
-title: vs. PublishPress Tag Groups
+title: Comparing to Tag Groups
 nav_order: 7
 ---
 
@@ -8,6 +8,10 @@ nav_order: 7
 Comparing **HyperTaxonomy** with **Tag Groups** (rebranded "PublishPress Tag Groups" in October 2026) — a popular plugin, commonly used for taxonomy term organization and management.
 
 **Legend:** ✓ Included · ~ Partial/limited · ✗ Not supported
+
+Where Tag Groups lacks a feature but **TaxoPress** offers something comparable, the Tag Groups column notes it, for example `✗ · ~ *(TaxoPress Pro)*`. TaxoPress (rebranded "PublishPress Taxonomies" in September 2026) is a separate plugin from the same publisher.
+
+**A mark means a plugin has a feature in that area, not that the feature is equivalent.** Plugins can use the same name for things that differ widely in scope and behavior, so a ✓ in two columns doesn't make them interchangeable. The notes below each table explain the differences.
 
 ---
 
@@ -41,14 +45,16 @@ Tag Groups stores groups as plugin-specific data outside the WordPress taxonomy 
 
 | Feature | HyperTaxonomy | Tag Groups |
 |---------|:---:|:---:|
-| Non-transitive term inclusion | ✓ | ✗ |
-| Term synonyms (bidirectional inclusion) | ✓ | ✗ |
+| Non-transitive term inclusion | ✓ | ✗ · ~ *(TaxoPress Pro)* |
+| Term synonyms (bidirectional inclusion) | ✓ | ✗ · ~ *(TaxoPress Pro)* |
 | Term group inclusion | ✓ | ✗ |
 | Reverse term inclusion/container groups | ✓ | ✗ |
 | Term redirects | ✓ | ✗ |
 | Custom relationship type registry | ✓ | ✗ |
 
 **Term Relationships.** Semantic relationships between terms are a unique feature of HyperTaxonomy, which goes beyond simply grouping related terms for organizational purposes. Besides structural relationships based on inclusion/exclusion, HyperTaxonomy supports behavioral relationships such as redirects, and provides a Relationship Type Registry that plugin authors can use to define additional types.
+
+**TaxoPress Pro's Linked Terms and Term Synonyms.** These overlap with HyperTaxonomy relationships in name or goal, but work differently. Linked Terms act on assignment: adding one term to a post also adds the linked terms, in one or both directions. The extra assignments are stored on each post, and existing posts change only when an update is run from the Linked Terms screen. HyperTaxonomy inclusions and synonyms act at query time: a term's archive and search results include the related term's posts without changing any post's assignments, so adding or removing a relationship takes effect at once across existing posts. TaxoPress Pro's Term Synonyms are alternate words for a single term, which its documentation describes as working with Auto Terms and Auto Links to find that term in content. HyperTaxonomy synonyms are two separate terms that each include the other's posts.
 
 **Custom relationship type registry.** Domain-specific relationship types may be created without modifying the plugin code. Two kinds are supported: *inclusion-based* types automatically participate in archive expansion and search indexing logic, identically to the built-in inclusion/exclusion — while *custom* types store the association, leaving behavior implementation to the registering plugin.
 
@@ -86,7 +92,7 @@ Tag Groups stores groups as plugin-specific data outside the WordPress taxonomy 
 | Term index (A–Z with letter anchors) | ✓ | ✓ |
 | Term group hierarchy | ✓ | ✓ *(TG Pro)* |
 | Post list by specified terms or groups | ✓ | ✗ |
-| Related posts | ✓ | ✗ |
+| Related posts | ✓ | ✗ · ✓ *(TaxoPress)* |
 | Tabbed display layout | ✗ | ✓ |
 | Accordion display layout | ✗ | ✓ |
 | Table layout | ✗ | ✓ *(TG Pro)* |
@@ -94,7 +100,7 @@ Tag Groups stores groups as plugin-specific data outside the WordPress taxonomy 
 
 **Term display.** Four shortcodes cover standard term presentation: `[ht_term_list]`, `[ht_term_cloud]`, `[ht_term_index]` (A–Z with letter anchors), and `[ht_term_groups]` (collapsible group tree). All support icons and redirect-term handling; each has a Gutenberg block. HyperTaxonomy does not have Tag Groups' tabbed, accordion, or table layouts, or client-side filter within term display.
 
-**Post list and related posts.** `[ht_post_list]` displays posts for any combination of terms or Term Groups; `[ht_related_posts]` derives the term set from the current post. Both factor in term inclusion relationships so semantically related posts surface without exact tag matches, and support relevance-based sort where posts that centrally cover the queried term rank above posts that mention it only in passing. Tag Groups has no equivalent.
+**Post list and related posts.** `[ht_post_list]` displays posts for any combination of terms or Term Groups; `[ht_related_posts]` derives the term set from the current post. Both factor in term inclusion relationships so semantically related posts surface without exact tag matches, and support relevance-based sort where posts that centrally cover the queried term rank above posts that mention it only in passing. Tag Groups has no equivalent. TaxoPress also offers Related Posts, which favors posts sharing more terms with the current post; it doesn't use inclusion relationships or strength-based ranking, and creating additional displays requires TaxoPress Pro. TaxoPress has no equivalent of `[ht_post_list]`.
 
 ---
 
@@ -125,28 +131,28 @@ Tag Groups stores groups as plugin-specific data outside the WordPress taxonomy 
 
 | Feature | HyperTaxonomy | Tag Groups |
 |---------|:---:|:---:|
-| Hidden terms with role-based visibility controls | ✓ | ✗ |
+| Hidden terms with role-based visibility controls | ✓ | ✗ · ~ *(TaxoPress)* |
 | Quick Edit (term list table) | ✓ | ✗ |
-| Bulk actions on terms | ✓ | ✗ |
-| Merge terms | ✓ | ✗ |
-| Handle term taxonomy conversion | ✓ | ✗ |
+| Bulk actions on terms | ✓ | ✗ · ~ *(TaxoPress)* |
+| Merge terms | ✓ | ✗ · ✓ *(TaxoPress)* |
+| Handle term taxonomy conversion | ✓ | ✗ · ~ *(TaxoPress)* |
 | Concurrent term edit locking with take-over flow | ✓ | ✗ |
 | Unsaved-changes warning when navigating away from term edit | ✓ | ✗ |
-| Content-based tag suggestions in post editor | ✓ | ✗ |
+| Content-based tag suggestions in post editor | ✓ | ✗ · ✓ *(TaxoPress Pro)* |
 | Prevent accidental term creation in post editor | ✓ | ✗ |
 | Term icons (media library images and placeholders) | ✓ | ✗ |
 
-**Hidden terms.** HyperTaxonomy allows admins to hide individual terms. Visibility is role-based: configured roles can see hidden terms while others cannot. Hidden terms remain accessible to authorized users and still appear in archives for those users.
+**Hidden terms.** HyperTaxonomy allows admins to hide individual terms. Visibility is role-based: configured roles can see hidden terms while others cannot. Hidden terms remain accessible to authorized users and still appear in archives for those users. TaxoPress's Hidden Terms is a different feature despite the name: it automatically hides every term used on fewer posts than a set minimum, rather than terms an admin chooses. It has no per-role visibility on the front end, and a hidden term's archive redirects to the homepage.
 
 **Quick Edit (term list table).** HyperTaxonomy extends the WordPress term list table Quick Edit row with a visibility checkbox and a Term Groups checklist, both pre-populated from the term's current values.
 
-**Bulk actions on terms.** WordPress core provides bulk delete on every term list table. HyperTaxonomy adds bulk actions for its own metadata: bulk set/clear visibility, bulk remove icons, and bulk assign to Term Groups (the last via a modal group selector that opens inline).
+**Bulk actions on terms.** WordPress core provides bulk delete on every term list table. HyperTaxonomy adds bulk actions for its own metadata: bulk set/clear visibility, bulk remove icons, and bulk assign to Term Groups (the last via a modal group selector that opens inline). TaxoPress adds bulk delete and copy on its own term table, and batch tools for adding, removing, and renaming terms on its Manage Terms screen. These act on the terms and their post assignments, not on visibility, icons, or group membership.
 
-**Merge terms.** HyperTaxonomy can permanently reassign posts from source terms to a target term and delete the sources. Group memberships and inclusion/exclusion relationships are transferred to the target, and optional redirects can be created so old archive URLs continue to work.
+**Merge terms.** HyperTaxonomy can permanently reassign posts from source terms to a target term and delete the sources. Group memberships and inclusion/exclusion relationships are transferred to the target, and optional redirects can be created so old archive URLs continue to work. TaxoPress also merges terms, moving posts to the target and deleting the sources, and can suggest similar terms to merge. It has no redirect option, and HyperTaxonomy data on the source terms, such as relationships, hidden status, and icons, isn't transferred. On HyperTaxonomy-enabled taxonomies, use HyperTaxonomy's Merge Terms.
 
-**Term taxonomy conversion.** HyperTaxonomy converts terms between any two post taxonomies. The original term optionally stays in the old taxonomy as a redirect stub, keeping its slug, icon, group memberships, and hierarchy position intact so old archive URLs continue to work and the conversion is reversible. Sticky post assignments are moved to the new term. Tag Groups has no equivalent — group assignments are lost on conversion.
+**Term taxonomy conversion.** HyperTaxonomy converts terms between any two post taxonomies. The original term optionally stays in the old taxonomy as a redirect stub, keeping its slug, icon, group memberships, and hierarchy position intact so old archive URLs continue to work and the conversion is reversible. Sticky post assignments are moved to the new term. Tag Groups has no equivalent — group assignments are lost on conversion. TaxoPress can copy terms to another taxonomy, optionally assigning the copies to posts. This is a copy rather than a conversion: the source term stays in place with its posts, and no redirect is created.
 
-**Content-based tag suggestions.** In the Gutenberg post editor, HyperTaxonomy replaces WordPress's site-wide "most used tags" suggestions with tags matched to the current post's content. Suggestions are drawn from unassigned tags whose names appear in the post's title (shown first), excerpt, then body, each group ordered by occurrence count. A configurable ignore-words list excludes generic terms from matching.
+**Content-based tag suggestions.** In the Gutenberg post editor, HyperTaxonomy replaces WordPress's site-wide "most used tags" suggestions with tags matched to the current post's content. Suggestions are drawn from unassigned tags whose names appear in the post's title (shown first), excerpt, then body, each group ordered by occurrence count. A configurable ignore-words list excludes generic terms from matching. TaxoPress Pro offers suggestions in its own post editor metabox rather than in the native tag panel, and adds AI-generated suggestions from services such as OpenAI.
 
 **Prevent accidental term creation.** An optional setting blocks new terms from being created via the post editor's tag input. Existing terms can still be assigned freely; only creation of new ones is blocked.
 
@@ -234,6 +240,6 @@ The plugins below address capabilities outside the scope of this comparison and 
 
 **Using both together.** This isn't necessarily an either/or choice. HyperTaxonomy's Migrate and Sync tools (Export/Import → Migrate / Sync) read Tag Groups' group and term-assignment data directly from its database tables and keep HyperTaxonomy's native Term Groups taxonomy in step with it — as a one-time migration, or continuously. Under Locked integration mode, Tag Groups can remain the day-to-day tool for creating groups and assigning terms to them (its own field is promoted to the term edit screen's primary group-assignment spot), while HyperTaxonomy layers archive pages, search indexing, hierarchy, and relationships on top of the same group structure. See [Import & Migration](https://hypertaxonomy.org/hypertaxonomy/user-guide/import-migration.html) for the integration modes and sync options.
 
-**TaxoPress** addresses a different problem entirely and is a natural complement to HyperTaxonomy rather than an alternative. TaxoPress (now PublishPress Taxonomies) and Tag Groups (now PublishPress Tag Groups) are both published by PublishPress as of their respective late-2026 rebrands, but remain independent plugins with no cross-dependency.
+**TaxoPress** focuses on a different problem, automated term assignment and linking, and is a natural complement to HyperTaxonomy rather than an alternative, despite the overlaps noted above. TaxoPress (now PublishPress Taxonomies) and Tag Groups (now PublishPress Tag Groups) are both published by PublishPress as of their respective late-2026 rebrands, but remain independent plugins with no cross-dependency.
 
 For guidance on combining HyperTaxonomy with other plugins, see [Best Practices § Working Alongside Other Plugins](https://hypertaxonomy.org/hypertaxonomy/user-guide/best-practices.html#working-alongside-other-plugins).

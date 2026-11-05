@@ -16,4 +16,3 @@ This reference is split into the following pages:
 - **[Database Schema](database-schema.html)** — term/post meta keys, options, native-table indexes, custom tables, and transient caching.
 - **[Feature Implementation](feature-implementation.html)** — feature-flag enforcement, container groups, redirects, display depth, term icons, hidden terms, term conversion, term merge, and conflict detection.
 - **[Search Internals](search-internals.html)** — search query architecture, the search widget and its fields, PowerSearch scoring, index management, strength models, performance architecture, native block group filter, AJAX endpoints, and security.
-- **[Sort & Filter Rendering (DOM Structures)](sort-filter-rendering.html)** — PHP rendering functions, the emitted HTML/DOM trees, and JavaScript events for the sort order picker and filter options panel.

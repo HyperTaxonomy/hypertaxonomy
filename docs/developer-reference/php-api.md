@@ -303,7 +303,7 @@ Pills inherit border-radius from **Settings > HyperTaxonomy > Icons** per-taxono
 ---
 
 
-> **Sort & Filter Controls (PHP rendering, DOM structure, JS events)** are documented in the Architecture section: [Sort & Filter Rendering](../architecture/sort-filter-rendering.html).
+> **Sort & Filter Controls** (PHP rendering, HTML structure, JavaScript events) have their own page: [Sort & Filter Controls](sort-filter-controls.html).
 
 ## Hidden Terms
 

@@ -1,10 +1,12 @@
 ---
-title: Function & Hook Reference
+title: Function Reference
 parent: Architecture
 nav_order: 2
 ---
 
-# Function & Hook Reference
+# Function Reference
+
+Functions by module. Private helpers are not listed. For hook registration and execution order, see the [Hook Reference](hook-reference.html).
 
 ## Function Organization
 
@@ -29,7 +31,7 @@ Public API + plugin lifecycle functions. Does not contain internal utilities —
 - `htax_get_indexed_post_types()` - Get post types included in the search index (default: `['post', 'page']`)
 - `htax_get_taxonomy_features()` - Get feature configuration for a taxonomy
 - `htax_taxonomy_has_feature()` - Check if specific feature is enabled for taxonomy
-- `htax_get_cache_duration($type)` - Get cache duration from settings; types: `search` (default 30 min), `autocomplete` (default 5 min), `relationship` (default 0 = never expire, explicit invalidation), `sticky` (default 0), `shortcode` (default 0)
+- `htax_get_cache_duration($type)` - Get cache duration from settings; types: `term` (default 2 hours), `search` (default 30 min), `autocomplete` (default 5 min), `relationship` (default 0 = never expire, explicit invalidation), `sticky` (default 0), `shortcode` (default 0)
 - `htax_generate_transient_key()` - Safe transient key generation
 - `htax_debug_info()` - Display debug information on archive pages (`wp_footer`)
 - `htax_get_current_taxonomy()` - Get current taxonomy from screen or request
@@ -44,11 +46,12 @@ Public API + plugin lifecycle functions. Does not contain internal utilities —
 **Activation (includes/core/activation.php)**
 - `htax_activate()` - Main activation handler
 - `htax_activate_network()` - Network-wide activation
-- `htax_activate_single_site()` - Single site activation; runs repair scans (`htax_repair_visibility_cascade`, `htax_repair_orphaned_term_relationships`, `htax_repair_orphaned_sticky_meta`), then calls `HyperTaxonomy_Activator::schedule_index_rebuild()` to schedule the full index rebuild after repairs complete, registers taxonomies, flushes rewrite rules, creates DB tables
+- `htax_activate_single_site()` - Single site activation; runs `HyperTaxonomy_Activator::activate()`, adds capabilities, runs repair scans (`htax_repair_visibility_cascade`, `htax_repair_orphaned_term_relationships`, `htax_repair_orphaned_sticky_meta`, `htax_repair_hierarchy_conflicts`), calls `HyperTaxonomy_Activator::schedule_index_rebuild()` to schedule the full index rebuild after repairs complete, registers the group taxonomy, flushes rewrite rules, and creates the search index table
+- `htax_repair_hierarchy_conflicts(): int` - Activation-time scan; removes direct inclusion, container, and exclusion rows that place an ancestor or descendant of a term in its relationship sets
 - `htax_new_site_created()` - New multisite site handler
 - `htax_deactivate()` - Main deactivation handler
 - `htax_deactivate_network()` - Network-wide deactivation
-- `htax_deactivate_single_site()` - Clears all transients and removes capabilities; data and tables are preserved
+- `htax_deactivate_single_site()` - Clears all transients and removes capabilities and the stored rewrite rules; data and tables are preserved
 - `htax_add_security_headers()` - Add security headers
 
 **Activator Class (includes/classes/class-activator.php)**
@@ -70,7 +73,7 @@ When a third-party plugin that registered a custom taxonomy is deactivated, Word
 
 **Cache handling:**
 - Most term-keyed transients (`htax_inc_`, `htax_cont_`, `htax_excl_`, `htax_groups_`, `htax_contrib_`) are safe when their taxonomy is unregistered: they are only consumed when serving a term's archive, which requires the taxonomy to be registered. Group member caches (`htax_grp_{group_id}_{taxonomy}`) are scoped by both group and taxonomy, so a disabled taxonomy's entries are never consulted for active archives. Custom relationship type caches (`htax_crel_{slug}_*` and `htax_crel_rev_{slug}_*`) are similarly safe: they are only consumed by callers that explicitly query by type slug, and those callers are always within active-taxonomy contexts.
-- `htax_get_redirect_target()` validates the target's taxonomy at resolution time. For an **unregistered** target taxonomy it returns false without overwriting the cache, so the redirect resumes automatically the next request after the taxonomy is re-registered. For an **disabled in settings** (registered but off in settings) target taxonomy it caches `'none'`; `on_taxonomy_enabled_state_changed` clears all caches on re-enable so the redirect recovers then too.
+- `htax_get_redirect_target()` validates the target's taxonomy at resolution time. For an **unregistered** target taxonomy it returns false without overwriting the cache, so the redirect resumes automatically the next request after the taxonomy is re-registered. For a **disabled in settings** (registered but off in settings) target taxonomy it caches `'none'`; `on_taxonomy_enabled_state_changed` clears all caches on re-enable so the redirect recovers then too.
 - `on_taxonomy_enabled_state_changed()` calls `htax_clear_all_caches()` whenever any taxonomy transitions between enabled and disabled, giving a clean slate for the intentional-disable path.
 
 **Search index cleanup on settings save:**
@@ -78,7 +81,7 @@ When a third-party plugin that registered a custom taxonomy is deactivated, Word
 - `HyperTaxonomy_Search_Index_Manager::on_relevance_weights_changed()` also hooks `update_option_htax_settings`. For each enabled taxonomy it compares the effective `hierarchy`, `container`, and `redirect` explicit weights between old and new settings and, when any differ, queues every published post with terms in that taxonomy for reindex (those weights are multiplied into stored indirect-row strengths). Both handlers collect posts through the private `get_published_post_ids_in_taxonomy()`.
 
 **Resumption:**
-No action required after the third-party plugin is reactivated. `htax_is_taxonomy_enabled()` and `htax_get_enabled_taxonomies()` will return the correct results on the first request after the taxonomy is registered again. Stale index rows are cleaned up incrementally; a manual rebuild via Settings → Search Index produces a fully clean state immediately.
+No action required after the third-party plugin is reactivated. `htax_is_taxonomy_enabled()` and `htax_get_enabled_taxonomies()` will return the correct results on the first request after the taxonomy is registered again. Stale index rows are cleaned up incrementally; a manual rebuild via Settings → HyperTaxonomy → Search → General produces a fully clean state immediately.
 
 ### Term Groups
 
@@ -117,9 +120,9 @@ Groups-as-inclusion-sources feature. Handles group-based inclusion and container
 
 ### Relationship Type Registry (includes/core/relationship-types.php)
 
-Manages the in-memory registry of built-in and user-defined relationship types. Built-in types are registered on `init` at priority 0; user-defined types are loaded from `wp_options` on `init` at priority 5. All query sites use `htax_relationship_type_sql_in()` to expand a core type slug into an `IN (...)` SQL fragment that covers both the built-in slug and all user-defined slugs mapped to it.
+Manages the in-memory registry of built-in and user-defined relationship types. Built-in types are registered on `init` at priority 0; user-defined types are loaded from `wp_options` on `init` at priority 5. Inclusion queries use `htax_relationship_type_sql_in( 'includes' )` to get an `IN (...)` SQL fragment covering the built-in slug and all user-defined slugs mapped to it.
 
-**Two new fields** on each `htax_custom_relationship_types` entry (absent keys default to empty/false — no migration needed):
+**Two additional fields** on each `htax_custom_relationship_types` entry (absent keys default to empty/false):
 - `source_site` (string) — URL of the peer site that originated this type via TermConnect sync. Empty = locally owned. Controls REST visibility: types with `source_site` set are excluded from `/relationship-types` responses (they are accessible at the originating site). Cleared by `htax_make_relationship_type_local()`.
 - `is_private` (bool) — when true, excluded from both `/relationship-types` and `/term/{id}/relationships` REST responses.
 
@@ -161,7 +164,7 @@ Manages the in-memory registry of built-in and user-defined relationship types. 
 **Resolved readers — multi-path, WP_Term objects:**
 - `htax_get_included_terms( int|WP_Term $term, bool $include_redirect_data = false, bool $include_disabled = false )` - Returns empty when `term_relationships` is disabled for the taxonomy unless `$include_disabled` (search index callers only); the cached set is feature-independent. Get WP_Term[] of included terms indexed by term_id (cached as `htax_inc_{term_id}`, eager reload). No TTL — persists until explicitly deleted by `htax_delete_term_transients()`. `false` = cold (never computed or evicted); `[]` = warm with no relationships. Empty result is stored as `[]` so that a warm cache with no inclusions never triggers a DB query.
 - `htax_get_container_terms( int|WP_Term $term, bool $include_disabled = false )` - Same `term_relationships` gating and `$include_disabled` opt-out (search index callers). Get WP_Term[] of container terms indexed by term_id (cached as `htax_cont_{term_id}`, lazy-load; 3 paths: direct, container groups, group inclusion). No TTL — persists until explicitly deleted by `htax_delete_term_transients()`. Same `false` vs `[]` sentinel convention as `htax_inc_{term_id}`.
-- `htax_get_synonym_terms( int|WP_Term $term )` - Get WP_Term[] of terms with a bidirectional `includes` relationship (A→B and B→A). Display utility — not required for archive expansion. Two-tier cache: static per-request array + persistent transient `htax_syno_{term_id}` (TTL=0). Invalidated by `htax_delete_term_transients()` or `htax_delete_term_transients_batch()`; re-warmed asynchronously via the `htax_async_rebuild_term_caches` cron event.
+- `htax_get_synonym_terms( int|WP_Term $term, bool $include_redirect_data = false )` - Get WP_Term[] of terms with a bidirectional `includes` relationship (A→B and B→A). Display utility — not required for archive expansion. Two-tier cache: static per-request array + persistent transient `htax_syno_{term_id}` (TTL=0). Invalidated by `htax_delete_term_transients()` or `htax_delete_term_transients_batch()`; re-warmed asynchronously via the `htax_async_rebuild_term_caches` cron event.
 - `htax_get_excluded_term_ids( int $term_id, bool $include_redirect_data = false ): int[]` - Get excluded term IDs (cached as `htax_excl_{term_id}`); returns `[]` for redirect terms unless `$include_redirect_data` is true
 
 **Redirect suppression pattern:**
@@ -185,15 +188,14 @@ Functions that accept `$include_redirect_data`:
 - `htax_clear_redirect_term_ids_cache()` - Clear the `htax_redirect_terms` transient and its per-request copy
 - `htax_get_ids_of_redirects_to( $target_id, $taxonomies = null )` - Get terms redirecting to target (cross-taxonomy)
 - `htax_prewarm_redirect_cache()` - Bulk-fetch all redirect rows in one query, then batch-check target terms by taxonomy, and populate `htax_redir_{id}` transients. Call before bulk index loops to convert O(n) lazy queries into 1 + 1-per-taxonomy queries.
-- `htax_set_redirect( int|WP_Term $term, int|WP_Term $target )` - Set redirect with circular detection and chain resolution
+- `htax_set_redirect( int|WP_Term $term, int|WP_Term $target )` - Set redirect with circular detection and chain resolution; replaces the row in a transaction and returns false if a write fails, keeping the old redirect
+- `htax_get_redirect_sources( int $target_term_id ): array` - Get the terms that redirect, directly or transitively, to a target term
 - `htax_remove_redirect( $term_id )` - Remove redirect from term; returns false, with no hook fired, if the delete fails
 - `htax_save_redirect( $term_id, $tt_id )` - Save redirect settings (called by orchestrator)
 
-**Write operations:**
-
 **Save orchestration:**
 - `htax_save_term_data( $term_id, $tt_id )` - Orchestrator that validates nonce once, checks permissions conditionally based on enabled features and form data, then calls all save functions (runs on both `edited_{$taxonomy}` at priority 20 and `create_{$taxonomy}` at priority 5 for early AJAX compatibility)
-- `htax_save_term_relationships( $term_id, $tt_id )` - Save include/container relationships (called by orchestrator, uses dual nonce verification)
+- `htax_save_term_relationships( $term_id, $tt_id )` - Save include/container relationships (called by orchestrator, which verifies the nonce); replaces rows in a transaction and rolls back if any write fails
 - `htax_save_group_relationships( $term_id, $taxonomy, $relationship_direction, $type_slug = 'includes', $raw_field_value = null )` - Save container or included group memberships for a term; called from within `htax_save_term_relationships()` for both directions and for each visible custom type
 - (`admin/term-edit.php`) `htax_save_archive_settings( $term_id )` - Save archive display settings; skips when customize_archives disabled (called by orchestrator)
 - `HyperTaxonomy_Term_Icons::save_term_icon( $term_id )` - Save term icon if enabled for taxonomy (called by orchestrator)
@@ -202,12 +204,32 @@ Functions that accept `$include_redirect_data`:
 - `htax_cleanup_deleted_term( $term_id, $tt_id )` - On `delete_term`: removes all relationship rows where the term is source or target; clears `_htax_auto_redirect` meta from any terms that were redirecting to this term; clears `_htax_show_description` and `_htax_is_hidden` meta from the deleted term; deletes the `_htax_sticky_{term_id}` post meta entry and its transient
 - `htax_cleanup_bulk_deleted_terms( $tt_id )` - Clean up bulk deletions (auto-detects taxonomy from tt_id)
 - `htax_cleanup_hierarchy_conflicts( $term_id, $tt_id, $taxonomy )` - Remove conflicts when hierarchy changes
+- `htax_remove_hierarchy_conflict_rows( int $term_id, string $taxonomy ): bool` - Delete direct inclusion and exclusion rows that place an ancestor or descendant of a term in its relationship sets
 - `htax_remove_duplicate_redirects(): int` - Removes redirect rows where a source term has more than one target (schema allows it; write-time code prevents it, but direct DB manipulation could create this state); keeps the row with the lowest `target_term_id` (deterministic tiebreaker) and deletes the rest; idempotent
 - `htax_cleanup_symmetric_relationship_duplicates(): int` - For each symmetric custom relationship type, finds A→B + B→A duplicate row pairs and deletes the one where `source_term_id > target_term_id`, keeping a single canonical row per pair; called by `htax_repair_orphaned_term_relationships()` and on activation; idempotent
 - `htax_repair_orphaned_term_relationships(): int` - Activation-time scan; (1) removes rows whose source term no longer exists, (2) removes rows whose target term no longer exists, (3) removes stale `_htax_auto_redirect` meta from terms with no redirect row, (4) calls `htax_remove_invalid_term_relationships()` for all four core types and every user-defined type enforcing taxonomy constraints and self-relation rules, (5) calls `htax_remove_duplicate_redirects()` to enforce the one-target-per-source invariant, (6) calls `htax_cleanup_symmetric_relationship_duplicates()` for all symmetric custom types; returns total rows deleted; idempotent
 
 **Symmetric custom relationship types:**
 User-defined types with `symmetric: true` have identical forward and inverse labels (e.g. "Related"). The term edit UI collapses both direction containers into one merged container: reverse pills (rows where another term points to this one) are shown with a dashed border and a `←` arrow after the label; forward pills (rows created from this term's edit page) are shown with a `→` arrow after the label. Adding via `+` always creates a forward row; removing either direction deletes the appropriate row. The save handler strips any forward-direction term IDs that already appear in the reverse direction, preventing A→B + B→A duplicates at write time. The autocomplete excludes all pills (both directions) so users cannot add a term already related in either direction.
+
+### Term Conversion (includes/core/term-conversion.php)
+
+Moves terms between taxonomies, natively or by detecting conversions made by other plugins.
+
+- `htax_convert_term( int $term_id, string $target_taxonomy, bool $create_redirect = true )` - Convert one term; returns a result array or `WP_Error`. With a redirect, the original term stays as a stub in the old taxonomy; without one, it is replaced and the new term claims its slug. Returns `WP_Error`, removing the new term, if moving posts fails.
+- `htax_convert_terms_batch( array $term_ids, string $from_taxonomy, string $to_taxonomy, bool $create_redirect = true ): array` - Convert several terms, parents first, and return a summary
+- `htax_restore_converted_term( int $new_term_id, string $new_taxonomy, string $old_taxonomy, WP_Term $stub ): array` - Reverse a conversion: move posts back, remove the stub's redirect, and delete the replacement term. Reports `converted` 0 and changes nothing further if moving posts fails.
+- `htax_create_redirect_term( $name, $old_taxonomy, $target_term_id, $target_taxonomy, $old_term_data = null )` - Create a redirect stub pointing to the converted term
+- `htax_find_auto_redirect_to_term( $target_term_id, $taxonomy )` - Find an auto-generated stub pointing to a term
+- `htax_should_transfer_icon( string $old_taxonomy, string $new_taxonomy ): bool` - Whether an icon can move between two taxonomies
+- `htax_transfer_sticky_posts_on_convert( int $old_term_id, int $new_term_id ): void` - Move sticky post assignments to the new term
+- `htax_update_nav_menu_items_for_converted_term( int $old_term_id, string $old_taxonomy, int $new_term_id, string $new_taxonomy ): void` - Update menu items that reference a converted term
+- `htax_track_created_term_for_conversion()` / `htax_detect_external_conversion_pre_delete()` / `htax_complete_external_conversion_after_delete()` - Detect another plugin's conversion from its create and delete hooks. See the [Hook Reference](hook-reference.html).
+- `htax_cache_term_taxonomy_before_edit( $term_id, $tt_id, $taxonomy )` - Capture a term's data before an edit, for parent-change detection
+
+### Term Merge (includes/core/term-merge.php)
+
+- `htax_merge_terms( array $source_ids, int $target_id, string $taxonomy, bool $create_redirect = false )` - Move post assignments and relationships to the target in a transaction, then delete the sources and optionally create redirect stubs. Returns `{posts_reassigned, terms_deleted, redirects_created, target_id}`, or `WP_Error` after rolling back if a write fails. Fires `htax_before_merge_terms` and `htax_after_merge_terms`.
 
 ### Term Visibility (includes/core/term-visibility.php)
 
@@ -258,10 +280,16 @@ Hidden term logic: permission checks, write-time cascade, and frontend query fil
 
 Public integration API for third-party plugins.
 
-- `htax_get_expanded_term_ids( int $term_id )` - Returns the complete flat list of term IDs whose posts appear in a term's archive: self + WP descendants (via `htax_get_visible_wp_descendants`) + all HyperTaxonomy-contributed terms from `htax_build_expanded_tax_query` (inclusions pre-expanded to include their own WP descendants). WP descendants of the primary term are always added explicitly regardless of whether HyperTaxonomy contributions are present. Taxonomy is looked up automatically. Applies `htax_expanded_term_ids` filter.
+- `htax_get_expanded_term_ids( int $term_id, bool $include_redirect_sources = false )` - Returns the complete flat list of term IDs whose posts appear in a term's archive: self + WP descendants (via `htax_get_visible_wp_descendants`) + all HyperTaxonomy-contributed terms from `htax_build_expanded_tax_query` (inclusions pre-expanded to include their own WP descendants). WP descendants of the primary term are always added explicitly regardless of whether HyperTaxonomy contributions are present. Taxonomy is looked up automatically. With `$include_redirect_sources`, also includes terms that redirect to this term. Applies `htax_expanded_term_ids` filter.
 - `htax_expand_secondary_query( WP_Query $query )` - `pre_get_posts` handler (priority 10) that expands single-term tax_query clauses for enabled taxonomies in secondary/third-party queries. Controlled by `htax_expand_terms` query var or `expand_secondary_queries` global setting. Skips the main archive query.
 - `htax_count_expanded_term_posts( string $taxonomy, array $entries ): array` - Distinct post counts for expanded terms, in statements of at most `HTAX_TERM_COUNT_BATCH_ROWS` rows; terms whose query failed are left out
 - `htax_adjust_term_counts( array $terms, ?array $taxonomies, array $args )` - `get_terms` filter; skips post term queries (`object_ids`). Replaces native WP counts with expansion-aware counts. Frontend only, active only when `expand_secondary_queries` is on.
+- `htax_get_local_post_scores( array $term_ids, array $args = [] ): array` - Score local posts for a set of terms using the search index, gated by each taxonomy's relationship features and by term visibility; returns `post_id => score`, or empty when the index table is unavailable. `$args['exclude']` omits post IDs.
+- `htax_get_post_term_strengths( int $post_id, array $term_ids = [] ): array` - A post's direct term strengths from the model selected for related posts, normalized so the strongest is 1.0; terms the model has not scored are omitted
+- `htax_get_term_uris( int $term_id ): array` - External URIs for a term, from the `htax_term_uris` filter
+- `htax_get_term_external_posts( int $term_id, array $args = [] ): array` - External posts for a term, from the `htax_term_external_posts` filter; returns empty without firing the filter when the term is hidden from the current user. `$args` is passed to providers unchanged.
+- `htax_get_peer_sites(): array` - Known peer sites, from the `htax_peer_sites` filter
+- `htax_get_term_locations( int $term_id ): array` - Location rows for a term, from the `htax_term_locations` filter
 
 ### Frontend Display (includes/core/frontend.php)
 
@@ -277,6 +305,7 @@ Public integration API for third-party plugins.
 - `htax_integrate_description_display()` - Set up description hooks
 - `htax_maybe_display_archive_description()` - Conditional display
 - `htax_filter_query_title_block()` - Filter FSE Query Title block
+- `htax_suppress_native_archive_description( string $description ): string` - `get_the_archive_description` filter at priority 1. Returns empty string when `_htax_show_description = '1'`, preventing a theme's `the_archive_description()` call from duplicating the description that `htax_display_archive_description()` already outputs. WordPress skips the wrapper div entirely on empty return.
 
 **Styles:**
 - `htax_frontend_styles()` - Output frontend CSS
@@ -292,12 +321,6 @@ Public integration API for third-party plugins.
 - `htax_get_term_pill( WP_Term $term, array $args )` - Get term as a styled pill with optional icon
 - `htax_the_term_pills( int $post_id, string $taxonomy, array $args )` - Display all post terms as styled pills
 - `htax_add_icon_to_term_link( string $term_link, WP_Term $term, string $show_icons, bool $is_hidden )` - Transform existing term link into pill
-
-**Text utilities:**
-- `htax_split_description()` - Split description into fragments
-- `htax_truncate_text()` - Truncate text with ellipsis
-
-- `htax_suppress_native_archive_description( string $description ): string` - `get_the_archive_description` filter at priority 1. Returns empty string when `_htax_show_description = '1'`, preventing a theme's `the_archive_description()` call from duplicating the description that `htax_display_archive_description()` already outputs. WordPress skips the wrapper div entirely on empty return.
 
 ### Search
 
@@ -330,6 +353,11 @@ POST-mode forms submit once; the results pages are GET requests carrying `?htax_
 - `htax_enhance_search_query()` - Native `?s=` search through the PowerSearch engine (always, or with `htax_search`): leaves an empty `s` to WordPress; runs the requested page with the query's `posts_per_page` (`posts_per_rss` for search feeds), clears `s`, stores the text in `htax_search_text`, and applies the page with `htax_apply_search_page_to_query()` — the engine sorts by the full orderby, so the page keeps its order
 - `htax_get_search_results_per_page()` - Default posts-per-page for all HT search forms; returns `get_option('posts_per_page', 20)` so that the WordPress Reading setting is the single site-wide control. Shortcode-level `posts_per_page` attributes always override this.
 - `htax_get_default_match_mode()` - Returns `'all'` or `'any'` from `htax_settings[default_match_mode]`; defaults to `'any'`.
+- `htax_build_orderby_sql( $orderby_parsed, $post_alias = 'pt', $relevance_column = 'term_relevance' )` - Build a SQL `ORDER BY` clause from a parsed orderby array
+- `htax_get_term_sort_order( $term_id )` - Get the parsed sort order for a term's archive
+- `htax_get_relevance_weights( string $taxonomy, ?array $options = null ): array` - Configured relevance weights for a taxonomy, falling back to defaults
+- `htax_get_default_expand_types(): array` / `htax_get_expand_types_for_taxonomy( string $taxonomy ): array` - Site-wide default relationship expansion types for search, and the active types for a taxonomy after site settings and feature flags
+- `htax_suppress_query_blocks_on_search( $pre, $block )` - `pre_render_block` filter; stops query-running blocks from executing on search results pages
 
 **URL Parameters:**
 - `htax_search=1` - Trigger enhanced search
@@ -407,15 +435,14 @@ Collapsible filter panel supporting term, date range, and author filters. Works 
 
 **ATCF Integration (includes/integrations/class-atcf-integration.php)**
 
-Conditionally loaded when `function_exists( 'atcf_get_term_ids_within_radius' )`. Hooks:
-- `htax_pre_search_fields` — receives the full search query spec `{relation, fields, groups, text_search}` and resolves any `distance`-type fields in `$query['fields']` to `type:"hidden"` resolved fields containing matching term IDs before the SQL query runs. Prefers JS-provided coordinates (`_atcf_lat`/`_atcf_lng` request params) over postal-code centroid lookup; falls back to `atcf_get_ip_location()`. Any `expand_types` value from the distance field is passed through unchanged to the resolved field; `normalize_expand_types()` in the search widget class handles final normalization at query time.
+Always loaded; its hooks register only when `function_exists( 'atcf_get_term_ids_within_radius' )`. Hooks:
+- `htax_pre_search_fields` — receives the full search query spec `{relation, fields, groups, text_search}` and resolves any `distance`-type fields in `$query['fields']` to `type:"hidden"` resolved fields containing matching term IDs before the SQL query runs. Prefers JS-provided coordinates (`_atcf_lat`/`_atcf_lng` request params) over postal-code centroid lookup; falls back to `atcf_get_visitor_location()`. Any `expand_types` value from the distance field is passed through unchanged to the resolved field; `normalize_expand_types()` in the search widget class handles final normalization at query time.
 - `htax_allowed_field_types` — adds `'distance'` to the accepted field types so the AJAX handler does not reject distance fields
 - `htax_search_proximity_where` — `build_proximity_where()` turns `near:`/`-near:` tokens into a WHERE condition for PowerSearch and the search widget (see below)
 - `htax_search_proximity_relevance` — `build_proximity_relevance()` scores posts by distance for `near:`-only searches (PowerSearch `$near_only` path: `proximity_score` select column, HAVING `1 = 1`; widget text-only branch). Both builders share `resolve_proximity()`, memoized per request (proximity tokens + hidden-term visibility), which resolves references once, records unresolved-clause notices once, and returns in-range term distances (`get_in_range_term_distances()`, from ATCF's `distance_km`)
-- `htax_term_locations` — provides ATCF location rows to HT's filter; consumed by `htax_get_term_locations()` for REST responses
-- `htax_term_locations` — `htax_filter_rest_prepare_term` reads location data from this filter directly (rather than from `rest_prepare_{$taxonomy}`)
+- `htax_term_locations` — provides ATCF location rows to HT's filter, available through `htax_get_term_locations()`. REST responses get locations from `ATCF_REST_API::format_term_locations()` instead (see REST API below)
 
-The integration touches **no ATCF database tables directly** — all location data is retrieved via ATCF's public API (`atcf_get_locations_within_radius()`, `atcf_get_term_ids_with_locations()`, `atcf_get_postal_centroid()`, `ATCF_Locations::get_aggregated()`). The only direct DB queries HT performs are against WP's own `term_relationships` and `term_taxonomy` tables to map term IDs to post IDs.
+The integration touches **no ATCF database tables directly** — all location data is retrieved via ATCF's public API (`atcf_get_locations_within_radius()`, `atcf_get_term_ids_within_radius()`, `atcf_get_postal_centroid()`, `atcf_get_visitor_location()`, `ATCF_Locations::get_aggregated()`). The only direct DB queries HT performs are against WP's own `term_relationships` and `term_taxonomy` tables to map term IDs to post IDs.
 
 The `[ht_distance_field]` shortcode is registered unconditionally (so the tag is always recognized in content). When ATCF is inactive at render time, the shortcode outputs a notice for admins and nothing for other users.
 
@@ -437,7 +464,7 @@ near:taxonomy:slug[/radius]   — reference: term's ATCF locations (+ WP descend
 near:X[/radius]               — X checked against country's postal format (uppercase):
                                  match → postal centroid; no match → slug lookup in all eligible taxonomies
 near:me[/radius]              — reference: user location (_atcf_lat/_atcf_lng or IP geo fallback)
--near:...                     — negation; excludes class D posts
+-near:...                     — negation; excludes posts in range
 ```
 
 Default radius: 10, in the ATCF distance unit (`atcf_distance_units`). Country context (for postal format check and centroid lookup) is set by the `near_country` shortcode/block attribute (default `'US'`). When ATCF is inactive, `near:` text is not extracted and falls through to FULLTEXT search unchanged.
@@ -467,15 +494,23 @@ Reference locations are resolved via `ATCF_Locations::get_aggregated()`, which e
 **Posts endpoint extensions:**
 - `htax_rest_add_version_header( WP_REST_Response $result )` - Adds `X-HyperTaxonomy: {version}` header to every REST response; used by peer sites for HyperTaxonomy detection. Conditionally registered in `hooks/filters.php` based on the **HyperTaxonomy Presence Header** Advanced setting (default on)
 - `htax_rest_register_post_extensions()` - Registers `htax_*` collection params, the scoring query filter, and the `htax_score`/`htax_matched_term_slugs` REST fields on the `post` type; hooked on `rest_api_init`
-- `htax_register_tag_suggestions_rest_route()` - Registers `GET /htax/v1/suggested-tags`; requires `edit_posts`; hooked on `rest_api_init`
-- `htax_rest_suggested_tags( WP_REST_Request $request )` - Callback for `/htax/v1/suggested-tags`. Accepts `post_id` (required), `taxonomy` (default `post_tag`, any flat taxonomy supported), and `per_page`. Fetches the post's text from `wp_htax_post_text` (falls back to live post), applies ignore words per-field (word-boundary regex from Settings → Advanced), then counts occurrences of each unassigned term's name in title, excerpt, and body independently. Returns terms in three groups — title matches first, then excerpt-only, then body-only — each group sorted by count descending, sliced to `per_page`. Response mirrors WP REST term format so Gutenberg's tag selector can consume it directly. The Gutenberg panel registers one `PluginDocumentSettingPanel` per enabled flat taxonomy (including custom ones) and positions each panel immediately after its taxonomy section in the sidebar via `domReady` DOM manipulation.
-- `htax_register_term_meta_route()` - Registers `GET /htax/v1/term-meta`; requires `edit_posts`; hooked on `rest_api_init`. Used by the JS autocomplete subscriber to fetch badge metadata for terms added mid-session.
-- `htax_rest_term_meta( WP_REST_Request $request )` - Callback for `GET /htax/v1/term-meta`. Accepts `taxonomy` (required, must exist) and `ids` (required, comma-separated integers, capped at 50). Returns `{ terms: [{id, name, slug, is_redirect, is_hidden, inc_count, cont_count, included_names, container_names, redirect_target_name}] }` — only terms with at least one HT flag are included; terms with nothing to show are omitted.
 - `htax_rest_register_post_htax_params( array $params, string $post_type )` - `rest_post_collection_params` filter: registers `htax_includes`, `htax_match`, `htax_weights` as accepted params on `/wp-json/wp/v2/posts`
 - `htax_rest_apply_htax_post_query( array $args, WP_REST_Request $request )` - `rest_wp_post_query` filter: when `htax_includes` is present, reads primary and included term IDs, queries the search index (`relationship_type='direct'` only), scores posts, restricts the WP_Query via `post__in`, and stores normalized scores in `$_htax_rest_post_scores` for the field callbacks. The standard `?tags=`/`?categories=` params remain in effect and AND with `post__in`.
 - `htax_rest_get_post_score( array $post )` - REST field callback for `htax_score`; returns 0–1 float or null
 - `htax_rest_get_post_matched_slugs( array $post )` - REST field callback for `htax_matched_term_slugs`; returns string[] (remote term slugs derived from matched term IDs) or null
 - `htax_term_peers` field — registered by TermConnect (when active) on post REST responses. Returns peer connection data for all terms on returned posts. See TermConnect documentation.
+- `htax_rest_get_post_term_strengths( $post_arr, $field = '', $request = null )` - REST field callback for `htax_term_strengths`
+
+**Post editor endpoints (includes/core/post-editor-rest.php):**
+- `htax_register_tag_suggestions_rest_route()` - Registers `GET /htax/v1/suggested-tags`; requires `edit_posts`; hooked on `rest_api_init`
+- `htax_rest_suggested_tags( WP_REST_Request $request )` - Callback for `/htax/v1/suggested-tags`. Accepts `post_id` (required), `taxonomy` (default `post_tag`, any flat taxonomy supported), and `per_page`. Fetches the post's text from `wp_htax_post_text` (falls back to live post), applies ignore words per-field (word-boundary regex from Settings → Advanced), then counts occurrences of each unassigned term's name in title, excerpt, and body independently. Returns terms in three groups — title matches first, then excerpt-only, then body-only — each group sorted by count descending, sliced to `per_page`. Response mirrors WP REST term format so Gutenberg's tag selector can consume it directly. The Gutenberg panel registers one `PluginDocumentSettingPanel` per enabled flat taxonomy (including custom ones) and positions each panel immediately after its taxonomy section in the sidebar via `domReady` DOM manipulation.
+- `htax_register_term_meta_route()` - Registers `GET /htax/v1/term-meta`; requires `edit_posts`; hooked on `rest_api_init`. Used by the JS autocomplete subscriber to fetch badge metadata for terms added mid-session.
+- `htax_rest_term_meta( WP_REST_Request $request )` - Callback for `GET /htax/v1/term-meta`. Accepts `taxonomy` (required, must exist) and `ids` (required, comma-separated integers, capped at 50). Returns `{ terms: [{id, name, slug, is_redirect, is_hidden, inc_count, cont_count, included_names, container_names, redirect_target_name}] }` — only terms with at least one HT flag are included; terms with nothing to show are omitted.
+
+**Relationship type endpoints (includes/core/relationship-types-rest.php):**
+- `htax_register_relationship_type_rest_routes(): void` - Registers `GET /htax/v1/relationship-types` and `GET /htax/v1/term/{id}/relationships`
+- `htax_rest_get_relationship_types( WP_REST_Request $request ): WP_REST_Response` - Lists relationship type definitions
+- `htax_rest_get_term_relationships( WP_REST_Request $request )` - Returns a term's effective outbound relationships
 
 **`_fields` awareness.** All HT-added fields are gated by `htax_rest_field_requested( ?WP_REST_Request $request, string $field ): bool`. Returns `false` if: (a) the field is globally disabled by the Relationship Data in REST Responses setting (`htax_includes`, `htax_synonyms`), OR (b) a `_fields` parameter was supplied and does not include this field. Returns `true` when `_fields` is absent. Callers should specify `_fields` to avoid unused computation; TermConnect does this in all outbound requests.
 
@@ -487,6 +522,20 @@ Reference locations are resolved via `ATCF_Locations::get_aggregated()`, which e
 
 **Scoring:** Score = `sum(weight per matched term) / (n_primary_terms × weight_direct)`, clamped to 1.0. Primary term IDs (keys of `htax_includes`) use `weight_direct` (default 1.0); included term IDs (values of `htax_includes`) use `weight_included_direct` (default 0.7). Hidden-term rows excluded via `is_hidden = 0`. AND mode (`htax_match=all`) removes posts missing a match in any primary term group before normalization.
 
+
+### Native Block Extensions (includes/core/native-blocks.php)
+
+- `htax_query_loop_group_filter( $query_vars, $block, $page )` - `query_loop_block_query_vars` filter; restricts a Query Loop block to posts with terms from its selected groups and their subgroups (OR logic)
+- `htax_latest_posts_group_filter( $pre_render, $parsed_block )` - `pre_render_block` filter; applies the same restriction to the Latest Posts block
+
+### Admin Pages
+
+- **Terms menu** (`includes/admin/admin-menu.php`) - `htax_register_admin_menu()` adds the top-level menu, which opens Term Groups; `htax_sort_terms_submenu()` keeps its submenus in order
+- **Term Groups** (`includes/admin/group-admin.php`) - The native term screens for the `group` taxonomy, extended with the fields listed under Group Admin below
+- **Term Relationship Types** (`includes/admin/relationship-types-admin.php`) - `htax_render_term_relationships_page()`
+- **Merge Terms** (`includes/admin/merge-terms.php`) - `htax_render_merge_terms_page()`, a form over `htax_merge_terms()`
+- **Convert Terms** (`includes/admin/convert-terms.php`) - `htax_render_convert_terms_page()`, a form over `htax_convert_terms_batch()`, with `htax_ajax_get_terms_for_conversion()` loading the term checklist
+- **Settings** (`includes/admin/settings.php`) - `HyperTaxonomy_Settings`, with Features, Display, Icons, Search, Cache, Export / Import, and Advanced tabs
 
 ### Admin — Term Edit & Bulk Actions
 
@@ -530,18 +579,18 @@ Prevents concurrent editing of the same term or relationship type by multiple ad
 - `htax_check_rt_edit_lock( string $slug ): WP_User|false` - Same semantics as term variant
 - `htax_heartbeat_refresh_lock( array $response, array $data ): array` - `heartbeat_received` filter; handles both `htax_term_lock_refresh` and `htax_rt_lock_refresh` payloads
 - `htax_enqueue_lock_script( array $config )` - Enqueue `htax-term-edit-lock` script and pass `HTAXLock` config (term_id or rt_slug, nonce, locked-user data, list URL, i18n strings)
-- `htax_render_lock_dialog( WP_User|false $locked_by, string $back_url, string $take_url )` - Output the dialog HTML; both sections always present, visibility controlled by PHP for initial state and JS for displacement
+- `htax_render_lock_dialog( WP_User|false $locked_by, string $back_url, string $take_url, string $kind = 'term' )` - Output the dialog HTML; both sections always present, visibility controlled by PHP for initial state and JS for displacement
 - `htax_term_lock_on_load()` - `load-edit-tags.php` / `load-term.php` handler; skips add screens (no tag_ID); handles take-over redirect; sets up enqueue and footer render closures
 - `htax_rt_lock_on_admin_init()` - `admin_init` handler for relationship type edit page; same flow as term variant
 
 **Bulk Actions (includes/admin/bulk-actions.php)**
 - `htax_add_bulk_actions( array $bulk_actions ): array` - Filter callback on `bulk_actions-edit-{$taxonomy}`; appends `htax_make_visible`, `htax_make_hidden` (when visibility enabled), `htax_remove_icon` (when icons enabled), and `htax_assign_to_groups` (when group assignment enabled) to the term list table's bulk action dropdown
-- `htax_handle_bulk_actions( string $redirect_to, string $action, int[] $term_ids ): string` - Filter callback on `handle_bulk_actions-edit-{$taxonomy}`; processes `htax_make_visible`, `htax_make_hidden`, and `htax_remove_icon` for each selected term ID; `htax_assign_to_groups` is handled entirely via AJAX modal and returns early here; appends `htax_bulk_action` and `htax_processed` query vars to `$redirect_to` when any terms were updated, for admin notice display. For `htax_make_visible`: silently skips any term whose ancestor is still hidden at processing time (a term cannot be made visible while a parent is hidden); because WP processes selected terms in list order, selecting both a parent and its descendant works correctly — parent is made visible first, descendant passes the ancestor check on its own turn.
+- `htax_handle_bulk_actions( string $redirect_to, string $action, int[] $term_ids ): string` - Filter callback on `handle_bulk_actions-edit-{$taxonomy}`; processes `htax_make_visible`, `htax_make_hidden`, and `htax_remove_icon` for each selected term ID; `htax_assign_to_groups` is handled entirely via AJAX modal and returns early here; appends `htax_bulk_action` and `htax_processed` query vars to `$redirect_to` when any terms were updated, for admin notice display (`htax_bulk_action_admin_notice()` shows it). For `htax_make_visible`: silently skips any term whose ancestor is still hidden at processing time (a term cannot be made visible while a parent is hidden); because WP processes selected terms in list order, selecting both a parent and its descendant works correctly — parent is made visible first, descendant passes the ancestor check on its own turn.
 - `htax_ajax_bulk_assign_groups()` — `wp_ajax_htax_bulk_assign_groups` handler; accepts `term_ids[]`, `add_groups[]`, `remove_groups[]`, `taxonomy`, `nonce`; for each term, merges its existing group IDs with `add_groups` then removes `remove_groups` (preserving all unmentioned groups), then calls `htax_set_term_groups()`; returns `{ processed: N, message: string }`. The JS modal uses three-state checkboxes (checked = add to all, unchecked = remove from all, indeterminate = no change); only groups whose state differs from the initial state are sent as `add_groups` or `remove_groups`. Group labels passed to JS are decoded with `html_entity_decode()` before `wp_localize_script` to avoid double-encoding (WordPress's `get_terms()` already HTML-encodes names for display).
 
 ### Admin — Group Admin (includes/admin/group-admin.php)
 
-Group admin hooks to `edited_group` (and `group_edit_form_fields`) to manage four relationship sets visible from the group's edit screen:
+Group admin hooks to `edited_group` (and `group_edit_form_fields`) to manage four relationship sets visible from the group's edit screen. The three member and inclusion saves replace their rows in a transaction and roll back with an error notice if a write fails:
 
 - `htax_add_terms_in_group_field()` / `htax_save_terms_in_group()` — Display/save `member_of` rows (T→G membership). Save path: deletes `htax_grp_{group_id}_*` caches (all taxonomies) via `htax_delete_transients_by_prefix`, calls `htax_reload_term_caches_on_edit` for each changed member term, calls `htax_invalidate_group_relationship_caches`, then fires `htax_term_groups_changed` for search-index listeners.
 - `htax_add_terms_with_container_group_field()` / `htax_save_terms_with_container_group()` — Display/save `includes` rows where this group is the source (G→T). Save path: calls `htax_reload_term_caches_on_edit` for each changed target term, calls `htax_invalidate_group_relationship_caches`, then calls `htax_clear_member_caches_for_groups([group_id], 'inc')` to clear `htax_inc_M` for all members of this group and its ancestor groups (path 3 of `htax_get_included_terms` expands member groups downward, so ancestor-group members also reach these container rows).
@@ -563,6 +612,9 @@ Admin UI for viewing built-in relationship types and managing user-defined types
 - `htax_handle_remove_relationship_type()` - `admin_post_htax_remove_relationship_type` handler; deletes a custom type via `htax_remove_custom_relationship_type()`; redirects back with success/error notice
 - `htax_ajax_count_ineligible_custom_relationships()` - `wp_ajax_htax_count_ineligible_custom_relationships` handler; counts existing relationship rows that would become invalid if taxonomy constraints are narrowed; used by the edit form to warn before saving
 - `htax_render_taxonomy_checkboxes( string $field_name, array $selected, array $taxonomies )` - Render source/target taxonomy checkbox inputs for the add/edit forms
+- `htax_ajax_save_relationship_type_pane()` / `htax_ajax_remove_relationship_type()` - AJAX save and delete of a custom type from the floating pane
+- `htax_ajax_sync_remote_relationship_type()` - AJAX re-sync of a remote type from its source site
+- `htax_handle_make_relationship_type_local()` - Handle the "Make local" form for a remote type
 
 ### Admin — Tables, AJAX, Import/Export
 
@@ -593,7 +645,6 @@ Loaded unconditionally (outside `is_admin()`) so the REST field is available dur
 - `htax_add_hidden_column()` - Add visibility column to term list tables (AJAX-compatible)
 - `htax_display_hidden_column()` - Display visibility icons in term lists; also renders a hidden `<span class="htax-qe-vis-data" data-hidden="0|1" data-parent-hidden="0|1">` per row. `data-hidden` reflects the term's own visibility state; `data-parent-hidden` is 1 when any ancestor is currently hidden (computed by walking the parent chain against `htax_get_all_hidden_term_ids()`, cached with a static variable across rows). Quick Edit JS reads `data-parent-hidden` to disable the visibility checkbox with a tooltip when the user cannot change visibility without first making a parent visible.
 - `htax_quick_edit_fields()` - Renders the HyperTaxonomy fieldset inside the term Quick Edit row (hooked on `quick_edit_custom_box`); anchors to `htax_term_groups` column when group_assignment is enabled, otherwise to `htax_hidden`; renders once per row. Values are populated from per-row data spans by `htax-tables.js` on `inlineEditTax.edit`. Saving reuses `edited_{taxonomy}` hooks (`htax_save_term_data`, `htax_save_term_groups`), which accept WP's Quick Edit nonce (`_inline_edit` / `taxinlineeditnonce`).
-- `htax_ajax_count_hidden_descendants()` — `wp_ajax_htax_count_hidden_descendants` handler; accepts `term_ids[]`, `taxonomy`, `nonce`; for each term ID returns a count of hidden descendants via `get_term_children()` filtered against `htax_get_all_hidden_term_ids()`. Descendants that are themselves present in `term_ids` are excluded from every count — when a parent and child are both selected for bulk "Make Visible", the child does not inflate the cascade-prompt count since it will be made visible on its own. Called before bulk and Quick Edit make-visible saves to decide whether to show the cascade modal.
 - `htax_add_redirect_column()` - Add redirect column to term list tables (AJAX-compatible)
 - `htax_display_redirect_column()` - Display redirect information (count of redirecting terms)
 - `htax_add_term_groups_column()` - Add Term Groups column to term list tables (AJAX-compatible)
@@ -604,6 +655,7 @@ Loaded unconditionally (outside `is_admin()`) so the REST field is available dur
 - `htax_add_sticky_indicators()` - Add sticky indicators to term columns in post list
 
 **Term Filters (includes/admin/term-filters.php)**
+- `htax_filter_terms_by_icon()` / `htax_filter_terms_by_visibility()` / `htax_filter_terms_by_group()` - `get_terms_args` filters for the other admin list filters
 - `htax_filter_terms_by_redirect()` - `get_terms_args` filter; narrows term queries to redirect or non-redirect terms when the admin list filter is active. Filter values: `standard` (Non-Redirects — excludes redirect sources, includes redirect targets), `redirects`, `auto_redirects`, `targets` (Redirect Targets only).
 - `htax_is_term_list_request(): bool` - Returns true when the current request is an admin term list screen or its AJAX counterpart (Quick Edit). Used to gate `get_terms_args` filters that should only apply on list screens, not on dropdowns or autocomplete queries.
 - `htax_merge_term_ids_to_exclude( &$args, $exclude_ids ): void` - Merge `$exclude_ids` into `$args['exclude']`, deduplicating and removing any IDs that also appear in `$args['include']` (WordPress's `get_terms` ignores exclude when the same ID is included).
@@ -618,12 +670,19 @@ Loaded unconditionally (outside `is_admin()`) so the REST field is available dur
 - `htax_ajax_import_tag_groups_batch()` (`wp_ajax_htax_import_tag_groups_batch`) - Chunked import, batch request: assigns one batch of terms. Accepts `group_mapping`, `offset`, `batch_size`, `mode`.
 - `htax_ajax_import_tag_groups_finish()` (`wp_ajax_htax_import_tag_groups_finish`) - Chunked import, final request: clears caches, stores the run snapshot via `htax_store_tag_groups_import_snapshot()`.
 - `htax_ajax_dismiss_tag_groups_notice()` (`wp_ajax_htax_dismiss_tag_groups_notice`) - Permanently dismisses the Tag Groups coexistence notice for the current user (`_htax_dismissed_tag_groups_notice` user meta).
-- `htax_clear_tag_groups_notice_dismissal_on_deactivate( $plugin )` (`deactivated_plugin`) - Clears every user's `_htax_dismissed_tag_groups_notice` meta when a plugin whose basename starts with `tag-groups` is deactivated, so the coexistence notice is shown again (until re-dismissed) if Tag Groups is reactivated later.
+- `htax_clear_tag_groups_notice_dismissal_on_deactivate( $plugin )` (`deactivated_plugin`, defined in `includes/hooks/actions.php`) - Clears every user's `_htax_dismissed_tag_groups_notice` meta when a plugin whose basename starts with `tag-groups` is deactivated, so the coexistence notice is shown again (until re-dismissed) if Tag Groups is reactivated later.
 - `htax_ajax_export()` - Export HyperTaxonomy data to JSON
 - `htax_ajax_preview_import()` - Preview HyperTaxonomy import data
 - `htax_ajax_import()` - Import HyperTaxonomy data from JSON
+- `htax_ajax_count_hidden_descendants()` — `wp_ajax_htax_count_hidden_descendants` handler; accepts `term_ids[]`, `taxonomy`, `nonce`; for each term ID returns a count of hidden descendants via `get_term_children()` filtered against `htax_get_all_hidden_term_ids()`. Descendants that are themselves present in `term_ids` are excluded from every count — when a parent and child are both selected for bulk "Make Visible", the child does not inflate the cascade-prompt count since it will be made visible on its own. Called before bulk and Quick Edit make-visible saves to decide whether to show the cascade modal.
+- `htax_ajax_search_groups()` - Autocomplete search for group terms
+- `htax_ajax_save_tag_groups_sync_settings()` - Save the Tag Groups Sync subtab settings in one request
+- `htax_ajax_clear_strength_model()` - Settings → Search → Clear Scores: remove every score stored for an external strength model
+- `htax_check_ajax_rate_limit( $action, $limit = 60 )` - Rate limit check for AJAX requests
 - `htax_find_after_non_letter()` - Find search after word boundary
 - `htax_highlight_match()` - Highlight search matches
+- `htax_split_description()` - Split description into fragments
+- `htax_truncate_text()` - Truncate text with ellipsis
 
 **Export/Import (includes/admin/)**
 
@@ -649,10 +708,10 @@ Loaded unconditionally (outside `is_admin()`) so the REST field is available dur
 - `htax_orphan_deleted_tag_groups( array $current_tg_group_ids ): array` - Strips the mapping meta (never deletes the HT term) for any previously-mapped group no longer in Tag Groups' current `term_groups` option.
 - `htax_import_tag_groups_hierarchy( array $group_mapping, array $newly_mapped_old_ids ): array` - Seeds Tag Groups Pro's parent-group data (`term_group_positions` + `term_group_parents`) onto the native `parent` field of newly-mapped HT group terms **only** — `$newly_mapped_old_ids` restricts writes to groups mapped for the first time this run; a group already mapped from a prior run is never touched again, deliberately. (HT's native hierarchy supports arbitrary depth; Tag Groups Pro's is capped at two levels — re-applying on every run would silently flatten any deeper structure an admin built in HT back down to that cap.) Single pass, not recursive — Tag Groups' own documentation confirms parent groups are capped at two levels. Provenance-aware even for the one-time seed: skips (and counts as a conflict) rather than overwrites when a newly-matched group's current parent is a non-mapped, HT-native group.
 - `htax_split_term_groups_by_provenance( array $group_ids ): array` - Splits a term's current HT groups into Tag-Groups-mapped vs. HT-only, by presence of the mapping meta.
-- `htax_apply_tag_groups_term_assignment( int $term_id, string $taxonomy, array $tg_mapped_new_ids, string $mode = 'mirror' ): string` - Applies one term's Tag Groups membership report to its HT group assignment (the provenance-filtered merge), returning `'assigned'`, `'skipped'`, or `'error'`. Factored out of the batch loop so it's independently callable — see `tag-groups-live-sync-coexistence.md`.
+- `htax_apply_tag_groups_term_assignment( int $term_id, string $taxonomy, array $tg_mapped_new_ids, string $mode = 'keep' ): string` - Applies one term's Tag Groups membership report to its HT group assignment (the provenance-filtered merge), returning `'assigned'`, `'skipped'`, or `'error'`. Used by both the batch loop and the live-sync handler.
 - `htax_store_tag_groups_import_snapshot(): void` - Stores `{groups, terms, time}` to the `htax_tag_groups_last_import` option after a successful run, for the migration screen's diff display.
 - `htax_import_tag_groups_create_groups(): array` - First pass: resolves/creates/renames group terms, applies hierarchy, detects deletions. Matches ID-first via the site-scoped mapping.
-- `htax_import_tag_groups_process_batch( array $group_mapping, int $offset, int $batch_size, string $mode = 'mirror' ): array` - Batch pass: assigns one batch of terms to their groups. Works on any taxonomy, gated by the per-row `group_assignment` feature check. `$mode` controls the Tag-Groups-mapped subset only (HT-only memberships are always preserved): `'mirror'` (default) makes it identical to Tag Groups' current report for the term, including removals; `'keep'` only ever adds.
+- `htax_import_tag_groups_process_batch( array $group_mapping, int $offset, int $batch_size, string $mode = 'keep' ): array` - Batch pass: assigns one batch of terms to their groups. Works on any taxonomy, gated by the per-row `group_assignment` feature check. `$mode` controls the Tag-Groups-mapped subset only (HT-only memberships are always preserved): `'keep'` (default) only ever adds; `'mirror'` makes it identical to Tag Groups' current report for the term, including removals.
   - Reads from wp_options: term_groups, term_group_labels, term_group_positions, term_group_parents
   - Reads from wp_termmeta: _cm_term_group_array
   - Converts to HyperTaxonomy Term Groups
@@ -664,14 +723,14 @@ Loaded unconditionally (outside `is_admin()`) so the REST field is available dur
 - `htax_tag_groups_import_in_progress( ?bool $set = null ): bool` - Reentrancy flag, set around `htax_import_tag_groups_create_groups()`'s own rename/hierarchy writes so `htax_lock_tag_groups_mapped_name()` can tell the importer's own legitimate write apart from an admin's.
 - `htax_tag_groups_taxonomy_is_managed( string $taxonomy ): bool` - Whether Tag Groups has actually written `_cm_term_group_array` termmeta for a taxonomy, read directly rather than via any Tag Groups setting — the gate for every lock below. Returns `false` unconditionally when integration mode is `'independent'`. Per-request cached.
 - `htax_lock_tag_groups_mapped_name( $data, $term_id, $taxonomy, $args )` - Filters `wp_update_term_data` (WP core, fires in `wp_update_term()` before the DB write, unconditionally for every entry point — full edit screen, native Quick Edit, REST, WP-CLI). For a `group` term carrying `_htax_tag_groups_source_id`, outside an import pass and outside `'independent'` mode, restores `$data['name']` to the term's current name so a rename never sticks through any path except the importer itself.
-- `htax_save_term_groups( int $term_id )` (term-edit.php) - Unchanged signature; now re-merges in the Tag-Groups-mapped subset of the term's existing group IDs over whatever was submitted, for any taxonomy `htax_tag_groups_taxonomy_is_managed()` is true for. Covers the term's own edit screen and Quick Edit's "Term Groups" checklist, which reuses this handler.
-- `htax_save_terms_in_group( int $term_id )` (group-admin.php) - Unchanged signature; for a group carrying `_htax_tag_groups_source_id`, carries forward the current members of any locked taxonomy instead of applying the submission for it (per-taxonomy, since one group can hold members across several at once).
+- `htax_save_term_groups( int $term_id )` (term-edit.php) - Re-merges in the Tag-Groups-mapped subset of the term's existing group IDs over whatever was submitted, for any taxonomy `htax_tag_groups_taxonomy_is_managed()` is true for. Covers the term's own edit screen and Quick Edit's "Term Groups" checklist, which reuses this handler.
+- `htax_save_terms_in_group( int $term_id )` (group-admin.php) - For a group carrying `_htax_tag_groups_source_id`, carries forward the current members of any locked taxonomy instead of applying the submission for it (per-taxonomy, since one group can hold members across several at once).
 - `htax_get_tag_groups_parent_map(): array` - Child Tag Groups group ID → parent group ID, derived from `term_group_positions` and `term_group_parents` (single pass; Tag Groups Pro caps hierarchy at two levels). Used by the hierarchy seed and to look up parent labels for naming.
 - `htax_find_group_terms_by_label( string $label ): WP_Term[]` - HT group terms whose decoded name equals `$label`.
 - `htax_get_tag_groups_display_name( string $label, ?string $parent_label, string $source_key, int $own_term_id = 0 ): string` - Returns `$label` unless another HT group with that name is mapped to a different Tag Groups group. A clash appends the parent label as `Label (Parent)`, falling back to `Label (2)`, `Label (3)`… when there is no parent or the candidate is taken. `$own_term_id` is ignored when checking whether a candidate is taken, so a group keeps its own suffix on later runs.
 - `htax_is_group_label_taken( string $label, int $own_term_id ): bool` - Whether any HT group other than `$own_term_id` has this name.
 - `htax_tag_groups_native_field_promoted(): bool` - Whether Tag Groups' own native per-term field should take the always-visible spot HT's Term Groups selector normally occupies on the term edit/add screens, with HT's own (now read-only) selector demoted into the "More options" collapsible instead. True only when Locked mode is selected and Tag Groups is currently active. Read by `htax_add_edit_form_collapsible_start()` / `htax_add_form_collapsible_start()` (emitted as `data-promote-native-groups` for the JS reorder in htax-term-edit.js / htax-tables.js) and by the `{taxonomy}_*_form_fields` registration in `includes/hooks/actions.php` (controls whether `htax_add_term_groups_field()` is hooked at priority 8, always visible, or priority 16, inside the collapsible between Redirect and Term Relationships).
-- `htax_find_ht_group_by_tag_groups_id( int $tg_group_id ): ?int` - Read-only companion to `htax_resolve_or_create_tag_group()` (which now calls this internally for its own ID-match step) — looks up the HT group mapped to a Tag Groups ID on this site without creating anything. Used by the live-sync membership handler, which only ever sees IDs Tag Groups itself reports as already existing.
+- `htax_find_ht_group_by_tag_groups_id( int $tg_group_id ): ?int` - Read-only companion to `htax_resolve_or_create_tag_group()` (which calls this internally for its own ID-match step) — looks up the HT group mapped to a Tag Groups ID on this site without creating anything. Used by the live-sync membership handler, which only ever sees IDs Tag Groups itself reports as already existing.
 
 **Live sync (tag-groups-live-sync.php, loaded unconditionally in admin alongside import-tag-groups-handler.php; registers nothing unless `htax_tag_groups_live_sync_active()` is true):**
 - `htax_tag_groups_live_sync_enabled(): bool` (import-tag-groups-handler.php) - The `htax_tag_groups_live_sync` option is on and the integration mode is `'locked'`. It is cleared whenever the mode is saved as `'independent'`.
@@ -683,21 +742,22 @@ Loaded unconditionally (outside `is_admin()`) so the REST field is available dur
   - `tag_groups_groups_of_term_saved( array $term_groups, int $term_id )` → `htax_tag_groups_live_sync_on_term_groups_saved()` - maps Tag Groups' IDs to HT IDs via `htax_find_ht_group_by_tag_groups_id()` (skipping any not yet mapped) and calls `htax_apply_tag_groups_term_assignment()`, same as the periodic batch importer does per term.
 
 **UI niceties for the above (no new enforcement — the save-function guards above are what actually prevent the overwrite):**
-- `htax_hierarchical_checklist()` (class-hierarchical-checklist.php) gained `disabled_terms` (int[]) and `disabled_title` (string) args, and the walker's `start_el()` now accepts `$args['disabled']` as either a bool (existing all-items behavior) or an array of specific term IDs to disable — used to gray out locked groups in the term-edit screen's add-group checklist.
-- `htax_render_group_term_section()` (group-admin.php) gained a `$locked_taxonomies` parameter (default `array()`); only `htax_add_terms_in_group_field()` ("Group Members") passes a non-empty value — the other two callers (inclusion-type fields) are never locked.
+- `htax_hierarchical_checklist()` (class-hierarchical-checklist.php) has `disabled_terms` (int[]) and `disabled_title` (string) args, and the walker's `start_el()` accepts `$args['disabled']` as either a bool (existing all-items behavior) or an array of specific term IDs to disable — used to gray out locked groups in the term-edit screen's add-group checklist.
+- `htax_render_group_term_section()` (group-admin.php) has a `$locked_taxonomies` parameter (default `array()`); only `htax_add_terms_in_group_field()` ("Group Members") passes a non-empty value — the other two callers (inclusion-type fields) are never locked.
 - `htax_group_tag_groups_mapping_notice( WP_Term $term ): void` (group-admin.php) - `group_edit_form_fields` notice on a mapped group's own edit screen stating its locked fields and what deleting it does (not blocked, just surfaced).
 - `htax_group_custom_column_content()` (group-admin.php) - the "Taxonomies" list-table column gets a lock-icon prefix for a mapped group, so it's identifiable without opening it.
-- Quick Edit's group checklist (`htax-tables.js`, built from `htaxTablesConfig.groupFilter`) gained `lockedGroupIds`/`lockedTitle`, localized from PHP once per screen (the lock is per-taxonomy, not per-row) — disables the matching checkboxes with the same tooltip.
+- Quick Edit's group checklist (`htax-tables.js`, built from `htaxTablesConfig.groupFilter`) uses `lockedGroupIds`/`lockedTitle`, localized from PHP once per screen (the lock is per-taxonomy, not per-row) — disables the matching checkboxes with the same tooltip.
 
 ### Cache Management (includes/core/cache.php)
 
-**Nuclear (full-reset):**
+**Transient wrappers:**
 - `htax_get_transient( $key )` / `htax_set_transient( $key, $value, $expiration )` / `htax_delete_transient( $key )` - Transient API wrappers used for every HyperTaxonomy transient; resolve the storage key via `htax_transient_key()`
 - `htax_transient_key( string $key ): string` - Under an external object cache, appends `~{global generation}{family generation}` to `htax_*` keys; otherwise returns the key unchanged
 - `htax_transient_family( string $key ): string` - Maps a key to its invalidation family (`rel`, `contrib`, `pl`, `total`, `ac`, `sticky`, `misc`)
 - `htax_cache_generation( string $family, bool $bump = false ): string` - Current (or new) random generation token for a family, stored in the `htax_cache_generation` object-cache group
 - `htax_bump_cache_family( string $family ): void` - Called after every bulk `DELETE … LIKE`: bumps the family generation under an external object cache, otherwise flushes the runtime `options` cache group
 
+**Nuclear (full-reset):**
 - `htax_clear_caches_on_feature_change( $old_value, $new_value )` - `update_option_htax_settings` (priority 10): calls `htax_clear_all_caches()` when `taxonomy_features` changed. Relationship caches are feature-independent (the getters apply `term_relationships` on read), but rendered outputs — post-list results, contributing terms — are computed with the flags applied
 - `htax_clear_all_caches()` - Nuclear option: deletes all `_transient_htax_*` entries. Per-type variants: `htax_clear_relationship_caches()`, `htax_clear_search_caches()` (htax_contrib_*), `htax_clear_autocomplete_caches()` (htax_ac_*), `htax_clear_sticky_caches()` (htax_sticky_*), `htax_clear_shortcode_caches()` (htax_pl_*, htax_total_*)
 
@@ -723,20 +783,63 @@ Loaded unconditionally (outside `is_admin()`) so the REST field is available dur
 - `htax_invalidate_caches_on_group_reparent( int $term_id, int $tt_id, string $taxonomy ): void` - Hooked to `edited_term` at priority 12. Returns early unless taxonomy is `'group'`. Reads old parent from `htax_term_data_{term_id}` transient (captured by `htax_cache_term_taxonomy_before_edit` at priority 5), compares to current parent, and if the parent changed: (1) calls `htax_invalidate_group_relationship_caches([old_parent, new_parent])` to clear `htax_inc_*`, `htax_cont_*`, and `htax_crel_*/htax_crel_rev_*` for terms T that have rows pointing to the old/new parent chains; (2) calls `htax_clear_member_caches_for_groups([old_parent, new_parent], 'inc')` to clear `htax_inc_M` for members of the old and new parent groups (and their ancestors), because path 3 of `htax_get_included_terms` expands member groups downward so ancestor-group members lose or gain G in their expanded set when G moves.
 
 **Frontend / shortcode caches:**
+- `htax_invalidate_all_contrib_caches()` - Delete all contributing-term caches
 - `htax_invalidate_contrib_cache( int $term_id )` - Delete all `htax_contrib_{term_id}_p*` pages; deduped per request via static array
 - `htax_invalidate_post_list_cache( int[] $term_ids )` - Pattern-delete `htax_pl_*` shortcode caches for given term IDs; over 100 terms clears all of them
 - `htax_invalidate_post_list_cache_for_term( int $term_id )` - `htax_term_archive_changed` action: invalidates post lists for that term
+- `htax_post_list_cache_on_object_terms_set()` / `htax_post_list_cache_on_term_relationships_deleted()` / `htax_post_list_cache_on_post_status_change()` - `set_object_terms`, `deleted_term_relationships` and `transition_post_status` actions: invalidate affected post lists
 - `htax_post_list_cache_on_comment_count( int $post_id )` - `wp_update_comment_count` action: invalidates post lists for a published post's index terms
 - `htax_post_list_cache_on_visibility_change( int $term_id )` - `htax_term_visibility_changed` action: invalidates post lists whose index rows involve that term
 - `htax_get_post_index_term_ids( int|int[] $post_ids ): int[]` - Distinct term IDs in the search index for one or more posts
 - `HyperTaxonomy_Transient_Batch` - Holds non-expiring transients set during its lifetime and writes them in one statement; created by term shortcode handlers
 - `htax_expand_term_ids_for_contrib_invalidation( int[] $term_ids, string $taxonomy ): int[]` - Expand a term ID list to include all terms whose contrib caches are affected: adds WP ancestors, group-expanded included terms, and reverse-included terms (terms that include any of the input terms). Called before firing `htax_term_archive_changed` so that the contrib-cache invalidation covers the full upstream fan-out.
 - `htax_tt_ids_to_term_ids( int[] $tt_ids ): int[]` - Convert term-taxonomy IDs to term IDs via a single `SELECT term_id FROM wp_term_taxonomy WHERE term_taxonomy_id IN (…)` query; used in `deleted_term_relationships` hook handlers that receive `$tt_ids` from WordPress.
-- `htax_get_post_index_term_ids( int $post_id ): int[]` - Return all term IDs associated with a post via the denormalized `wp_htax_search_terms` index; used to find which terms' contrib caches need invalidating when a post's term assignments change.
+
+**Tracing:**
+- `htax_trace( string $msg ): void` - Write a timestamped trace line to the debug log when `HTAX_TIMING` is on
 
 **Async cron hooks (registered in includes/hooks/actions.php):**
 - `htax_async_rebuild_term_caches` → `htax_do_rebuild_term_caches( array $queue )` — Scheduled by `htax_rebuild_queued_term_caches()` at shutdown; re-warms `htax_inc_*`, `htax_cont_*`, and `htax_syno_*` for each queued term without blocking the current request.
 - `htax_async_group_propagate` → `htax_invalidate_group_relationship_caches( array $group_ids )` — Scheduled by `htax_update_group_membership_caches()` after a group membership change; propagates cache invalidation to all terms that include or are related to the affected groups, asynchronously.
+
+### Group Taxonomy (includes/core/taxonomies.php)
+
+- `htax_register_group_taxonomy()` - Register the `group` taxonomy
+- `htax_update_group_term_count( $terms, $taxonomy )` - Term count callback for the `group` taxonomy
+
+### Search Index (includes/classes/class-search-index.php)
+
+`HyperTaxonomy_Search_Index_Manager` keeps `wp_htax_search_terms` and `wp_htax_post_text` current. Its `on_*` handlers are listed in the [Hook Reference](hook-reference.html).
+
+- `htax_get_search_index()` / `htax_init_search_index()` - Get the manager instance
+- `HyperTaxonomy_Search_Index_Manager::queue_post_reindex( $post_ids )` - Queue posts for reindexing; `process_reindex_queue()` runs at `shutdown`, and `process_async_reindex_batch()` handles large batches
+- `HyperTaxonomy_Search_Index_Manager::rebuild_indexes(): void` - Full rebuild, run from the `htax_rebuild_indexes` cron event
+- `HyperTaxonomy_Search_Index_Manager::ajax_rebuild_indexes()` / `ajax_bulk_rebuild()` - The admin rebuild: reset the tables, then process batches of 50 posts
+- `HyperTaxonomy_Search_Index_Manager::get_posts_with_term_ids( $term_ids )` / `get_posts_directly_assigned_terms( $term_ids, $taxonomy )` - Find posts by indexed or directly assigned terms
+- `htax_build_post_search_index( $post_id, array $post_text = [] )` - Build a post's index rows
+- `htax_create_search_term_index_table()` - Create the search terms table
+- `htax_calculate_direct_term_strength( int $term_id, array $post_text, array $field_weights ): float` - Calculate the built-in model's raw strength for a post and term
+- `htax_fetch_post_text_batch( array $post_ids ): array` - Fetch plain-text post data from `wp_htax_post_text`
+- `htax_upsert_search_rows( string $table_name, array $placeholders, array $values, string $error_context = '' ): void` - Upsert a batch of index rows, excluding the strength column
+
+### Strength Models (includes/core/strength-models.php)
+
+Lets other plugins supply their own term-to-post strengths alongside the built-in model.
+
+**Public API:**
+- `htax_register_strength_model( string $key, array $args = [] ): bool` / `htax_unregister_strength_model( string $key ): bool` - Register or unregister an external model
+- `htax_get_strength_models(): array` - All registered models, including the built-in one
+- `htax_get_strength_model( string $purpose = 'search' ): string` - The model a search-index read should use; `$purpose` is `'search'` or `'related'`. Falls back to the built-in model when the selected one is unregistered.
+- `htax_set_term_strengths( string $model, int $post_id, array $strengths )` - Store an external model's calibrated 0–1 scores for a post's directly assigned terms, and the rows derived from them. All-or-nothing; returns `true` or `WP_Error`. Fires `htax_term_strengths_updated`.
+- `htax_remove_term_strengths( string $model, int $post_id = 0, array $term_ids = [] )` - Remove an external model's stored scores
+- `htax_get_strength_model_coverage( string $model ): array` - How much of the index a model has scored, per taxonomy
+- `htax_strength_model_has_full_coverage( string $model ): bool` - Whether a model has scored every directly assigned post–term pair
+- `htax_get_stored_strength_models(): array` - External models with scores in the index
+
+**Internal:**
+- `htax_strength_model_sql( string $alias = '', string $purpose = 'search' ): string` - SQL condition restricting index rows to one model; required by any query that reads or aggregates strength
+- `htax_derive_indirect_strength( float $source_strength, string $taxonomy, string $relationship_type ): float` - An indirect row's strength from its source term's direct strength
+- `htax_get_external_direct_strengths( int $post_id ): array` - Direct strengths stored by external models for a post
 
 ### Utilities & Helpers (includes/core/helpers.php)
 
@@ -765,8 +868,8 @@ Shared internal utilities used throughout the plugin. Not part of the public API
 - `htax_log_debug()` - Debug logging (WP_DEBUG + WP_DEBUG_LOG, supports verbose backtrace mode)
 - `htax_log_error()` - Error logging (always logs, supports verbose backtrace mode)
 - `htax_get_filtered_backtrace()` - Generate filtered backtrace string (excludes logging frames)
-- `htax_handle_db_error()` - Check wpdb->last_error; returns `$default` (and logs) on error
-- `htax_throw_on_db_error()` - Check wpdb->last_error after a write inside a transaction; logs and throws `RuntimeException` on error, returns `false` when no error. Callers use `if ( false !== $err = htax_handle_db_error(...) ) { return $err; }` to short-circuit on failure.
+- `htax_handle_db_error()` - Check wpdb->last_error; returns `$default` (and logs) on error, returns `false` when no error. Callers use `if ( false !== $err = htax_handle_db_error(...) ) { return $err; }` to short-circuit on failure.
+- `htax_throw_on_db_error( string $operation ): void` - Check wpdb->last_error after a write inside a transaction; logs and throws `RuntimeException` on error
 
 **Meta Key Helpers:**
 - `htax_get_sticky_assignment_key(int $term_id)` - Get the post meta key for a sticky term assignment (`_htax_sticky_{term_id}`); taxonomy is omitted because WordPress term IDs are globally unique
@@ -812,164 +915,3 @@ Shared internal utilities used throughout the plugin. Not part of the public API
   - Expensive tokens (author meta, excerpt, featured image, thumbnail) are lazy-evaluated via `strpos` / `preg_match` check
   - Output is passed through `wp_kses_post()`
   - Used by `[ht_post_list]`, `[ht_related_posts]`, and `[ht_search_results]` for `prepend`/`append` attributes and the `meta` template attribute
-
-## Hook Organization
-
-### Action Hooks (includes/hooks/actions.php)
-Organized by category:
-1. **Initialization and Setup** (6 hooks — `plugins_loaded` ×3, `admin_init` ×2, `init` ×1)
-2. **Admin Enqueue Scripts** (2 hooks)
-3. **Admin Notices** (1 hook)
-4. **Term Edit Form Fields** (dynamic on `init`; per non-group taxonomy: up to 14 hooks — field handlers at priorities 8–18 × add/edit variants plus collapsible open/close at priorities 9+19; group taxonomy gets only the field handlers that have their own group guards). The External Links field is registered by TermConnect (when active); collapsible hooks are not registered for group at all.
-5. **Term Save Hooks** (3 hooks per enabled taxonomy — `create_{tax}` p5, `edited_{tax}` p20/p30, dynamic on `init`)
-6. **Cache Management** (14 hooks — includes surgical hidden-terms meta hooks and post-list cache invalidation)
-7. **Term Edit Pre-Cache** (1 hook — `edit_term` p5 to cache hierarchy data for search-index parent-change detection)
-7a. **External Conversion Detection** (3 hooks — `created_term` p1, `pre_delete_term` p5, `delete_term` p5)
-8. **Cleanup Hooks** (5 hooks — `edited_term`, `created_term`, `delete_term`, `delete_term_taxonomy`, `delete_post`)
-9. **Query Modification** (7 hooks — 6× `pre_get_posts` + `template_redirect`)
-   - Note: `htax_apply_archive_filter` (`pre_get_posts` priority 11) is registered directly from `class-filter-options.php`, not from hooks/actions.php
-   - Note: `htax_expand_secondary_query` (`pre_get_posts` priority 10) is registered directly from `integration-api.php`; `htax_fire_archive_changed_on_hierarchy` (`edited_term` priority 11) and the `htax_redirect_changed` closure are registered from `actions.php` but their callbacks live in `cache.php`
-10. **Frontend Display** (4 hooks — `wp_head` ×3, `admin_head` ×1)
-11. **AJAX Handlers** (4 hooks)
-12. **Admin UI Enhancements** — hooks in `includes/admin/tables.php` (enqueued via `htax_enqueue_table_assets`)
-13. **Security** (1 hook — `send_headers`)
-14. **Multisite Support** (1 hook — `wp_initialize_site`)
-15. **Custom Relationship Hooks** (4 hooks — `init` ×2 for type registration/loading, `htax_relationship_saved` and `htax_relationship_deleted` for search index requeue)
-
-### Filter Hooks (includes/hooks/filters.php)
-Organized by category:
-1. **Plugin Meta and Links** (2 filters)
-2. **Term Visibility** (3 filters)
-3. **Admin Columns** (dynamic per-taxonomy: redirect, icon, hidden, bulk action filters)
-4. **Query Filtering** (4 admin filters — redirect, icon, visibility, group)
-5. **Archive Display** (1 filter — `get_the_archive_title`)
-6. **Post Styling** (1 filter)
-7. **Meta Box Defaults** (1 filter)
-8. **The_Posts Filter** (1 filter)
-9. **Pagination** (1 filter)
-10. **Admin Term Links** (dynamic per-taxonomy sticky indicators)
-11. **Admin Styling** (1 filter)
-12. **Tag Creation Gate** (1 filter — `pre_insert_term` → `htax_maybe_prevent_tag_creation`; function defined in `core/functions.php`)
-
-### Integration API Hooks (registered directly from integration-api.php)
-- `htax_expanded_term_ids` — filter on expanded term ID list (registered within `htax_get_expanded_term_ids`)
-- `htax_term_post_count` — filter on per-term expansion-aware count (registered from `htax_adjust_term_counts`)
-- `get_terms` filter (`htax_adjust_term_counts`) — active on frontend only when `expand_secondary_queries` is on
-- `rest_api_init` — registers REST filters that enrich term responses with `htax_*` fields, enforce hidden-term visibility, and normalize HTML entity encoding in term name searches (registered from `includes/hooks/filters.php`). The entity normalization filter hooks `get_terms_args` for the lifetime of the REST request: WP stores term names HTML-encoded in `wp_terms.name` (e.g. `H&amp;M`), but REST clients (Gutenberg tag autocomplete) send raw text; without normalization, searching `h&m` never matches `H&amp;M`. The filter applies `html_entity_decode` → `htmlspecialchars` to `args['search']` using the same round-trip as `htax_run_term_autocomplete_search()`.
-- `wp_sitemaps_taxonomies_query_args` — excludes hidden term archives from XML sitemaps (registered from `includes/hooks/filters.php`)
-
-## Hook Execution Order
-
-### Event: `edited_term`
-
-| Priority | Handler | Action |
-|----------|---------|--------|
-| 10 | `htax_reload_term_caches_on_edit` | Reload term caches (`htax_inc_*`, `htax_cont_*`, `htax_excl_*`, `htax_redir_*`, `htax_groups_*`, `htax_direct_rel_*`, `htax_direct_rel_grp_*`, `htax_crel_*`, `htax_crel_rev_*` for all registered slugs) |
-| 15 | `htax_clear_ajax_caches` | Clear autocomplete caches |
-| 20 | `htax_cleanup_hierarchy_conflicts` | Remove conflicting relationships, fire reindex actions |
-
-`edited_{$taxonomy}` also fires (separate WordPress hook):
-- Priority 20: `htax_save_term_data` — save relationships (includes/containers, redirects, custom type tab rows), eager reload caches, fire custom actions
-- Priority 30: `htax_clear_count_cache_on_save` — targeted count cache clear
-
-**Critical timing:** Cache is reloaded INSIDE relationship setters (`htax_save_term_relationships()`, `htax_set_redirect()`, `htax_remove_redirect()`) AFTER the DB update but BEFORE custom actions fire. This ensures index handlers always read the new state from cache, preventing race conditions.
-
-### Event: `edited_term` (hierarchy handler)
-
-In addition to the `edited_term` handlers listed above, a dedicated hierarchy handler runs for all hierarchical taxonomies (except `group`, which has its own handler):
-
-| Priority | Handler | Action |
-|----------|---------|--------|
-| 10 | `on_taxonomy_hierarchy_changed` | Batched DELETE + INSERT of hierarchy entries when parent changes |
-
-Hierarchy change optimization: identifies changed term plus all descendants, deletes old hierarchy entries in one query, inserts all new entries in one batched INSERT (`ON DUPLICATE KEY UPDATE`). Handles grandchildren, great-grandchildren, etc. Skips non-hierarchical taxonomies and the `group` taxonomy (handled by `on_group_hierarchy_changed` via `edited_group`).
-
-### Event: `created_term`
-
-| Priority | Handler | Action |
-|----------|---------|--------|
-| 1 | `htax_track_created_term_for_conversion` | Records the new term in `$GLOBALS['htax_recently_created_terms']` (keyed by lowercase name) for external-conversion detection — runs before all other HyperTaxonomy hooks |
-| 20 | `htax_cleanup_hierarchy_conflicts` | Remove conflicting relationships, fire reindex actions |
-| 21 | `htax_cascade_hidden_on_create` | Inherit hidden status from parent |
-
-### Event: `pre_delete_term`
-
-| Priority | Handler | Action |
-|----------|---------|--------|
-| 5 | `htax_detect_external_conversion_pre_delete` | Checks whether the term being deleted has the same name as a recently created term in a different taxonomy (external-conversion pattern). If matched: captures groups, hierarchy, icon ID, hidden status, and sticky post assignments into `$GLOBALS['htax_pending_external_conversions']` before term meta is wiped by `wp_delete_term()`. Sticky assignments are captured here (not at `delete_term`) because `delete_term_taxonomy` fires before `delete_term` and `htax_cleanup_deleted_term` deletes sticky postmeta via `delete_term_taxonomy` at priority 10. |
-
-### Event: `delete_term`
-
-| Priority | Handler | Action |
-|----------|---------|--------|
-| 5 | `on_term_deleted` (search index) | `DELETE FROM wp_htax_search_terms WHERE source_term_id = %d` |
-| 5 | `htax_complete_external_conversion_after_delete` | If `$GLOBALS['htax_pending_external_conversions']` has an entry for this term (and `htax_native_conversion_in_progress` is not set): transfers hidden status, icon (if dimensions match), and sticky posts to the new term; queues reindex; fires `htax_term_converted`. Group memberships are not transferred — no stub means no taxonomy-correct recipient. No redirect stub is created. Sticky assignments were captured at `pre_delete_term` time (before `delete_term_taxonomy` cleans them up) and are replayed here directly. |
-| 10 | `htax_invalidate_term_caches_on_delete` | Invalidate term caches |
-| 10 | `htax_cleanup_deleted_term` | Delete from `wp_htax_term_relationships` (all relationship types) + term meta + `_htax_sticky_{term_id}` post meta |
-| 15 | `htax_clear_ajax_caches` | Clear autocomplete caches |
-
-The two priority-10 handlers are independent (different tables) and have no ordering dependency.
-
-### Event: `set_object_terms`
-
-| Priority | Handler | Action |
-|----------|---------|--------|
-| 10 | `on_term_relationships_added` | Delta-based incremental index update — diffs the indexed source terms against the post's actual terms read from the database (the hook's `$terms` holds only the appended terms on `wp_add_object_terms()`; `deleted_term_relationships` → `on_term_relationships_removed()` reuses the same path); targeted count cache clear |
-
-**Incremental update:** Queries current source terms from index (1 query), calculates delta, deletes removed term relationships by `source_term_id` (1 query), inserts new ones (~4–9 queries per new term). Approximately 5× faster than full rebuild for typical 1–3 term changes. The inserted rows carry the column-default strength, so when terms were added the post is also queued (`queue_post_reindex()`) for a background reindex that computes their strengths.
-
-### Event: `delete_post` / `trash_post`
-
-| Priority | Handler | Action |
-|----------|---------|--------|
-| 10 | `htax_cleanup_sticky_on_delete` | Delete sticky post meta (`delete_post` only) |
-| 10 | `on_post_delete` (search index) | Delete from the search index and `wp_htax_post_text` (both hooks) |
-
-### Event: `save_post`
-
-| Priority | Handler | Action |
-|----------|---------|--------|
-| 10 | `htax_sync_post_text_row` | Upsert row in `wp_htax_post_text` for published, draft, pending, future, and private posts using `htax_extract_post_body()`; delete row for trash and auto-draft. Skips revisions and autosaves. Draft rows enable content-based tag suggestions in the editor. Force-deleted posts that bypass trash may leave an orphan row until the next full rebuild. |
-| 20 | `on_post_saved` (search index) | Queue a published, indexed-type post for reindex so its stored strengths reflect the post text just refreshed at priority 10. Skips revisions and autosaves. |
-
-### Event: `wp_update_comment_count`
-
-| Priority | Handler | Action |
-|----------|---------|--------|
-| 10 | `htax_sync_post_text_comment` | Update `comment_count` and `last_comment_gmt` in `wp_htax_post_text`. No-ops if the post row does not exist in the table. |
-
-### Event: `transition_post_status`
-
-| Priority | Handler | Action |
-|----------|---------|--------|
-| 10 | `on_post_status_change` | Remove from index if unpublished; queue reindex if newly published |
-
-Skips if both old and new status are the same publish-state. When a scheduled post auto-publishes via cron, the transition fires and triggers a fresh index build.
-
-### Custom Actions (Relationship Changes)
-
-Fired by `htax_save_term_relationships()` and `htax_set_redirect()` / `htax_remove_redirect()` when relationships change:
-
-| Action | Parameters | Index Strategy |
-|--------|-----------|----------------|
-| `htax_includes_changed` | `$term_id, $taxonomy, $new_included, $old_included` | Direct SQL: update container rows in posts with newly/no-longer-included terms |
-| `htax_containers_changed` | `$term_id, $taxonomy, $new_containers, $old_containers` | Direct SQL delta: DELETE removed + INSERT added container rows |
-| `htax_excludes_changed` | `$term_id, $taxonomy, $new_excluded, $old_excluded` | Queue reindex of posts with included group members (exclusion logic too complex for SQL) |
-| `htax_included_groups_changed` | `$term_id, $taxonomy, $new_groups, $old_groups` | Queue reindex of posts with members of affected groups |
-| `htax_custom_inclusions_changed` | `$term_id, $taxonomy, $affected_term_ids` | `on_custom_inclusions_changed()`: queue reindex of posts with the affected (included-side) terms |
-| `htax_container_groups_changed` | `$term_id, $taxonomy, $new_groups, $old_groups` | Direct SQL delta via unified container handler (groups expanded by cache) |
-| `htax_redirect_changed` | `$term_id, $taxonomy, $new_target_id, $new_taxonomy, $old_target` | DELETE old redirect_target rows + INSERT new ones; on first redirect also DELETE `container` entries for the term and, for hierarchical taxonomies, DELETE `hierarchy` entries where term is ancestor or where descendants point to ancestors-via-this-term. `$old_target` is `null` on first redirect, WP_Term on target change. `htax_term_archive_changed` fires only when `$old_target` is null — changing an existing redirect's target has no archive effect |
-| `htax_redirect_removed` | `$term_id, $taxonomy, $old_target_id, $old_taxonomy` | DELETE redirect_target rows for this source term; restore `container` entries from preserved inclusions; for hierarchical taxonomies, restore `hierarchy` entries via `on_hierarchy_parent_restored()` |
-| `htax_term_groups_changed` | `$term_id, $taxonomy, $new_groups, $old_groups` | Queue reindex of posts with the term + containers + terms with this group included |
-| `htax_term_visibility_changed` | `$term_id, $taxonomy` | Direct SQL UPDATE of `is_hidden` flag for all rows where changed term appears as `source_term_id` or `term_id`; no reindex needed |
-| `htax_relationship_saved` | `$source_term_id, $target_term_id, $type_slug` | Fired by `htax_add_term_relationship()` after a relationship row is inserted; queues reindex for both source and target terms |
-| `htax_relationship_deleted` | `$source_term_id, $target_term_id, $type_slug` | Fired by `htax_remove_term_relationship()` after a relationship row is deleted; queues reindex for both source and target terms |
-
-**Dual handler architecture:** Each action has two handlers at priority 10 — one for index updates, one for cache invalidation. Both process old and new relationship values for complete coverage.
-
-**Type registration action:** `htax_relationship_types` fires at the end of `htax_register_builtin_relationship_types()` (init priority 0), after all four built-in types are registered. Plugin code that calls `htax_register_relationship_type()` in PHP should hook here rather than using `init` directly, to guarantee built-in types are already registered when the hook fires.
-
-In addition to the per-operation actions above, `htax_term_archive_changed( $term_id, $taxonomy )` is the unified signal for any change to a term's archive composition. It fires for: every relationship save/delete; a term's first redirect (not target changes); redirect removal; term parent changes (via `htax_fire_archive_changed_on_hierarchy` in `cache.php`, at `edited_term` priority 11, firing for old/new parent ancestor chains); post-term assignment changes (fires for directly-assigned terms and their containers/ancestors via `htax_expand_term_ids_for_contrib_invalidation`); post publish/unpublish; and sticky post changes. Internally, HyperTaxonomy hooks it at priority 10 to invalidate the `htax_contrib_` paginated archive cache (`htax_invalidate_contrib_cache`). The named callback `htax_fire_term_archive_changed` (also in `cache.php`) is used by `add_action` registrations in `actions.php` to bridge fine-grained relationship actions to this signal. External integrations can hook it to invalidate their own derived data without subscribing to each fine-grained action.
-
----
-

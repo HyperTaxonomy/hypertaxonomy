@@ -1,7 +1,7 @@
 ---
 title: Sort & Filter Rendering (DOM Structures)
 parent: Architecture
-nav_order: 6
+nav_order: 7
 ---
 
 # Sort & Filter Controls — Rendering, DOM Structures & Events

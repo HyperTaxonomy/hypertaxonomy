@@ -1,7 +1,7 @@
 ---
 title: Search Internals
 parent: Architecture
-nav_order: 5
+nav_order: 6
 ---
 
 ## Search Query Architecture

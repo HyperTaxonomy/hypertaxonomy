@@ -1,7 +1,7 @@
 ---
 title: Feature Implementation
 parent: Architecture
-nav_order: 4
+nav_order: 5
 ---
 
 ## Feature Implementation Notes
@@ -261,7 +261,7 @@ An icon-shaped color placeholder (color assigned deterministically from term slu
 
 During taxonomy conversion (a term moving from one taxonomy to another), icons are preserved when the source and destination taxonomies share the same configured icon dimensions; otherwise the icon is detached and must be re-uploaded.
 
-When icons are enabled for a taxonomy, icon URLs and dimensions are exposed in the WordPress REST API as the `htax_icon` field on the term object. The field is absent when no icon is set. See [REST API](function-hook-reference.html#rest-api-includescorerest-apiphp) for the full field structure.
+When icons are enabled for a taxonomy, icon URLs and dimensions are exposed in the WordPress REST API as the `htax_icon` field on the term object. The field is absent when no icon is set. See [REST API](function-reference.html#rest-api-includescorerest-apiphp) for the full field structure.
 
 ---
 

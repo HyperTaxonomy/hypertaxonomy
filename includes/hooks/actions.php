@@ -413,7 +413,7 @@ add_action( 'wp_head', 'htax_icon_border_radius_styles', 100 );
 add_action( 'admin_head', 'htax_icon_border_radius_styles', 100 );
 
 // Debug info
-add_action( 'wp_head', 'htax_debug_info' );
+add_action( 'wp_footer', 'htax_debug_info' );
 
 // ==============================================================================
 // AJAX HANDLERS

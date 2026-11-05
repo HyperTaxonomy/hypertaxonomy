@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Based on WordPress core's Walker_Category_Checklist
  */
 class HyperTaxonomy_Walker_Checklist extends Walker {
-    public $tree_type = 'term';  // Changed from 'category' to 'term'
+    public $tree_type = 'term';
     public $db_fields = array(
         'parent' => 'parent',
         'id'     => 'term_id',

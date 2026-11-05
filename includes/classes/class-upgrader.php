@@ -1,7 +1,15 @@
 <?php
 /**
  * Handle database upgrades between versions
+ *
+ * @package HyperTaxonomy
+ * @since 1.0.0
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
+
 class HyperTaxonomy_Upgrader {
     
     /**

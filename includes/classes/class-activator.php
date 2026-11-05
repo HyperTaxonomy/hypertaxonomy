@@ -1,6 +1,9 @@
 <?php
 /**
  * Plugin activation handler
+ *
+ * @package HyperTaxonomy
+ * @since 1.0.0
  */
 class HyperTaxonomy_Activator {
     

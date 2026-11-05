@@ -156,6 +156,9 @@ function htax_merge_terms( array $source_ids, int $target_id, string $taxonomy, 
 
     $wpdb->query( 'START TRANSACTION' );
 
+    // Each new query clears last_error, so record the first failure after every write.
+    $db_error = '';
+
     $all_post_ids    = array();
     $posts_reassigned = 0;
 
@@ -194,6 +197,7 @@ function htax_merge_terms( array $source_ids, int $target_id, string $taxonomy, 
                     AND object_id IN ($move_placeholders)",
                     array_merge( array( $target_tt_id, $source_tt_id ), $to_move )
                 ) );
+                $db_error = $db_error ?: $wpdb->last_error;
                 $posts_reassigned += count( $to_move );
             }
 
@@ -203,6 +207,7 @@ function htax_merge_terms( array $source_ids, int $target_id, string $taxonomy, 
                 array( 'term_taxonomy_id' => $source_tt_id ),
                 array( '%d' )
             );
+            $db_error = $db_error ?: $wpdb->last_error;
         }
 
         // Keep WP post counts accurate.
@@ -228,6 +233,7 @@ function htax_merge_terms( array $source_ids, int $target_id, string $taxonomy, 
             $taxonomy,
             $source_id
         ) );
+        $db_error = $db_error ?: $wpdb->last_error;
 
         // 4b. includes/excludes where source is the subject:
         //     "source includes/excludes X" → "target includes/excludes X"
@@ -245,6 +251,7 @@ function htax_merge_terms( array $source_ids, int $target_id, string $taxonomy, 
             $source_id,
             $target_id
         ) );
+        $db_error = $db_error ?: $wpdb->last_error;
 
         // 4c. includes/excludes where source is the object:
         //     "X includes/excludes source" → "X includes/excludes target"
@@ -262,13 +269,15 @@ function htax_merge_terms( array $source_ids, int $target_id, string $taxonomy, 
             $source_id,
             $target_id
         ) );
+        $db_error = $db_error ?: $wpdb->last_error;
 
         // redirect rows are intentionally not transferred; the delete hooks
         // for the source term will clean them up automatically in the next step.
     }
 
-    if ( $wpdb->last_error ) {
+    if ( $db_error ) {
         $wpdb->query( 'ROLLBACK' );
+        htax_log_error( 'Term merge failed; changes rolled back', array( 'error' => $db_error, 'target_id' => $target_id ) );
         return new WP_Error( 'htax_merge_db_error', __( 'Database error during term merge; all changes rolled back.', 'hypertaxonomy' ) );
     }
 

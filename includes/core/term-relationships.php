@@ -1058,7 +1058,7 @@ function htax_remove_redirect( $term_id ) {
     global $wpdb;
     $table_name = $wpdb->prefix . 'htax_term_relationships';
 
-    $wpdb->delete(
+    $result = $wpdb->delete(
         $table_name,
         array(
             'source_term_id' => $term_id,
@@ -1066,6 +1066,14 @@ function htax_remove_redirect( $term_id ) {
         ),
         array( '%d', '%s' )
     );
+
+    if ( false === $result ) {
+        htax_log_error( 'Failed to remove redirect', array(
+            'term_id' => $term_id,
+            'error'   => $wpdb->last_error,
+        ) );
+        return false;
+    }
 
     // Clear auto-redirect metadata (used by term conversion feature)
     delete_term_meta( $term_id, '_htax_auto_redirect' );
@@ -1185,7 +1193,9 @@ function htax_set_redirect( $term, $target ) {
 
         // Remove the conflicting redirect from the target term
         // This makes target_id a normal term, breaking the circular chain
-        htax_remove_redirect( $target_id );
+        if ( ! htax_remove_redirect( $target_id ) ) {
+            return false;
+        }
 
         // After removing the redirect, target_id is now a normal term
         // Set ultimate_target to target_id (no more chain to follow)
@@ -1224,27 +1234,37 @@ function htax_set_redirect( $term, $target ) {
     global $wpdb;
     $table_name = $wpdb->prefix . 'htax_term_relationships';
 
-    // Delete old redirect
-    $wpdb->delete(
-        $table_name,
-        array(
-            'source_term_id' => $term_id,
-            'relationship_type' => 'redirect',
-        ),
-        array( '%d', '%s' )
-    );
+    // Replace the old redirect in a transaction, so a failed insert keeps the old one.
+    try {
+        $wpdb->query( 'START TRANSACTION' );
 
-    // Insert new redirect
-    $wpdb->query( $wpdb->prepare(
-        "INSERT IGNORE INTO {$table_name}
-        (source_term_id, target_term_id, relationship_type, source_taxonomy, target_taxonomy)
-        VALUES (%d, %d, %s, %s, %s)",
-        $term_id,
-        $target_id,
-        'redirect',
-        $term_obj->taxonomy,
-        $target_term->taxonomy
-    ) );
+        $wpdb->delete(
+            $table_name,
+            array(
+                'source_term_id' => $term_id,
+                'relationship_type' => 'redirect',
+            ),
+            array( '%d', '%s' )
+        );
+        htax_throw_on_db_error( 'delete old redirect' );
+
+        $wpdb->query( $wpdb->prepare(
+            "INSERT IGNORE INTO {$table_name}
+            (source_term_id, target_term_id, relationship_type, source_taxonomy, target_taxonomy)
+            VALUES (%d, %d, %s, %s, %s)",
+            $term_id,
+            $target_id,
+            'redirect',
+            $term_obj->taxonomy,
+            $target_term->taxonomy
+        ) );
+        htax_throw_on_db_error( 'insert new redirect' );
+
+        $wpdb->query( 'COMMIT' );
+    } catch ( Exception $e ) {
+        $wpdb->query( 'ROLLBACK' );
+        return false;
+    }
 
     // CASCADE: Update any terms that were redirecting TO this term
     // If X → A and we just set A → B, update X to redirect to B instead
@@ -1275,13 +1295,19 @@ function htax_set_redirect( $term, $target ) {
                 // 2. Handle circular detection
                 // 3. Update the database
                 // 4. Fire appropriate actions
-                htax_set_redirect( $source_term, $target_term );
-
-                htax_log_debug( 'Cascaded redirect update', array(
-                    'source_id' => $source_id,
-                    'old_target_id' => $term_id,
-                    'new_target_id' => $target_id
-                ) );
+                if ( htax_set_redirect( $source_term, $target_term ) ) {
+                    htax_log_debug( 'Cascaded redirect update', array(
+                        'source_id' => $source_id,
+                        'old_target_id' => $term_id,
+                        'new_target_id' => $target_id
+                    ) );
+                } else {
+                    htax_log_error( 'Failed to cascade redirect update', array(
+                        'source_id' => $source_id,
+                        'old_target_id' => $term_id,
+                        'new_target_id' => $target_id
+                    ) );
+                }
             }
         }
     }
@@ -1485,186 +1511,167 @@ function htax_save_redirect( $term_id, $tt_id = 0 ) {
         return;
     }
 
-    // Database operations are atomic - no locking needed
-    try {
-        // Get redirect settings from POST
-        $is_redirect =isset( $_POST['htax_is_redirect'] ) && '1' === wp_unslash( $_POST['htax_is_redirect'] );
-        $redirect_to = isset( $_POST['htax_redirect_to'] ) ? intval( wp_unslash( $_POST['htax_redirect_to'] ) ) : 0;
-        $redirect_taxonomy = isset( $_POST['htax_redirect_taxonomy'] ) ? sanitize_text_field( wp_unslash( $_POST['htax_redirect_taxonomy'] ) ) : $taxonomy;
+    // Get redirect settings from POST
+    $is_redirect =isset( $_POST['htax_is_redirect'] ) && '1' === wp_unslash( $_POST['htax_is_redirect'] );
+    $redirect_to = isset( $_POST['htax_redirect_to'] ) ? intval( wp_unslash( $_POST['htax_redirect_to'] ) ) : 0;
+    $redirect_taxonomy = isset( $_POST['htax_redirect_taxonomy'] ) ? sanitize_text_field( wp_unslash( $_POST['htax_redirect_taxonomy'] ) ) : $taxonomy;
 
-        // Get old redirect value from database
-        $old_redirect_term = htax_get_redirect_target( $term_id );
-        $old_redirect_to = $old_redirect_term ? $old_redirect_term->term_id : false;
-        $old_is_redirect = ! empty( $old_redirect_to );
+    // Get old redirect value from database
+    $old_redirect_term = htax_get_redirect_target( $term_id );
+    $old_redirect_to = $old_redirect_term ? $old_redirect_term->term_id : false;
+    $old_is_redirect = ! empty( $old_redirect_to );
 
-        // Early return when nothing has changed — avoids DB writes, cache busts, and action fires.
-        if ( ! $is_redirect && ! $old_is_redirect ) {
-            return;
-        }
-        if ( $is_redirect && $redirect_to > 0 && (int) $redirect_to === (int) $old_redirect_to ) {
-            return;
-        }
+    // Early return when nothing has changed — avoids DB writes, cache busts, and action fires.
+    if ( ! $is_redirect && ! $old_is_redirect ) {
+        return;
+    }
+    if ( $is_redirect && $redirect_to > 0 && (int) $redirect_to === (int) $old_redirect_to ) {
+        return;
+    }
 
-        htax_log_debug( 'Saving redirect', array(
-            'term_id' => $term_id,
-            'taxonomy' => $taxonomy,
-            'is_redirect' => $is_redirect,
-            'redirect_to' => $redirect_to,
-            'old_redirect_to' => $old_redirect_to
-        ) );
+    htax_log_debug( 'Saving redirect', array(
+        'term_id' => $term_id,
+        'taxonomy' => $taxonomy,
+        'is_redirect' => $is_redirect,
+        'redirect_to' => $redirect_to,
+        'old_redirect_to' => $old_redirect_to
+    ) );
 
-        // Handle redirect logic
-        if ( $is_redirect ) {
-            // Basic validation: not empty, not self-redirect
-            if ( ! $redirect_to || $redirect_to === $term_id ) {
-                htax_log_debug( 'Invalid redirect: empty or self-redirect', array(
+    // Handle redirect logic
+    if ( $is_redirect ) {
+        // Basic validation: not empty, not self-redirect
+        if ( ! $redirect_to || $redirect_to === $term_id ) {
+            htax_log_debug( 'Invalid redirect: empty or self-redirect', array(
+                'term_id' => $term_id,
+                'redirect_to' => $redirect_to
+            ) );
+
+            htax_add_admin_notice( __( 'Invalid redirect: cannot redirect to self or empty target.', 'hypertaxonomy' ), 'warning' );
+        } else {
+            // Verify target exists in the selected taxonomy
+            $target = htax_get_valid_term( $redirect_to );
+            if ( ! $target ) {
+                htax_add_admin_notice( __( 'Invalid redirect target.', 'hypertaxonomy' ), 'error' );
+
+                htax_log_error( 'Invalid redirect target', array(
                     'term_id' => $term_id,
                     'redirect_to' => $redirect_to
                 ) );
-
-                htax_add_admin_notice( __( 'Invalid redirect: cannot redirect to self or empty target.', 'hypertaxonomy' ), 'warning' );
             } else {
-                // Verify target exists in the selected taxonomy
-                $target = htax_get_valid_term( $redirect_to );
-                if ( ! $target ) {
-                    htax_add_admin_notice( __( 'Invalid redirect target.', 'hypertaxonomy' ), 'error' );
+                // Pre-call analysis — detect side-effects to explain in admin notices.
 
-                    htax_log_error( 'Invalid redirect target', array(
+                // 1. Will the target's chain lead back to us? (circular)
+                $will_be_circular = false;
+                $check            = $target->term_id;
+                $visited          = array( $term_id, $check );
+                while ( htax_is_redirect( $check ) ) {
+                    $next = htax_get_redirect_target( $check );
+                    if ( ! $next ) { break; }
+                    if ( (int) $next->term_id === $term_id ) { $will_be_circular = true; break; }
+                    if ( in_array( (int) $next->term_id, $visited, true ) ) { break; }
+                    $visited[] = (int) $next->term_id;
+                    $check     = $next->term_id;
+                }
+
+                // 2. Is the target itself a redirect (chain follow)?
+                $target_is_chain = htax_is_redirect( $target->term_id ) && ! $will_be_circular;
+
+                // 3. Terms currently redirecting to us (will be re-collapsed).
+                $incoming_cascades = htax_get_ids_of_redirects_to( $term_id );
+
+                // Valid redirect - save it atomically
+                // htax_set_redirect auto-resolves redirect chains to ultimate target
+                // Pass WP_Term objects to avoid redundant get_term() calls
+                $result = htax_set_redirect( $term, $target );
+
+                if ( $result ) {
+                    htax_log_debug( 'Redirect saved successfully', array(
                         'term_id' => $term_id,
-                        'redirect_to' => $redirect_to
+                        'redirect_to' => $redirect_to,
+                        'was_new_redirect' => ( ! $old_is_redirect )
                     ) );
-                } else {
-                    // Pre-call analysis — detect side-effects to explain in admin notices.
 
-                    // 1. Will the target's chain lead back to us? (circular)
-                    $will_be_circular = false;
-                    $check            = $target->term_id;
-                    $visited          = array( $term_id, $check );
-                    while ( htax_is_redirect( $check ) ) {
-                        $next = htax_get_redirect_target( $check );
-                        if ( ! $next ) { break; }
-                        if ( (int) $next->term_id === $term_id ) { $will_be_circular = true; break; }
-                        if ( in_array( (int) $next->term_id, $visited, true ) ) { break; }
-                        $visited[] = (int) $next->term_id;
-                        $check     = $next->term_id;
+                    htax_add_admin_notice( __( 'Redirect saved.', 'hypertaxonomy' ), 'success' );
+
+                    // Circular resolution notice.
+                    if ( $will_be_circular ) {
+                        htax_add_admin_notice(
+                            sprintf(
+                                /* translators: %s: term name */
+                                __( 'Circular redirect resolved: "%s" was previously redirecting here, so its redirect has been removed.', 'hypertaxonomy' ),
+                                esc_html( $target->name )
+                            ),
+                            'info'
+                        );
                     }
 
-                    // 2. Is the target itself a redirect (chain follow)?
-                    $target_is_chain = htax_is_redirect( $target->term_id ) && ! $will_be_circular;
-
-                    // 3. Terms currently redirecting to us (will be re-collapsed).
-                    $incoming_cascades = htax_get_ids_of_redirects_to( $term_id );
-
-                    // Valid redirect - save it atomically
-                    // htax_set_redirect auto-resolves redirect chains to ultimate target
-                    // Pass WP_Term objects to avoid redundant get_term() calls
-                    $result = htax_set_redirect( $term, $target );
-
-                    if ( $result ) {
-                        htax_log_debug( 'Redirect saved successfully', array(
-                            'term_id' => $term_id,
-                            'redirect_to' => $redirect_to,
-                            'was_new_redirect' => ( ! $old_is_redirect )
-                        ) );
-
-                        htax_add_admin_notice( __( 'Redirect saved.', 'hypertaxonomy' ), 'success' );
-
-                        // Circular resolution notice.
-                        if ( $will_be_circular ) {
+                    // Chain-follow notice: user picked a redirect target; we jumped to its final destination.
+                    if ( $target_is_chain ) {
+                        $actual = htax_get_redirect_target( $term_id );
+                        if ( $actual && (int) $actual->term_id !== (int) $target->term_id ) {
                             htax_add_admin_notice(
                                 sprintf(
-                                    /* translators: %s: term name */
-                                    __( 'Circular redirect resolved: "%s" was previously redirecting here, so its redirect has been removed.', 'hypertaxonomy' ),
-                                    esc_html( $target->name )
+                                    /* translators: 1: chosen target name, 2: ultimate target name */
+                                    __( '"%1$s" is itself a redirect, so this term now redirects directly to "%2$s".', 'hypertaxonomy' ),
+                                    esc_html( $target->name ),
+                                    esc_html( $actual->name )
                                 ),
                                 'info'
                             );
                         }
+                    }
 
-                        // Chain-follow notice: user picked a redirect target; we jumped to its final destination.
-                        if ( $target_is_chain ) {
-                            $actual = htax_get_redirect_target( $term_id );
-                            if ( $actual && (int) $actual->term_id !== (int) $target->term_id ) {
-                                htax_add_admin_notice(
-                                    sprintf(
-                                        /* translators: 1: chosen target name, 2: ultimate target name */
-                                        __( '"%1$s" is itself a redirect, so this term now redirects directly to "%2$s".', 'hypertaxonomy' ),
-                                        esc_html( $target->name ),
-                                        esc_html( $actual->name )
-                                    ),
-                                    'info'
-                                );
-                            }
+                    // Cascade notice: other terms re-pointed.
+                    // Exclude the circular term — its redirect was removed, not cascaded.
+                    if ( $will_be_circular ) {
+                        $incoming_cascades = array_filter(
+                            $incoming_cascades,
+                            fn( $id ) => (int) $id !== (int) $target->term_id
+                        );
+                    }
+                    if ( ! empty( $incoming_cascades ) ) {
+                        $cascade_names = array();
+                        foreach ( $incoming_cascades as $src_id ) {
+                            $src = htax_get_valid_term( $src_id );
+                            if ( $src ) { $cascade_names[] = $src->name; }
                         }
-
-                        // Cascade notice: other terms re-pointed.
-                        // Exclude the circular term — its redirect was removed, not cascaded.
-                        if ( $will_be_circular ) {
-                            $incoming_cascades = array_filter(
-                                $incoming_cascades,
-                                fn( $id ) => (int) $id !== (int) $target->term_id
+                        if ( ! empty( $cascade_names ) ) {
+                            $actual_target = htax_get_redirect_target( $term_id );
+                            $dest_name     = $actual_target ? $actual_target->name : $target->name;
+                            htax_add_admin_notice(
+                                sprintf(
+                                    /* translators: 1: comma-separated term names, 2: destination term name */
+                                    _n(
+                                        '1 other redirect updated: "%1$s" now redirects directly to "%2$s".',
+                                        '%3$d other redirects updated: "%1$s" now redirect directly to "%2$s".',
+                                        count( $cascade_names ),
+                                        'hypertaxonomy'
+                                    ),
+                                    esc_html( implode( '", "', $cascade_names ) ),
+                                    esc_html( $dest_name ),
+                                    count( $cascade_names )
+                                ),
+                                'info'
                             );
                         }
-                        if ( ! empty( $incoming_cascades ) ) {
-                            $cascade_names = array();
-                            foreach ( $incoming_cascades as $src_id ) {
-                                $src = htax_get_valid_term( $src_id );
-                                if ( $src ) { $cascade_names[] = $src->name; }
-                            }
-                            if ( ! empty( $cascade_names ) ) {
-                                $actual_target = htax_get_redirect_target( $term_id );
-                                $dest_name     = $actual_target ? $actual_target->name : $target->name;
-                                htax_add_admin_notice(
-                                    sprintf(
-                                        /* translators: 1: comma-separated term names, 2: destination term name */
-                                        _n(
-                                            '1 other redirect updated: "%1$s" now redirects directly to "%2$s".',
-                                            '%3$d other redirects updated: "%1$s" now redirect directly to "%2$s".',
-                                            count( $cascade_names ),
-                                            'hypertaxonomy'
-                                        ),
-                                        esc_html( implode( '", "', $cascade_names ) ),
-                                        esc_html( $dest_name ),
-                                        count( $cascade_names )
-                                    ),
-                                    'info'
-                                );
-                            }
-                        }
-                    } else {
-                        htax_add_admin_notice( __( 'Failed to save redirect. Check for circular redirects.', 'hypertaxonomy' ), 'error' );
                     }
+                } else {
+                    htax_add_admin_notice( __( 'Failed to save redirect. Check for circular redirects.', 'hypertaxonomy' ), 'error' );
                 }
             }
-        } else {
-            // Not a redirect - remove redirect relationship
-            if ( $old_is_redirect ) {
-                htax_remove_redirect( $term_id );
-
-                htax_log_debug( 'Redirect removed', array( 'term_id' => $term_id ) );
-
-                htax_add_admin_notice( __( 'Redirect removed successfully.', 'hypertaxonomy' ), 'success' );
-            }
         }
+    } else {
+        // Not a redirect - remove redirect relationship
+        if ( $old_is_redirect ) {
+            if ( ! htax_remove_redirect( $term_id ) ) {
+                htax_add_admin_notice( __( 'Database error saving relationship.', 'hypertaxonomy' ), 'error' );
+                return;
+            }
 
-    } catch ( Exception $e ) {
-        htax_log_error( 'Database error during redirect save', array(
-            'term_id' => $term_id,
-            'taxonomy' => $taxonomy,
-            'error' => $e->getMessage(),
-            'trace' => $e->getTraceAsString()
-        ) );
+            htax_log_debug( 'Redirect removed', array( 'term_id' => $term_id ) );
 
-        // Database operations are atomic - no rollback needed
-
-        htax_add_admin_notice(
-            sprintf(
-                __( 'Error saving redirect for term #%d: %s', 'hypertaxonomy' ),
-                $term_id,
-                $e->getMessage()
-            ),
-            'error'
-        );
+            htax_add_admin_notice( __( 'Redirect removed successfully.', 'hypertaxonomy' ), 'success' );
+        }
     }
 }
 
@@ -1690,7 +1697,6 @@ function htax_arrays_differ( array $a, array $b ): bool {
  */
 function htax_save_group_relationships( $term_id, $taxonomy, $relationship_direction, $type_slug = 'includes', $raw_field_value = null ) {
     $field_name = ( 'container' === $relationship_direction ) ? 'htax_cont_groups' : 'htax_incl_groups';
-    $group_type = htax_get_group_type( $taxonomy );
 
     // Get new group IDs from the provided value or from POST. An absent POST field means the
     // form did not render this group picker — report no change and leave the stored rows alone.
@@ -1727,7 +1733,7 @@ function htax_save_group_relationships( $term_id, $taxonomy, $relationship_direc
         htax_log_error( "Removed invalid {$relationship_direction} groups before saving", array(
             'term_id' => $term_id,
             'taxonomy' => $taxonomy,
-            'group_type' => $group_type,
+            'group_taxonomy' => 'group',
             'invalid_groups' => $validation_result['invalid_groups']
         ) );
 
@@ -1769,6 +1775,7 @@ function htax_save_group_relationships( $term_id, $taxonomy, $relationship_direc
             ),
             array( '%d', '%d', '%s', '%s' )
         );
+        htax_throw_on_db_error( 'save group relationships' );
     }
 
     // Add new group relationships
@@ -1784,6 +1791,7 @@ function htax_save_group_relationships( $term_id, $taxonomy, $relationship_direc
             $is_container ? 'group' : $taxonomy,
             $is_container ? $taxonomy : 'group'
         ) );
+        htax_throw_on_db_error( 'save group relationships' );
     }
 
     $changed = htax_arrays_differ( $new_groups, $old_groups );
@@ -1831,7 +1839,6 @@ function htax_save_term_relationships( $term_id, $tt_id = 0 ) {
     // exception is thrown before the transaction starts.
     global $wpdb;
 
-    // Database operations are atomic - no locking needed
     try {
 
         // Get relationship data from POST
@@ -1911,6 +1918,7 @@ function htax_save_term_relationships( $term_id, $tt_id = 0 ) {
                 ),
                 array( '%d', '%s', '%s' )
             );
+            htax_throw_on_db_error( 'save term relationships' );
         } else {
             $new_included = $old_included;
         }
@@ -1931,6 +1939,7 @@ function htax_save_term_relationships( $term_id, $tt_id = 0 ) {
             $wpdb->query( "INSERT IGNORE INTO {$table_name}
                 (source_term_id, target_term_id, relationship_type, source_taxonomy, target_taxonomy)
                 VALUES " . implode( ',', $values ) );
+            htax_throw_on_db_error( 'save term relationships' );
         }
 
         // Delete old direct container relationships (other terms that include this term,
@@ -1947,6 +1956,7 @@ function htax_save_term_relationships( $term_id, $tt_id = 0 ) {
                 ),
                 array( '%d', '%s', '%s', '%s' )
             );
+            htax_throw_on_db_error( 'save term relationships' );
         } else {
             $new_containers = $old_containers;
         }
@@ -1967,6 +1977,7 @@ function htax_save_term_relationships( $term_id, $tt_id = 0 ) {
             $wpdb->query( "INSERT IGNORE INTO {$table_name}
                 (source_term_id, target_term_id, relationship_type, source_taxonomy, target_taxonomy)
                 VALUES " . implode( ',', $values ) );
+            htax_throw_on_db_error( 'save term relationships' );
         }
 
         // Handle container groups (Term Groups)
@@ -2027,6 +2038,7 @@ function htax_save_term_relationships( $term_id, $tt_id = 0 ) {
                 ),
                 array( '%d', '%s', '%s' )
             );
+            htax_throw_on_db_error( 'save term relationships' );
         } else {
             $new_excluded = $old_excluded;
         }
@@ -2047,6 +2059,7 @@ function htax_save_term_relationships( $term_id, $tt_id = 0 ) {
             $wpdb->query( "INSERT IGNORE INTO {$table_name}
                 (source_term_id, target_term_id, relationship_type, source_taxonomy, target_taxonomy)
                 VALUES " . implode( ',', $values ) );
+            htax_throw_on_db_error( 'save term relationships' );
         }
 
         // Handle custom relationship type terms and groups (edit form only — add form sends nothing).
@@ -2126,6 +2139,7 @@ function htax_save_term_relationships( $term_id, $tt_id = 0 ) {
                 // Sync forward rows.
                 foreach ( array_diff( $old_fwd, $new_fwd ) as $rid ) {
                     $wpdb->delete( $table_name, array( 'source_term_id' => $term_id, 'target_term_id' => $rid, 'relationship_type' => $cslug ), array( '%d', '%d', '%s' ) );
+                    htax_throw_on_db_error( 'save term relationships' );
                 }
                 foreach ( array_diff( $new_fwd, $old_fwd ) as $rid ) {
                     $target_tax = $custom_tax_map[ $rid ] ?? null;
@@ -2134,12 +2148,14 @@ function htax_save_term_relationships( $term_id, $tt_id = 0 ) {
                             "INSERT IGNORE INTO `{$table_name}` (source_term_id, target_term_id, relationship_type, source_taxonomy, target_taxonomy) VALUES (%d, %d, %s, %s, %s)",
                             $term_id, $rid, $cslug, $taxonomy, $target_tax
                         ) );
+                        htax_throw_on_db_error( 'save term relationships' );
                     }
                 }
 
                 // Sync reverse rows.
                 foreach ( array_diff( $old_rev, $new_rev ) as $rid ) {
                     $wpdb->delete( $table_name, array( 'source_term_id' => $rid, 'target_term_id' => $term_id, 'relationship_type' => $cslug ), array( '%d', '%d', '%s' ) );
+                    htax_throw_on_db_error( 'save term relationships' );
                 }
                 foreach ( array_diff( $new_rev, $old_rev ) as $rid ) {
                     $source_tax = $custom_tax_map[ $rid ] ?? null;
@@ -2148,6 +2164,7 @@ function htax_save_term_relationships( $term_id, $tt_id = 0 ) {
                             "INSERT IGNORE INTO `{$table_name}` (source_term_id, target_term_id, relationship_type, source_taxonomy, target_taxonomy) VALUES (%d, %d, %s, %s, %s)",
                             $rid, $term_id, $cslug, $source_tax, $taxonomy
                         ) );
+                        htax_throw_on_db_error( 'save term relationships' );
                     }
                 }
 

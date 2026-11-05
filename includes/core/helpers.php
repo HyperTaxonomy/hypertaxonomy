@@ -566,6 +566,33 @@ function htax_handle_db_error( $operation, $default = array() ) {
 }
 
 /**
+ * Throw when the most recent $wpdb query failed.
+ *
+ * $wpdb reports failures through last_error rather than exceptions, and every new
+ * query clears that value, so this check must follow each write. Call it inside a
+ * transaction's try block so the catch can roll back. The SQL error goes to the log
+ * only, because callers may show the exception message in an admin notice.
+ *
+ * Never let the exception escape a WordPress hook callback.
+ *
+ * @since 1.0.0
+ * @param string $operation Description of the operation, used in the log and exception.
+ * @return void
+ * @throws RuntimeException When $wpdb->last_error is set.
+ */
+function htax_throw_on_db_error( string $operation ): void {
+    global $wpdb;
+
+    if ( $wpdb->last_error ) {
+        htax_log_error( 'Database operation failed: ' . $operation, array(
+            'error'      => $wpdb->last_error,
+            'last_query' => $wpdb->last_query,
+        ) );
+        throw new RuntimeException( $operation );
+    }
+}
+
+/**
  * Return the post meta key for a sticky term assignment.
  *
  * The key encodes only the term ID. Each assignment is stored with meta_value = 1,

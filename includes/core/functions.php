@@ -446,20 +446,6 @@ function htax_debug_info() {
 // ============================================================================
 
 /**
- * Get group type suffix for taxonomy
- *
- * Returns the group type suffix used for HyperTaxonomy Term Groups meta keys.
- * Uses the taxonomy name with '_groups' suffix.
- *
- * @since 1.0.0
- * @param string $taxonomy Taxonomy name
- * @return string Group type (e.g., 'tag_groups', 'category_groups', 'product_cat_groups')
- */
-function htax_get_group_type( $taxonomy ) {
-    return $taxonomy . '_groups';
-}
-
-/**
  * Get the current taxonomy from the screen object or request parameter.
  * Returns false if unavailable or not a valid htax taxonomy.
  *

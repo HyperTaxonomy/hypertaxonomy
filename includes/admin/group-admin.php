@@ -626,42 +626,54 @@ function htax_save_terms_in_group( $term_id ) {
         }
     }
 
-    // Remove terms that are no longer in the group
-    $terms_to_remove = array_values( array_diff( $current_term_ids, $new_term_ids ) );
-    if ( ! empty( $terms_to_remove ) ) {
-        $placeholders = htax_sql_placeholders( count( $terms_to_remove ) );
-        $wpdb->query(
-            $wpdb->prepare(
-                "DELETE FROM `{$relationships_table}`
-                WHERE source_term_id IN ({$placeholders})
-                AND target_term_id = %d
-                AND relationship_type = 'member_of'",
-                array_merge( $terms_to_remove, array( $term_id ) )
-            )
-        );
-    }
+    try {
+        $wpdb->query( 'START TRANSACTION' );
 
-    // Add new terms
-    $terms_to_add      = array_diff( $new_term_ids, $current_term_ids );
-    $term_taxonomy_map = htax_get_taxonomy_map_for_terms( $terms_to_add );
-
-    foreach ( $terms_to_add as $term_to_add ) {
-        if ( ! isset( $term_taxonomy_map[ $term_to_add ] ) ) {
-            continue;
+        // Remove terms that are no longer in the group
+        $terms_to_remove = array_values( array_diff( $current_term_ids, $new_term_ids ) );
+        if ( ! empty( $terms_to_remove ) ) {
+            $placeholders = htax_sql_placeholders( count( $terms_to_remove ) );
+            $wpdb->query(
+                $wpdb->prepare(
+                    "DELETE FROM `{$relationships_table}`
+                    WHERE source_term_id IN ({$placeholders})
+                    AND target_term_id = %d
+                    AND relationship_type = 'member_of'",
+                    array_merge( $terms_to_remove, array( $term_id ) )
+                )
+            );
+            htax_throw_on_db_error( 'htax_save_terms_in_group' );
         }
 
-        // Insert the member_of relationship
-        $wpdb->replace(
-            $relationships_table,
-            array(
-                'source_term_id'    => $term_to_add,
-                'target_term_id'    => $term_id,
-                'relationship_type' => 'member_of',
-                'source_taxonomy'   => $term_taxonomy_map[ $term_to_add ],
-                'target_taxonomy'   => 'group',
-            ),
-            array( '%d', '%d', '%s', '%s', '%s' )
-        );
+        // Add new terms
+        $terms_to_add      = array_diff( $new_term_ids, $current_term_ids );
+        $term_taxonomy_map = htax_get_taxonomy_map_for_terms( $terms_to_add );
+
+        foreach ( $terms_to_add as $term_to_add ) {
+            if ( ! isset( $term_taxonomy_map[ $term_to_add ] ) ) {
+                continue;
+            }
+
+            // Insert the member_of relationship
+            $wpdb->replace(
+                $relationships_table,
+                array(
+                    'source_term_id'    => $term_to_add,
+                    'target_term_id'    => $term_id,
+                    'relationship_type' => 'member_of',
+                    'source_taxonomy'   => $term_taxonomy_map[ $term_to_add ],
+                    'target_taxonomy'   => 'group',
+                ),
+                array( '%d', '%d', '%s', '%s', '%s' )
+            );
+            htax_throw_on_db_error( 'htax_save_terms_in_group' );
+        }
+
+        $wpdb->query( 'COMMIT' );
+    } catch ( Exception $e ) {
+        $wpdb->query( 'ROLLBACK' );
+        htax_add_admin_notice( __( 'Database error saving group assignments; changes rolled back.', 'hypertaxonomy' ), 'error' );
+        return;
     }
 
     if ( ! empty( $terms_to_add ) || ! empty( $terms_to_remove ) ) {
@@ -729,43 +741,55 @@ function htax_save_terms_with_container_group( $term_id ) {
         }
     }
 
-    // Remove terms that are no longer in the container list
-    $terms_to_remove = array_values( array_diff( $current_term_ids, $new_term_ids ) );
-    if ( ! empty( $terms_to_remove ) ) {
-        $placeholders = htax_sql_placeholders( count( $terms_to_remove ) );
-        $wpdb->query(
-            $wpdb->prepare(
-                "DELETE FROM `{$relationships_table}`
-                WHERE source_term_id = %d
-                AND target_term_id IN ({$placeholders})
-                AND {$includes_in}
-                AND source_taxonomy = 'group'",
-                array_merge( array( $term_id ), $terms_to_remove )
-            )
-        );
-    }
+    try {
+        $wpdb->query( 'START TRANSACTION' );
 
-    // Add new container relationships
-    $terms_to_add      = array_diff( $new_term_ids, $current_term_ids );
-    $term_taxonomy_map = htax_get_taxonomy_map_for_terms( $terms_to_add );
-
-    foreach ( $terms_to_add as $term_to_add ) {
-        if ( ! isset( $term_taxonomy_map[ $term_to_add ] ) ) {
-            continue;
+        // Remove terms that are no longer in the container list
+        $terms_to_remove = array_values( array_diff( $current_term_ids, $new_term_ids ) );
+        if ( ! empty( $terms_to_remove ) ) {
+            $placeholders = htax_sql_placeholders( count( $terms_to_remove ) );
+            $wpdb->query(
+                $wpdb->prepare(
+                    "DELETE FROM `{$relationships_table}`
+                    WHERE source_term_id = %d
+                    AND target_term_id IN ({$placeholders})
+                    AND {$includes_in}
+                    AND source_taxonomy = 'group'",
+                    array_merge( array( $term_id ), $terms_to_remove )
+                )
+            );
+            htax_throw_on_db_error( 'htax_save_terms_with_container_group' );
         }
 
-        // Insert the container relationship (source=GroupX, target=TermB, type='includes')
-        $wpdb->replace(
-            $relationships_table,
-            array(
-                'source_term_id'    => $term_id,
-                'target_term_id'    => $term_to_add,
-                'relationship_type' => 'includes',
-                'source_taxonomy'   => 'group',
-                'target_taxonomy'   => $term_taxonomy_map[ $term_to_add ],
-            ),
-            array( '%d', '%d', '%s', '%s', '%s' )
-        );
+        // Add new container relationships
+        $terms_to_add      = array_diff( $new_term_ids, $current_term_ids );
+        $term_taxonomy_map = htax_get_taxonomy_map_for_terms( $terms_to_add );
+
+        foreach ( $terms_to_add as $term_to_add ) {
+            if ( ! isset( $term_taxonomy_map[ $term_to_add ] ) ) {
+                continue;
+            }
+
+            // Insert the container relationship (source=GroupX, target=TermB, type='includes')
+            $wpdb->replace(
+                $relationships_table,
+                array(
+                    'source_term_id'    => $term_id,
+                    'target_term_id'    => $term_to_add,
+                    'relationship_type' => 'includes',
+                    'source_taxonomy'   => 'group',
+                    'target_taxonomy'   => $term_taxonomy_map[ $term_to_add ],
+                ),
+                array( '%d', '%d', '%s', '%s', '%s' )
+            );
+            htax_throw_on_db_error( 'htax_save_terms_with_container_group' );
+        }
+
+        $wpdb->query( 'COMMIT' );
+    } catch ( Exception $e ) {
+        $wpdb->query( 'ROLLBACK' );
+        htax_add_admin_notice( __( 'Database error saving relationship.', 'hypertaxonomy' ), 'error' );
+        return;
     }
 
     if ( ! empty( $terms_to_add ) || ! empty( $terms_to_remove ) ) {
@@ -830,43 +854,55 @@ function htax_save_terms_with_included_group( $term_id ) {
         }
     }
 
-    // Remove terms that no longer include this group
-    $terms_to_remove = array_values( array_diff( $current_term_ids, $new_term_ids ) );
-    if ( ! empty( $terms_to_remove ) ) {
-        $placeholders = htax_sql_placeholders( count( $terms_to_remove ) );
-        $wpdb->query(
-            $wpdb->prepare(
-                "DELETE FROM `{$relationships_table}`
-                WHERE source_term_id IN ({$placeholders})
-                AND target_term_id = %d
-                AND {$includes_in}
-                AND target_taxonomy = 'group'",
-                array_merge( $terms_to_remove, array( $term_id ) )
-            )
-        );
-    }
+    try {
+        $wpdb->query( 'START TRANSACTION' );
 
-    // Add new T→G includes rows
-    $terms_to_add      = array_diff( $new_term_ids, $current_term_ids );
-    $term_taxonomy_map = htax_get_taxonomy_map_for_terms( $terms_to_add );
-
-    foreach ( $terms_to_add as $term_to_add ) {
-        if ( ! isset( $term_taxonomy_map[ $term_to_add ] ) ) {
-            continue;
+        // Remove terms that no longer include this group
+        $terms_to_remove = array_values( array_diff( $current_term_ids, $new_term_ids ) );
+        if ( ! empty( $terms_to_remove ) ) {
+            $placeholders = htax_sql_placeholders( count( $terms_to_remove ) );
+            $wpdb->query(
+                $wpdb->prepare(
+                    "DELETE FROM `{$relationships_table}`
+                    WHERE source_term_id IN ({$placeholders})
+                    AND target_term_id = %d
+                    AND {$includes_in}
+                    AND target_taxonomy = 'group'",
+                    array_merge( $terms_to_remove, array( $term_id ) )
+                )
+            );
+            htax_throw_on_db_error( 'htax_save_terms_with_included_group' );
         }
 
-        // Insert the inclusion relationship (source=TermA, target=GroupX, type='includes')
-        $wpdb->replace(
-            $relationships_table,
-            array(
-                'source_term_id'    => $term_to_add,
-                'target_term_id'    => $term_id,
-                'relationship_type' => 'includes',
-                'source_taxonomy'   => $term_taxonomy_map[ $term_to_add ],
-                'target_taxonomy'   => 'group',
-            ),
-            array( '%d', '%d', '%s', '%s', '%s' )
-        );
+        // Add new T→G includes rows
+        $terms_to_add      = array_diff( $new_term_ids, $current_term_ids );
+        $term_taxonomy_map = htax_get_taxonomy_map_for_terms( $terms_to_add );
+
+        foreach ( $terms_to_add as $term_to_add ) {
+            if ( ! isset( $term_taxonomy_map[ $term_to_add ] ) ) {
+                continue;
+            }
+
+            // Insert the inclusion relationship (source=TermA, target=GroupX, type='includes')
+            $wpdb->replace(
+                $relationships_table,
+                array(
+                    'source_term_id'    => $term_to_add,
+                    'target_term_id'    => $term_id,
+                    'relationship_type' => 'includes',
+                    'source_taxonomy'   => $term_taxonomy_map[ $term_to_add ],
+                    'target_taxonomy'   => 'group',
+                ),
+                array( '%d', '%d', '%s', '%s', '%s' )
+            );
+            htax_throw_on_db_error( 'htax_save_terms_with_included_group' );
+        }
+
+        $wpdb->query( 'COMMIT' );
+    } catch ( Exception $e ) {
+        $wpdb->query( 'ROLLBACK' );
+        htax_add_admin_notice( __( 'Database error saving relationship.', 'hypertaxonomy' ), 'error' );
+        return;
     }
 
     if ( ! empty( $terms_to_add ) || ! empty( $terms_to_remove ) ) {

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: hypertaxonomy 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-04 10:16-0500\n"
+"POT-Creation-Date: 2026-11-05 16:43-0500\n"
 "PO-Revision-Date: 2026-11-04 03:30-0500\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -25,7 +25,7 @@ msgid "Terms"
 msgstr "Термины"
 
 #: includes/admin/admin-menu.php:47 includes/admin/admin-menu.php:48
-#: includes/admin/settings.php:463 includes/admin/settings.php:549
+#: includes/admin/settings.php:467 includes/admin/settings.php:553
 #: includes/admin/tables.php:796 includes/admin/term-edit.php:908
 #: includes/admin/term-edit.php:915 includes/core/taxonomies.php:43
 msgid "Term Groups"
@@ -41,7 +41,7 @@ msgstr "Типы связей между терминами"
 #: includes/admin/ajax.php:749 includes/admin/ajax.php:770
 #: includes/admin/ajax.php:813 includes/admin/ajax.php:855
 #: includes/admin/ajax.php:949 includes/admin/bulk-actions.php:240
-#: includes/admin/settings.php:3565 includes/admin/settings.php:3583
+#: includes/admin/settings.php:3569 includes/admin/settings.php:3587
 #: includes/admin/term-icons.php:1062
 #: includes/classes/class-search-index.php:1213
 #: includes/integrations/class-taxopress-integration.php:126
@@ -52,8 +52,8 @@ msgstr "Проверка безопасности не пройдена."
 #: includes/admin/ajax.php:680 includes/admin/ajax.php:712
 #: includes/admin/ajax.php:753 includes/admin/ajax.php:775
 #: includes/admin/ajax.php:819 includes/admin/ajax.php:861
-#: includes/admin/ajax.php:953 includes/admin/settings.php:3561
-#: includes/admin/settings.php:3579
+#: includes/admin/ajax.php:953 includes/admin/settings.php:3565
+#: includes/admin/settings.php:3583
 msgid "You do not have permission to perform this action."
 msgstr "У вас нет доступа для выполнения этого действия."
 
@@ -208,8 +208,8 @@ msgstr "Очистить выбор"
 msgid "Permission denied."
 msgstr "Доступ запрещён."
 
-#: includes/admin/convert-terms.php:104 includes/admin/settings.php:1278
-#: includes/admin/settings.php:2117 includes/admin/term-icons.php:1075
+#: includes/admin/convert-terms.php:104 includes/admin/settings.php:1282
+#: includes/admin/settings.php:2121 includes/admin/term-icons.php:1075
 #: includes/core/term-merge.php:62
 msgid "Invalid taxonomy."
 msgstr "Недопустимая таксономия."
@@ -445,13 +445,13 @@ msgstr ""
 "Управляется в плагине Tag Groups — состав таксономии можно изменить там. "
 "Изменения, сделанные здесь, будут отменены при следующей миграции."
 
-#: includes/admin/group-admin.php:187 includes/admin/group-admin.php:956
+#: includes/admin/group-admin.php:187 includes/admin/group-admin.php:992
 #: includes/admin/term-edit.php:594
 #: includes/shortcodes/class-sort-order.php:131 blocks/shared/components.js:245
 msgid "Remove"
 msgstr "Удалить"
 
-#: includes/admin/group-admin.php:188 includes/admin/group-admin.php:958
+#: includes/admin/group-admin.php:188 includes/admin/group-admin.php:994
 #: includes/admin/term-edit.php:1311 includes/admin/term-edit.php:1817
 msgid "Remove term:"
 msgstr "Удалить термин:"
@@ -544,15 +544,27 @@ msgstr ""
 "членов группы, входящих в ту же таксономию. При добавлении термина в этот "
 "список, группа будет автоматически добавлена в список его контейнерных групп."
 
-#: includes/admin/group-admin.php:914 includes/admin/term-edit.php:1068
+#: includes/admin/group-admin.php:675 includes/core/group-functions.php:272
+#: includes/core/group-functions.php:294
+msgid "Database error saving group assignments; changes rolled back."
+msgstr ""
+"Ошибка базы данных при сохранении членства в группах; изменения отменены."
+
+#: includes/admin/group-admin.php:791 includes/admin/group-admin.php:904
+#: includes/core/relationship-types.php:698
+#: includes/core/term-relationships.php:1667
+msgid "Database error saving relationship."
+msgstr "Ошибка базы данных при сохранении связи."
+
+#: includes/admin/group-admin.php:950 includes/admin/term-edit.php:1068
 msgid "Add…"
 msgstr "Добавить…"
 
-#: includes/admin/group-admin.php:1018
+#: includes/admin/group-admin.php:1054
 msgid "Custom Relationships"
 msgstr "Пользовательские связи"
 
-#: includes/admin/group-admin.php:1038 includes/admin/group-admin.php:1039
+#: includes/admin/group-admin.php:1074 includes/admin/group-admin.php:1075
 #: includes/admin/term-edit.php:1746 includes/admin/term-edit.php:1747
 #: includes/admin/term-edit.php:1775 includes/admin/term-edit.php:1776
 #: includes/admin/term-edit.php:1827 includes/admin/term-edit.php:1848
@@ -561,55 +573,55 @@ msgstr "Пользовательские связи"
 msgid "Add %s…"
 msgstr "Добавить %s…"
 
-#: includes/admin/group-admin.php:1050
+#: includes/admin/group-admin.php:1086
 msgid "Terms this group has this relationship with (this group is the source)."
 msgstr ""
 "Термины, с которыми у этой группы есть эта связь (эта группа — источник)."
 
-#: includes/admin/group-admin.php:1064
+#: includes/admin/group-admin.php:1100
 msgid ""
 "Terms that have this relationship with this group (this group is the target)."
 msgstr ""
 "Термины, у которых есть данная связь с этой группой (эта группа — цель)."
 
-#: includes/admin/group-admin.php:1135
+#: includes/admin/group-admin.php:1171
 msgid "is not currently a member of any group."
 msgstr "в настоящее время не входит ни в одну группу."
 
-#: includes/admin/group-admin.php:1183
+#: includes/admin/group-admin.php:1219
 msgid "does not appear to be associated with this group."
 msgstr "по-видимому, не связан с этой группой."
 
-#: includes/admin/group-admin.php:1226
+#: includes/admin/group-admin.php:1262
 msgid "member via subgroup:"
 msgid_plural "member via subgroups:"
 msgstr[0] "входит через подгруппу:"
 msgstr[1] "входит через подгруппы:"
 msgstr[2] "входит через подгруппы:"
 
-#: includes/admin/group-admin.php:1228
+#: includes/admin/group-admin.php:1264
 msgid "member via parent group:"
 msgid_plural "member via parent groups:"
 msgstr[0] "входит через родительскую группу:"
 msgstr[1] "входит через родительские группы:"
 msgstr[2] "входит через родительские группы:"
 
-#: includes/admin/group-admin.php:1231
+#: includes/admin/group-admin.php:1267
 msgid "associated via parent group:"
 msgid_plural "associated via parent groups:"
 msgstr[0] "связан через родительскую группу:"
 msgstr[1] "связан через родительские группы:"
 msgstr[2] "связан через родительские группы:"
 
-#: includes/admin/group-admin.php:1236
+#: includes/admin/group-admin.php:1272
 msgid "appears here because:"
 msgstr "отображается здесь, потому что:"
 
-#: includes/admin/group-admin.php:1355
+#: includes/admin/group-admin.php:1391
 msgid "Overview"
 msgstr "Обзор"
 
-#: includes/admin/group-admin.php:1356
+#: includes/admin/group-admin.php:1392
 msgid ""
 "Term Groups allow you to organize terms from different taxonomies (tags, "
 "categories, custom taxonomies) into hierarchical groups."
@@ -617,7 +629,7 @@ msgstr ""
 "Группы терминов позволяют организовать термины из разных таксономий (метки, "
 "рубрики, пользовательские таксономии) в иерархические группы."
 
-#: includes/admin/group-admin.php:1357
+#: includes/admin/group-admin.php:1393
 msgid ""
 "Groups are hierarchical, meaning you can create parent and child groups. In "
 "addition to directly assigned terms, groups automatically include terms from "
@@ -628,11 +640,11 @@ msgstr ""
 "родительская группа также автоматически включает в себя и термины из всех "
 "своих дочерних групп."
 
-#: includes/admin/group-admin.php:1364
+#: includes/admin/group-admin.php:1400
 msgid "Usage"
 msgstr "Использование"
 
-#: includes/admin/group-admin.php:1365
+#: includes/admin/group-admin.php:1401
 msgid ""
 "To assign terms to groups, edit the term (tag, category, etc.) and select "
 "the groups in the \"Term Groups\" section."
@@ -640,7 +652,7 @@ msgstr ""
 "Чтобы добавить термины в группы, откройте термин (метку, рубрику и т. д.) "
 "для редактирования и выберите группы в разделе «Группы терминов»."
 
-#: includes/admin/group-admin.php:1366
+#: includes/admin/group-admin.php:1402
 msgid ""
 "Group archive pages (e.g., /group/colors/) will display posts from all terms "
 "assigned to that group across all enabled taxonomies."
@@ -648,11 +660,11 @@ msgstr ""
 "Страницы архивов групп (например, /group/colors/) отображают записи со всеми "
 "терминами-членами данной группы, входящими в любую включённую таксономию."
 
-#: includes/admin/group-admin.php:1373 includes/core/functions.php:94
+#: includes/admin/group-admin.php:1409 includes/core/functions.php:94
 msgid "Settings"
 msgstr "Настройки"
 
-#: includes/admin/group-admin.php:1374
+#: includes/admin/group-admin.php:1410
 msgid ""
 "You can enable or disable group assignment for each taxonomy in Settings → "
 "HyperTaxonomy → Term Groups."
@@ -660,7 +672,7 @@ msgstr ""
 "Вы можете включить или отключить функцию внесения терминов в группы для "
 "каждой таксономии в «Настройки → HyperTaxonomy → Группы терминов»."
 
-#: includes/admin/group-admin.php:1375
+#: includes/admin/group-admin.php:1411
 msgid ""
 "Only taxonomies with group assignment enabled will show the group selection "
 "interface on their term edit screens."
@@ -1172,7 +1184,7 @@ msgstr "Действия"
 #: includes/admin/relationship-types-admin.php:447
 #: includes/admin/relationship-types-admin.php:937
 #: includes/admin/relationship-types-admin.php:941
-#: includes/admin/settings.php:2779
+#: includes/admin/settings.php:2783
 msgid "Sync"
 msgstr "Синхронизировать"
 
@@ -1393,77 +1405,77 @@ msgstr ""
 msgid "Delete failed."
 msgstr "Не удалось удалить."
 
-#: includes/admin/settings.php:78 includes/admin/settings.php:3164
+#: includes/admin/settings.php:82 includes/admin/settings.php:3168
 #: includes/core/frontend.php:947
 #, php-format
 msgid " (including: %s)"
 msgstr " (включая: %s)"
 
-#: includes/admin/settings.php:332
+#: includes/admin/settings.php:336
 #, php-format
 msgid "Icon sizes regenerated for %1$s (%2$d icons updated)."
 msgstr "Размеры значков перегенерированы для %1$s (обновлено значков: %2$d)."
 
-#: includes/admin/settings.php:348
+#: includes/admin/settings.php:352
 msgid "HyperTaxonomy Settings"
 msgstr "Настройки HyperTaxonomy"
 
-#: includes/admin/settings.php:349
+#: includes/admin/settings.php:353
 msgid "HyperTaxonomy"
 msgstr "HyperTaxonomy"
 
-#: includes/admin/settings.php:367 includes/admin/settings.php:758
-#: includes/admin/settings.php:817 includes/admin/settings.php:1189
-#: includes/admin/settings.php:1644
+#: includes/admin/settings.php:371 includes/admin/settings.php:762
+#: includes/admin/settings.php:821 includes/admin/settings.php:1193
+#: includes/admin/settings.php:1648
 msgid "Features"
 msgstr "Функции"
 
-#: includes/admin/settings.php:368 blocks/ht-sort-order-options/src/index.js:81
+#: includes/admin/settings.php:372 blocks/ht-sort-order-options/src/index.js:81
 #: blocks/ht-term-cloud/src/index.js:19 blocks/ht-term-groups/src/index.js:21
 #: blocks/ht-term-index/src/index.js:20 blocks/ht-term-list/src/index.js:22
 #: blocks/shared/post-list-edit.js:288
 msgid "Display"
 msgstr "Отображение"
 
-#: includes/admin/settings.php:369
+#: includes/admin/settings.php:373
 msgid "Icons"
 msgstr "Значки"
 
-#: includes/admin/settings.php:370
+#: includes/admin/settings.php:374
 #: includes/classes/class-search-widget.php:2192
 msgid "Search"
 msgstr "Поиск"
 
-#: includes/admin/settings.php:371
+#: includes/admin/settings.php:375
 msgid "Cache"
 msgstr "Кэширование"
 
-#: includes/admin/settings.php:372
+#: includes/admin/settings.php:376
 msgid "Export / Import"
 msgstr "Экспорт / Импорт"
 
-#: includes/admin/settings.php:373 blocks/ht-power-search/src/index.js:131
+#: includes/admin/settings.php:377 blocks/ht-power-search/src/index.js:131
 msgid "Advanced"
 msgstr "Расширенные настройки"
 
-#: includes/admin/settings.php:460 includes/admin/settings.php:1203
-#: includes/admin/settings.php:1657
+#: includes/admin/settings.php:464 includes/admin/settings.php:1207
+#: includes/admin/settings.php:1661
 msgid "General"
 msgstr "Обзор"
 
-#: includes/admin/settings.php:469 includes/admin/settings.php:577
+#: includes/admin/settings.php:473 includes/admin/settings.php:581
 msgid "Tags"
 msgstr "Метки"
 
-#: includes/admin/settings.php:477 includes/admin/settings.php:610
+#: includes/admin/settings.php:481 includes/admin/settings.php:614
 msgid "Categories"
 msgstr "Рубрики"
 
-#: includes/admin/settings.php:539
+#: includes/admin/settings.php:543
 msgid "Enable HyperTaxonomy Features"
 msgstr "Включить функции HyperTaxonomy"
 
-#: includes/admin/settings.php:540
+#: includes/admin/settings.php:544
 msgid ""
 "Select which taxonomies should have HyperTaxonomy features enabled. "
 "Configure specific features for each taxonomy in their individual tabs."
@@ -1472,65 +1484,65 @@ msgstr ""
 "Настройте конкретные функции для каждой выбранной таксономии на её "
 "соответствующей вкладке."
 
-#: includes/admin/settings.php:558
+#: includes/admin/settings.php:562
 msgid "Required for HyperTaxonomy features to work in other taxonomies"
 msgstr ""
 "Требуется для поддержки функций HyperTaxonomy в других таксономиях, и "
 "поэтому невозможно отключить здесь."
 
-#: includes/admin/settings.php:561 includes/admin/settings.php:751
+#: includes/admin/settings.php:565 includes/admin/settings.php:755
 msgid "Used by: terms (from other taxonomies)"
 msgstr "Используется: терминами (из других таксономий)"
 
-#: includes/admin/settings.php:588
+#: includes/admin/settings.php:592
 msgid "Enable HyperTaxonomy features for tags"
 msgstr "Включить функции HyperTaxonomy для меток"
 
-#: includes/admin/settings.php:593 includes/admin/settings.php:626
+#: includes/admin/settings.php:597 includes/admin/settings.php:630
 #, php-format
 msgid "Used by: %s"
 msgstr "Используется: %s"
 
-#: includes/admin/settings.php:621
+#: includes/admin/settings.php:625
 msgid "Enable HyperTaxonomy features for categories"
 msgstr "Включить функции HyperTaxonomy для рубрик"
 
-#: includes/admin/settings.php:657
+#: includes/admin/settings.php:661
 #, php-format
 msgid "Enable HyperTaxonomy features for %s"
 msgstr "Включить функции HyperTaxonomy для таксономии «%s»"
 
-#: includes/admin/settings.php:664 includes/admin/settings.php:726
+#: includes/admin/settings.php:668 includes/admin/settings.php:730
 msgid "Used by:"
 msgstr "Используется:"
 
-#: includes/admin/settings.php:667 includes/admin/settings.php:741
-#: includes/admin/settings.php:742
+#: includes/admin/settings.php:671 includes/admin/settings.php:745
+#: includes/admin/settings.php:746
 msgid "Hierarchical"
 msgstr "Иерархическая"
 
-#: includes/admin/settings.php:718
+#: includes/admin/settings.php:722
 msgid "Taxonomy:"
 msgstr "Таксономия:"
 
-#: includes/admin/settings.php:722
+#: includes/admin/settings.php:726
 msgid "URL slug:"
 msgstr "Ярлык URL:"
 
-#: includes/admin/settings.php:731
+#: includes/admin/settings.php:735
 msgid "Terms (from other taxonomies)"
 msgstr "Термины (из других таксономий)"
 
-#: includes/admin/settings.php:733 blocks/ht-term-list/src/index.js:60
+#: includes/admin/settings.php:737 blocks/ht-term-list/src/index.js:60
 #: blocks/ht-term-list/src/index.js:92
 msgid "None"
 msgstr "Нет"
 
-#: includes/admin/settings.php:749
+#: includes/admin/settings.php:753
 msgid "Term Groups Features"
 msgstr "Функции групп терминов"
 
-#: includes/admin/settings.php:753
+#: includes/admin/settings.php:757
 msgid ""
 "Term Groups is a hierarchical taxonomy provided by this plugin for "
 "organizing terms from other taxonomies. It is also used for group inclusion "
@@ -1554,11 +1566,11 @@ msgstr ""
 "служить целями для других перенаправлений, и могут быть пользовательские "
 "значки."
 
-#: includes/admin/settings.php:766
+#: includes/admin/settings.php:770
 msgid "Enable Term Group icons"
 msgstr "Разрешить значки для групп"
 
-#: includes/admin/settings.php:768
+#: includes/admin/settings.php:772
 msgid ""
 "Allow setting custom icons for term groups (used in group archives and in "
 "displaying Term Groups if supported by your theme)."
@@ -1567,11 +1579,11 @@ msgstr ""
 "(используются в архивах групп и при отображении групп терминов, если "
 "поддерживается вашей темой)."
 
-#: includes/admin/settings.php:779
+#: includes/admin/settings.php:783
 msgid "Allow Term Group redirects"
 msgstr "Разрешить перенаправления для групп"
 
-#: includes/admin/settings.php:781
+#: includes/admin/settings.php:785
 msgid ""
 "Term Group archive pages can redirect to other term groups' archives - this "
 "allows to consolidate content, reorganize group hierarchies or rename groups "
@@ -1581,11 +1593,11 @@ msgstr ""
 "групп терминов — это позволяет объединять контент, реорганизовывать иерархии "
 "групп или переименовывать группы, сохраняя прежние URL-адреса."
 
-#: includes/admin/settings.php:790
+#: includes/admin/settings.php:794
 msgid "Enable Term Group visibility options"
 msgstr "Включить управление видимостью групп терминов"
 
-#: includes/admin/settings.php:792
+#: includes/admin/settings.php:796
 msgid ""
 "Allow hiding individual groups and their subgroups from public view. Hidden "
 "group archives return 404 to unauthorized users and are excluded from REST "
@@ -1599,11 +1611,11 @@ msgstr ""
 "на реализацию расширения групп, которая используется для группового "
 "включения и контейнерных групп."
 
-#: includes/admin/settings.php:801
+#: includes/admin/settings.php:805
 msgid "Archive customization"
 msgstr "Настройка архивов"
 
-#: includes/admin/settings.php:803
+#: includes/admin/settings.php:807
 msgid ""
 "Per-group archive description display, sticky posts, posts per page, and "
 "sort order."
@@ -1611,15 +1623,15 @@ msgstr ""
 "Отображение описания архива для каждой группы, закреплённые записи, "
 "количество записей на странице и порядок сортировки."
 
-#: includes/admin/settings.php:812
+#: includes/admin/settings.php:816
 msgid "Taxonomy Features"
 msgstr "Функции таксономии"
 
-#: includes/admin/settings.php:826
+#: includes/admin/settings.php:830
 msgid "Enable Term Groups assignment"
 msgstr "Включить внесение терминов в группы"
 
-#: includes/admin/settings.php:830
+#: includes/admin/settings.php:834
 #, php-format
 msgid ""
 "Assign %s to hierarchical term groups for organizational purposes and for "
@@ -1628,12 +1640,12 @@ msgstr ""
 "Добавить %s в иерархические группы терминов для организации и для "
 "агрегирования контента в архивах групп."
 
-#: includes/admin/settings.php:842
+#: includes/admin/settings.php:846
 #, php-format
 msgid "Enable relationships for %s"
 msgstr "Включить связи для терминов таксономии «%s»"
 
-#: includes/admin/settings.php:847
+#: includes/admin/settings.php:851
 #, php-format
 msgid ""
 "Enable inclusion/container relationships, group-based relationships, and "
@@ -1645,12 +1657,12 @@ msgstr ""
 "терминам включать другие термины или быть включёнными в них, а также "
 "участвовать в пользовательских связях."
 
-#: includes/admin/settings.php:861
+#: includes/admin/settings.php:865
 #, php-format
 msgid "Allow redirects for %s"
 msgstr "Разрешить перенаправления для терминов таксономии «%s»"
 
-#: includes/admin/settings.php:866
+#: includes/admin/settings.php:870
 #, php-format
 msgid ""
 "Archive pages for %s can redirect to other terms' archives - this allows "
@@ -1662,12 +1674,12 @@ msgstr ""
 "термины или преобразовывать их в термины других таксономий, сохраняя прежние "
 "URL-адреса."
 
-#: includes/admin/settings.php:878
+#: includes/admin/settings.php:882
 #, php-format
 msgid "Enable icons for %s"
 msgstr "Разрешить значки для терминов таксономии «%s»"
 
-#: includes/admin/settings.php:883
+#: includes/admin/settings.php:887
 #, php-format
 msgid ""
 "Allow setting custom icons for %s (used in search widgets, their archives "
@@ -1677,24 +1689,26 @@ msgstr ""
 "(используются в виджетах поиска, архивах этих терминов и в метаданных "
 "записей, если поддерживается вашей темой)."
 
-#: includes/admin/settings.php:895
+#: includes/admin/settings.php:899
 #, php-format
 msgid "Enable Term visibility options for %s"
 msgstr "Включить управление видимостью терминов, входящих в таксономию «%s»"
 
-#: includes/admin/settings.php:900
+#: includes/admin/settings.php:904
 #, php-format
-msgid "Allow hiding specific %s from post meta or show them only to users who can edit posts."
+msgid ""
+"Allow hiding specific %s from post meta or show them only to users who can "
+"edit posts."
 msgstr ""
 "Разрешить скрывать отдельные термины из таксономии «%s» в метаданных записей "
 "или показывать их только пользователям, которые могут редактировать записи."
 
-#: includes/admin/settings.php:912
+#: includes/admin/settings.php:916
 #, php-format
 msgid "Enable archive customization for %s"
 msgstr "Включить настройку архивов для таксономии «%s»"
 
-#: includes/admin/settings.php:917
+#: includes/admin/settings.php:921
 #, php-format
 msgid ""
 "Archive description display, sticky posts, posts per page, and sort order — "
@@ -1704,12 +1718,12 @@ msgstr ""
 "записей на странице и порядка сортировки — для каждого термина таксономии "
 "«%s»."
 
-#: includes/admin/settings.php:929
+#: includes/admin/settings.php:933
 #, php-format
 msgid "Use %s for search enhancement"
 msgstr "Использовать таксономию «%s» для улучшения поиска"
 
-#: includes/admin/settings.php:934
+#: includes/admin/settings.php:938
 #, php-format
 msgid ""
 "Consider %s for relevance-scored search based on configurable weights for "
@@ -1718,12 +1732,12 @@ msgstr ""
 "Учитывать термины из таксономии «%s» в поиске с оценкой релевантности на "
 "основе настраиваемых коэффициентов для различных сценариев."
 
-#: includes/admin/settings.php:948
+#: includes/admin/settings.php:952
 #, php-format
 msgid "Share list of locations for %s"
 msgstr "Предоставлять список местоположений для терминов таксономии «%s»"
 
-#: includes/admin/settings.php:951
+#: includes/admin/settings.php:955
 msgid ""
 "Include location data from As the Crow Flies in REST responses for this "
 "taxonomy — used by TermConnect peer site matching and proximity-enhanced "
@@ -1734,20 +1748,20 @@ msgstr ""
 "найденными на сторонних сайтах при помощи плагина TermConnect, а также для "
 "поиска с учётом близости."
 
-#: includes/admin/settings.php:975
+#: includes/admin/settings.php:979
 msgid "Archive Titles"
 msgstr "Заголовки архивов"
 
-#: includes/admin/settings.php:983
+#: includes/admin/settings.php:987
 msgid "Show contributing terms in archive titles"
 msgstr ""
 "Показывать в заголовках архивов включённые термины, добавляющие результаты"
 
-#: includes/admin/settings.php:988
+#: includes/admin/settings.php:992
 msgid "Template:"
 msgstr "Шаблон:"
 
-#: includes/admin/settings.php:995
+#: includes/admin/settings.php:999
 #, php-format
 msgid ""
 "Use %s where the comma-separated list of contributing terms should appear."
@@ -1755,15 +1769,15 @@ msgstr ""
 "Используйте %s там, где должен появиться список включённых терминов, "
 "добавляющих результаты, через запятую."
 
-#: includes/admin/settings.php:1002
+#: includes/admin/settings.php:1006
 msgid "Archive Description"
 msgstr "Описание архива"
 
-#: includes/admin/settings.php:1010
+#: includes/admin/settings.php:1014
 msgid "Show term description on archive pages"
 msgstr "Показывать описание термина на страницах архивов"
 
-#: includes/admin/settings.php:1013
+#: includes/admin/settings.php:1017
 msgid ""
 "When disabled, no term descriptions are output regardless of per-term "
 "preferences; saved per-term data is preserved."
@@ -1772,15 +1786,15 @@ msgstr ""
 "отдельных терминов; сохранённые данные отдельных терминов остаются "
 "нетронутыми."
 
-#: includes/admin/settings.php:1019
+#: includes/admin/settings.php:1023
 msgid "Sticky Posts"
 msgstr "Закреплённые записи"
 
-#: includes/admin/settings.php:1028
+#: includes/admin/settings.php:1032
 msgid "Show sticky posts on term archive pages"
 msgstr "Показывать закреплённые записи на страницах архивов терминов"
 
-#: includes/admin/settings.php:1031
+#: includes/admin/settings.php:1035
 msgid ""
 "Global on/off gate for sticky post pinning. When disabled, no posts are "
 "pinned regardless of per-term or per-post sticky settings; saved data is "
@@ -1790,21 +1804,21 @@ msgstr ""
 "запись не закрепляется независимо от настроек закрепления для отдельных "
 "терминов или записей; сохранённые данные остаются нетронутыми."
 
-#: includes/admin/settings.php:1040
+#: includes/admin/settings.php:1044
 msgid "Disable default sticky post styles"
 msgstr "Отключить стандартные стили закреплённых записей"
 
-#: includes/admin/settings.php:1043
+#: includes/admin/settings.php:1047
 msgid "Check this if your theme provides its own sticky post styling."
 msgstr ""
 "Отметьте, если ваша тема предоставляет собственное оформление закреплённых "
 "записей."
 
-#: includes/admin/settings.php:1047
+#: includes/admin/settings.php:1051
 msgid "Maximum sticky posts per archive (first page only)"
 msgstr "Максимум закреплённых записей на архив (только первая страница)"
 
-#: includes/admin/settings.php:1056
+#: includes/admin/settings.php:1060
 msgid ""
 "Maximum number of sticky posts to display on the first page of term "
 "archives. Automatically adjusted down if posts-per-page is lower."
@@ -1813,31 +1827,31 @@ msgstr ""
 "странице архивов терминов. Автоматически уменьшается, если количество "
 "записей на странице меньше."
 
-#: includes/admin/settings.php:1063
+#: includes/admin/settings.php:1067
 msgid "Hidden Terms"
 msgstr "Скрытые термины"
 
-#: includes/admin/settings.php:1066
+#: includes/admin/settings.php:1070
 msgid "Hidden terms visibility:"
 msgstr "Видимость скрытых терминов:"
 
-#: includes/admin/settings.php:1073
+#: includes/admin/settings.php:1077
 msgid "Hidden from all users"
 msgstr "Скрыты от всех пользователей"
 
-#: includes/admin/settings.php:1081
+#: includes/admin/settings.php:1085
 msgid "Visible only to users who can edit posts"
 msgstr "Видимы только пользователям, которые могут редактировать записи"
 
-#: includes/admin/settings.php:1089
+#: includes/admin/settings.php:1093
 msgid "Visible to all users"
 msgstr "Видимы всем пользователям"
 
-#: includes/admin/settings.php:1096
+#: includes/admin/settings.php:1100
 msgid "Max Term Hierarchy Depth"
 msgstr "Максимальная глубина иерархии терминов"
 
-#: includes/admin/settings.php:1103
+#: includes/admin/settings.php:1107
 msgid ""
 "Default maximum nesting depth for the [ht_term_list] shortcode, the Term "
 "List block, and the search widget's hierarchical taxonomy checklists. Each "
@@ -1850,15 +1864,15 @@ msgstr ""
 "-1 = без ограничений; 0 = только верхний уровень; 1–99 = ограничить "
 "указанным числом уровней."
 
-#: includes/admin/settings.php:1109
+#: includes/admin/settings.php:1113
 msgid "Frontend Styles"
 msgstr "Стили внешнего интерфейса"
 
-#: includes/admin/settings.php:1116
+#: includes/admin/settings.php:1120
 msgid "Disable default frontend styles"
 msgstr "Отключить стандартные стили внешнего интерфейса"
 
-#: includes/admin/settings.php:1119
+#: includes/admin/settings.php:1123
 msgid ""
 "Check this to provide your own CSS for shortcodes and blocks. Stylesheet is "
 "at assets/css/htax-shortcodes.css."
@@ -1866,11 +1880,11 @@ msgstr ""
 "Отметьте, чтобы использовать собственный CSS для шорткодов и блоков. Таблица "
 "стилей находится в assets/css/htax-shortcodes.css."
 
-#: includes/admin/settings.php:1182
+#: includes/admin/settings.php:1186
 msgid "No taxonomies with icons feature enabled."
 msgstr "Нет ни одной таксономии с включённой функцией значков."
 
-#: includes/admin/settings.php:1188
+#: includes/admin/settings.php:1192
 #, php-format
 msgid ""
 "To configure icon settings, first enable the \"Icons\" feature for a "
@@ -1879,11 +1893,11 @@ msgstr ""
 "Чтобы настроить параметры значков, сначала включите функцию «Значки» для "
 "какой-либо таксономии в разделе %s."
 
-#: includes/admin/settings.php:1222
+#: includes/admin/settings.php:1226
 msgid "Theme Integration"
 msgstr "Интеграция с темой"
 
-#: includes/admin/settings.php:1223
+#: includes/admin/settings.php:1227
 msgid ""
 "To display term icons in your theme, you need to add code to your theme "
 "files. Below are code examples you can copy and paste into your theme."
@@ -1892,11 +1906,11 @@ msgstr ""
 "файлы темы. Ниже приведены примеры кода, которые можно скопировать и "
 "вставить в вашу тему."
 
-#: includes/admin/settings.php:1225
+#: includes/admin/settings.php:1229
 msgid "Display Terms as Styled Pills"
 msgstr "Отображение терминов в виде стилизованных капсул"
 
-#: includes/admin/settings.php:1226
+#: includes/admin/settings.php:1230
 msgid ""
 "Add this code to your single.php, archive.php, or wherever you want to "
 "display terms as styled pills with icons:"
@@ -1904,11 +1918,11 @@ msgstr ""
 "Добавьте этот код в single.php, archive.php или туда, где вы хотите "
 "отображать термины в виде стилизованных капсул со значками:"
 
-#: includes/admin/settings.php:1249
+#: includes/admin/settings.php:1253
 msgid "Display Icons in Term Archives"
 msgstr "Отображение значков в архивах терминов"
 
-#: includes/admin/settings.php:1250
+#: includes/admin/settings.php:1254
 msgid ""
 "Add this code to your taxonomy.php or archive.php to display the icon for "
 "the current term:"
@@ -1916,39 +1930,39 @@ msgstr ""
 "Добавьте этот код в taxonomy.php или archive.php, чтобы отображать значок "
 "текущего термина:"
 
-#: includes/admin/settings.php:1260
+#: includes/admin/settings.php:1264
 msgid "Available Functions"
 msgstr "Доступные функции"
 
-#: includes/admin/settings.php:1262
+#: includes/admin/settings.php:1266
 msgid "Output all post terms as styled pills with icons"
 msgstr "Вывести все термины записи в виде стилизованных капсул со значками"
 
-#: includes/admin/settings.php:1263
+#: includes/admin/settings.php:1267
 msgid "Get HTML for a single term as a styled pill"
 msgstr "Получить HTML одного термина в виде стилизованной капсулы"
 
-#: includes/admin/settings.php:1264
+#: includes/admin/settings.php:1268
 msgid "Output the icon for the current term archive page"
 msgstr "Вывести значок для текущей страницы архива термина"
 
-#: includes/admin/settings.php:1265
+#: includes/admin/settings.php:1269
 msgid "Get the icon HTML for the current term archive page"
 msgstr "Получить HTML значка для текущей страницы архива термина"
 
-#: includes/admin/settings.php:1266
+#: includes/admin/settings.php:1270
 msgid "Get the icon HTML for any specific term"
 msgstr "Получить HTML значка для любого указанного термина"
 
-#: includes/admin/settings.php:1267
+#: includes/admin/settings.php:1271
 msgid "Transform an existing term link into a styled pill"
 msgstr "Преобразовать существующую ссылку термина в стилизованную капсулу"
 
-#: includes/admin/settings.php:1270
+#: includes/admin/settings.php:1274
 msgid "Styling Pills"
 msgstr "Оформление капсул"
 
-#: includes/admin/settings.php:1271
+#: includes/admin/settings.php:1275
 msgid ""
 "Pills automatically inherit border-radius from your icon settings. The "
 "border-radius applies to both the icon and the pill container, creating a "
@@ -1960,57 +1974,57 @@ msgstr ""
 "капсулы, создавая единый визуальный стиль. Значки и заполнители имеют "
 "границу 1px, повторяющую их форму."
 
-#: includes/admin/settings.php:1314
+#: includes/admin/settings.php:1318
 msgid "Icon Uploads"
 msgstr "Загрузка значков"
 
-#: includes/admin/settings.php:1321
+#: includes/admin/settings.php:1325
 msgid "Enable icon uploads"
 msgstr "Включить загрузку значков"
 
-#: includes/admin/settings.php:1325
+#: includes/admin/settings.php:1329
 #, php-format
 msgid "Allow uploading custom icons for %s."
 msgstr ""
 "Разрешить загрузку пользовательских значков для терминов таксономии «%s»."
 
-#: includes/admin/settings.php:1333
+#: includes/admin/settings.php:1337
 msgid "Icon Dimensions"
 msgstr "Размеры значков"
 
-#: includes/admin/settings.php:1337
+#: includes/admin/settings.php:1341
 msgid "Width (px):"
 msgstr "Ширина (px):"
 
-#: includes/admin/settings.php:1347 includes/admin/settings.php:1363
+#: includes/admin/settings.php:1351 includes/admin/settings.php:1367
 msgid "Min: 16px, Max: 512px"
 msgstr "Мин.: 16px, Макс.: 512px"
 
-#: includes/admin/settings.php:1353
+#: includes/admin/settings.php:1357
 msgid "Height (px):"
 msgstr "Высота (px):"
 
-#: includes/admin/settings.php:1369
+#: includes/admin/settings.php:1373
 msgid "Medium size (%):"
 msgstr "Средний размер (%):"
 
-#: includes/admin/settings.php:1378
+#: includes/admin/settings.php:1382
 msgid "% of full size — for lists"
 msgstr "% от полного размера — для списков"
 
-#: includes/admin/settings.php:1383
+#: includes/admin/settings.php:1387
 msgid "Small size (%):"
 msgstr "Малый размер (%):"
 
-#: includes/admin/settings.php:1392
+#: includes/admin/settings.php:1396
 msgid "% of full size — for pills and inline display"
 msgstr "% от полного размера — для капсул и встроенного отображения"
 
-#: includes/admin/settings.php:1397 includes/admin/settings.php:2994
+#: includes/admin/settings.php:1401 includes/admin/settings.php:2998
 msgid "Warning:"
 msgstr "Внимание:"
 
-#: includes/admin/settings.php:1400
+#: includes/admin/settings.php:1404
 msgid ""
 "Changing icon dimensions will clear all previously assigned icons for this "
 "taxonomy. Image files will be preserved in the media library, but you will "
@@ -2022,7 +2036,7 @@ msgstr ""
 "потребуется заново назначить терминам. Изменение процентов для среднего или "
 "малого размера перегенерирует эти размеры из уже загруженных значков."
 
-#: includes/admin/settings.php:1405
+#: includes/admin/settings.php:1409
 msgid ""
 "Upload icons at exactly the full size dimensions shown above (larger images "
 "would be cropped). Medium and small sizes are generated automatically at the "
@@ -2032,102 +2046,102 @@ msgstr ""
 "(превышающие его изображения будут обрезаны). Средний и малый варианты "
 "создаются автоматически, на основании заданных процентов."
 
-#: includes/admin/settings.php:1411
+#: includes/admin/settings.php:1415
 msgid "Corner Style"
 msgstr "Стиль углов"
 
-#: includes/admin/settings.php:1415
+#: includes/admin/settings.php:1419
 msgid "Icon corner style"
 msgstr "Стиль углов значка"
 
-#: includes/admin/settings.php:1420
+#: includes/admin/settings.php:1424
 msgid "Square (sharp corners)"
 msgstr "Квадратные (острые углы)"
 
-#: includes/admin/settings.php:1421
+#: includes/admin/settings.php:1425
 msgid "Rounded (4px radius)"
 msgstr "Скруглённые (радиус 4px)"
 
-#: includes/admin/settings.php:1422
+#: includes/admin/settings.php:1426
 msgid "Extra Rounded (8px radius)"
 msgstr "Сильно скруглённые (радиус 8px)"
 
-#: includes/admin/settings.php:1423
+#: includes/admin/settings.php:1427
 msgid "Circular (50% radius)"
 msgstr "Круглые (радиус 50%)"
 
-#: includes/admin/settings.php:1424
+#: includes/admin/settings.php:1428
 msgid "Custom (specify each corner)"
 msgstr "Пользовательские (задать каждый угол)"
 
-#: includes/admin/settings.php:1442
+#: includes/admin/settings.php:1446
 msgid "Top Left:"
 msgstr "Верхний левый:"
 
-#: includes/admin/settings.php:1443
+#: includes/admin/settings.php:1447
 msgid "Top Right:"
 msgstr "Верхний правый:"
 
-#: includes/admin/settings.php:1444
+#: includes/admin/settings.php:1448
 msgid "Bottom Left:"
 msgstr "Нижний левый:"
 
-#: includes/admin/settings.php:1445
+#: includes/admin/settings.php:1449
 msgid "Bottom Right:"
 msgstr "Нижний правый:"
 
-#: includes/admin/settings.php:1473
+#: includes/admin/settings.php:1477
 msgid "0% = sharp corner, 100% = fully rounded (quarter circle)"
 msgstr "0% = острый угол, 100% = полностью скруглённый (четверть круга)"
 
-#: includes/admin/settings.php:1490
+#: includes/admin/settings.php:1494
 msgid "Preview:"
 msgstr "Предпросмотр:"
 
-#: includes/admin/settings.php:1495
+#: includes/admin/settings.php:1499
 #, php-format
 msgid "Small (%d×%d)"
 msgstr "Малый (%d×%d)"
 
-#: includes/admin/settings.php:1499
+#: includes/admin/settings.php:1503
 #, php-format
 msgid "Medium (%d×%d)"
 msgstr "Средний (%d×%d)"
 
-#: includes/admin/settings.php:1503
+#: includes/admin/settings.php:1507
 #, php-format
 msgid "Full (%d×%d)"
 msgstr "Полный (%d×%d)"
 
-#: includes/admin/settings.php:1512
+#: includes/admin/settings.php:1516
 msgid "Icon Display"
 msgstr "Отображение значков"
 
-#: includes/admin/settings.php:1516
+#: includes/admin/settings.php:1520
 msgid "When to display icons"
 msgstr "Когда отображать значки"
 
-#: includes/admin/settings.php:1524
+#: includes/admin/settings.php:1528
 msgid "Always show placeholders"
 msgstr "Всегда показывать заполнители"
 
-#: includes/admin/settings.php:1532
+#: includes/admin/settings.php:1536
 msgid "Only when icon exists"
 msgstr "Только при наличии значка"
 
-#: includes/admin/settings.php:1540
+#: includes/admin/settings.php:1544
 msgid "Never show icons"
 msgstr "Никогда не показывать значки"
 
-#: includes/admin/settings.php:1545
+#: includes/admin/settings.php:1549
 msgid "Widget shortcodes can override these settings using:"
 msgstr "Шорткоды виджетов могут переопределить эти настройки с помощью:"
 
-#: includes/admin/settings.php:1550
+#: includes/admin/settings.php:1554
 msgid "Color Preview:"
 msgstr "Предпросмотр цвета:"
 
-#: includes/admin/settings.php:1563
+#: includes/admin/settings.php:1567
 #, php-format
 msgid "+ %d more color"
 msgid_plural "+ %d more colors"
@@ -2135,15 +2149,15 @@ msgstr[0] "+ ещё %d цвет"
 msgstr[1] "+ ещё %d цвета"
 msgstr[2] "+ ещё %d цветов"
 
-#: includes/admin/settings.php:1575
+#: includes/admin/settings.php:1579
 msgid "Delete All Icons"
 msgstr "Удалить все значки"
 
-#: includes/admin/settings.php:1582
+#: includes/admin/settings.php:1586
 msgid "Delete All Icons for This Taxonomy"
 msgstr "Удалить все значки для этой таксономии"
 
-#: includes/admin/settings.php:1585
+#: includes/admin/settings.php:1589
 msgid ""
 "Permanently delete all uploaded icons for this taxonomy. This action cannot "
 "be undone."
@@ -2151,11 +2165,11 @@ msgstr ""
 "Удалить все загруженные значки для этой таксономии. Это действие невозможно "
 "отменить."
 
-#: includes/admin/settings.php:1637
+#: includes/admin/settings.php:1641
 msgid "No taxonomies with search enhancement enabled."
 msgstr "Нет ни одной таксономии с включённой функцией улучшения поиска."
 
-#: includes/admin/settings.php:1643
+#: includes/admin/settings.php:1647
 #, php-format
 msgid ""
 "To configure search settings, first enable the \"Search enhancement\" "
@@ -2164,19 +2178,19 @@ msgstr ""
 "Чтобы настроить параметры поиска, сначала включите функцию «Улучшение "
 "поиска» для какой-либо таксономии в разделе %s."
 
-#: includes/admin/settings.php:1675
+#: includes/admin/settings.php:1679
 msgid "Custom (Flat)"
 msgstr "Пользовательская (неиерархическая)"
 
-#: includes/admin/settings.php:1683
+#: includes/admin/settings.php:1687
 msgid "Custom (Hierarchical)"
 msgstr "Пользовательская (иерархическая)"
 
-#: includes/admin/settings.php:1694
+#: includes/admin/settings.php:1698
 msgid "Indexed Post Types"
 msgstr "Индексируемые типы записей"
 
-#: includes/admin/settings.php:1714
+#: includes/admin/settings.php:1718
 msgid ""
 "Post types to include in the HyperTaxonomy search index and term archive "
 "features. Defaults to Posts and Pages, matching WordPress native search "
@@ -2186,15 +2200,15 @@ msgstr ""
 "терминов. По умолчанию — записи и страницы, как в стандартном поиске "
 "WordPress."
 
-#: includes/admin/settings.php:1720
+#: includes/admin/settings.php:1724
 msgid "Site Search Integration"
 msgstr "Интеграция с поиском по сайту"
 
-#: includes/admin/settings.php:1727
+#: includes/admin/settings.php:1731
 msgid "Use PowerSearch for WordPress site search"
 msgstr "Использовать PowerSearch для поиска по сайту WordPress"
 
-#: includes/admin/settings.php:1730
+#: includes/admin/settings.php:1734
 msgid ""
 "Replaces WordPress's default search (/?s=…) with the PowerSearch engine on "
 "all site searches. Applies relevance scoring, term relationship expansion, "
@@ -2207,11 +2221,11 @@ msgstr ""
 "для роли /?s= используется Relevanssi, SearchWP или другой "
 "специализированный плагин поиска."
 
-#: includes/admin/settings.php:1736
+#: includes/admin/settings.php:1740
 msgid "Default Match Mode"
 msgstr "Режим интерпретации запросов по умолчанию"
 
-#: includes/admin/settings.php:1744
+#: includes/admin/settings.php:1748
 msgid ""
 "Any (OR) — posts matching at least one term are returned; more matches rank "
 "higher"
@@ -2219,7 +2233,7 @@ msgstr ""
 "Любые (дизъюнкция — «ИЛИ») — возвращаются записи, совпадающие хотя бы с "
 "одним термином; больше совпадений — выше в результатах"
 
-#: includes/admin/settings.php:1751
+#: includes/admin/settings.php:1755
 msgid ""
 "All (AND) — posts must contain every search term; consistent with native "
 "WordPress search behavior"
@@ -2227,7 +2241,7 @@ msgstr ""
 "Все (конъюнкция — «И») — записи должны содержать каждый поисковый термин; "
 "как в стандартном поиске WordPress"
 
-#: includes/admin/settings.php:1754
+#: includes/admin/settings.php:1758
 msgid ""
 "Applies to native WordPress search and to the PowerSearch shortcode when no "
 "match= attribute is set. In All mode the + operator is redundant (every term "
@@ -2239,23 +2253,23 @@ msgstr ""
 "термин и так обязателен); только исключения при помощи «-» и фразы в "
 "кавычках изменяют режим обработки поиска."
 
-#: includes/admin/settings.php:1760
+#: includes/admin/settings.php:1764
 msgid "Term Relationship Expansion"
 msgstr "Расширение по связям терминов"
 
-#: includes/admin/settings.php:1772
+#: includes/admin/settings.php:1776
 msgid "Container (posts tagged with included terms)"
 msgstr "Контейнер (записи, помеченные включёнными терминами)"
 
-#: includes/admin/settings.php:1779
+#: includes/admin/settings.php:1783
 msgid "Hierarchy (posts tagged with child terms)"
 msgstr "Иерархия (записи, помеченные дочерними терминами)"
 
-#: includes/admin/settings.php:1786
+#: includes/admin/settings.php:1790
 msgid "Redirects (posts reachable via redirect terms)"
 msgstr "Перенаправления (записи, доступные через перенаправляющие термины)"
 
-#: includes/admin/settings.php:1789
+#: includes/admin/settings.php:1793
 msgid ""
 "Which relationship types are included when expanding a search term beyond "
 "its direct posts. Direct matches are always included. These defaults apply "
@@ -2267,17 +2281,17 @@ msgstr ""
 "умолчанию применяются к PowerSearch и виджетам поиска; отдельные поля "
 "шорткодов могут переопределить их атрибутом expand=."
 
-#: includes/admin/settings.php:1795
+#: includes/admin/settings.php:1799
 msgid "Search Result Order"
 msgstr "Сортировка результатов поиска"
 
-#: includes/admin/settings.php:1803
+#: includes/admin/settings.php:1807
 msgid "Default sort order for enhanced search: relevance:desc,date:desc"
 msgstr ""
 "Порядок сортировки по умолчанию для улучшенного поиска: "
 "relevance:desc,date:desc"
 
-#: includes/admin/settings.php:1804
+#: includes/admin/settings.php:1808
 msgid ""
 "Valid fields: relevance, date, modified, title, author, comment_count, "
 "last_comment, last_activity, ID"
@@ -2285,32 +2299,32 @@ msgstr ""
 "Допустимые поля: relevance, date, modified, title, author, comment_count, "
 "last_comment, last_activity, ID"
 
-#: includes/admin/settings.php:1805
+#: includes/admin/settings.php:1809
 msgid "Valid orders: asc, desc (defaults to desc if omitted)"
 msgstr "Допустимые направления: asc, desc (по умолчанию desc, если не указано)"
 
-#: includes/admin/settings.php:1806
+#: includes/admin/settings.php:1810
 msgid ""
 "Examples: \"date:desc,title:asc\", \"comment_count:desc\", \"modified:desc\""
 msgstr "Примеры: «date:desc,title:asc», «comment_count:desc», «modified:desc»"
 
-#: includes/admin/settings.php:1813
+#: includes/admin/settings.php:1817
 msgid "Content Relevance Weights"
 msgstr "Значения коэффициента релевантности контента"
 
-#: includes/admin/settings.php:1817
+#: includes/admin/settings.php:1821
 msgid "Title match:"
 msgstr "Совпадение в заголовке:"
 
-#: includes/admin/settings.php:1826
+#: includes/admin/settings.php:1830
 msgid "Content match:"
 msgstr "Совпадение в содержимом:"
 
-#: includes/admin/settings.php:1835
+#: includes/admin/settings.php:1839
 msgid "Excerpt match:"
 msgstr "Совпадение в отрывке:"
 
-#: includes/admin/settings.php:1845
+#: includes/admin/settings.php:1849
 msgid ""
 "These weights control how matches are scored in text search mode. The search "
 "system supports multiple sorting modes (controlled by the orderby "
@@ -2334,27 +2348,27 @@ msgstr ""
 "от 0 до 1.0. Более высокие значения придают большее значение совпадениям в "
 "этом поле."
 
-#: includes/admin/settings.php:1851
+#: includes/admin/settings.php:1855
 msgid "Rate Limiting"
 msgstr "Ограничение частоты запросов"
 
-#: includes/admin/settings.php:1854
+#: includes/admin/settings.php:1858
 msgid "Requests per minute:"
 msgstr "Запросов в минуту:"
 
-#: includes/admin/settings.php:1861
+#: includes/admin/settings.php:1865
 msgid "Limit AJAX search requests per user (10-100)."
 msgstr "Ограничить число AJAX-запросов поиска на пользователя (10–100)."
 
-#: includes/admin/settings.php:1867
+#: includes/admin/settings.php:1871
 msgid "Third-Party Query Expansion"
 msgstr "Расширение сторонних запросов"
 
-#: includes/admin/settings.php:1874
+#: includes/admin/settings.php:1878
 msgid "Expand secondary queries from third-party plugins"
 msgstr "Расширять вторичные запросы от сторонних плагинов"
 
-#: includes/admin/settings.php:1877
+#: includes/admin/settings.php:1881
 msgid ""
 "When enabled, single-term taxonomy queries issued by facet plugins, "
 "WooCommerce layered navigation, page builders, and other third-party plugins "
@@ -2369,21 +2383,21 @@ msgstr ""
 "фасетных виджетах, отражая расширенный набор записей. Отключите, если "
 "конкретный плагин вызывает конфликт."
 
-#: includes/admin/settings.php:1917
+#: includes/admin/settings.php:1921
 msgid "Strength Model"
 msgstr "Модель значимости"
 
-#: includes/admin/settings.php:1925
+#: includes/admin/settings.php:1929
 #, php-format
 msgid "%s — inactive, stored scores only"
 msgstr "%s — неактивна, только сохранённые оценки"
 
-#: includes/admin/settings.php:1932
+#: includes/admin/settings.php:1936
 #, php-format
 msgid "%1$s — %2$d%% scored"
 msgstr "%1$s — оценено %2$d%%"
 
-#: includes/admin/settings.php:1947
+#: includes/admin/settings.php:1951
 #, php-format
 msgid ""
 "The selected model \"%s\" is inactive (its plugin may be deactivated), so "
@@ -2394,7 +2408,7 @@ msgstr ""
 "отключён), поэтому используется встроенная модель. Выбранная модель снова "
 "начнёт действовать после повторной активации плагина."
 
-#: includes/admin/settings.php:1953
+#: includes/admin/settings.php:1957
 msgid ""
 "Which model's term strengths (how central each term is to a post) rank term-"
 "based search results and related posts. Other plugins can provide models. A "
@@ -2409,16 +2423,16 @@ msgstr ""
 "она выбрана, ещё не оценённые пары не учитываются при ранжировании по "
 "терминам. Значения коэффициента релевантности применяются к любой модели."
 
-#: includes/admin/settings.php:1959
+#: includes/admin/settings.php:1963
 msgid "Index Coverage"
 msgstr "Покрытие индекса"
 
-#: includes/admin/settings.php:1994
+#: includes/admin/settings.php:1998
 #, php-format
 msgid "posts indexed (%d%%)"
 msgstr "записей проиндексировано (%d%%)"
 
-#: includes/admin/settings.php:1999
+#: includes/admin/settings.php:2003
 #, php-format
 msgid "%1$s post–term pair (%2$s index rows)"
 msgid_plural "%1$s post–term pairs (%2$s index rows)"
@@ -2426,12 +2440,12 @@ msgstr[0] "%1$s пара «запись — термин» (строк инде�
 msgstr[1] "%1$s пары «запись — термин» (строк индекса: %2$s)"
 msgstr[2] "%1$s пар «запись — термин» (строк индекса: %2$s)"
 
-#: includes/admin/settings.php:2010
+#: includes/admin/settings.php:2014
 #, php-format
 msgid "%1$s: %2$s"
 msgstr "%1$s: %2$s"
 
-#: includes/admin/settings.php:2019
+#: includes/admin/settings.php:2023
 #, php-format
 msgid "%d post is missing from the index — rebuild to include it."
 msgid_plural "%d posts are missing from the index — rebuild to include them."
@@ -2442,17 +2456,17 @@ msgstr[1] ""
 msgstr[2] ""
 "%d записей отсутствуют в индексе — перестройте индекс, чтобы включить их."
 
-#: includes/admin/settings.php:2035
+#: includes/admin/settings.php:2039
 #, php-format
 msgid "%1$s / %2$s post–term pairs scored (%3$d%%)"
 msgstr "Оценено пар «запись — термин»: %1$s из %2$s (%3$d%%)"
 
-#: includes/admin/settings.php:2047
+#: includes/admin/settings.php:2051
 #, php-format
 msgid "%1$s: %2$s / %3$s"
 msgstr "%1$s: %2$s / %3$s"
 
-#: includes/admin/settings.php:2058
+#: includes/admin/settings.php:2062
 #, php-format
 msgid "%s post–term pair is not scored yet."
 msgid_plural "%s post–term pairs are not scored yet."
@@ -2460,15 +2474,15 @@ msgstr[0] "%s пара «запись — термин» ещё не оцене�
 msgstr[1] "%s пары «запись — термин» ещё не оценены."
 msgstr[2] "%s пар «запись — термин» ещё не оценены."
 
-#: includes/admin/settings.php:2062
+#: includes/admin/settings.php:2066
 msgid "This model is inactive and can't be selected."
 msgstr "Эта модель неактивна, и её нельзя выбрать."
 
-#: includes/admin/settings.php:2064
+#: includes/admin/settings.php:2068
 msgid "This model can be selected once every pair is scored."
 msgstr "Эту модель можно будет выбрать, когда все пары будут оценены."
 
-#: includes/admin/settings.php:2066
+#: includes/admin/settings.php:2070
 msgid ""
 "Unscored pairs don't contribute to term-based ranking until the provider "
 "scores them."
@@ -2476,23 +2490,23 @@ msgstr ""
 "Неоценённые пары не учитываются при ранжировании по терминам, пока плагин, "
 "предоставляющий модель, их не оценит."
 
-#: includes/admin/settings.php:2076
+#: includes/admin/settings.php:2080
 msgid "Index Rebuild"
 msgstr "Перестроение индекса"
 
-#: includes/admin/settings.php:2080
+#: includes/admin/settings.php:2084
 msgid "Rebuild Search Index"
 msgstr "Перестроить поисковый индекс"
 
-#: includes/admin/settings.php:2089
+#: includes/admin/settings.php:2093
 msgid "Rebuild the search index if results seem incorrect."
 msgstr "Перестройте поисковый индекс, если результаты кажутся некорректными."
 
-#: includes/admin/settings.php:2096
+#: includes/admin/settings.php:2100
 msgid "Clear Scores"
 msgstr "Очистить оценки"
 
-#: includes/admin/settings.php:2102
+#: includes/admin/settings.php:2106
 #, php-format
 msgid ""
 "Scores for \"%s\" are produced by the plugin that provides this model, so "
@@ -2506,80 +2520,80 @@ msgstr ""
 "все сохранённые оценки этой модели; если она выбрана в качестве модели "
 "значимости, будет снова выбрана встроенная модель."
 
-#: includes/admin/settings.php:2132
+#: includes/admin/settings.php:2136
 msgid "Relevance Weights"
 msgstr "Значения коэффициента релевантности"
 
-#: includes/admin/settings.php:2136
+#: includes/admin/settings.php:2140
 #, php-format
 msgid "Configure how much weight to give to %s matches in search results."
 msgstr ""
 "Настройте значение коэффициента для совпадений в таксономии «%s» в "
 "результатах поиска."
 
-#: includes/admin/settings.php:2178 includes/admin/settings.php:2403
-#: includes/admin/settings.php:2526
+#: includes/admin/settings.php:2182 includes/admin/settings.php:2407
+#: includes/admin/settings.php:2530
 msgid "Match term descriptions in PowerSearch"
 msgstr "Учитывать совпадения в описаниях терминов при поиске в PowerSearch"
 
-#: includes/admin/settings.php:2184 includes/admin/settings.php:2409
-#: includes/admin/settings.php:2532
+#: includes/admin/settings.php:2188 includes/admin/settings.php:2413
+#: includes/admin/settings.php:2536
 msgid "Match Type"
 msgstr "Тип совпадения"
 
-#: includes/admin/settings.php:2185
+#: includes/admin/settings.php:2189
 msgid "Explicit Selection"
 msgstr "Непосредственный выбор"
 
-#: includes/admin/settings.php:2187 includes/admin/settings.php:2410
-#: includes/admin/settings.php:2533
+#: includes/admin/settings.php:2191 includes/admin/settings.php:2414
+#: includes/admin/settings.php:2537
 msgid "Name Match"
 msgstr "Совпадение в названии"
 
-#: includes/admin/settings.php:2188 includes/admin/settings.php:2411
-#: includes/admin/settings.php:2534
+#: includes/admin/settings.php:2192 includes/admin/settings.php:2415
+#: includes/admin/settings.php:2538
 msgid "Description Match"
 msgstr "Совпадение в описании"
 
-#: includes/admin/settings.php:2196 includes/admin/settings.php:2417
-#: includes/admin/settings.php:2540
+#: includes/admin/settings.php:2200 includes/admin/settings.php:2421
+#: includes/admin/settings.php:2544
 msgid "Direct assignment"
 msgstr "Прямая связь"
 
-#: includes/admin/settings.php:2218 includes/admin/settings.php:2431
-#: includes/admin/settings.php:2554
+#: includes/admin/settings.php:2222 includes/admin/settings.php:2435
+#: includes/admin/settings.php:2558
 msgid "Term directly assigned to post"
 msgstr "Термин непосредственно связан с записью"
 
-#: includes/admin/settings.php:2225 includes/admin/settings.php:2558
+#: includes/admin/settings.php:2229 includes/admin/settings.php:2562
 msgid "Child term"
 msgstr "Дочерний термин"
 
-#: includes/admin/settings.php:2247
+#: includes/admin/settings.php:2251
 msgid "Child term via WordPress hierarchy"
 msgstr "Дочерний термин по иерархии WordPress"
 
-#: includes/admin/settings.php:2254 includes/admin/settings.php:2435
-#: includes/admin/settings.php:2576
+#: includes/admin/settings.php:2258 includes/admin/settings.php:2439
+#: includes/admin/settings.php:2580
 msgid "Non-transitive inclusion"
 msgstr "Нетранзитивное включение"
 
-#: includes/admin/settings.php:2289
+#: includes/admin/settings.php:2293
 msgid "Term included into a directly assigned term (container)"
 msgstr ""
 "Термин, включённый в непосредственно связанный с записью термин (контейнер)"
 
-#: includes/admin/settings.php:2291
+#: includes/admin/settings.php:2295
 msgid "(Enable Inclusion/Container relationships to use)"
 msgstr ""
 "(Чтобы использовать, включите связи включения в себя/вхождения в контейнер)"
 
-#: includes/admin/settings.php:2300 includes/admin/settings.php:2453
-#: includes/admin/settings.php:2594
+#: includes/admin/settings.php:2304 includes/admin/settings.php:2457
+#: includes/admin/settings.php:2598
 msgid "Redirect target"
 msgstr "Цель перенаправления"
 
-#: includes/admin/settings.php:2322
+#: includes/admin/settings.php:2326
 msgid ""
 "Post assigned to redirect target term (when redirect term is selected or "
 "text-matched)"
@@ -2587,27 +2601,27 @@ msgstr ""
 "Запись, связанная с термином — целью перенаправления (когда перенаправляющий "
 "термин выбран или найден по тексту)"
 
-#: includes/admin/settings.php:2329
+#: includes/admin/settings.php:2333
 msgid "Explicit Selection:"
 msgstr "Непосредственный выбор:"
 
-#: includes/admin/settings.php:2329
+#: includes/admin/settings.php:2333
 msgid "User selected term in search widget."
 msgstr "Пользователь выбрал термин в виджете поиска."
 
-#: includes/admin/settings.php:2331
+#: includes/admin/settings.php:2335
 msgid "Name Match:"
 msgstr "Совпадение в названии:"
 
-#: includes/admin/settings.php:2331
+#: includes/admin/settings.php:2335
 msgid "Search text matches the term name."
 msgstr "Текст поиска совпадает с названием термина."
 
-#: includes/admin/settings.php:2332
+#: includes/admin/settings.php:2336
 msgid "Description Match:"
 msgstr "Совпадение в описании:"
 
-#: includes/admin/settings.php:2332
+#: includes/admin/settings.php:2336
 msgid ""
 "Search text matches the term description (only when \"Match term "
 "descriptions\" is checked above)."
@@ -2615,7 +2629,7 @@ msgstr ""
 "Текст поиска совпадает с описанием термина (только когда выше отмечено "
 "«Учитывать совпадения в описаниях терминов»)."
 
-#: includes/admin/settings.php:2334
+#: includes/admin/settings.php:2338
 msgid ""
 "Note: Name match and description match weights for custom taxonomies are "
 "configured in the \"Custom (Flat)\" and \"Custom (Hierarchical)\" tabs."
@@ -2624,7 +2638,7 @@ msgstr ""
 "пользовательских таксономий настраиваются на вкладках «Пользовательская "
 "(неиерархическая)» и «Пользовательская (иерархическая)»."
 
-#: includes/admin/settings.php:2336
+#: includes/admin/settings.php:2340
 msgid ""
 "Weight values range from 0 to 1.0. Higher values give more relevance. Use "
 "lower weights for indirect relationships. Setting a weight to 0 will "
@@ -2635,11 +2649,11 @@ msgstr ""
 "связей. При установке 0 как значения коэффициента, соответствующий тип связи "
 "не будет учитываться при поиске, из-за его нулевого влияния на результат."
 
-#: includes/admin/settings.php:2337
+#: includes/admin/settings.php:2341
 msgid "Note:"
 msgstr "Примечание:"
 
-#: includes/admin/settings.php:2337
+#: includes/admin/settings.php:2341
 msgid ""
 "Explicit weights for child-term, inclusion, and redirect-target matches "
 "(used for taxonomy-filter searches) are stored in the search index; when you "
@@ -2652,11 +2666,11 @@ msgstr ""
 "автоматически переиндексируются в фоновом режиме. Значения коэффициента для "
 "текстового поиска (при поиске по ключевым словам) вступают в силу сразу же."
 
-#: includes/admin/settings.php:2338
+#: includes/admin/settings.php:2342
 msgid "Text Search Matching:"
 msgstr "Сопоставление при текстовом поиске:"
 
-#: includes/admin/settings.php:2338
+#: includes/admin/settings.php:2342
 msgid ""
 "Posts are indexed with all their associated terms (direct assignments, "
 "hierarchy, inclusions, redirects). When a user searches for text, MySQL's "
@@ -2672,15 +2686,15 @@ msgstr ""
 "умножаем эти базовые оценки на значение соответствующего коэффициента для "
 "вычисления итоговой релевантности."
 
-#: includes/admin/settings.php:2362
+#: includes/admin/settings.php:2366
 msgid "Reset to Default Values"
 msgstr "Вернуть значения по умолчанию"
 
-#: includes/admin/settings.php:2391 includes/admin/settings.php:2514
+#: includes/admin/settings.php:2395 includes/admin/settings.php:2518
 msgid "Text Match Weights"
 msgstr "Значения коэффициента текстовых совпадений"
 
-#: includes/admin/settings.php:2394
+#: includes/admin/settings.php:2398
 msgid ""
 "These weights apply to text search matches for all custom flat (non-"
 "hierarchical) taxonomies. For explicit widget selection weights, configure "
@@ -2691,15 +2705,15 @@ msgstr ""
 "относящегося к непосредственному выбору в виджете, настраивается для каждой "
 "таксономии отдельно на её собственной вкладке."
 
-#: includes/admin/settings.php:2449 includes/admin/settings.php:2590
+#: includes/admin/settings.php:2453 includes/admin/settings.php:2594
 msgid "Term included into a directly assigned term"
 msgstr "Термин, включённый в напрямую связанный с записью термин"
 
-#: includes/admin/settings.php:2467 includes/admin/settings.php:2608
+#: includes/admin/settings.php:2471 includes/admin/settings.php:2612
 msgid "Post assigned to redirect target term"
 msgstr "Запись, связанная с термином — целью перенаправления"
 
-#: includes/admin/settings.php:2473
+#: includes/admin/settings.php:2477
 msgid ""
 "These weights apply globally to all custom flat taxonomies during indexed "
 "text search. Explicit selection weights are configured per-taxonomy. The "
@@ -2713,7 +2727,7 @@ msgstr ""
 "Флажок «Учитывать совпадения в описаниях терминов» можно переопределить для "
 "каждой таксономии на её собственной вкладке."
 
-#: includes/admin/settings.php:2517
+#: includes/admin/settings.php:2521
 msgid ""
 "These weights apply to text search matches for all custom hierarchical "
 "taxonomies. For explicit widget selection weights, configure each taxonomy "
@@ -2724,11 +2738,11 @@ msgstr ""
 "относящегося к непосредственному выбору в виджете, настраивается для каждой "
 "таксономии отдельно на её собственной вкладке."
 
-#: includes/admin/settings.php:2572
+#: includes/admin/settings.php:2576
 msgid "Child term via hierarchy"
 msgstr "Дочерний термин по иерархии"
 
-#: includes/admin/settings.php:2614
+#: includes/admin/settings.php:2618
 msgid ""
 "These weights apply globally to all custom hierarchical taxonomies during "
 "indexed text search. Explicit selection weights are configured per-taxonomy. "
@@ -2742,49 +2756,49 @@ msgstr ""
 "Флажок «Учитывать совпадения в описаниях терминов» можно переопределить для "
 "каждой таксономии на её собственной вкладке."
 
-#: includes/admin/settings.php:2651
+#: includes/admin/settings.php:2655
 msgid "Internal Caches"
 msgstr "Внутреннее кэширование"
 
-#: includes/admin/settings.php:2654
+#: includes/admin/settings.php:2658
 msgid "Cache Durations"
 msgstr "Длительность кэширования"
 
-#: includes/admin/settings.php:2659
+#: includes/admin/settings.php:2663
 msgid "Search cache:"
 msgstr "Кэширование результатов поиска:"
 
-#: includes/admin/settings.php:2666 includes/admin/settings.php:2684
-#: includes/admin/settings.php:2702 includes/admin/settings.php:2720
-#: includes/admin/settings.php:2738
+#: includes/admin/settings.php:2670 includes/admin/settings.php:2688
+#: includes/admin/settings.php:2706 includes/admin/settings.php:2724
+#: includes/admin/settings.php:2742
 msgid "seconds"
 msgstr "секунд"
 
-#: includes/admin/settings.php:2669
+#: includes/admin/settings.php:2673
 msgid "Contributing-term computation for taxonomy archive pages."
 msgstr ""
 "Вычисление включённых терминов, добавляющих результаты, для страниц архивов "
 "таксономий."
 
-#: includes/admin/settings.php:2672 includes/admin/settings.php:2690
-#: includes/admin/settings.php:2708 includes/admin/settings.php:2726
-#: includes/admin/settings.php:2744
+#: includes/admin/settings.php:2676 includes/admin/settings.php:2694
+#: includes/admin/settings.php:2712 includes/admin/settings.php:2730
+#: includes/admin/settings.php:2748
 msgid "Clear"
 msgstr "Очистить"
 
-#: includes/admin/settings.php:2677
+#: includes/admin/settings.php:2681
 msgid "Autocomplete cache:"
 msgstr "Кэширование автозаполнения:"
 
-#: includes/admin/settings.php:2687
+#: includes/admin/settings.php:2691
 msgid "Tag and term autocomplete suggestions in the admin post editor."
 msgstr "Подсказки автозаполнения меток и терминов в редакторе записей."
 
-#: includes/admin/settings.php:2695
+#: includes/admin/settings.php:2699
 msgid "Relationship cache:"
 msgstr "Кэширование связей:"
 
-#: includes/admin/settings.php:2705
+#: includes/admin/settings.php:2709
 msgid ""
 "Inclusions, containers, redirects, hidden terms, group memberships, and "
 "custom relationship lookups. 0 = never expire (cleared on save)."
@@ -2793,11 +2807,11 @@ msgstr ""
 "и запросы пользовательских связей. 0 = никогда не истекает (очищается при "
 "сохранении изменений)."
 
-#: includes/admin/settings.php:2713
+#: includes/admin/settings.php:2717
 msgid "Sticky archive cache:"
 msgstr "Кэширование закреплённых записей в архивах:"
 
-#: includes/admin/settings.php:2723
+#: includes/admin/settings.php:2727
 msgid ""
 "Sticky post lists shown on taxonomy archive pages. 0 = never expire (cleared "
 "when pins change)."
@@ -2805,11 +2819,11 @@ msgstr ""
 "Списки закреплённых записей, показываемые на страницах архивов терминов. 0 = "
 "никогда не истекает (очищается при изменении закреплений)."
 
-#: includes/admin/settings.php:2731
+#: includes/admin/settings.php:2735
 msgid "Shortcode output cache:"
 msgstr "Кэширование вывода шорткодов:"
 
-#: includes/admin/settings.php:2741
+#: includes/admin/settings.php:2745
 msgid ""
 "[ht_post_list] and [ht_related_posts] rendered output. 0 = never expire (use "
 "Clear below when posts change)."
@@ -2817,39 +2831,39 @@ msgstr ""
 "Обработанный вывод [ht_post_list] и [ht_related_posts]. 0 = никогда не "
 "истекает (используйте «Очистить» ниже при изменении записей)."
 
-#: includes/admin/settings.php:2752
+#: includes/admin/settings.php:2756
 msgid "Clear All Caches"
 msgstr "Очистить все кэшированные данные"
 
-#: includes/admin/settings.php:2754
+#: includes/admin/settings.php:2758
 msgid "Clear all HyperTaxonomy caches?"
 msgstr "Очистить все кэшированные данные HyperTaxonomy?"
 
-#: includes/admin/settings.php:2755
+#: includes/admin/settings.php:2759
 msgid "Clear All"
 msgstr "Очистить всё"
 
-#: includes/admin/settings.php:2758
+#: includes/admin/settings.php:2762
 msgid "Clears all HyperTaxonomy transients at once."
 msgstr "Очищает все временные данные HyperTaxonomy."
 
-#: includes/admin/settings.php:2776
+#: includes/admin/settings.php:2780
 msgid "Export"
 msgstr "Экспорт"
 
-#: includes/admin/settings.php:2777
+#: includes/admin/settings.php:2781
 msgid "Import"
 msgstr "Импорт"
 
-#: includes/admin/settings.php:2778
+#: includes/admin/settings.php:2782
 msgid "Migrate"
 msgstr "Миграция"
 
-#: includes/admin/settings.php:2819
+#: includes/admin/settings.php:2823
 msgid "Concurrent Edit Locking"
 msgstr "Блокировка одновременного редактирования"
 
-#: includes/admin/settings.php:2826
+#: includes/admin/settings.php:2830
 msgid ""
 "Show a warning when multiple editors edit the same term or relationship type "
 "simultaneously"
@@ -2857,7 +2871,7 @@ msgstr ""
 "Показывать предупреждение, когда несколько редакторов одновременно "
 "редактируют один и тот же термин или тип связи"
 
-#: includes/admin/settings.php:2829
+#: includes/admin/settings.php:2833
 msgid ""
 "Uses the WordPress heartbeat API. Disable if this conflicts with another "
 "plugin that also hooks into the heartbeat."
@@ -2865,17 +2879,17 @@ msgstr ""
 "Использует API Heartbeat, встроенный в WordPress. Отключите, если это "
 "конфликтует с другим плагином, который также подключается к Heartbeat."
 
-#: includes/admin/settings.php:2835
+#: includes/admin/settings.php:2839
 msgid "Post Editor Term Loading"
 msgstr "Загрузка терминов в редакторе записей"
 
-#: includes/admin/settings.php:2842
+#: includes/admin/settings.php:2846
 msgid "Pre-load assigned tag data from PHP to avoid per-term REST requests"
 msgstr ""
 "Предзагружать из PHP данные меток, связанных с записью, чтобы избежать "
 "отдельных REST-запросов для каждого термина"
 
-#: includes/admin/settings.php:2845
+#: includes/admin/settings.php:2849
 msgid ""
 "On page load, HyperTaxonomy injects the currently assigned terms into the "
 "block editor's data store so Gutenberg does not need to fetch each one "
@@ -2890,15 +2904,15 @@ msgstr ""
 "редакторе (например, ACF с поддержкой REST API) — отключение этой опции "
 "позволяет включить такие поля в стандартный ответ REST."
 
-#: includes/admin/settings.php:2851
+#: includes/admin/settings.php:2855
 msgid "Post Editor Restrictions"
 msgstr "Ограничения редактора записей"
 
-#: includes/admin/settings.php:2858
+#: includes/admin/settings.php:2862
 msgid "Disallow creating new tags in post editor"
 msgstr "Запретить создание новых меток в редакторе записей"
 
-#: includes/admin/settings.php:2861
+#: includes/admin/settings.php:2865
 msgid ""
 "Editors can only select existing tags in the post editor, not create new "
 "ones. Tags can still be created via the Terms admin screens."
@@ -2907,11 +2921,11 @@ msgstr ""
 "не создавать новые. Метки по-прежнему можно создавать через страницы "
 "управления терминами."
 
-#: includes/admin/settings.php:2867
+#: includes/admin/settings.php:2871
 msgid "Content-Based Tag Suggestions"
 msgstr "Предложение меток на основе содержимого"
 
-#: includes/admin/settings.php:2875
+#: includes/admin/settings.php:2879
 msgid ""
 "Replace \"most used tags\" suggestions in the post editor with suggestions "
 "based on the post content"
@@ -2919,7 +2933,7 @@ msgstr ""
 "Заменить предложения «часто используемых меток» в редакторе записей "
 "предложениями на основе содержимого записи"
 
-#: includes/admin/settings.php:2878
+#: includes/admin/settings.php:2882
 msgid ""
 "Suggests tags whose names match words in the post title, excerpt, or body, "
 "ordered by number of matches. Only tags not already assigned to the post are "
@@ -2929,15 +2943,15 @@ msgstr ""
 "или теле записи, отсортированные по количеству совпадений. Показываются "
 "только метки, ещё не связанные с записью."
 
-#: includes/admin/settings.php:2883
+#: includes/admin/settings.php:2887
 msgid "Words to ignore:"
 msgstr "Игнорируемые слова:"
 
-#: includes/admin/settings.php:2890
+#: includes/admin/settings.php:2894
 msgid "e.g. post, page, article, the, a"
 msgstr "например: запись, страница, статья, и, в, на"
 
-#: includes/admin/settings.php:2893
+#: includes/admin/settings.php:2897
 msgid ""
 "Comma-separated. Occurrences of these words are removed from the post text "
 "before matching."
@@ -2945,15 +2959,15 @@ msgstr ""
 "Перечисление через запятую. Совпадения этих слов не принимаются во внимание "
 "для предложения меток."
 
-#: includes/admin/settings.php:2911
+#: includes/admin/settings.php:2915
 msgid "Search Assets"
 msgstr "Ресурсы поиска"
 
-#: includes/admin/settings.php:2918
+#: includes/admin/settings.php:2922
 msgid "Always load search assets (Search Widget and PowerSearch)"
 msgstr "Всегда загружать ресурсы поиска (виджет поиска и PowerSearch)"
 
-#: includes/admin/settings.php:2921
+#: includes/admin/settings.php:2925
 msgid ""
 "Enable if using page builders or dynamic content where search shortcodes may "
 "be loaded conditionally."
@@ -2961,15 +2975,15 @@ msgstr ""
 "Включите, если используете конструкторы страниц или динамический контент, "
 "где шорткоды поиска могут загружаться условно."
 
-#: includes/admin/settings.php:2927
+#: includes/admin/settings.php:2931
 msgid "HyperTaxonomy Presence Header"
 msgstr "Заголовок присутствия HyperTaxonomy"
 
-#: includes/admin/settings.php:2934
+#: includes/admin/settings.php:2938
 msgid "Add X-HyperTaxonomy header to REST API responses"
 msgstr "Добавлять заголовок X-HyperTaxonomy в ответы REST API"
 
-#: includes/admin/settings.php:2937
+#: includes/admin/settings.php:2941
 msgid ""
 "Peer sites (including TermConnect on remote WordPress installs) use this "
 "header to detect HyperTaxonomy and enable scored requests, vocabulary sync, "
@@ -2981,16 +2995,16 @@ msgstr ""
 "с оценкой, синхронизации словаря и сопоставления терминов между сайтами. "
 "Отключите, чтобы отказаться от обнаружения в качестве словарного узла."
 
-#: includes/admin/settings.php:2943
+#: includes/admin/settings.php:2947
 msgid "Term Inclusion Relationships"
 msgstr "Связи включения терминов"
 
-#: includes/admin/settings.php:2950
+#: includes/admin/settings.php:2954
 msgid "Include term inclusion and synonym relationships in REST term responses"
 msgstr ""
 "Включать связи включения терминов и синонимов в ответы REST для терминов"
 
-#: includes/admin/settings.php:2953
+#: includes/admin/settings.php:2957
 msgid ""
 "Exposes inclusion and synonym data for each term. Used by themes and "
 "headless clients that display related terms. Disable on sites with deep "
@@ -3004,11 +3018,11 @@ msgstr ""
 "чтобы не раскрывать структуру словаря публично. htax_relationships требует, "
 "чтобы также были включены пользовательские связи терминов и типы связей."
 
-#: includes/admin/settings.php:2959
+#: includes/admin/settings.php:2963
 msgid "Custom Term Relationships and Relationship Types"
 msgstr "Пользовательские связи терминов и типы связей"
 
-#: includes/admin/settings.php:2966
+#: includes/admin/settings.php:2970
 msgid ""
 "Expose custom relationship type definitions via REST and include custom term "
 "relationships in REST term responses"
@@ -3016,7 +3030,7 @@ msgstr ""
 "Предоставлять определения пользовательских типов связей через REST и "
 "включать пользовательские связи терминов в ответы REST для терминов"
 
-#: includes/admin/settings.php:2973
+#: includes/admin/settings.php:2977
 msgid ""
 "Registers <code>GET htax/v1/relationship-types</code> and <code>GET htax/v1/"
 "term/{id}/relationships</code>, and adds the <code>htax_relationships</code> "
@@ -3032,15 +3046,15 @@ msgstr ""
 "типов связей и связей терминов со сторонних сайтов. Приватные типы и типы, "
 "делегированные удалённо, всегда исключаются независимо от этой настройки."
 
-#: includes/admin/settings.php:2983
+#: includes/admin/settings.php:2987
 msgid "Uninstall"
 msgstr "Удаление"
 
-#: includes/admin/settings.php:2990
+#: includes/admin/settings.php:2994
 msgid "Delete all HyperTaxonomy data when plugin is uninstalled"
 msgstr "Очистить все данные HyperTaxonomy при удалении плагина"
 
-#: includes/admin/settings.php:2995
+#: includes/admin/settings.php:2999
 msgid ""
 "This will permanently delete all HyperTaxonomy term data: relationships, "
 "groups, redirects, icons, hidden flags, sticky posts and the search index. "
@@ -3050,19 +3064,19 @@ msgstr ""
 "терминов, перенаправления, значки, признаки скрытия, закреплённые записи и "
 "поисковый индекс. Настройки удаляются при удалении плагина в любом случае."
 
-#: includes/admin/settings.php:3001
+#: includes/admin/settings.php:3005
 msgid "Health Check"
 msgstr "Проверка работоспособности"
 
-#: includes/admin/settings.php:3006
+#: includes/admin/settings.php:3010
 msgid "✓ All systems operational"
 msgstr "✓ Все системы работают"
 
-#: includes/admin/settings.php:3008
+#: includes/admin/settings.php:3012
 msgid "⚠ Issues detected:"
 msgstr "⚠ Обнаружены проблемы:"
 
-#: includes/admin/settings.php:3017
+#: includes/admin/settings.php:3021
 msgid ""
 "System status report: database table presence, search index state, and "
 "configuration validity."
@@ -3070,7 +3084,7 @@ msgstr ""
 "Отчёт о состоянии системы: наличие таблиц базы данных, состояние поискового "
 "индекса и корректность конфигурации."
 
-#: includes/admin/settings.php:3121
+#: includes/admin/settings.php:3125
 #, php-format
 msgid ""
 "Term relationships have been enabled for %s. You may need to rebuild the "
@@ -3080,7 +3094,7 @@ msgstr ""
 "перестроить поисковый индекс, чтобы связи включения в себя/вхождения в "
 "контейнер стали доступны для поиска."
 
-#: includes/admin/settings.php:3246
+#: includes/admin/settings.php:3250
 #, php-format
 msgid ""
 "Icon dimensions changed for %s. All icon assignments have been cleared "
@@ -3089,7 +3103,7 @@ msgstr ""
 "Размеры значков изменены для таксономии «%s». Все привязки значков к "
 "терминам очищены (файлы изображений сохранены)."
 
-#: includes/admin/settings.php:3306
+#: includes/admin/settings.php:3310
 #, php-format
 msgid ""
 "\"%s\" can't be selected as the strength model yet: it hasn't scored every "
@@ -3099,19 +3113,19 @@ msgstr ""
 "ещё не все пары «запись — термин». См. раздел «Покрытие индекса» на вкладке "
 "«Поиск»."
 
-#: includes/admin/settings.php:3470
+#: includes/admin/settings.php:3474
 msgid "Settings saved successfully."
 msgstr "Настройки успешно сохранены."
 
-#: includes/admin/settings.php:3506
+#: includes/admin/settings.php:3510
 msgid "Search index rebuilt successfully!"
 msgstr "Поисковый индекс успешно перестроен!"
 
-#: includes/admin/settings.php:3507
+#: includes/admin/settings.php:3511
 msgid "Error rebuilding search index. Please try again."
 msgstr "Ошибка при перестроении поискового индекса. Попробуйте ещё раз."
 
-#: includes/admin/settings.php:3509
+#: includes/admin/settings.php:3513
 msgid ""
 "Remove every score stored for this strength model? The plugin that provides "
 "it will have to rescore all posts. This cannot be undone."
@@ -3119,15 +3133,15 @@ msgstr ""
 "Удалить все сохранённые оценки этой модели значимости? Предоставляющему её "
 "плагину придётся заново оценить все записи. Это действие нельзя отменить."
 
-#: includes/admin/settings.php:3510
+#: includes/admin/settings.php:3514
 msgid "Clearing…"
 msgstr "Идёт очистка…"
 
-#: includes/admin/settings.php:3511
+#: includes/admin/settings.php:3515
 msgid "Error clearing scores. Please try again."
 msgstr "Ошибка при очистке оценок. Попробуйте ещё раз."
 
-#: includes/admin/settings.php:3513
+#: includes/admin/settings.php:3517
 #, php-format
 msgid ""
 "Are you sure you want to delete all icons for %s? This action cannot be "
@@ -3136,30 +3150,30 @@ msgstr ""
 "Вы уверены, что хотите удалить все значки для таксономии «%s»? Это действие "
 "невозможно отменить."
 
-#: includes/admin/settings.php:3514
+#: includes/admin/settings.php:3518
 msgid "Deleting icons..."
 msgstr "Идёт удаление значков…"
 
-#: includes/admin/settings.php:3515
+#: includes/admin/settings.php:3519
 msgid "Icons deleted successfully!"
 msgstr "Значки успешно удалены!"
 
-#: includes/admin/settings.php:3516
+#: includes/admin/settings.php:3520
 msgid "Error deleting icons. Please try again."
 msgstr "Ошибка при удалении значков. Попробуйте ещё раз."
 
-#: includes/admin/settings.php:3517
+#: includes/admin/settings.php:3521
 msgid ""
 "Are you sure you want to reset all relevance weights to their default values?"
 msgstr ""
 "Вы уверены, что хотите сбросить все значения коэффициента релевантности к "
 "значениям по умолчанию?"
 
-#: includes/admin/settings.php:3518
+#: includes/admin/settings.php:3522
 msgid "Relevance weights have been reset to default values."
 msgstr "Значения коэффициента релевантности сброшены к значениям по умолчанию."
 
-#: includes/admin/settings.php:3606
+#: includes/admin/settings.php:3610
 msgid "All caches cleared successfully!"
 msgstr "Все кэшированные данные успешно очищены!"
 
@@ -3890,7 +3904,7 @@ msgstr "Добавить критерий сортировки"
 
 #: includes/admin/term-edit.php:607
 #: includes/shortcodes/class-filter-options.php:139
-#: includes/shortcodes/class-filter-options.php:1076
+#: includes/shortcodes/class-filter-options.php:1078
 #: includes/shortcodes/class-sort-order.php:39
 #: blocks/ht-sort-order-options/src/index.js:18
 msgid "Date"
@@ -3907,7 +3921,7 @@ msgstr "Заголовок"
 
 #: includes/admin/term-edit.php:610
 #: includes/shortcodes/class-filter-options.php:184
-#: includes/shortcodes/class-filter-options.php:1088
+#: includes/shortcodes/class-filter-options.php:1090
 #: includes/shortcodes/class-sort-order.php:42
 #: blocks/ht-sort-order-options/src/index.js:21 blocks/shared/components.js:151
 msgid "Author"
@@ -4397,7 +4411,7 @@ msgstr "Документация"
 msgid "Support"
 msgstr "Поддержка"
 
-#: includes/core/functions.php:512
+#: includes/core/functions.php:498
 msgid "Creating new tags is disabled. Please select from existing tags."
 msgstr ""
 "Создание новых меток отключено. Пожалуйста, выберите из существующих меток."
@@ -4414,11 +4428,6 @@ msgstr ""
 "Группы терминов нельзя добавлять в другие группы терминов через членство в "
 "группе. Используйте вместо этого стандартный интерфейс для создания "
 "иерархий, встроенный в WordPress."
-
-#: includes/core/group-functions.php:272 includes/core/group-functions.php:294
-msgid "Database error saving group assignments; changes rolled back."
-msgstr ""
-"Ошибка базы данных при сохранении членства в группах; изменения отменены."
 
 #: includes/core/helpers.php:554
 #, php-format
@@ -4481,77 +4490,73 @@ msgstr "Название «%1$s» уже используется типом «%
 msgid "The inverse label \"%1$s\" is already used by the \"%2$s\" type."
 msgstr "Обратное название «%1$s» уже используется типом «%2$s»."
 
-#: includes/core/relationship-types.php:636
+#: includes/core/relationship-types.php:637
 msgid "Use the dedicated API for this relationship type."
 msgstr "Используйте специальный API для этого типа связи."
 
-#: includes/core/relationship-types.php:641
+#: includes/core/relationship-types.php:642
 msgid "Relationship type not registered."
 msgstr "Тип связи не зарегистрирован."
 
-#: includes/core/relationship-types.php:648
+#: includes/core/relationship-types.php:649
 msgid "Source term ID is invalid."
 msgstr "Недопустимый идентификатор исходного термина."
 
-#: includes/core/relationship-types.php:651
+#: includes/core/relationship-types.php:652
 msgid "Target term ID is invalid."
 msgstr "Недопустимый идентификатор целевого термина."
 
-#: includes/core/relationship-types.php:660
+#: includes/core/relationship-types.php:661
 msgid "A relationship cannot have group terms on both source and target."
 msgstr "Связь не может иметь термины-группы одновременно в источнике и в цели."
 
-#: includes/core/relationship-types.php:665
+#: includes/core/relationship-types.php:666
 msgid "A term cannot include itself."
 msgstr "Термин не может включать сам себя."
 
-#: includes/core/relationship-types.php:670
+#: includes/core/relationship-types.php:671
 msgid "Source term taxonomy is not allowed for this relationship type."
 msgstr "Таксономия исходного термина не разрешена для этого типа связи."
 
-#: includes/core/relationship-types.php:673
+#: includes/core/relationship-types.php:674
 msgid "Target term taxonomy is not allowed for this relationship type."
 msgstr "Таксономия целевого термина не разрешена для этого типа связи."
 
-#: includes/core/relationship-types.php:678
+#: includes/core/relationship-types.php:679
 msgid "Includes-type relationships must connect terms in the same taxonomy."
 msgstr ""
 "Типы связи на основе включения могут соединять только термины из одной и той "
 "же таксономии."
 
-#: includes/core/relationship-types.php:697
-msgid "Database error saving relationship."
-msgstr "Ошибка базы данных при сохранении связи."
-
-#: includes/core/relationship-types.php:964
+#: includes/core/relationship-types.php:965
 msgid "Member of"
 msgstr "Входит в"
 
-#: includes/core/relationship-types.php:965
+#: includes/core/relationship-types.php:966
 msgid "Contains member"
 msgstr "Содержит"
 
-#: includes/core/relationship-types.php:973
+#: includes/core/relationship-types.php:974
 msgid "Includes"
 msgstr "Включает"
 
-#: includes/core/relationship-types.php:974
+#: includes/core/relationship-types.php:975
 msgid "Is included into"
 msgstr "Включается в"
 
-#: includes/core/relationship-types.php:982
+#: includes/core/relationship-types.php:983
 msgid "Excludes"
 msgstr "Исключает"
 
-#: includes/core/relationship-types.php:983
+#: includes/core/relationship-types.php:984
 msgid "Is excluded from"
 msgstr "Исключается из"
 
-#: includes/core/relationship-types.php:991
+#: includes/core/relationship-types.php:992
 msgid "Redirects to"
 msgstr "Перенаправляется на"
 
-#: includes/core/relationship-types.php:992
+#: includes/core/relationship-types.php:993
 msgid "Target of redirect from"
 msgstr "Является целью перенаправления"
 
@@ -4778,16 +4783,22 @@ msgstr ""
 "Этот термин уже является перенаправлением. Удалите характеристику "
 "перенаправления на странице редактирования термина перед преобразованием."
 
-#: includes/core/term-conversion.php:266 includes/core/term-conversion.php:358
+#: includes/core/term-conversion.php:266 includes/core/term-conversion.php:372
 msgid "Failed to create the term in the target taxonomy."
 msgstr "Не удалось создать термин в целевой таксономии."
 
-#: includes/core/term-conversion.php:459
+#: includes/core/term-conversion.php:292 includes/core/term-conversion.php:399
+msgid ""
+"Database error moving posts to the new term; the term was not converted."
+msgstr ""
+"Ошибка базы данных при переносе записей в новый термин; термин не преобразован."
+
+#: includes/core/term-conversion.php:488
 #, php-format
 msgid "Term #%d not found in source taxonomy."
 msgstr "Термин #%d не найден в исходной таксономии."
 
-#: includes/core/term-conversion.php:979
+#: includes/core/term-conversion.php:1017
 #, php-format
 msgid "Redirect to %1$s (%2$s)"
 msgstr "Перенаправление на %1$s (%2$s)"
@@ -4821,49 +4832,49 @@ msgstr "Исходный термин %d не найден в указанной
 msgid "Could not resolve target term_taxonomy_id."
 msgstr "Не удалось определить term_taxonomy_id целевого термина."
 
-#: includes/core/term-merge.php:272
+#: includes/core/term-merge.php:281
 msgid "Database error during term merge; all changes rolled back."
 msgstr "Ошибка базы данных во время слияния терминов; все изменения отменены."
 
-#: includes/core/term-relationships.php:1329
+#: includes/core/term-relationships.php:1355
 msgid "Security verification failed. Please refresh the page and try again."
 msgstr ""
 "Проверка безопасности не пройдена. Обновите страницу и попробуйте ещё раз."
 
-#: includes/core/term-relationships.php:1367
+#: includes/core/term-relationships.php:1393
 msgid "Manage Term Visibility"
 msgstr "Настройки видимости термина"
 
-#: includes/core/term-relationships.php:1376
+#: includes/core/term-relationships.php:1402
 msgid "Manage Term Icons"
 msgstr "Управление значками терминов"
 
-#: includes/core/term-relationships.php:1411
+#: includes/core/term-relationships.php:1437
 msgid "Manage Term Relationships"
 msgstr "Управление связями терминов"
 
-#: includes/core/term-relationships.php:1423
+#: includes/core/term-relationships.php:1449
 #, php-format
 msgid ""
 "You do not have the required permissions to edit term settings. Missing: %s"
 msgstr ""
 "У вас нет необходимых прав для изменения настроек термина. Отсутствует: %s"
 
-#: includes/core/term-relationships.php:1525
+#: includes/core/term-relationships.php:1549
 msgid "Invalid redirect: cannot redirect to self or empty target."
 msgstr ""
 "Недопустимое перенаправление: нельзя перенаправить на себя или на пустую "
 "цель."
 
-#: includes/core/term-relationships.php:1530
+#: includes/core/term-relationships.php:1554
 msgid "Invalid redirect target."
 msgstr "Недопустимая цель перенаправления."
 
-#: includes/core/term-relationships.php:1570
+#: includes/core/term-relationships.php:1594
 msgid "Redirect saved."
 msgstr "Перенаправление сохранено."
 
-#: includes/core/term-relationships.php:1577
+#: includes/core/term-relationships.php:1601
 #, php-format
 msgid ""
 "Circular redirect resolved: \"%s\" was previously redirecting here, so its "
@@ -4872,7 +4883,7 @@ msgstr ""
 "Циклическое перенаправление устранено: термин «%s» ранее перенаправлялся "
 "сюда, поэтому его перенаправление удалено."
 
-#: includes/core/term-relationships.php:1591
+#: includes/core/term-relationships.php:1615
 #, php-format
 msgid ""
 "\"%1$s\" is itself a redirect, so this term now redirects directly to "
@@ -4881,7 +4892,7 @@ msgstr ""
 "Термин «%1$s» сам является перенаправлением, поэтому этот термин теперь "
 "перенаправляется напрямую на «%2$s»."
 
-#: includes/core/term-relationships.php:1621
+#: includes/core/term-relationships.php:1645
 #, php-format
 msgid "1 other redirect updated: \"%1$s\" now redirects directly to \"%2$s\"."
 msgid_plural ""
@@ -4896,36 +4907,31 @@ msgstr[2] ""
 "Обновлено ещё %3$d перенаправлений: «%1$s» теперь перенаправляются напрямую "
 "на «%2$s»."
 
-#: includes/core/term-relationships.php:1635
+#: includes/core/term-relationships.php:1659
 msgid "Failed to save redirect. Check for circular redirects."
 msgstr ""
 "Не удалось сохранить перенаправление. Проверьте наличие циклических "
 "перенаправлений."
 
-#: includes/core/term-relationships.php:1646
+#: includes/core/term-relationships.php:1673
 msgid "Redirect removed successfully."
 msgstr "Перенаправление успешно удалено."
 
-#: includes/core/term-relationships.php:1662
-#, php-format
-msgid "Error saving redirect for term #%d: %s"
-msgstr "Ошибка при сохранении перенаправления для термина #%d: %s"
-
-#: includes/core/term-relationships.php:1737
+#: includes/core/term-relationships.php:1743
 #, php-format
 msgid "Some %s groups were not added: %s"
 msgstr "Некоторые группы (%s) не добавлены: %s"
 
-#: includes/core/term-relationships.php:2218
+#: includes/core/term-relationships.php:2235
 msgid "Term relationships saved successfully."
 msgstr "Связи терминов успешно сохранены."
 
-#: includes/core/term-relationships.php:2368
+#: includes/core/term-relationships.php:2385
 #, php-format
 msgid "Database error saving relationships for term #%d: %s"
 msgstr "Ошибка базы данных при сохранении связей для термина #%d: %s"
 
-#: includes/core/term-relationships.php:3003
+#: includes/core/term-relationships.php:3028
 #, php-format
 msgid ""
 "HyperTaxonomy: Cleaned up conflicting relationships for term #%d due to "
@@ -5033,33 +5039,33 @@ msgid "HyperTaxonomy's own merge tool"
 msgstr "встроенную функцию слияния терминов HyperTaxonomy"
 
 #: includes/shortcodes/class-filter-options.php:162
-#: includes/shortcodes/class-filter-options.php:1082
+#: includes/shortcodes/class-filter-options.php:1084
 #: includes/shortcodes/class-sort-order.php:40
 #: blocks/ht-sort-order-options/src/index.js:19
 msgid "Modified"
 msgstr "Дата изменения"
 
 #: includes/shortcodes/class-filter-options.php:215
-#: includes/shortcodes/class-filter-options.php:1149
-#: includes/shortcodes/class-filter-options.php:1150
+#: includes/shortcodes/class-filter-options.php:1151
+#: includes/shortcodes/class-filter-options.php:1152
 msgid "Filter"
 msgstr "Фильтровать"
 
-#: includes/shortcodes/class-filter-options.php:1179
+#: includes/shortcodes/class-filter-options.php:1181
 msgid "Clear filters"
 msgstr "Очистить фильтры"
 
-#: includes/shortcodes/class-filter-options.php:1308
-#: includes/shortcodes/class-filter-options.php:1309
+#: includes/shortcodes/class-filter-options.php:1310
+#: includes/shortcodes/class-filter-options.php:1311
 msgid "From"
 msgstr "От"
 
-#: includes/shortcodes/class-filter-options.php:1310
+#: includes/shortcodes/class-filter-options.php:1312
 msgid "–"
 msgstr "–"
 
-#: includes/shortcodes/class-filter-options.php:1313
-#: includes/shortcodes/class-filter-options.php:1314
+#: includes/shortcodes/class-filter-options.php:1315
+#: includes/shortcodes/class-filter-options.php:1316
 msgid "To"
 msgstr "До"
 
@@ -5097,11 +5103,11 @@ msgstr "ID"
 msgid "Add sort field"
 msgstr "Добавить поле сортировки"
 
-#: includes/shortcodes/class-term-groups.php:61
+#: includes/shortcodes/class-term-groups.php:63
 msgid "The Term Groups taxonomy is not registered."
 msgstr "Таксономия групп терминов не зарегистрирована."
 
-#: includes/shortcodes/class-term-groups.php:74
+#: includes/shortcodes/class-term-groups.php:76
 msgid "No valid taxonomies specified."
 msgstr "Не указано ни одной допустимой таксономии."
 
@@ -6035,3 +6041,7 @@ msgstr ""
 msgctxt "block keyword"
 msgid "list"
 msgstr "list"
+
+#, php-format
+#~ msgid "Error saving redirect for term #%d: %s"
+#~ msgstr "Ошибка при сохранении перенаправления для термина #%d: %s"

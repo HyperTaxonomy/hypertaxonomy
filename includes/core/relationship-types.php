@@ -335,6 +335,7 @@ function htax_remove_custom_relationship_type( string $slug ): bool {
         array( 'relationship_type' => $slug ),
         array( '%s' )
     );
+    htax_handle_db_error( 'delete relationship type rows' );
 
     // Clear all cached relationship data for the deleted type.
     htax_delete_transients_by_prefix( 'htax_crel_' . $slug . '_' );
@@ -618,7 +619,7 @@ function htax_get_relationship_types_for_taxonomy( string $taxonomy ): array {
  * Save a relationship row between two terms.
  *
  * Valid for 'includes', 'excludes', and all non-core types. Do NOT pass
- * 'redirect' (use htax_save_redirect() — chain collapse and circular detection
+ * 'redirect' (use htax_set_redirect() — chain collapse and circular detection
  * are required) or 'member_of' (use htax_set_term_groups()).
  *
  * Enforces taxonomy constraints, invalidates affected caches, fires the

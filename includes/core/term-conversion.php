@@ -271,13 +271,27 @@ function htax_convert_term( int $term_id, string $target_taxonomy, bool $create_
 		$new_tt_id   = (int) $new_term['term_taxonomy_id'];
 
 		// 2. Move post assignments before deletion (same as wpcat2tag).
-		$wpdb->update(
+		$moved = $wpdb->update(
 			$wpdb->term_relationships,
 			array( 'term_taxonomy_id' => $new_tt_id ),
 			array( 'term_taxonomy_id' => $old_tt_id ),
 			array( '%d' ),
 			array( '%d' )
 		);
+
+		// Stop before deleting the old term, which would remove its unmoved posts' assignments.
+		if ( false === $moved ) {
+			htax_log_error( 'Failed to move posts during term conversion', array(
+				'term_id' => $term_id,
+				'error'   => $wpdb->last_error,
+			) );
+			wp_delete_term( $new_term_id, $target_taxonomy );
+			unset( $GLOBALS['htax_native_conversion_in_progress'] );
+			return new WP_Error(
+				'move_failed',
+				__( 'Database error moving posts to the new term; the term was not converted.', 'hypertaxonomy' )
+			);
+		}
 		$post_ids_to_move = $wpdb->get_col( $wpdb->prepare(
 			"SELECT object_id FROM {$wpdb->term_relationships} WHERE term_taxonomy_id = %d",
 			$new_tt_id
@@ -363,13 +377,28 @@ function htax_convert_term( int $term_id, string $target_taxonomy, bool $create_
 	$new_tt_id   = (int) $new_term['term_taxonomy_id'];
 
 	// Move all post assignments from old term to new term in one query.
-	$wpdb->update(
+	$moved = $wpdb->update(
 		$wpdb->term_relationships,
 		array( 'term_taxonomy_id' => $new_tt_id ),
 		array( 'term_taxonomy_id' => $old_tt_id ),
 		array( '%d' ),
 		array( '%d' )
 	);
+
+	if ( false === $moved ) {
+		htax_log_error( 'Failed to move posts during term conversion', array(
+			'term_id' => $term_id,
+			'error'   => $wpdb->last_error,
+		) );
+		// The flag keeps this cleanup from looking like an external conversion.
+		$GLOBALS['htax_native_conversion_in_progress'] = true;
+		wp_delete_term( $new_term_id, $target_taxonomy );
+		unset( $GLOBALS['htax_native_conversion_in_progress'] );
+		return new WP_Error(
+			'move_failed',
+			__( 'Database error moving posts to the new term; the term was not converted.', 'hypertaxonomy' )
+		);
+	}
 
 	wp_update_term_count_now( array( $old_tt_id ),  $old_taxonomy   );
 	wp_update_term_count_now( array( $new_tt_id ),  $target_taxonomy );
@@ -507,13 +536,22 @@ function htax_restore_converted_term( int $new_term_id, string $new_taxonomy, st
 	$new_tt_id = (int) $new_term->term_taxonomy_id;
 
 	// Move posts back from new term to stub.
-	$wpdb->update(
+	$moved = $wpdb->update(
 		$wpdb->term_relationships,
 		array( 'term_taxonomy_id' => $stub_tt_id ),
 		array( 'term_taxonomy_id' => $new_tt_id ),
 		array( '%d' ),
 		array( '%d' )
 	);
+
+	// Stop before deleting the replacement term, which would remove its unmoved posts' assignments.
+	if ( false === $moved ) {
+		htax_log_error( 'Failed to move posts while restoring a converted term', array(
+			'term_id' => $new_term_id,
+			'error'   => $wpdb->last_error,
+		) );
+		return array( 'converted' => 0, 'redirect_created' => false, 'reverse_conversion' => false );
+	}
 
 	wp_update_term_count_now( array( $stub_tt_id ), $old_taxonomy  );
 	wp_update_term_count_now( array( $new_tt_id ),  $new_taxonomy  );

@@ -129,17 +129,17 @@ hypertaxonomy/
 │   ├── user-guide/                           # User Guide section (parent + child pages)
 │   ├── developer-reference/                  # Developer Reference section (PHP API, hooks, REST, capabilities)
 │   ├── architecture/                         # Architecture section (this reference, split into child pages)
-│   ├── contributing.md                       # Guide for HyperTaxonomy contributors (Design Principles, Patterns, Blocks, Debug)
+│   ├── contributing.md                       # Guide for HyperTaxonomy contributors (Design Principles, Patterns, Blocks, Error Handling, Debug)
 │   └── comparison.md                         # Comparing to Tag Groups
 │
 ├── includes/                                 # All PHP functionality
 │   │
 │   ├── bootstrap.php                         # Orchestrates file loading
 │   │
-│   ├── admin/                                # Admin-only code
+│   ├── admin/                                # Admin code (post-edit.php and term-icons.php also load outside admin)
 │   │   ├── admin-menu.php                    # Top-level "Terms" admin menu registration and highlighting
 │   │   ├── ajax.php                          # AJAX handlers (includes autocomplete helper functions)
-│   │   ├── bulk-actions.php                  # Bulk actions for term lists (visibility, icons, redirects)
+│   │   ├── bulk-actions.php                  # Bulk actions for term lists (visibility, icons, group assignment)
 │   │   ├── convert-terms.php                 # Convert Terms admin UI and handler (cross-taxonomy term conversion)
 │   │   ├── export-hypertaxonomy.php          # HyperTaxonomy export functionality
 │   │   ├── export-ui.php                     # Export / Import tab: Export subtab
@@ -151,14 +151,14 @@ hypertaxonomy/
 │   │   ├── tag-groups-migrate-ui.php         # Export / Import tab: Migrate subtab (Tag Groups import)
 │   │   ├── tag-groups-sync-ui.php            # Export / Import tab: Sync subtab (integration mode, removal handling)
 │   │   ├── merge-terms.php                   # Merge Terms admin UI and handler
-│   │   ├── post-edit.php                     # Post edit screen: assets, meta boxes, save handlers
-│   │   ├── relationship-types-admin.php      # Term Relationship Types admin page: Custom and Inclusion-based
+│   │   ├── post-edit.php                     # Post editor: assets, sticky terms REST field, display preferences notice
+│   │   ├── relationship-types-admin.php      # Term Relationship Types admin page: view built-in types, manage user-defined types
 │   │   ├── settings.php                      # Settings page UI (HyperTaxonomy_Settings class)
 │   │   ├── tables.php                        # List tables: assets, columns, filters, row classes
 │   │   ├── term-edit.php                     # Term edit screen: assets, form fields, save handlers
 │   │   ├── term-edit-lock.php                # Heartbeat-based concurrent edit locking (all taxonomies + RT edit page)
 │   │   ├── term-filters.php                  # Term filtering functionality (includes filter helper functions)
-│   │   └── term-icons.php                    # Term icon upload UI (HyperTaxonomy_Term_Icons class)
+│   │   └── term-icons.php                    # Term icon upload UI and retrieval (HyperTaxonomy_Term_Icons class)
 │   │
 │   ├── classes/                              # Infrastructure classes
 │   │   ├── class-activator.php               # Plugin activation
@@ -172,12 +172,12 @@ hypertaxonomy/
 │   │
 │   ├── core/                                 # Core functionality
 │   │   ├── activation.php                    # Activation/deactivation
-│   │   ├── cache.php                         # Caching & locks (includes cache helper functions)
+│   │   ├── cache.php                         # Caching and lifecycle tracing (includes cache helper functions)
 │   │   ├── compatibility.php                 # Environment checks
 │   │   ├── frontend.php                      # Frontend display: hidden terms, CSS, icons, pills, archive display
-│   │   ├── functions.php                     # Core infrastructure (logging, cache, plugin lifecycle, taxonomy config, tag creation gate)
+│   │   ├── functions.php                     # Core infrastructure (textdomain, plugin links, version checks, taxonomy config, debug panel, tag creation gate)
 │   │   ├── group-functions.php               # Term Groups membership functions (group assignment to terms)
-│   │   ├── helpers.php                       # Core utilities (SQL, term validation, POST handling, notices, nonce, term description cleaning)
+│   │   ├── helpers.php                       # Core utilities (SQL, term validation, request cache, notices, nonce, logging, database errors)
 │   │   ├── integration-api.php               # Public integration API for third-party plugins
 │   │   ├── relationship-types.php            # Relationship Type Registry: registration API, SQL helpers, persistence
 │   │   ├── relationship-types-rest.php       # REST endpoints: GET htax/v1/relationship-types, GET htax/v1/term/{id}/relationships
@@ -256,7 +256,7 @@ Load order (dependencies verified):
    - core/functions.php (core infrastructure)
    - core/helpers.php (core utilities)
    - core/relationship-types.php (relationship type registry — must load before term-relationships.php)
-   - core/relationship-types-rest.php (peer sync REST endpoints)
+   - core/relationship-types-rest.php (relationship type REST endpoints)
    - core/post-editor-rest.php (editor REST endpoints)
    - core/term-visibility.php (visibility logic - depends on helpers)
    - core/cache.php (includes cache helpers)
@@ -264,7 +264,7 @@ Load order (dependencies verified):
    - core/search-state.php (Search State POST/Redirect/GET token encode/decode)
    - core/strength-models.php (Strength Model API registration/scoring hooks)
    - core/taxonomies.php (registers 'group' taxonomy)
-   - core/group-functions.php (group membership - _htax_groups meta)
+   - core/group-functions.php (group membership - member_of relationship rows)
    - core/term-relationships.php (includes relationship helpers)
    - core/term-groups.php (included/container groups)
    - core/term-conversion.php (term taxonomy conversion — native engine, external-plugin detection, redirect stub creation, sticky transfer)
@@ -292,7 +292,7 @@ Load order (dependencies verified):
    - core/activation.php
 
 6. UNCONDITIONAL ADMIN (loaded always, including REST API context)
-   - admin/post-edit.php                (post edit screen: assets, meta boxes, save handlers;
+   - admin/post-edit.php                (post editor: assets, display preferences notice;
                                          also registers htax_sticky_terms REST field used by
                                          the Gutenberg sidebar panel — must be outside is_admin()
                                          because REST API requests do not pass is_admin())
@@ -304,7 +304,7 @@ Load order (dependencies verified):
 
 8. ADMIN (only if is_admin(), uses all core)
    - admin/admin-menu.php                (top-level Terms menu + submenus)
-   - admin/relationship-types-admin.php  (Term Relationships admin page + form handlers)
+   - admin/relationship-types-admin.php  (Term Relationship Types admin page + form handlers)
    - admin/term-edit-lock.php            (heartbeat-based concurrent edit locking for terms + RT edit)
    - admin/settings.php                  (settings page UI; the Export / Import tab includes its subtab files on demand)
    - admin/import-tag-groups-handler.php (Tag Groups mapping helpers + re-run-overwrite guards, needed on every term/group save)
@@ -343,13 +343,13 @@ Load order (dependencies verified):
     - hooks/filters.php
 ```
 
-### Block Build Pipeline
+## Block Build Pipeline
 
 The editor JS for each block is compiled with `@wordpress/scripts` (webpack). Source files live in `blocks/{block-name}/src/`; output goes to `blocks/{block-name}/build/`. Build output is committed to the repository so the plugin works without a local `npm run build` step.
 
 `block.json` declares `editorScript` and `editorStyle` as `file:./build/…` paths. WordPress reads these during `register_block_type()` and auto-enqueues the handles with the correct dependencies from `index.asset.php`.
 
-There are nine block directories. Eight blocks are **dynamic (server-side rendered)**: `save()` returns `null` and each PHP render callback delegates to the corresponding shortcode handler, so query logic, caching, and output are identical to the shortcode. The ninth, `hypertaxonomy/query-group-filter`, is a block editor extension with no render callback.
+There are nine block directories. Eight blocks are **dynamic (server-side rendered)**: `save()` returns `null`, and most PHP render callbacks delegate to the corresponding shortcode handler, so query logic, caching, and output are identical to the shortcode. Sort Order Options calls its picker function directly. The ninth, `hypertaxonomy/query-group-filter`, is a block editor extension with no render callback.
 
 **`hypertaxonomy/post-list`** — render callback calls `HyperTaxonomy_Shortcode_Post_List::shortcode_handler()` directly. Works anywhere (posts, pages, templates).
 
@@ -428,6 +428,10 @@ The webpack config (`webpack.config.js`) is an array of per-block configs, each 
            ┌─────────────────────────────▼──────────────────────────┐
            │  term-archives  ·  integration-api  ·  rest-api        │
            │  frontend  ·  native-blocks  ·  activation             │
+           └─────────────────────────────┬──────────────────────────┘
+                                         │
+           ┌─────────────────────────────▼──────────────────────────┐
+           │  admin/post-edit  ·  admin/term-icons  (always loaded) │
            └──────────┬──────────────────────┬──────────────────────┘
                       │                      │
            ┌──────────▼──────────┐  ┌────────▼────────────────────┐

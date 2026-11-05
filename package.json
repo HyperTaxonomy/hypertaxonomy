@@ -9,8 +9,5 @@
     },
     "devDependencies": {
         "@wordpress/scripts": "^30.0.0"
-    },
-    "dependencies": {
-        "playwright": "^1.60.0"
     }
 }

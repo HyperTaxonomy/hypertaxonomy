@@ -450,7 +450,7 @@ jQuery(document).ready(function($) {
                     },
                     success: function(data) {
                         resp((data || []).map(function(item) {
-                            return { id: item.id, value: item.value, label: item.label, item_type: item.item_type || 'term' };
+                            return { id: item.id, value: item.value, label: item.label };
                         }));
                     },
                     error: function() { resp([]); }
@@ -517,7 +517,6 @@ jQuery(document).ready(function($) {
                     if (req.term.length < AUTOCOMPLETE_CONFIG.minSearchLength) { resp([]); return; }
 
                     var existingTermIds  = getMergedTermIds($container);
-                    var existingGroupIds = getMergedGroupIds($container);
 
                     $.ajax({
                         url: HTAX_Ajax.ajax_url,
@@ -527,33 +526,19 @@ jQuery(document).ready(function($) {
                             term:            req.term,
                             'taxonomies[]':  taxonomies,
                             exclude_terms:   existingTermIds,
-                            exclude_groups:  existingGroupIds,
                             current:         currentId,
                             nonce:           HTAX_Ajax.nonce
                         },
                         success: function(data) {
-                            // data is a flat array; label groups with a prefix in the dropdown.
-                            var items = (data || []).map(function(item) {
-                                return {
-                                    id:        item.id,
-                                    value:     item.value,
-                                    label:     item.item_type === 'group'
-                                                   ? '\u25a0 ' + item.label  // filled square prefix
-                                                   : item.label,
-                                    item_type: item.item_type || 'term'
-                                };
-                            });
-                            resp(items);
+                            resp((data || []).map(function(item) {
+                                return { id: item.id, value: item.value, label: item.label };
+                            }));
                         },
                         error: function() { resp([]); }
                     });
                 },
                 select: function(e, ui) {
-                    if (ui.item.item_type === 'group') {
-                        addGroupPillToMerged($container, ui.item.id, ui.item.value);
-                    } else {
-                        addTermPillToMerged($container, ui.item.id, ui.item.value, true, []);
-                    }
+                    addTermPillToMerged($container, ui.item.id, ui.item.value, true, []);
                     $input.val('').hide();
                     $container.find('.htax-term-add-btn').show();
                     updateMergedHiddenInputs($container);

@@ -1120,7 +1120,7 @@ function htax_render_merged_pill_container( array $args ): void {
     }
 
     $ajax_action    = 'htax_search_terms'; // Groups are added via checklist dropdown, not autocomplete
-    $extra_taxonomies = array_values( array_unique( array_merge( array( $taxonomy ), (array) ( $args['taxonomies'] ?? array() ) ) ) );
+    $extra_taxonomies = ! empty( $args['taxonomies'] ) ? array_values( array_unique( (array) $args['taxonomies'] ) ) : array( $taxonomy );
     $disabled_attr  = $disabled ? ' disabled' : '';
     $disabled_style = $disabled ? ' style="opacity:0.6;pointer-events:none;"' : '';
     $panel          = $panel_override ?? ( ( 'htax_containers' === $field_terms ) ? 'containers' : 'includes' );
@@ -1849,9 +1849,11 @@ function htax_add_inclusions_tabs_field( $term_or_taxonomy ): void {
                 : sprintf( __( 'Add %s…', 'hypertaxonomy' ), $tax_name );
             $rev_placeholder = $fwd_placeholder;
 
-            // For non-includes-mapped types, forward searches target_taxonomies and reverse searches source_taxonomies.
-            $fwd_extra_taxes  = ( ! $ctype_sup_groups && ! empty( $cdef['target_taxonomies'] ) ) ? $cdef['target_taxonomies'] : array();
-            $rev_extra_taxes  = ( ! $ctype_sup_groups && ! empty( $cdef['source_taxonomies'] ) ) ? $cdef['source_taxonomies'] : array();
+            // Non-includes-mapped types can cross taxonomies: forward searches target_taxonomies and
+            // reverse searches source_taxonomies, or every enabled taxonomy when the type sets none.
+            $all_non_group   = array_values( array_diff( htax_get_enabled_taxonomies(), array( 'group' ) ) );
+            $fwd_extra_taxes = $ctype_sup_groups ? array() : ( ! empty( $cdef['target_taxonomies'] ) ? $cdef['target_taxonomies'] : $all_non_group );
+            $rev_extra_taxes = $ctype_sup_groups ? array() : ( ! empty( $cdef['source_taxonomies'] ) ? $cdef['source_taxonomies'] : $all_non_group );
             $is_includes_type = in_array( $cslug, $includes_slugs, true );
         ?>
         <div class="htax-rel-tab-panel"
@@ -1876,7 +1878,7 @@ function htax_add_inclusions_tabs_field( $term_or_taxonomy ): void {
                     }
                 }
             }
-            $sym_taxes = implode( ',', array_filter( array_unique( array_merge( array( $taxonomy ), $fwd_extra_taxes ) ) ) );
+            $sym_taxes = implode( ',', ! empty( $fwd_extra_taxes ) ? array_unique( $fwd_extra_taxes ) : array( $taxonomy ) );
             ?>
             <div class="htax-inclusions-panel">
                 <h4 class="htax-container-heading"><?php echo esc_html( $cdef['label'] ); ?></h4>

@@ -375,17 +375,17 @@ function htax_ajax_search_terms() {
         return;
     }
 
-    // JS sends taxonomies[] (array from merged containers); fall back to taxonomy (singular).
+    // JS sends taxonomies[]: every taxonomy this field may link to.
     if ( ! empty( $_GET['taxonomies'] ) && is_array( $_GET['taxonomies'] ) ) {
-        $taxonomy = sanitize_key( wp_unslash( reset( $_GET['taxonomies'] ) ) );
+        $requested = array_map( 'sanitize_key', wp_unslash( $_GET['taxonomies'] ) );
     } elseif ( isset( $_GET['taxonomy'] ) ) {
-        $taxonomy = sanitize_key( wp_unslash( $_GET['taxonomy'] ) );
+        $requested = array( sanitize_key( wp_unslash( $_GET['taxonomy'] ) ) );
     } else {
-        $taxonomy = 'post_tag';
+        $requested = array( 'post_tag' );
     }
 
-    // Single validation check - supports all enabled taxonomies including custom ones
-    if ( ! htax_is_taxonomy_enabled( $taxonomy ) ) {
+    $taxonomies = array_values( array_unique( array_filter( $requested, 'htax_is_taxonomy_enabled' ) ) );
+    if ( empty( $taxonomies ) ) {
         wp_send_json_error( 'Invalid or disabled taxonomy' );
         return;
     }
@@ -406,30 +406,33 @@ function htax_ajax_search_terms() {
     // Expand include_groups / exclude_groups to term IDs for option-pool filtering
     $include_ids       = array();
     $include_requested = false;
+
     if ( ! empty( $_GET['include_groups'] ) ) {
         $include_group_ids = htax_parse_term_ids( sanitize_text_field( wp_unslash( $_GET['include_groups'] ) ) );
         if ( ! empty( $include_group_ids ) ) {
-            $include_requested  = true;
-            $group_term_objects = htax_get_terms_in_groups( $include_group_ids, $taxonomy );
-            $include_ids        = array_map( function( $t ) { return (int) $t->term_id; }, $group_term_objects );
+            $include_requested = true;
+            foreach ( $taxonomies as $taxonomy ) {
+                $include_ids = array_merge( $include_ids, array_map( 'intval', array_keys( htax_get_terms_in_groups( $include_group_ids, $taxonomy ) ) ) );
+            }
         }
     }
-    // An include constraint was requested but expanded to zero terms: the result set must
-    // be empty, not unrestricted. Force a sentinel that can never match a real term ID.
+
+    // A restriction that resolves to no terms matches nothing, rather than being ignored.
     if ( $include_requested && empty( $include_ids ) ) {
         $include_ids = array( 0 );
     }
+
     if ( ! empty( $_GET['exclude_groups'] ) ) {
         $exclude_group_ids = htax_parse_term_ids( sanitize_text_field( wp_unslash( $_GET['exclude_groups'] ) ) );
         if ( ! empty( $exclude_group_ids ) ) {
-            $excl_group_term_objects = htax_get_terms_in_groups( $exclude_group_ids, $taxonomy );
-            $excl_ids                = array_map( function( $t ) { return (int) $t->term_id; }, $excl_group_term_objects );
-            $exclude                 = array_merge( $exclude, $excl_ids );
+            foreach ( $taxonomies as $taxonomy ) {
+                $exclude = array_merge( $exclude, array_map( 'intval', array_keys( htax_get_terms_in_groups( $exclude_group_ids, $taxonomy ) ) ) );
+            }
         }
     }
 
     // SHORT-LIVED CACHE FOR IDENTICAL REQUESTS
-    $cache_key = htax_generate_transient_key( 'htax_ac_', md5( $taxonomy . '|' . $search . '|' . implode( ',', $exclude ) . '|' . $current_id . '|' . implode( ',', $include_ids ) ) );
+    $cache_key = htax_generate_transient_key( 'htax_ac_', md5( implode( ',', $taxonomies ) . '|' . $search . '|' . implode( ',', $exclude ) . '|' . $current_id . '|' . implode( ',', $include_ids ) ) );
     $cached = htax_get_transient( $cache_key );
     if ( false !== $cached ) {
         wp_send_json( $cached );
@@ -438,41 +441,73 @@ function htax_ajax_search_terms() {
 
     if ( $current_id ) {
         $exclude[] = $current_id;
+
         // For hierarchical taxonomies, suppress ancestors and descendants from suggestions.
         // HT inclusions/containers are restricted to cross-branch relationships; ancestors
         // and descendants are handled by WP's native hierarchy and cannot be valid targets.
         // This applies equally to the include, container, and exclude autocomplete contexts.
-        if ( is_taxonomy_hierarchical( $taxonomy ) ) {
-            $ancestor_ids = get_ancestors( $current_id, $taxonomy, 'taxonomy' );
-            if ( ! empty( $ancestor_ids ) ) {
-                $exclude = array_merge( $exclude, $ancestor_ids );
-            }
-            $descendant_ids = get_term_children( $current_id, $taxonomy );
-            if ( ! is_wp_error( $descendant_ids ) && ! empty( $descendant_ids ) ) {
+        $current_term = get_term( $current_id );
+        if ( $current_term && ! is_wp_error( $current_term ) && is_taxonomy_hierarchical( $current_term->taxonomy ) ) {
+            $exclude = array_merge( $exclude, get_ancestors( $current_id, $current_term->taxonomy, 'taxonomy' ) );
+            $descendant_ids = get_term_children( $current_id, $current_term->taxonomy );
+            if ( ! is_wp_error( $descendant_ids ) ) {
                 $exclude = array_merge( $exclude, $descendant_ids );
             }
         }
     }
 
-    $results = htax_run_term_autocomplete_search( $taxonomy, $search, $exclude, $include_ids );
+    $results     = array();
+    $can_see     = htax_can_see_hidden_terms();
+    $multi_label = count( $taxonomies ) > 1;
 
-    // Filter out hidden terms if user doesn't have permission to see them
-    if ( ! htax_can_see_hidden_terms() ) {
-        $results = array_values( array_filter( $results, function( $item ) {
-            return ! htax_is_term_hidden( $item['id'] );
-        } ) );
+    foreach ( $taxonomies as $taxonomy ) {
+        $tax_results = htax_run_term_autocomplete_search( $taxonomy, $search, $exclude, $include_ids );
+
+        // Filter out hidden terms if user doesn't have permission to see them
+        if ( ! $can_see ) {
+            $tax_results = array_values( array_filter( $tax_results, function( $item ) {
+                return ! htax_is_term_hidden( $item['id'] );
+            } ) );
+        }
+
+        if ( ! empty( $tax_results ) && HyperTaxonomy_Term_Icons::are_icons_enabled( $taxonomy ) ) {
+            $icons         = HyperTaxonomy_Term_Icons::get_instance();
+            $term_ids      = array_map( function( $item ) { return $item['id']; }, $tax_results );
+            $all_icon_data = $icons->get_batch_term_icon_data( $term_ids, 'htax-icon-small', $taxonomy );
+
+            foreach ( $tax_results as &$result ) {
+                if ( isset( $all_icon_data[ $result['id'] ] ) && $all_icon_data[ $result['id'] ]['has_icon'] ) {
+                    $result['icon_url'] = $all_icon_data[ $result['id'] ]['url'];
+                }
+            }
+            unset( $result );
+        }
+
+        // Same-named terms can exist in several taxonomies, so say which one each result is from.
+        if ( $multi_label ) {
+            $singular = esc_html( htax_get_taxonomy_singular( $taxonomy ) );
+            foreach ( $tax_results as &$result ) {
+                $result['label'] .= ' <small>(' . $singular . ')</small>';
+            }
+            unset( $result );
+        }
+
+        $results = array_merge( $results, $tax_results );
     }
 
-    if ( ! empty( $results ) && HyperTaxonomy_Term_Icons::are_icons_enabled( $taxonomy ) ) {
-        $icons         = HyperTaxonomy_Term_Icons::get_instance();
-        $term_ids      = array_map( function( $item ) { return $item['id']; }, $results );
-        $all_icon_data = $icons->get_batch_term_icon_data( $term_ids, 'htax-icon-small', $taxonomy );
-
-        foreach ( $results as &$result ) {
-            if ( isset( $all_icon_data[ $result['id'] ] ) && $all_icon_data[ $result['id'] ]['has_icon'] ) {
-                $result['icon_url'] = $all_icon_data[ $result['id'] ]['url'];
-            }
+    // Each taxonomy's results are already ranked. Across taxonomies, names that start with
+    // the search come first, then names that contain it, then description matches.
+    if ( $multi_label ) {
+        $needle = strtolower( html_entity_decode( $search, ENT_QUOTES | ENT_HTML5, 'UTF-8' ) );
+        $ranks  = array();
+        $order  = array();
+        foreach ( $results as $index => $item ) {
+            $pos     = strpos( strtolower( html_entity_decode( $item['value'], ENT_QUOTES | ENT_HTML5, 'UTF-8' ) ), $needle );
+            $ranks[] = ( false === $pos ) ? 2 : ( 0 === $pos ? 0 : 1 );
+            $order[] = $index;
         }
+        array_multisort( $ranks, SORT_ASC, $order, SORT_ASC, $results );
+        $results = array_slice( $results, 0, HTAX_AJAX_SEARCH_LIMIT );
     }
 
     htax_set_transient( $cache_key, $results, htax_get_cache_duration( 'autocomplete' ) );

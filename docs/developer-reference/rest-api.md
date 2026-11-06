@@ -4,15 +4,15 @@ parent: Developer Reference
 nav_order: 6
 ---
 
-## REST API
+# REST API
 
-### `X-HyperTaxonomy` response header
+## `X-HyperTaxonomy` response header
 
 When the **Presence Header** setting is enabled (the default), HyperTaxonomy adds an `X-HyperTaxonomy: {version}` header to every WordPress REST API response. Peer sites use this to detect HT presence (e.g. via `HEAD /wp-json/`) without a dedicated discovery endpoint.
 
 Can be disabled under **Settings → HyperTaxonomy → Advanced → HyperTaxonomy Presence Header**. Disabling opts this site out of peer discovery entirely — remote TermConnect installs will not detect HT and will not attempt scored requests or vocabulary sync.
 
-### Term endpoint enrichment
+## Term endpoint enrichment
 
 HyperTaxonomy hooks `rest_prepare_{taxonomy}` for all public `show_in_rest` taxonomies. All HT-added fields respect the standard WP REST `_fields` parameter — if a caller supplies `_fields`, only the requested fields are computed (unrequested fields are skipped, not just stripped). `htax_includes` and `htax_synonyms` can be disabled site-wide under **Settings → HyperTaxonomy → Advanced → Term Inclusion Relationships**. `htax_relationships` is additionally disabled when either **Term Inclusion Relationships** or **Custom Term Relationships and Relationship Types** is off.
 
@@ -30,7 +30,7 @@ The following fields are available. All can be requested via `_fields`; availabi
 
 Collection endpoints (`GET /wp/v2/{taxonomy}?slug=…`) without the `X-HyperTaxonomy` header receive no HT enrichment.
 
-### Peer collection requests (`X-HyperTaxonomy` request header)
+## Peer collection requests (`X-HyperTaxonomy` request header)
 
 When a request includes the `X-HyperTaxonomy` header, HyperTaxonomy treats it as a peer site request. All fields in the table above are available on peer collection responses when requested in `_fields`. Callers should include only the fields they need.
 
@@ -44,7 +44,7 @@ TermConnect `_fields` per request type:
 
 **`htax_locations`** in peer responses: Schema.org Place objects with address and optional geo coordinates. Same structure as individual response. Format: `[{ "@type": "schema:Place", "schema:name": "...", "schema:address": {...}, "schema:geo": {...} }]`. Gated by `share_locations` feature flag.
 
-### Scored post collection (`GET /wp/v2/posts`)
+## Scored post collection (`GET /wp/v2/posts`)
 
 HyperTaxonomy extends the standard WordPress post collection endpoint with term-based scoring. This is the mechanism TermConnect uses to fetch relevance-ranked posts from HT-enabled peer sites.
 
@@ -87,7 +87,7 @@ GET /wp-json/wp/v2/posts
 
 The `orderby=score` value is valid only when `htax_includes` is present; otherwise the request is rejected.
 
-### Relationship type endpoints (`htax/v1`)
+## Relationship type endpoints (`htax/v1`)
 
 Two read-only endpoints under the `htax/v1` namespace expose relationship type definitions and term relationships for peer syncing. Both are public (no authentication required).
 
@@ -124,13 +124,11 @@ Each entry:
 }
 ```
 
-**Privacy.** Mark a type private in **Terms → Term Relationships → Local types → Edit → Private** to exclude it and all its relationship rows from both endpoints. Private types remain fully functional locally.
+**Privacy.** Mark a type private in **Terms → Term Relationship Types → Local Relationship Types → Edit → Private** to exclude it and all its relationship rows from both endpoints. Private types remain fully functional locally.
 
-Both endpoints can be disabled entirely under **Settings → HyperTaxonomy → Advanced → Peer Relationship Delegation API** — the routes are not registered when this is off.
+Both endpoints can be disabled entirely under **Settings → HyperTaxonomy → Advanced → Custom Term Relationships and Relationship Types** — the routes are not registered when this is off.
 
-The full enrichment fields (icon, includes, synonyms) are deliberately excluded from peer collection responses — they are expensive per-term and not needed for identity resolution.
-
-### Hidden terms and REST
+## Hidden terms and REST
 
 Hidden terms are fully protected:
 - **Collection** (`GET /wp/v2/{taxonomy}`): excluded via the `exclude` parameter; unauthorized users never see them in lists.
@@ -141,9 +139,6 @@ Hidden terms are fully protected:
 
 ## External Posts Platform API
 
-This API is part of the **TermConnect** plugin. Peer site fetching, RSS/Atom feed aggregation, FOAF discovery, and cross-site scoring functions (`tc_external_*`) are documented in the [TermConnect Developer Reference](https://wordpress.org/plugins/termconnect/).
+This API is part of the **TermConnect** plugin. Peer site fetching, RSS/Atom feed aggregation, FOAF discovery, and cross-site scoring functions (`tc_external_*`) are documented in the [TermConnect Developer Reference](https://hypertaxonomy.org/termconnect/developer-reference/).
 
-Cross-site matching of peer/FOAF terms by physical location is handled through TermConnect's shared-identifier (URI) matching — the same path used for knowledge-base identifiers (Wikidata, GeoNames) and Social Hashtags & Mentions handles. When As the Crow Flies is active, HyperTaxonomy contributes a canonical-address URI (e.g. `urn:atcf:place:US:62704:123-main-street`) to each term's TermConnect `_tc_uris` index via TermConnect's `tc_index_extra_uris` filter, derived from `ATCF_Locations::get_canonical_addresses()`. The same place therefore matches across sites even when the term slugs and labels differ. See [As the Crow Flies Integration](atcf.html) for details.
-
----
-
+Cross-site matching of peer/FOAF terms by physical location is handled through TermConnect's shared-identifier (URI) matching — the same path used for knowledge-base identifiers (Wikidata, GeoNames) and Social Hashtags & Mentions handles. When As the Crow Flies is active, HyperTaxonomy contributes a canonical-address URI (e.g. `urn:atcf:place:US:62704:123-main-street`) to each term's TermConnect `_tc_uris` index via TermConnect's `tc_index_extra_uris` filter, derived from `ATCF_Locations::get_normalized_addresses()`. The same place therefore matches across sites even when the term slugs and labels differ. See [As the Crow Flies Integration](atcf.html) for details.

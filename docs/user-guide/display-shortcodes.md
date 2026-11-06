@@ -101,7 +101,7 @@ Hierarchical or flat term list with optional depth control, indentation, and col
 | `separator` | HTML inserted between terms in flat (non-hierarchical) mode | — |
 | `generate_anchors` | Generate anchor `id` attributes for each term element | `true` |
 | `collapsible` | `false`, `true` (starts expanded), or `collapsed` | `false` |
-| `columns` | 1–4 columns (responsive on small screens) | 1 |
+| `columns` | 1–4 columns (responsive on small screens). In hierarchical lists, each top-level term stays together with its children. | 1 |
 | `div_class` | Additional CSS class for the container `<div>` | — |
 | `div_id` | CSS `id` for the container `<div>` | — |
 

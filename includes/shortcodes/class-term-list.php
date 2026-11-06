@@ -281,7 +281,13 @@ class HyperTaxonomy_Term_List extends HyperTaxonomy_Term_Display_Base {
             if ( $this->should_exclude_term( $term_data['term'] ) ) {
                 continue;
             }
-            $output .= $this->render_term_with_children( $term_data );
+            $term_html = $this->render_term_with_children( $term_data );
+
+            // In columns, wrap each top-level term and its children so the browser keeps them together.
+            if ( '' !== $term_html && intval( $this->htax_atts['columns'] ) > 1 ) {
+                $term_html = '<div class="htax-group-section">' . $term_html . '</div>';
+            }
+            $output .= $term_html;
         }
 
         $output .= '</div>';

@@ -371,23 +371,22 @@
     // =========================================================================
 
     $(document).on('htax:filter-change', '[data-htax-filter-root]', function (_e, newState) {
-        const $root    = $(this);
-        const $results = $root.siblings('.htax-power-search-results');
+        const $root  = $(this);
+        // A [ht_filter_options] panel sits beside the results; the filters= shorthand on
+        // [ht_search_results] sits in a controls bar inside .htax-search-results-block.
+        let $results = $root.siblings('.htax-search-results');
+        if (!$results.length) {
+            $results = $root.closest('.htax-search-results-block').find('.htax-search-results').first();
+        }
         if (!$results.length) return;
         $results.data('htax-filter', newState || {});
         const resultsId = $results.attr('id');
-        let $form = null;
-        if (resultsId) {
-            $form = $('[data-results="' + resultsId + '"]').closest('.htax-power-search-form');
-        }
-        if (!$form || !$form.length) {
-            $form = $results.closest('.htax-power-search-form');
-        }
-        if ($form && $form.length) {
-            const formInstance = $form.data('htax-instance');
-            if (formInstance) {
-                formInstance.performSearch(1);
-            }
+        if (!resultsId) return;
+        const formInstance = $('[data-results="' + resultsId + '"]').closest('.htax-power-search-form').data('htax-instance');
+        // With nothing typed yet, keep the filter for the first search rather than
+        // showing the minimum length message.
+        if (formInstance && formInstance.$input.val().trim()) {
+            formInstance.performSearch(1);
         }
     });
 

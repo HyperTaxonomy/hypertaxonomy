@@ -181,8 +181,6 @@
 	column-gap: 30px;
 }
 
-/* Legacy support for group-section-content */
-
 /* Responsive columns for term list */
 @media (max-width: 768px) {
 	.htax-term-list.htax-flat.htax-columns-3 .htax-term-list-tags,

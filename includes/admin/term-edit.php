@@ -609,6 +609,9 @@ function htax_add_archive_settings_field( $term_or_taxonomy ) {
             <div class="htax-sort-picker-pill" data-field="title"><?php esc_html_e( 'Title', 'hypertaxonomy' ); ?></div>
             <div class="htax-sort-picker-pill" data-field="author"><?php esc_html_e( 'Author', 'hypertaxonomy' ); ?></div>
             <div class="htax-sort-picker-pill" data-field="comment_count"><?php esc_html_e( 'Comments', 'hypertaxonomy' ); ?></div>
+            <?php foreach ( array( 'last_comment', 'last_activity', 'relevance', 'ID' ) as $sort_field ) : ?>
+            <div class="htax-sort-picker-pill" data-field="<?php echo esc_attr( $sort_field ); ?>"><?php echo esc_html( htax_sort_field_labels()[ $sort_field ] ); ?></div>
+            <?php endforeach; ?>
         </div>
         <input type="hidden" name="htax_sort_order" id="htax-sort-order-value"
                data-htax-sort-value value="<?php echo esc_attr( $sort_order ); ?>">
@@ -786,17 +789,13 @@ function htax_save_archive_settings( $term_id ) {
         }
 
         // Save sort order — stored as "field:dir,field:dir" (htax_parse_orderby format).
-        // Parse through htax_parse_orderby() to strip invalid tokens, then re-serialize
-        // keeping only the archive-valid fields (excludes relevance, etc.).
+        // Parse through htax_parse_orderby() to strip invalid tokens, then re-serialize.
         $sort_order_raw = sanitize_text_field( wp_unslash( $_POST['htax_sort_order'] ) );
-        $archive_fields = array( 'date', 'modified', 'title', 'author', 'comment_count' );
         if ( $sort_order_raw ) {
             $parsed      = htax_parse_orderby( $sort_order_raw );
             $valid_pairs = array();
             foreach ( $parsed as $field => $dir ) {
-                if ( in_array( $field, $archive_fields, true ) ) {
-                    $valid_pairs[] = $field . ':' . strtolower( $dir );
-                }
+                $valid_pairs[] = $field . ':' . strtolower( $dir );
             }
             if ( ! empty( $valid_pairs ) ) {
                 update_term_meta( $term_id, '_htax_sort_order', implode( ',', $valid_pairs ) );

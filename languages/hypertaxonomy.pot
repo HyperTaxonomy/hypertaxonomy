@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-05 23:56-0500\n"
+"POT-Creation-Date: 2026-11-06 00:14-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,8 +25,8 @@ msgstr ""
 
 #: includes/admin/admin-menu.php:47 includes/admin/admin-menu.php:48
 #: includes/admin/settings.php:469 includes/admin/settings.php:555
-#: includes/admin/tables.php:796 includes/admin/term-edit.php:908
-#: includes/admin/term-edit.php:915 includes/core/taxonomies.php:43
+#: includes/admin/tables.php:796 includes/admin/term-edit.php:907
+#: includes/admin/term-edit.php:914 includes/core/taxonomies.php:43
 msgid "Term Groups"
 msgstr ""
 
@@ -129,7 +129,7 @@ msgid_plural "Group assignments updated for %d terms."
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/admin/bulk-actions.php:252 includes/admin/term-edit.php:1990
+#: includes/admin/bulk-actions.php:252 includes/admin/term-edit.php:1989
 msgid "Invalid request."
 msgstr ""
 
@@ -415,7 +415,7 @@ msgid "Remove"
 msgstr ""
 
 #: includes/admin/group-admin.php:188 includes/admin/group-admin.php:994
-#: includes/admin/term-edit.php:1311 includes/admin/term-edit.php:1817
+#: includes/admin/term-edit.php:1310 includes/admin/term-edit.php:1816
 msgid "Remove term:"
 msgstr ""
 
@@ -497,7 +497,7 @@ msgstr ""
 msgid "Database error saving relationship."
 msgstr ""
 
-#: includes/admin/group-admin.php:950 includes/admin/term-edit.php:1068
+#: includes/admin/group-admin.php:950 includes/admin/term-edit.php:1067
 msgid "Add…"
 msgstr ""
 
@@ -506,10 +506,10 @@ msgid "Custom Relationships"
 msgstr ""
 
 #: includes/admin/group-admin.php:1074 includes/admin/group-admin.php:1075
-#: includes/admin/term-edit.php:1746 includes/admin/term-edit.php:1747
-#: includes/admin/term-edit.php:1775 includes/admin/term-edit.php:1776
-#: includes/admin/term-edit.php:1827 includes/admin/term-edit.php:1848
-#: includes/admin/term-edit.php:1849 includes/admin/term-edit.php:1918
+#: includes/admin/term-edit.php:1745 includes/admin/term-edit.php:1746
+#: includes/admin/term-edit.php:1774 includes/admin/term-edit.php:1775
+#: includes/admin/term-edit.php:1826 includes/admin/term-edit.php:1847
+#: includes/admin/term-edit.php:1848 includes/admin/term-edit.php:1917
 #, php-format
 msgid "Add %s…"
 msgstr ""
@@ -1358,7 +1358,7 @@ msgstr ""
 msgid "Features"
 msgstr ""
 
-#: includes/admin/settings.php:374 blocks/ht-sort-order-options/src/index.js:81
+#: includes/admin/settings.php:374 blocks/ht-sort-order-options/src/index.js:83
 #: blocks/ht-term-cloud/src/index.js:19 blocks/ht-term-groups/src/index.js:21
 #: blocks/ht-term-index/src/index.js:20 blocks/ht-term-list/src/index.js:22
 #: blocks/shared/post-list-edit.js:300
@@ -2862,8 +2862,8 @@ msgstr ""
 msgid "Ungrouped"
 msgstr ""
 
-#: includes/admin/tables.php:311 includes/admin/term-edit.php:931
-#: includes/admin/term-edit.php:967
+#: includes/admin/tables.php:311 includes/admin/term-edit.php:930
+#: includes/admin/term-edit.php:966
 msgid "Managed by Tag Groups — edit this group's membership there instead."
 msgstr ""
 
@@ -3437,7 +3437,7 @@ msgstr ""
 
 #: includes/admin/term-edit.php:607
 #: includes/shortcodes/class-filter-options.php:139
-#: includes/shortcodes/class-filter-options.php:1078
+#: includes/shortcodes/class-filter-options.php:1099
 #: includes/shortcodes/class-sort-order.php:39
 #: blocks/ht-sort-order-options/src/index.js:18
 msgid "Date"
@@ -3454,7 +3454,7 @@ msgstr ""
 
 #: includes/admin/term-edit.php:610
 #: includes/shortcodes/class-filter-options.php:184
-#: includes/shortcodes/class-filter-options.php:1090
+#: includes/shortcodes/class-filter-options.php:1111
 #: includes/shortcodes/class-sort-order.php:42
 #: blocks/ht-sort-order-options/src/index.js:21 blocks/shared/components.js:151
 msgid "Author"
@@ -3465,36 +3465,36 @@ msgstr ""
 msgid "Comments"
 msgstr ""
 
-#: includes/admin/term-edit.php:616
+#: includes/admin/term-edit.php:619
 msgid ""
 "Override the default post sort order for this term's archive. Click + to add "
 "criteria; drag pills to reorder."
 msgstr ""
 
-#: includes/admin/term-edit.php:675
+#: includes/admin/term-edit.php:678
 msgid ""
 "Cannot make term visible: a parent term is hidden. Make the parent term "
 "visible first."
 msgstr ""
 
-#: includes/admin/term-edit.php:714
+#: includes/admin/term-edit.php:717
 msgid "Term visibility settings saved successfully."
 msgstr ""
 
-#: includes/admin/term-edit.php:939
+#: includes/admin/term-edit.php:938
 #, php-format
 msgid "Remove from group %s"
 msgstr ""
 
-#: includes/admin/term-edit.php:940
+#: includes/admin/term-edit.php:939
 msgid "Remove:"
 msgstr ""
 
-#: includes/admin/term-edit.php:948 includes/admin/term-edit.php:950
+#: includes/admin/term-edit.php:947 includes/admin/term-edit.php:949
 msgid "Add to groups"
 msgstr ""
 
-#: includes/admin/term-edit.php:975
+#: includes/admin/term-edit.php:974
 #, php-format
 msgid ""
 "Assign this %s to one or more groups. Group members are displayed together "
@@ -3502,114 +3502,114 @@ msgid ""
 "relationship participation drives archive logic and PowerSearch relevance."
 msgstr ""
 
-#: includes/admin/term-edit.php:1160
+#: includes/admin/term-edit.php:1159
 msgid "Groups:"
 msgstr ""
 
-#: includes/admin/term-edit.php:1168
+#: includes/admin/term-edit.php:1167
 #, php-format
 msgid "Remove group %s"
 msgstr ""
 
-#: includes/admin/term-edit.php:1169
+#: includes/admin/term-edit.php:1168
 msgid "Remove group:"
 msgstr ""
 
-#: includes/admin/term-edit.php:1177 includes/admin/term-edit.php:1179
+#: includes/admin/term-edit.php:1176 includes/admin/term-edit.php:1178
 msgid "Add group"
 msgstr ""
 
-#: includes/admin/term-edit.php:1284
+#: includes/admin/term-edit.php:1283
 msgid ""
 "Overridden — this term is also excluded, so this direct include has no "
 "effect on the archive."
 msgstr ""
 
-#: includes/admin/term-edit.php:1303
+#: includes/admin/term-edit.php:1302
 msgid "Redirects here"
 msgstr ""
 
-#: includes/admin/term-edit.php:1305
+#: includes/admin/term-edit.php:1304
 msgid "Redirects elsewhere — inclusions not in effect"
 msgstr ""
 
-#: includes/admin/term-edit.php:1305
+#: includes/admin/term-edit.php:1304
 msgid "Redirects elsewhere"
 msgstr ""
 
-#: includes/admin/term-edit.php:1309 includes/admin/term-edit.php:1815
-#: includes/admin/term-edit.php:1897 includes/admin/term-edit.php:1908
+#: includes/admin/term-edit.php:1308 includes/admin/term-edit.php:1814
+#: includes/admin/term-edit.php:1896 includes/admin/term-edit.php:1907
 #, php-format
 msgid "Remove %s"
 msgstr ""
 
-#: includes/admin/term-edit.php:1325 includes/admin/term-edit.php:1327
+#: includes/admin/term-edit.php:1324 includes/admin/term-edit.php:1326
 #, php-format
 msgid "Add %s"
 msgstr ""
 
-#: includes/admin/term-edit.php:1342
+#: includes/admin/term-edit.php:1341
 msgid "via groups:"
 msgstr ""
 
-#: includes/admin/term-edit.php:1686 includes/admin/term-edit.php:1690
+#: includes/admin/term-edit.php:1685 includes/admin/term-edit.php:1689
 msgid "Term Relationships"
 msgstr ""
 
-#: includes/admin/term-edit.php:1696
+#: includes/admin/term-edit.php:1695
 msgid "Hide indirect and reverse relationships"
 msgstr ""
 
-#: includes/admin/term-edit.php:1708
+#: includes/admin/term-edit.php:1707
 msgid "Containers / Includes"
 msgstr ""
 
-#: includes/admin/term-edit.php:1732
+#: includes/admin/term-edit.php:1731
 #, php-format
 msgid "Container %s"
 msgstr ""
 
-#: includes/admin/term-edit.php:1752
+#: includes/admin/term-edit.php:1751
 #, php-format
 msgid "Archives of each of these %1$s will include posts with this %2$s."
 msgstr ""
 
-#: includes/admin/term-edit.php:1760
+#: includes/admin/term-edit.php:1759
 #, php-format
 msgid "Included %s"
 msgstr ""
 
-#: includes/admin/term-edit.php:1781
+#: includes/admin/term-edit.php:1780
 #, php-format
 msgid "This %1$s's archive will include posts with any of these %2$s."
 msgstr ""
 
-#: includes/admin/term-edit.php:1790
+#: includes/admin/term-edit.php:1789
 #, php-format
 msgid "Excluded %s"
 msgstr ""
 
-#: includes/admin/term-edit.php:1822 includes/admin/term-edit.php:1824
-#: includes/admin/term-edit.php:1913 includes/admin/term-edit.php:1915
+#: includes/admin/term-edit.php:1821 includes/admin/term-edit.php:1823
+#: includes/admin/term-edit.php:1912 includes/admin/term-edit.php:1914
 msgid "Add term"
 msgstr ""
 
-#: includes/admin/term-edit.php:1833
+#: includes/admin/term-edit.php:1832
 #, php-format
 msgid "Remove specific %s from the included set."
 msgstr ""
 
-#: includes/admin/term-edit.php:1835
+#: includes/admin/term-edit.php:1834
 msgid "Also applies to custom inclusion-based relationships."
 msgstr ""
 
-#: includes/admin/term-edit.php:1925
+#: includes/admin/term-edit.php:1924
 msgid ""
 "Arrows show which side added the link. You can remove links from either side "
 "here."
 msgstr ""
 
-#: includes/admin/term-edit.php:1996
+#: includes/admin/term-edit.php:1995
 msgid "Insufficient permissions."
 msgstr ""
 
@@ -3735,8 +3735,8 @@ msgstr ""
 #: includes/shortcodes/class-sort-order.php:100
 #: includes/shortcodes/class-sort-order.php:190
 #: includes/shortcodes/class-sort-order.php:191
-#: blocks/ht-sort-order-options/src/index.js:106
-#: blocks/ht-sort-order-options/src/index.js:114
+#: blocks/ht-sort-order-options/src/index.js:108
+#: blocks/ht-sort-order-options/src/index.js:116
 msgid "Sort"
 msgstr ""
 
@@ -4043,7 +4043,7 @@ msgstr ""
 msgid "Target of redirect from"
 msgstr ""
 
-#: includes/core/search.php:899
+#: includes/core/search.php:969
 #, php-format
 msgid "%s result found"
 msgid_plural "%s results found"
@@ -4461,33 +4461,33 @@ msgid "HyperTaxonomy's own merge tool"
 msgstr ""
 
 #: includes/shortcodes/class-filter-options.php:162
-#: includes/shortcodes/class-filter-options.php:1084
+#: includes/shortcodes/class-filter-options.php:1105
 #: includes/shortcodes/class-sort-order.php:40
 #: blocks/ht-sort-order-options/src/index.js:19
 msgid "Modified"
 msgstr ""
 
 #: includes/shortcodes/class-filter-options.php:215
-#: includes/shortcodes/class-filter-options.php:1151
-#: includes/shortcodes/class-filter-options.php:1152
+#: includes/shortcodes/class-filter-options.php:1172
+#: includes/shortcodes/class-filter-options.php:1173
 msgid "Filter"
 msgstr ""
 
-#: includes/shortcodes/class-filter-options.php:1181
+#: includes/shortcodes/class-filter-options.php:1202
 msgid "Clear filters"
 msgstr ""
 
-#: includes/shortcodes/class-filter-options.php:1310
-#: includes/shortcodes/class-filter-options.php:1311
+#: includes/shortcodes/class-filter-options.php:1331
+#: includes/shortcodes/class-filter-options.php:1332
 msgid "From"
 msgstr ""
 
-#: includes/shortcodes/class-filter-options.php:1312
+#: includes/shortcodes/class-filter-options.php:1333
 msgid "–"
 msgstr ""
 
-#: includes/shortcodes/class-filter-options.php:1315
-#: includes/shortcodes/class-filter-options.php:1316
+#: includes/shortcodes/class-filter-options.php:1336
+#: includes/shortcodes/class-filter-options.php:1337
 msgid "To"
 msgstr ""
 
@@ -4513,11 +4513,13 @@ msgstr ""
 msgid "Latest Activity"
 msgstr ""
 
-#: includes/shortcodes/class-sort-order.php:46 blocks/shared/components.js:156
+#: includes/shortcodes/class-sort-order.php:46
+#: blocks/ht-sort-order-options/src/index.js:25 blocks/shared/components.js:156
 msgid "Relevance"
 msgstr ""
 
-#: includes/shortcodes/class-sort-order.php:47 blocks/shared/components.js:155
+#: includes/shortcodes/class-sort-order.php:47
+#: blocks/ht-sort-order-options/src/index.js:26 blocks/shared/components.js:155
 msgid "ID"
 msgstr ""
 
@@ -4641,7 +4643,7 @@ msgid ""
 msgstr ""
 
 #: blocks/ht-power-search/src/index.js:141
-#: blocks/ht-sort-order-options/src/index.js:120
+#: blocks/ht-sort-order-options/src/index.js:122
 #: blocks/ht-term-cloud/src/index.js:73 blocks/ht-term-groups/src/index.js:65
 #: blocks/ht-term-index/src/index.js:79 blocks/ht-term-list/src/index.js:116
 #: blocks/shared/post-list-edit.js:436
@@ -4663,43 +4665,43 @@ msgid ""
 "all matched terms."
 msgstr ""
 
-#: blocks/ht-sort-order-options/src/index.js:70
+#: blocks/ht-sort-order-options/src/index.js:72
 msgid "Sort Fields"
 msgstr ""
 
-#: blocks/ht-sort-order-options/src/index.js:83
+#: blocks/ht-sort-order-options/src/index.js:85
 msgid "Initial state"
 msgstr ""
 
-#: blocks/ht-sort-order-options/src/index.js:86
+#: blocks/ht-sort-order-options/src/index.js:88
 msgid "Expanded"
 msgstr ""
 
-#: blocks/ht-sort-order-options/src/index.js:87
+#: blocks/ht-sort-order-options/src/index.js:89
 msgid "Collapsed"
 msgstr ""
 
-#: blocks/ht-sort-order-options/src/index.js:93
+#: blocks/ht-sort-order-options/src/index.js:95
 msgid "Default sort"
 msgstr ""
 
-#: blocks/ht-sort-order-options/src/index.js:104
+#: blocks/ht-sort-order-options/src/index.js:106
 msgid "Button label (collapsed)"
 msgstr ""
 
-#: blocks/ht-sort-order-options/src/index.js:112
+#: blocks/ht-sort-order-options/src/index.js:114
 msgid "Button label (expanded)"
 msgstr ""
 
-#: blocks/ht-sort-order-options/src/index.js:131
+#: blocks/ht-sort-order-options/src/index.js:133
 msgid "Renders on taxonomy archive and search results pages only."
 msgstr ""
 
-#: blocks/ht-sort-order-options/src/index.js:134
+#: blocks/ht-sort-order-options/src/index.js:136
 msgid "HT Sort Order Options"
 msgstr ""
 
-#: blocks/ht-sort-order-options/src/index.js:138
+#: blocks/ht-sort-order-options/src/index.js:140
 msgid "(no fields selected)"
 msgstr ""
 

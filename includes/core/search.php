@@ -54,10 +54,7 @@ function htax_get_term_sort_order( $term_id ) {
         return array();
     }
 
-    $archive_fields = array( 'date', 'modified', 'title', 'author', 'comment_count' );
-    $parsed         = htax_parse_orderby( $sort_order_str );
-
-    return array_intersect_key( $parsed, array_flip( $archive_fields ) );
+    return htax_parse_orderby( $sort_order_str );
 }
 
 /**
@@ -86,7 +83,7 @@ function htax_parse_orderby( $orderby ) {
             $order = 'desc';
         }
 
-        $field = strtolower( $field );
+        $field = 'id' === strtolower( $field ) ? 'ID' : strtolower( $field );
         $order = strtoupper( $order );
 
         // Validate field and order
@@ -253,6 +250,77 @@ function htax_get_exact_match_term_ids( string $term_string, string $taxonomy = 
         ) );
     }
     return array_map( 'intval', (array) $ids );
+}
+
+/**
+ * Sort a WP_Query in SQL when its sort order uses fields WP_Query can't sort by.
+ *
+ * Latest comment and latest activity live in wp_htax_post_text, and relevance needs the search
+ * index, so htax_apply_sql_orderby_clauses() joins them and reuses htax_build_orderby_sql().
+ *
+ * @since 1.0.0
+ *
+ * @param WP_Query $query          The query.
+ * @param array    $orderby_parsed Parsed orderby array from htax_parse_orderby().
+ * @param int      $term_id        Term to rank by for `relevance`. Without one, relevance is skipped.
+ * @return bool True if the query will be sorted in SQL, false if WP_Query can sort it itself.
+ */
+function htax_set_sql_orderby( WP_Query $query, array $orderby_parsed, int $term_id = 0 ): bool {
+    if ( ! $term_id ) {
+        unset( $orderby_parsed['relevance'] );
+    }
+    if ( ! array_intersect_key( $orderby_parsed, array_flip( array( 'last_comment', 'last_activity', 'relevance' ) ) ) ) {
+        return false;
+    }
+
+    $query->set(
+        'htax_sql_orderby',
+        array(
+            'orderby' => $orderby_parsed,
+            'term_id' => $term_id,
+        )
+    );
+    return true;
+}
+
+/**
+ * Apply a sort order set by htax_set_sql_orderby().
+ *
+ * Posts with no row in wp_htax_post_text, such as post types that aren't indexed, sort as if
+ * they had no value.
+ *
+ * @since 1.0.0
+ *
+ * @param array    $clauses Query clauses.
+ * @param WP_Query $query   The query.
+ * @return array Query clauses.
+ */
+function htax_apply_sql_orderby_clauses( $clauses, $query ) {
+    $sort = $query->get( 'htax_sql_orderby' );
+    if ( empty( $sort['orderby'] ) ) {
+        return $clauses;
+    }
+
+    global $wpdb;
+    $clauses['join'] .= " LEFT JOIN {$wpdb->prefix}htax_post_text htax_pt ON htax_pt.post_id = {$wpdb->posts}.ID";
+
+    $relevance_column = '0';
+    if ( isset( $sort['orderby']['relevance'] ) ) {
+        // A term counts once per post, at its strongest relationship.
+        $clauses['join'] .= $wpdb->prepare(
+            " LEFT JOIN (
+                SELECT st.post_id, MAX(st.strength) AS term_relevance
+                FROM {$wpdb->prefix}htax_search_terms st
+                WHERE st.term_id = %d" . htax_strength_model_sql( 'st', 'related' ) . htax_get_hidden_term_filter_clause( 'st.is_hidden' ) . '
+                GROUP BY st.post_id
+            ) htax_rel ON htax_rel.post_id = ' . $wpdb->posts . '.ID',
+            (int) $sort['term_id']
+        );
+        $relevance_column = 'COALESCE(htax_rel.term_relevance, 0)';
+    }
+
+    $clauses['orderby'] = htax_build_orderby_sql( $sort['orderby'], 'htax_pt', $relevance_column );
+    return $clauses;
 }
 
 /**
@@ -539,7 +607,9 @@ function htax_handle_widget_post_search( $query ) {
     // Empty filter — no taxonomy terms and no text. Let WP_Query run with only the orderby
     // override so standard WordPress behaviour (post types, date ranges, etc.) is preserved.
     if ( ! empty( $orderby_parsed ) ) {
-        htax_apply_orderby_to_wp_query( $orderby_parsed, $query );
+        if ( ! htax_set_sql_orderby( $query, $orderby_parsed ) ) {
+            htax_apply_orderby_to_wp_query( $orderby_parsed, $query );
+        }
     }
 }
 // Hook will be registered in includes/hooks/actions.php

@@ -174,33 +174,19 @@ function htax_modify_archive_query( $query ) {
 
     // Apply sort order: user GET param overrides term meta, term meta overrides default.
     // Stored/transmitted as "field:dir,field:dir"; parsed into a WP_Query array orderby.
-    $archive_fields     = array( 'date', 'modified', 'title', 'author', 'comment_count' );
-    $user_orderby_raw   = isset( $_GET['htax_orderby'] ) ? sanitize_text_field( wp_unslash( $_GET['htax_orderby'] ) ) : '';
-    $user_orderby       = '';
-    if ( $user_orderby_raw ) {
-        $parsed_user = htax_parse_orderby( $user_orderby_raw );
-        $valid_pairs = array();
-        foreach ( $parsed_user as $field => $dir ) {
-            if ( in_array( $field, $archive_fields, true ) ) {
-                $valid_pairs[ $field ] = $dir;
-            }
-        }
-        $user_orderby = $valid_pairs;
+    $orderby_raw = isset( $_GET['htax_orderby'] ) ? sanitize_text_field( wp_unslash( $_GET['htax_orderby'] ) ) : '';
+    $orderby     = $orderby_raw ? htax_parse_orderby( $orderby_raw ) : array();
+    if ( ! $orderby && htax_taxonomy_has_feature( $taxonomy, 'customize_archives' ) ) {
+        $orderby = htax_get_term_sort_order( $term_id );
     }
 
-    if ( ! empty( $user_orderby ) ) {
-        $query->set( 'orderby', $user_orderby );
-    } else {
-        if ( htax_taxonomy_has_feature( $taxonomy, 'customize_archives' ) ) {
-            $sort_order_str = htax_get_term_sort_order( $term_id );
-            if ( ! empty( $sort_order_str ) ) {
-                $query->set( 'orderby', $sort_order_str );
-            }
-        }
+    if ( ! $orderby ) {
         if ( ! $query->get( 'orderby' ) ) {
             $query->set( 'orderby', 'date' );
             $query->set( 'order', 'DESC' );
         }
+    } elseif ( ! htax_set_sql_orderby( $query, $orderby, (int) $term_id ) ) {
+        $query->set( 'orderby', $orderby );
     }
 
     // 5. Apply posts per page override if set

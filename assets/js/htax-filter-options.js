@@ -296,6 +296,9 @@
             for (const [taxonomy, data] of Object.entries(this.state)) {
                 if (typeof data === 'object' && data !== null && 'terms' in data && data.terms.length > 0) {
                     params.set('htax_filter[' + taxonomy + ']', data.terms.join(','));
+                    if (data.match && 'any' !== data.match) {
+                        params.set('htax_filter_match[' + taxonomy + ']', data.match);
+                    }
                 }
             }
 

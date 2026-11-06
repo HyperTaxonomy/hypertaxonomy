@@ -4,9 +4,9 @@ parent: User Guide
 nav_order: 8
 ---
 
-## Archive & Results Controls
+# Archive & Results Controls
 
-### [ht_sort_order_options]
+## [ht_sort_order_options]
 
 A standalone pill-based sort order selector. Users can add, remove, reorder, and toggle the direction of sort criteria. Primarily used on archive pages (where changing the sort order navigates to a new URL) or inside `[ht_search_form]` (where it submits the form with the updated order).
 
@@ -27,7 +27,7 @@ Fields already in `default` appear as active pills on first load; remaining fiel
 ```
 [ht_sort_order_options fields="date,modified,title" action="navigate"]
 ```
-Place anywhere on an archive template. Changing the sort order appends `?htax_orderby=field:dir,…` to the URL and navigates. The archive query automatically applies the sort (fields are validated against the archive-valid field list before use).
+Place anywhere on an archive template. Changing the sort order appends `?htax_orderby=field:dir,…` to the URL and navigates. The archive query automatically applies the sort. All the fields above work on archives. `relevance` ranks posts by how central this archive's term is to them.
 
 **Inside a search form (submit mode):**
 ```
@@ -40,7 +40,7 @@ Place anywhere on an archive template. Changing the sort order appends `?htax_or
 
 ---
 
-### HT Sort Order Options Block
+## HT Sort Order Options Block
 
 The **HT Sort Order Options** Gutenberg block is the block-editor equivalent of `[ht_sort_order_options action="navigate"]`. It is designed for FSE (Full Site Editing) archive and search templates where you want to give visitors a sort control without writing shortcode.
 
@@ -50,7 +50,7 @@ Find it in the block inserter under **HyperTaxonomy → HT Sort Order Options**,
 
 **Inspector panels:**
 
-*Sort Fields* — Check or uncheck each field to include in the picker. Available fields: Date, Modified, Title, Author, Comments, Latest Comment, Latest Activity. Display order follows the canonical field order regardless of the order you check them.
+*Sort Fields* — Check or uncheck each field to include in the picker. Available fields: Date, Modified, Title, Author, Comments, Latest Comment, Latest Activity, Relevance, ID. Display order follows the canonical field order regardless of the order you check them.
 
 *Display* — Set the initial state (expanded or collapsed), a default sort value (e.g. `date:desc`), custom button labels for the collapsed and expanded states, and an additional CSS class.
 
@@ -60,11 +60,11 @@ Find it in the block inserter under **HyperTaxonomy → HT Sort Order Options**,
 
 ---
 
-### Filter Options Panel
+## Filter Options Panel
 
 A collapsible filter panel that lets visitors narrow results by taxonomy terms, date range, or author. Works on term archives, post list shortcodes, and search result containers.
 
-### [ht_filter_options] — Full Form
+## [ht_filter_options] — Full Form
 
 Wrap child filter shortcodes inside `[ht_filter_options]` to create a filter panel:
 
@@ -89,7 +89,7 @@ Wrap child filter shortcodes inside `[ht_filter_options]` to create a filter pan
 | `text_expanded` | Button label when expanded (defaults to `label`) | — |
 | `class` | Additional CSS classes on the root element | — |
 
-#### [ht_filter_terms]
+### [ht_filter_terms]
 
 Adds a term-based filter group. One `[ht_filter_terms]` per taxonomy per panel.
 
@@ -99,7 +99,7 @@ Adds a term-based filter group. One `[ht_filter_terms]` per taxonomy per panel.
 | `label` | Group label | taxonomy label |
 | `type` | Display style: `pills` or `checklist` | auto (pills for flat, checklist for hierarchical) |
 | `match` | Filter logic: `any` (OR), `all` (AND), `none` (NOT IN) | `any` |
-| `primary` | `true` to mark as the primary filter; initial selection seeded from the result shortcode's `filter_terms` / `filter_groups` | `false` (first `[ht_filter_terms]` is implicit primary) |
+| `primary` | `true` to mark as the primary filter | `false` (first `[ht_filter_terms]` is implicit primary) |
 | `include_group_options` | Group IDs; limits option pool to terms from those groups | — |
 | `exclude_group_options` | Group IDs; removes their terms from the option pool | — |
 | `include_term_options` | Term IDs to force into the pool | — |
@@ -111,14 +111,13 @@ Adds a term-based filter group. One `[ht_filter_terms]` per taxonomy per panel.
 
 **Primary filter rules:**
 - At most one `[ht_filter_terms]` may have `primary="true"`. If none is marked, the first one is treated as primary.
-- The primary filter's initial selection is seeded from the parent result shortcode's static `filter_terms` / `filter_groups` (if any), in addition to any explicit `include_terms` / `include_groups` on the filter itself.
-- Seeded terms are forced into the option pool even if the pool definition does not cover them.
+- With the inline `filters=` form on `[ht_post_list]`, the primary filter's initial selection also includes the list's `filter_terms`, and those terms are forced into the option pool even if the pool definition does not cover them.
 - `primary="true"` is invalid with `match="none"` (silently demoted to non-primary).
 - An empty selection is a no-op — removing all selected terms shows all posts.
 
 **Archive term exclusion:** On a term archive page, the archive's own term is automatically excluded from the option pool for any `[ht_filter_terms]` whose `taxonomy` matches the archive's taxonomy. No explicit `exclude_term_options` needed.
 
-#### [ht_filter_date_published] and [ht_filter_date_modified]
+### [ht_filter_date_published] and [ht_filter_date_modified]
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
@@ -127,15 +126,15 @@ Adds a term-based filter group. One `[ht_filter_terms]` per taxonomy per panel.
 
 Empty date fields = no-op (no restriction applied).
 
-#### [ht_filter_author]
+### [ht_filter_author]
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
 | `label` | Group label | `"Author"` |
 
-Option pool is loaded dynamically from post authors matching the current result set. Empty selection = no-op.
+The options are every author with a published post of the post type being listed: the list's `post_type` for the inline `filters=` form on `[ht_post_list]`, and every indexed post type otherwise. Empty selection = no-op.
 
-### Inline Filter Panel (simplified form)
+## Inline Filter Panel (simplified form)
 
 Instead of a full `[ht_filter_options]` shortcode, use the `filters` and `filter_options` attributes directly on `[ht_post_list]` or `[ht_search_results]`:
 
@@ -162,17 +161,17 @@ Instead of a full `[ht_filter_options]` shortcode, use the `filters` and `filter
 
 **Simplified form conventions:** The first taxonomy slug in `filters` is implicitly `primary="true"`. All filters use `match="any"`. For `match="all"`, `match="none"`, or complex pool definitions, use the full `[ht_filter_options]` shortcode.
 
-### Action modes
+## Action modes
 
 | Mode | Use case | How it works |
 |------|----------|-------------|
-| `navigate` | Archive pages | Rewrites URL with `?htax_filter[taxonomy]=ids&htax_filter[date_from]=…` and navigates. The archive query reads and applies these params automatically. |
+| `navigate` | Archive pages | Rewrites URL with `?htax_filter[taxonomy]=ids&htax_filter[date_from]=…` and navigates. A term filter with `match="all"` or `match="none"` adds `htax_filter_match[taxonomy]=all` or `none`. The archive query reads and applies these params automatically. |
 | `submit` | Forms | Submits the ancestor `<form>`, forwarding filter state as POST fields. |
 | *(empty)* | AJAX result shortcodes | Fires `htax:filter-change` event. Result shortcodes (`[ht_post_list]`, `[ht_search_results]`) listen and re-query immediately. |
 
-When `[ht_filter_options]` is placed as a sibling to a result shortcode's output, the correct action mode is selected automatically based on the result type. The `filters=` inline form always uses the event (AJAX) mode.
+`[ht_filter_options]` defaults to `navigate`, so next to a `[ht_post_list]` or `[ht_search_results]`, set `action=""`. The `filters=` inline form always uses the event (AJAX) mode.
 
-### Examples
+## Examples
 
 ```
 [ht_filter_options action="navigate"]
@@ -213,6 +212,3 @@ HyperTaxonomy extends two native WordPress blocks — **Query Loop** and **Lates
 **Example use case:** You have a "Featured" group containing a curated set of tags. Add a Query Loop or Latest Posts block to your home page template, open the inspector, select the "Featured" group in the HT Term Group Filter panel, and the block will only show posts tagged with Featured terms.
 
 > **If HyperTaxonomy is deactivated:** The group filter has no effect on the frontend while the plugin is inactive. The configured group IDs remain stored in the block and are restored when the plugin is reactivated — provided the post has not been re-saved in the block editor during that time. Re-saving a post while HyperTaxonomy is deactivated causes WordPress to strip the `htax_filter_groups` attribute (it is no longer in any registered block schema), permanently losing the configured filter for that block.
-
----
-

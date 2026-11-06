@@ -13,7 +13,7 @@ import { SortOrderBuilder } from '../../shared/components';
 import '../../shared/editor.css';
 import metadata from '../block.json';
 
-// Fields available in this block (no relevance/ID — those only apply to search results).
+// Fields available in this block.
 const SORT_FIELDS = [
 	{ value: 'date',          label: __( 'Date',            'hypertaxonomy' ) },
 	{ value: 'modified',      label: __( 'Modified',        'hypertaxonomy' ) },
@@ -22,6 +22,8 @@ const SORT_FIELDS = [
 	{ value: 'comment_count', label: __( 'Comments',        'hypertaxonomy' ) },
 	{ value: 'last_comment',  label: __( 'Latest Comment',  'hypertaxonomy' ) },
 	{ value: 'last_activity', label: __( 'Latest Activity', 'hypertaxonomy' ) },
+	{ value: 'relevance',     label: __( 'Relevance',       'hypertaxonomy' ) },
+	{ value: 'ID',            label: __( 'ID',              'hypertaxonomy' ) },
 ];
 
 function Edit( { attributes, setAttributes } ) {

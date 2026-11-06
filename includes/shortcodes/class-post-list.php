@@ -751,7 +751,7 @@ class HyperTaxonomy_Shortcode_Post_List extends HyperTaxonomy_Shortcode_Base {
                 if ( ! empty( $this->htax_atts['filter_terms'] ) ) {
                     $primary_seed_ids = array_values( array_filter( array_map( 'intval', htax_parse_term_ids( $this->htax_atts['filter_terms'], $this->sanitize_taxonomy_att( $this->htax_atts['taxonomy'] ) ) ) ) );
                 }
-                $resolved    = htax_resolve_filter_configs( $raw_filter_configs, array(), null, $primary_seed_ids );
+                $resolved    = htax_resolve_filter_configs( $raw_filter_configs, array(), null, $primary_seed_ids, (string) $this->htax_atts['post_type'] );
                 $filter_html = htax_render_filter_options( $resolved, array( 'action' => '', 'class' => $filter_class ), array() );
             }
         }

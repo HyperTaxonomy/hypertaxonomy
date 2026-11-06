@@ -145,7 +145,7 @@ Per-term archive overrides available on any enabled taxonomy's term edit screen 
 |---------|-------------|
 | **Posts per page** | Override the global WordPress posts-per-page for this term's archive. Leave blank to use the WordPress default. |
 | **Maximum sticky posts** | Maximum number of sticky posts shown at the top of this term's archive. Leave blank to use the global maximum from Settings > HyperTaxonomy > Display. |
-| **Sort order** | Default sort order for this term's archive. Click **+** to add criteria and drag them to change their order. Leave empty to use the site default. Can be overridden at runtime via the `?htax_orderby=` URL parameter (e.g. from a `[ht_sort_order_options action="navigate"]` picker on the archive page). |
+| **Sort order** | Default sort order for this term's archive. Click **+** to add criteria and drag them to change their order. Fields are date, last modified, title, author, comments, latest comment, latest activity, relevance, and ID. Leave empty to use the site default. Can be overridden at runtime via the `?htax_orderby=` URL parameter (e.g. from a `[ht_sort_order_options action="navigate"]` picker on the archive page). |
 
 These settings apply to any enabled taxonomy (tags, categories, or custom taxonomies) — not just built-in ones.
 

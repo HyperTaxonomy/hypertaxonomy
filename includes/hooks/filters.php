@@ -240,6 +240,8 @@ add_filter( 'wp_sitemaps_taxonomies_query_args', 'htax_filter_sitemap_terms_quer
 
 add_filter( 'rest_request_before_callbacks', 'htax_maybe_prevent_tag_creation', 10, 3 );
 
+add_filter( 'posts_clauses', 'htax_apply_sql_orderby_clauses', 10, 2 );
+
 // ==============================================================================
 // DYNAMIC FILTERS (Applied Conditionally)
 // ==============================================================================

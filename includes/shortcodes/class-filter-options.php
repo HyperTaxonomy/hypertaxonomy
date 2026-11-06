@@ -269,9 +269,10 @@ add_shortcode( 'ht_filter_options', 'htax_filter_options_shortcode' );
  * @param  array      $filter_state      Current filter state (from GET or AJAX).
  * @param  int|null   $archive_exclude_term  Term ID to exclude from pools (archive context) or null.
  * @param  array      $primary_seed_ids  Term IDs to seed into the primary filter (simplified form).
+ * @param  string     $post_type         Post type(s) the author filter's pool comes from; empty = every indexed type.
  * @return array      Resolved configs.
  */
-function htax_resolve_filter_configs( array $raw_configs, array $filter_state, $archive_exclude_term = null, array $primary_seed_ids = array() ) {
+function htax_resolve_filter_configs( array $raw_configs, array $filter_state, $archive_exclude_term = null, array $primary_seed_ids = array(), string $post_type = '' ) {
     // Determine primary: find first explicitly primary, or first terms config
     $has_explicit_primary = false;
     foreach ( $raw_configs as $cfg ) {
@@ -414,7 +415,7 @@ function htax_resolve_filter_configs( array $raw_configs, array $filter_state, $
             $configs[] = array(
                 'type'            => 'author',
                 'label'           => $raw['label'],
-                'pool_authors'    => htax_get_author_pool(),
+                'pool_authors'    => htax_get_author_pool( $post_type ),
                 'current_authors' => $current_authors,
             );
         }
@@ -544,15 +545,26 @@ function htax_resolve_filter_initial_selection( array $raw, string $taxonomy ): 
  *
  * @return array[] Array of { 'id' => int, 'name' => string } objects.
  */
-function htax_get_author_pool(): array {
+function htax_get_author_pool( string $post_type = '' ): array {
     global $wpdb;
 
+    $post_types = '' !== $post_type
+        ? array_map( 'sanitize_key', array_map( 'trim', explode( ',', $post_type ) ) )
+        : (array) htax_get_indexed_post_types();
+
+    if ( empty( $post_types ) ) {
+        return array();
+    }
+
     $user_ids = $wpdb->get_col(
-        "SELECT DISTINCT p.post_author
-         FROM {$wpdb->posts} p
-         WHERE p.post_status = 'publish'
-         AND p.post_type = 'post'
-         ORDER BY p.post_author ASC"
+        $wpdb->prepare(
+            "SELECT DISTINCT p.post_author
+             FROM {$wpdb->posts} p
+             WHERE p.post_status = 'publish'
+             AND p.post_type IN (" . htax_sql_placeholders( count( $post_types ), 's' ) . ')
+             ORDER BY p.post_author ASC',
+            $post_types
+        )
     );
 
     if ( empty( $user_ids ) ) {
@@ -606,15 +618,24 @@ function htax_get_archive_exclude_term() {
  * @return array Sanitized filter state.
  */
 function htax_get_filter_state_from_get(): array {
-    $raw = isset( $_GET['htax_filter'] ) ? wp_unslash( $_GET['htax_filter'] ) : array();
-    return htax_parse_filter_state_navigate( $raw );
+    $raw   = isset( $_GET['htax_filter'] ) ? wp_unslash( $_GET['htax_filter'] ) : array();
+    $state = htax_parse_filter_state_navigate( $raw );
+
+    // A term filter that doesn't match 'any' carries its match mode alongside its terms.
+    $match = isset( $_GET['htax_filter_match'] ) && is_array( $_GET['htax_filter_match'] ) ? wp_unslash( $_GET['htax_filter_match'] ) : array();
+    foreach ( $match as $taxonomy => $mode ) {
+        if ( isset( $state['term_match'][ $taxonomy ] ) && in_array( $mode, array( 'all', 'none' ), true ) ) {
+            $state['term_match'][ $taxonomy ] = $mode;
+        }
+    }
+    return $state;
 }
 
 /**
  * Parse and sanitize a filter state array from navigate-mode GET params.
  *
  * Format: htax_filter[taxonomy]=5,12  htax_filter[date_from]=2024-01-01  htax_filter[author]=1,2
- * Match type for term filters is always 'any' in navigate mode.
+ * Term filters match 'any' here; htax_get_filter_state_from_get() applies other match modes.
  *
  * @param  array $raw Raw GET array (already wp_unslash'd).
  * @return array Sanitized state with keys: terms[], term_match[], date_from, date_to,
@@ -646,7 +667,7 @@ function htax_parse_filter_state_navigate( $raw ): array {
             // Treat as taxonomy slug
             $term_ids             = array_values( array_filter( array_map( 'intval', explode( ',', (string) $value ) ) ) );
             $state['terms'][ $key ] = $term_ids;
-            $state['term_match'][ $key ] = 'any'; // navigate mode always 'any'
+            $state['term_match'][ $key ] = 'any';
         }
     }
 

@@ -7,6 +7,7 @@
 #
 # Excluded from zip: everything matched by .gitignore, plus these package-only extras
 # (committed to git but not needed at runtime):
+#   docs/              — documentation source, published at hypertaxonomy.org
 #   webpack.config.js  — build tooling
 #   src/               — block source dirs (compiled into build/ directories)
 #   blocks/shared/     — shared editor JS factory (compiled into each block's build/)
@@ -109,6 +110,7 @@ rules += [
     ('.distignore',       False, False),
     ('.gitignore',        False, False),
     ('.wordpress-org',    True,  False),
+    ('docs',              True,  True),
 ]
 
 count = 0

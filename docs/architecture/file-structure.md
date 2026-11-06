@@ -78,7 +78,7 @@ hypertaxonomy/
 │   ├── ht-power-search/                      # Standalone Edit component
 │   └── ht-query-group-filter/                # Not a standalone block; extends core/query and core/latest-posts
 │
-├── docs/                                     # Technical documentation (Just-the-Docs / Jekyll site)
+├── docs/                                     # Technical documentation (Just-the-Docs / Jekyll site) (not in the zip)
 │   ├── _config.yml                           # Jekyll / Just-the-Docs configuration
 │   ├── index.md                              # Docs home / landing page
 │   ├── features.md                           # Feature overview

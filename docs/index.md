@@ -10,7 +10,7 @@ nav_order: 1
 
 Semantic term relationships for WordPress: inclusions, synonyms, redirects, term groups, rich archives, and faceted search — define a relationship once, and it propagates everywhere. Term inclusions and synonyms mean a post tagged "React" automatically surfaces in archives for "JSX", "hooks", and any other term that includes it, without re-tagging. A denormalized search index keeps archives and search fast, and the same relationships govern archive queries, the related-posts shortcode, the search widget, and the REST API.
 
-Part of the [HyperTaxonomy suite](https://hypertaxonomy.org) of interoperable WordPress taxonomy plugins, and its core.
+Part of the [HyperTaxonomy Suite](https://hypertaxonomy.org) of interoperable WordPress taxonomy plugins, and its core.
 
 ## Documentation map
 

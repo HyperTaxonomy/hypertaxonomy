@@ -464,6 +464,58 @@ function htax_get_current_taxonomy() {
 }
 
 /**
+ * Convert term search text to the form WordPress stores term names in.
+ *
+ * WordPress stores &, <, and > in term names as entities, but leaves quotes as typed. So
+ * "R&D" has to be searched as "R&amp;D", while "O'Brien" has to stay as it is. Entities the
+ * user typed are decoded first, so "R&amp;D" works too.
+ *
+ * @since 1.0.0
+ *
+ * @param string $search Search text.
+ * @return string Search text in stored form.
+ */
+function htax_encode_term_search( $search ) {
+    return htmlspecialchars( html_entity_decode( $search, ENT_QUOTES | ENT_HTML5, 'UTF-8' ), ENT_NOQUOTES, 'UTF-8' );
+}
+
+/**
+ * Check whether a tag with this exact name exists, using the same comparison as
+ * wp_insert_term()'s duplicate check.
+ *
+ * term_exists() isn't enough here, because it also matches by slug. "OBrien" and "O'Brien"
+ * share a slug, but wp_insert_term() would create the first as a new tag if the second exists.
+ *
+ * @since 1.0.0
+ *
+ * @param string $name Tag name as entered, without slashes.
+ * @return bool True if a tag with this name exists.
+ */
+function htax_is_existing_tag_name( $name ) {
+    $clean_name = wp_unslash( sanitize_term_field( 'name', wp_slash( $name ), 0, 'post_tag', 'db' ) );
+
+    $matches = get_terms(
+        array(
+            'taxonomy'               => 'post_tag',
+            'name'                   => $clean_name,
+            'hide_empty'             => false,
+            'update_term_meta_cache' => false,
+        )
+    );
+    if ( is_wp_error( $matches ) ) {
+        return false;
+    }
+
+    // The name query doesn't distinguish accented characters.
+    foreach ( $matches as $match ) {
+        if ( strtolower( $clean_name ) === strtolower( $match->name ) ) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/**
  * Refuse the block editor's request to create a tag when the "prevent tag creation"
  * setting is on.
  *
@@ -498,7 +550,7 @@ function htax_maybe_prevent_tag_creation( $response, $handler, $request ) {
         return $response;
     }
 
-    if ( term_exists( (string) $request->get_param( 'name' ), 'post_tag' ) ) {
+    if ( htax_is_existing_tag_name( (string) $request->get_param( 'name' ) ) ) {
         return $response;
     }
 

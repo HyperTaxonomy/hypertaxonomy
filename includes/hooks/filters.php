@@ -202,18 +202,30 @@ add_action( 'rest_api_init', 'htax_register_rest_term_filters' );
 add_action( 'rest_api_init', 'htax_rest_register_post_extensions' );
 add_action( 'rest_api_init', 'htax_register_tag_suggestions_rest_route' );
 
-// WP stores term names HTML-encoded in the DB (e.g. "H&amp;M"). Gutenberg's tag
-// autocomplete sends raw text via REST, so "h&m" never matches "H&amp;M".
-// Normalize the search arg to encoded form for the duration of REST requests only.
+// WP stores & in term names as an entity (e.g. "H&amp;M"). The block editor's tag autocomplete
+// sends raw text via REST, so "h&m" never matches "H&amp;M". Convert the search arg to stored
+// form for the duration of REST requests only.
 add_action( 'rest_api_init', function () {
     add_filter( 'get_terms_args', function ( $args, $taxonomies ) {
         if ( isset( $args['search'] ) && is_string( $args['search'] ) && $args['search'] !== '' ) {
-            $decoded        = html_entity_decode( $args['search'], ENT_QUOTES | ENT_HTML5, 'UTF-8' );
-            $args['search'] = htmlspecialchars( $decoded, ENT_QUOTES, 'UTF-8' );
+            $args['search'] = htax_encode_term_search( $args['search'] );
         }
         return $args;
     }, 10, 2 );
 } );
+// The Classic Editor's tag suggestions have the same mismatch, and would otherwise show the
+// stored form. Its script displays suggestions as text, so decoded names are safe to return.
+add_action( 'wp_ajax_ajax-tag-search', function () {
+    add_filter( 'get_terms_args', function ( $args ) {
+        if ( isset( $args['name__like'] ) && is_string( $args['name__like'] ) && '' !== $args['name__like'] ) {
+            $args['name__like'] = htax_encode_term_search( $args['name__like'] );
+        }
+        return $args;
+    } );
+    add_filter( 'ajax_term_search_results', function ( $results ) {
+        return array_map( 'wp_specialchars_decode', (array) $results );
+    } );
+}, 0 );
 $htax_options = get_option( 'htax_settings', array() );
 if ( ! isset( $htax_options['advertise_ht_presence'] ) || ! empty( $htax_options['advertise_ht_presence'] ) ) {
     add_filter( 'rest_post_dispatch', 'htax_rest_add_version_header' );

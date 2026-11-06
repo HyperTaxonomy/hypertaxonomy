@@ -201,12 +201,8 @@ function htax_ajax_get_group_terms() {
 function htax_run_term_autocomplete_search( $taxonomy, $search, $exclude, $include_ids = array() ) {
     global $wpdb;
 
-    // WordPress stores term names HTML-encoded in the DB (e.g. "H&amp;M").
-    // Normalize the caller's input: decode any entities the user may have typed
-    // (e.g. "h&amp;m" → "h&m"), then re-encode to match DB storage format.
-    // This lets "h&m", "h&amp;m", and partial inputs all find "H&amp;M".
     $search_decoded = html_entity_decode( $search, ENT_QUOTES | ENT_HTML5, 'UTF-8' );
-    $search_db      = htmlspecialchars( $search_decoded, ENT_QUOTES, 'UTF-8' );
+    $search_db      = htax_encode_term_search( $search );
 
     $search_like    = '%' . $wpdb->esc_like( $search_db ) . '%';
     $where_clauses  = array( 'tt.taxonomy = %s', '(t.name LIKE %s OR tt.description LIKE %s)' );

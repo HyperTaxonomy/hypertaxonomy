@@ -104,6 +104,17 @@ function htax_enqueue_post_editor_assets( $hook ) {
         if ( $suggestions_enabled ) {
             $script_deps[] = 'htax-tag-suggestions-js';
         }
+        // Repairs the tag field's result when the "prevent tag creation" setting refuses a tag.
+        $tag_options = get_option( 'htax_settings', array() );
+        if ( ! empty( $tag_options['prevent_tag_creation'] ) && in_array( 'post_tag', $post_type_taxonomies, true ) ) {
+            wp_enqueue_script(
+                'htax-tag-restriction-js',
+                HTAX_PLUGIN_URL . 'admin/js/htax-tag-restriction.js',
+                array( 'wp-api-fetch', 'wp-data', 'wp-core-data', 'wp-editor' ),
+                HTAX_VERSION,
+                true
+            );
+        }
         // Editor display preferences — five per-user toggles in the ··· menu.
         wp_enqueue_script(
             'htax-editor-prefs-js',
@@ -334,7 +345,8 @@ function htax_enqueue_post_editor_assets( $hook ) {
     // getEntityRecord() returns immediately without triggering per-term REST calls.
     $preload_enabled = ! isset( $options['preload_editor_terms'] ) || ! empty( $options['preload_editor_terms'] );
     if ( $preload_enabled && $is_block_editor && $post_id ) {
-        $preloaded = array();
+        $preloaded        = array();
+        $preload_requests = array();
         foreach ( $enabled_taxonomies as $taxonomy ) {
             $tax_obj = get_taxonomy( $taxonomy );
             if ( ! $tax_obj || empty( $tax_obj->show_in_rest ) ) {
@@ -359,6 +371,41 @@ function htax_enqueue_post_editor_assets( $hook ) {
                     'meta'        => new stdClass(),
                 );
             }
+
+            // The flat taxonomy field accepts typing as soon as it appears, and what's typed
+            // before its terms load replaces them. Answering its request from the page closes
+            // that gap. The path must match the request exactly, including its URL encoding and
+            // the order of the IDs; if it stops matching, the field just makes the request.
+            // The field asks for per_page=-1, which the REST server rejects, so WordPress's own
+            // preload path filter can't serve it, and answers are kept for repeat requests.
+            if ( ! $tax_obj->hierarchical ) {
+                $namespace = ! empty( $tax_obj->rest_namespace ) ? $tax_obj->rest_namespace : 'wp/v2';
+                $base      = ! empty( $tax_obj->rest_base ) ? $tax_obj->rest_base : $taxonomy;
+                $path      = '/' . $namespace . '/' . $base . '?context=view&per_page=-1&_fields=id%2Cname&include='
+                    . rawurlencode( implode( ',', wp_list_pluck( $assigned, 'term_id' ) ) );
+
+                $preload_requests[ $path ] = array_map(
+                    static function ( $term ) {
+                        return array(
+                            'id'   => $term->term_id,
+                            'name' => $term->name,
+                        );
+                    },
+                    array_values( $assigned )
+                );
+            }
+        }
+        if ( ! empty( $preload_requests ) ) {
+            wp_add_inline_script(
+                'wp-api-fetch',
+                '( function ( terms ) {' .
+                'wp.apiFetch.use( function ( options, next ) {' .
+                'var found = \'GET\' === ( options.method || \'GET\' ) && terms[ options.path ];' .
+                'return found ? Promise.resolve( found ) : next( options );' .
+                '} );' .
+                '}( ' . wp_json_encode( $preload_requests, JSON_HEX_TAG ) . ' ) );',
+                'after'
+            );
         }
         if ( ! empty( $preloaded ) ) {
             // Attach the injection as an inline script that runs BEFORE wp-edit-post
@@ -370,7 +417,7 @@ function htax_enqueue_post_editor_assets( $hook ) {
             wp_add_inline_script(
                 'wp-edit-post',
                 '(function(){' .
-                'var p=' . wp_json_encode( $preloaded ) . ';' .
+                'var p=' . wp_json_encode( $preloaded, JSON_HEX_TAG ) . ';' .
                 'window.htaxPreloadedTerms=p;' .
                 'if(!window.wp||!window.wp.data)return;' .
                 'var d=window.wp.data.dispatch("core");' .

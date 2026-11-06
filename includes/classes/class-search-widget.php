@@ -3423,7 +3423,7 @@ class HyperTaxonomy_Search_Widget {
         );
 
         if ( $search !== '' ) {
-            $args['search']  = $search;
+            $args['search']  = htax_encode_term_search( $search );
             $args['orderby'] = 'name';
         } else {
             $args['orderby'] = 'count';

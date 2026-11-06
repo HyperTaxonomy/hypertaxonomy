@@ -32,8 +32,6 @@ class HyperTaxonomy_Capabilities {
         register_activation_hook( HTAX_PLUGIN_BASENAME, array( __CLASS__, 'add_capabilities' ) );
         register_deactivation_hook( HTAX_PLUGIN_BASENAME, array( __CLASS__, 'remove_capabilities' ) );
 
-        // Add capability checks to existing functions
-        add_filter( 'user_has_cap', array( __CLASS__, 'filter_user_capabilities' ), 10, 3 );
     }
 
     /**
@@ -76,53 +74,10 @@ class HyperTaxonomy_Capabilities {
     }
 
     /**
-     * Filter user capabilities - fallback to WordPress native capabilities
-     */
-    public static function filter_user_capabilities( $allcaps, $caps, $args ) {
-        // Map manage_categories to editor-level custom capabilities (not settings).
-        // manage_hypertaxonomy_settings is administrator-only; it must not be granted
-        // to editors or any other role that holds manage_categories but not manage_options.
-        if ( isset( $allcaps['manage_categories'] ) && $allcaps['manage_categories'] ) {
-            $allcaps['manage_term_relationships'] = true;
-            $allcaps['manage_term_redirects'] = true;
-            $allcaps['manage_term_icons'] = true;
-            $allcaps['manage_term_visibility'] = true;
-        }
-
-        // Map manage_categories (Editor+) to sticky posts capability, matching the
-        // documented "Admin + Editor" role model. Contributors/Authors also hold
-        // edit_posts but must not get this capability.
-        if ( isset( $allcaps['manage_categories'] ) && $allcaps['manage_categories'] ) {
-            $allcaps['manage_term_sticky_posts'] = true;
-        }
-
-        return $allcaps;
-    }
-
-    /**
      * Check if current user has a specific HyperTaxonomy capability
      */
     public static function current_user_can( $capability ) {
-        // Fallback to WordPress native capabilities if our custom cap doesn't exist
-        $fallback_caps = array(
-            'manage_hypertaxonomy_settings' => 'manage_options',
-            'manage_term_relationships' => 'manage_categories',
-            'manage_term_redirects' => 'manage_categories',
-            'manage_term_icons' => 'manage_categories',
-            'manage_term_visibility' => 'manage_categories',
-            'manage_term_sticky_posts' => 'manage_categories',
-        );
-
-        if ( current_user_can( $capability ) ) {
-            return true;
-        }
-
-        // Check fallback capability
-        if ( isset( $fallback_caps[ $capability ] ) ) {
-            return current_user_can( $fallback_caps[ $capability ] );
-        }
-
-        return false;
+        return current_user_can( $capability );
     }
 }
 

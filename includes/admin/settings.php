@@ -351,7 +351,7 @@ class HyperTaxonomy_Settings {
         add_options_page(
             __( 'HyperTaxonomy Settings', 'hypertaxonomy' ),
             __( 'HyperTaxonomy', 'hypertaxonomy' ),
-            'manage_options',
+            'manage_hypertaxonomy_settings',
             'hypertaxonomy',
             array( $this, 'render_settings_page' )
         );
@@ -3040,6 +3040,11 @@ if ( function_exists( 'htax_the_archive_icon' ) ) {
             'htax_settings',
             array( $this, 'sanitize_settings' )
         );
+
+        // options.php requires manage_options unless the settings group says otherwise.
+        add_filter( 'option_page_capability_htax_settings_group', function () {
+            return 'manage_hypertaxonomy_settings';
+        } );
     }
 
     /**
@@ -3561,7 +3566,7 @@ add_action( 'admin_init', function() {
     if ( isset( $_GET['page'] ) && 'hypertaxonomy' === $_GET['page'] &&
          isset( $_GET['action'] ) && 'clear_cache' === $_GET['action'] ) {
 
-        if ( ! current_user_can( 'manage_options' ) ) {
+        if ( ! current_user_can( 'manage_hypertaxonomy_settings' ) ) {
             wp_die( __( 'You do not have permission to perform this action.', 'hypertaxonomy' ) );
         }
 
@@ -3579,7 +3584,7 @@ add_action( 'admin_init', function() {
     if ( isset( $_GET['page'] ) && 'hypertaxonomy' === $_GET['page'] &&
          isset( $_GET['action'] ) && 'clear_cache_type' === $_GET['action'] ) {
 
-        if ( ! current_user_can( 'manage_options' ) ) {
+        if ( ! current_user_can( 'manage_hypertaxonomy_settings' ) ) {
             wp_die( __( 'You do not have permission to perform this action.', 'hypertaxonomy' ) );
         }
 

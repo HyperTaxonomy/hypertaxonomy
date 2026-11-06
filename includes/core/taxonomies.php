@@ -64,9 +64,9 @@ function htax_register_group_taxonomy() {
         'show_admin_column'     => false,
         'meta_box_cb'           => false, // Prevent automatic meta box on post edit screens
         'capabilities'          => array(
-            'manage_terms' => 'manage_categories',
-            'edit_terms'   => 'manage_categories',
-            'delete_terms' => 'manage_categories',
+            'manage_terms' => 'manage_term_relationships',
+            'edit_terms'   => 'manage_term_relationships',
+            'delete_terms' => 'manage_term_relationships',
             'assign_terms' => 'edit_posts',
         ),
         'rewrite'               => array(

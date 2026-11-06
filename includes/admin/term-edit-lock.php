@@ -135,7 +135,7 @@ function htax_heartbeat_refresh_lock( array $response, array $data ): array {
 
         if ( $term_id
             && wp_verify_nonce( $nonce, 'htax_lock_term_' . $term_id )
-            && current_user_can( 'manage_categories' )
+            && current_user_can( 'edit_term', $term_id )
         ) {
             $locked_by = htax_check_term_edit_lock( $term_id );
             if ( $locked_by ) {

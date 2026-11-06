@@ -660,7 +660,7 @@ function htax_ajax_import_tag_groups_init() {
         wp_send_json_error( __( 'Security check failed.', 'hypertaxonomy' ) );
         return;
     }
-    if ( ! current_user_can( 'manage_options' ) ) {
+    if ( ! current_user_can( 'manage_hypertaxonomy_settings' ) ) {
         wp_send_json_error( __( 'You do not have permission to perform this action.', 'hypertaxonomy' ) );
         return;
     }
@@ -680,7 +680,7 @@ function htax_ajax_import_tag_groups_batch() {
         wp_send_json_error( __( 'Security check failed.', 'hypertaxonomy' ) );
         return;
     }
-    if ( ! current_user_can( 'manage_options' ) ) {
+    if ( ! current_user_can( 'manage_hypertaxonomy_settings' ) ) {
         wp_send_json_error( __( 'You do not have permission to perform this action.', 'hypertaxonomy' ) );
         return;
     }
@@ -711,7 +711,7 @@ function htax_ajax_import_tag_groups_finish() {
         wp_send_json_error( __( 'Security check failed.', 'hypertaxonomy' ) );
         return;
     }
-    if ( ! current_user_can( 'manage_options' ) ) {
+    if ( ! current_user_can( 'manage_hypertaxonomy_settings' ) ) {
         wp_send_json_error( __( 'You do not have permission to perform this action.', 'hypertaxonomy' ) );
         return;
     }
@@ -743,7 +743,7 @@ function htax_ajax_save_tag_groups_sync_settings() {
         wp_send_json_error( __( 'Security check failed.', 'hypertaxonomy' ) );
         return;
     }
-    if ( ! current_user_can( 'manage_options' ) ) {
+    if ( ! current_user_can( 'manage_hypertaxonomy_settings' ) ) {
         wp_send_json_error( __( 'You do not have permission to perform this action.', 'hypertaxonomy' ) );
         return;
     }
@@ -806,7 +806,7 @@ function htax_ajax_export() {
     }
 
     // Check permissions
-    if ( ! current_user_can( 'manage_options' ) ) {
+    if ( ! current_user_can( 'manage_hypertaxonomy_settings' ) ) {
         wp_die( esc_html__( 'You do not have permission to perform this action.', 'hypertaxonomy' ) );
     }
 
@@ -850,7 +850,7 @@ function htax_ajax_preview_import() {
     }
 
     // Check permissions
-    if ( ! current_user_can( 'manage_options' ) ) {
+    if ( ! current_user_can( 'manage_hypertaxonomy_settings' ) ) {
         wp_send_json_error( array( 'error' => __( 'You do not have permission to perform this action.', 'hypertaxonomy' ) ) );
         return;
     }
@@ -892,7 +892,7 @@ function htax_ajax_import() {
     }
 
     // Check permissions
-    if ( ! current_user_can( 'manage_options' ) ) {
+    if ( ! current_user_can( 'manage_hypertaxonomy_settings' ) ) {
         wp_send_json_error( array( 'error' => __( 'You do not have permission to perform this action.', 'hypertaxonomy' ) ) );
         return;
     }

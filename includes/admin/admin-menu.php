@@ -33,7 +33,7 @@ function htax_register_admin_menu() {
     add_menu_page(
         __( 'Terms', 'hypertaxonomy' ),
         __( 'Terms', 'hypertaxonomy' ),
-        'manage_options',
+        'manage_term_relationships',
         'htax-terms',
         'htax_terms_menu_redirect',
         'dashicons-tag',
@@ -46,7 +46,7 @@ function htax_register_admin_menu() {
         'htax-terms',
         __( 'Term Groups', 'hypertaxonomy' ),
         __( 'Term Groups', 'hypertaxonomy' ),
-        'manage_options',
+        'manage_term_relationships',
         'edit-tags.php?taxonomy=group'
     );
 

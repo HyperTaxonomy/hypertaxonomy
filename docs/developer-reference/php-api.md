@@ -4,6 +4,8 @@ parent: Developer Reference
 nav_order: 3
 ---
 
+# PHP API
+
 ## Integration API
 
 `includes/core/integration-api.php` provides a stable public surface for third-party plugins that need to work with HyperTaxonomy's archive expansion logic. Internal cache-invalidation infrastructure (`htax_fire_term_archive_changed`, `htax_fire_archive_changed_on_hierarchy`) lives in `cache.php`.
@@ -78,7 +80,7 @@ add_action( 'htax_term_archive_changed', function( $term_id, $taxonomy ) {
 
 See the `htax_term_archive_changed` entry in [Actions Fired by HyperTaxonomy](actions-filters.html#actions-fired-by-hypertaxonomy) for the full list of triggers.
 
-### Post Editor Term Badges
+## Post Editor Term Badges
 
 When editors assign tags or categories in the Gutenberg post editor, HyperTaxonomy adds contextual relationship indicators (badges and visual styling) to each term pill or list item. These badges help editors understand the semantic relationships of the terms they're adding.
 
@@ -122,7 +124,7 @@ HyperTaxonomy provides a complete PHP API for displaying terms as styled pills w
 
 ### Upload rules
 
-Icons are raster images (PNG, JPEG, WebP) or SVGs stored as standard WordPress media attachments. The attachment ID is saved in `_htax_icon_id` term meta.
+Icons are images from the media library, raster or SVG, stored as standard WordPress attachments. The attachment ID is saved in `_htax_icon_id` term meta.
 
 **Dimension enforcement** is applied at selection time in the admin UI (`htax-term-icons.js`):
 
@@ -350,7 +352,11 @@ $results = $wpdb->get_results( $wpdb->prepare(
 ) );
 ```
 
-### Strength Models
+### Hidden Terms and REST API
+
+Hidden terms are excluded from REST API responses for users who cannot see them (based on the global visibility setting). This means REST API consumers will not receive hidden terms unless the requesting user has the required capability.
+
+## Strength Models
 
 Every post–term relationship in the search index carries a **strength**: how central the term is to the post, from 0 to 1. Strength ranks term-based search results and related posts. HyperTaxonomy's built-in model, `htax_tf`, derives it from how prominently the term name appears in the post's title, excerpt, and body. Another plugin — for example one that computes semantic similarity with embeddings — can register its own model and supply scores; a site owner then selects it in **Settings → Search → Strength Model**.
 
@@ -392,7 +398,7 @@ if ( function_exists( 'htax_remove_term_strengths' ) ) {
 
 **Unregistering does not delete scores.** Registration is per request, so a temporarily deactivated provider keeps its scores; they are simply not read, and the selection falls back to `htax_tf` until the model is registered again (the saved selection is kept). Delete them explicitly with `htax_remove_term_strengths()` — e.g. in your uninstall routine — or let the site owner use Clear Scores: Settings → Search lists models that still have stored scores but aren't registered as *inactive*, with their coverage and Clear Scores, without allowing them to be selected.
 
-#### Functions
+### Functions
 
 **`htax_register_strength_model( string $key, array $args = [] ): bool`** — registers a model. `$key`: 1–64 characters of `a-z 0-9 _ . : -`. `$args`: `label`, `description`. Returns `false` for an invalid key or a reserved one: `htax_tf` and every other key starting with `htax_` belong to HyperTaxonomy and can't be registered.
 
@@ -414,7 +420,7 @@ if ( function_exists( 'htax_remove_term_strengths' ) ) {
 
 See also the actions [`htax_term_strength_missing`](actions-filters.html#htax_term_strength_missing) and [`htax_term_strengths_updated`](actions-filters.html#htax_term_strengths_updated).
 
-#### Querying strength directly
+### Querying strength directly
 
 If your query only asks *which* posts reach a term (like the hidden-terms example above), no model filter is needed — every relationship has an `htax_tf` row. If it reads or aggregates `strength`, restrict it to one model, or each relationship would be counted once per model:
 
@@ -427,10 +433,6 @@ $results = $wpdb->get_results(
      GROUP BY post_id"
 );
 ```
-
-### Hidden Terms and REST API
-
-Hidden terms are excluded from REST API responses for users who cannot see them (based on the global visibility setting). This means REST API consumers will not receive hidden terms unless the requesting user has the required capability.
 
 ---
 
@@ -484,11 +486,9 @@ foreach ( $synonyms as $synonym ) {
 }
 ```
 
-Returns an empty array when the **Term Relationships** feature is disabled for the term's taxonomy, or when the term is a redirect (unless `$include_redirect_data` is `true`).
+Returns an empty array when the **Term Relationships** feature is disabled for the term's taxonomy, if no bidirectional inclusions are configured, or if the term is a redirect, since a redirect's inclusions are inactive (unless `$include_redirect_data` is `true`). Redirect terms are also filtered from the results: if term B is a redirect, it will not appear as a synonym of A even if the DB rows exist. For archive expansion purposes `htax_get_included_terms()` is sufficient — this function is intended for display and UI use cases where the symmetric nature of the relationship is relevant.
 
-Returns an empty array if no bidirectional inclusions are configured, or if the term is a redirect (a redirect's inclusions are inactive, so no valid synonym relationship exists). Redirect terms are also filtered from the results: if term B is a redirect, it will not appear as a synonym of A even if the DB rows exist. For archive expansion purposes `htax_get_included_terms()` is sufficient — this function is intended for display and UI use cases where the symmetric nature of the relationship is relevant.
-
-Results are cached in a two-tier cache: a static per-request array and a persistent `htax_syno_{term_id}` transient (TTL=0). The transient is invalidated by `htax_delete_term_transients()` and re-warmed by `htax_rebuild_queued_term_caches()` at shutdown.
+Results are cached in a two-tier cache: a static per-request array and a persistent `htax_syno_{term_id}` transient (TTL=0). The transient is invalidated by `htax_delete_term_transients()`, queued for rebuilding at shutdown, and re-warmed by the `htax_async_rebuild_term_caches` cron event.
 
 #### `htax_is_redirect( int $term_id ): bool`
 
@@ -594,11 +594,11 @@ foreach ( $sticky_posts as $post ) {
 
 Results are cached in a transient (`htax_sticky_{term_id}`).
 
-### Term Links
+### Provider Filters
 
 External knowledge-base identifiers (Wikidata, Wikipedia, GeoNames, and more) attached to terms are managed by **TermConnect**. The Term Links API — `tc_get_term_links()`, `tc_get_link_uri()`, `tc_get_terms_by_uri()`, `tc_get_platform_link_types()`, and related functions — is documented in the [TermConnect Developer Reference](https://hypertaxonomy.org/termconnect/developer-reference/term-links-api.html).
 
-HyperTaxonomy exposes three PHP abstraction filters. Provider plugins hook these to make their data available to same-site consumers (WP-SKOS, search, etc.) without those consumers needing to know the source plugin — and consumers read the matching `htax_get_*()` getter without knowing the provider:
+HyperTaxonomy exposes four PHP abstraction filters. Provider plugins hook these to make their data available to same-site consumers (WP-SKOS, search, etc.) without those consumers needing to know the source plugin — and consumers read the matching `htax_get_*()` getter without knowing the provider:
 
 **`htax_term_uris`** — TermConnect always populates this with URIs from all enabled link types, regardless of TermConnect's REST API guard. Same-site plugins like WP-SKOS consume it via PHP without any REST call:
 
@@ -609,7 +609,7 @@ add_filter( 'htax_term_uris', function( array $uris, int $term_id ): array {
 }, 10, 2 );
 ```
 
-**`htax_term_locations`** — HT's built-in ATCF integration populates this with physical location rows when ATCF is active. ATCF's `atcf_expose_locations_api` setting controls ATCF's own REST endpoints. HyperTaxonomy reads the data via PHP (bypassing ATCF's REST guard) and applies its own per-taxonomy **Share list of locations** gate before including it in REST responses:
+**`htax_term_locations`** — HT's built-in ATCF integration populates this with physical location rows when ATCF is active, for PHP consumers to read through `htax_get_term_locations()`. It doesn't feed REST responses: those get locations from `ATCF_REST_API::format_term_locations()`, gated by the per-taxonomy **Share list of locations** setting. ATCF's `atcf_expose_locations_api` setting controls ATCF's own REST endpoints:
 
 ```php
 add_filter( 'htax_term_locations', function( array $locations, int $term_id ): array {
@@ -669,6 +669,3 @@ GET /wp-json/wp/v2/tags?htax_term_uri=https://www.wikidata.org/wiki/Q28865&_fiel
 ```
 
 HT does not define or handle this param. It is provided by TC on any site where TC is installed, enabling automatic cross-site term resolution by shared knowledge-base identifier without manual slug configuration.
-
----
-

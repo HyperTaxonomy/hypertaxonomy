@@ -33,8 +33,7 @@
 
     var SCOPE = 'htax/post-edit';
 
-    // Defaults match the previous global-setting defaults (redirects and
-    // visibility were opt-out; inclusions, containers, sticky were opt-in).
+    // Redirects and visibility are opt-out; inclusions, containers, and sticky are opt-in.
     var DEFAULTS = {
         inclusions: false,
         containers: false,

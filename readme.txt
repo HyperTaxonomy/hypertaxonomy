@@ -82,6 +82,7 @@ Post list, display, PowerSearch, and sort-order shortcodes each have a correspon
 * **Post Editor Indicators** — Per-user toggles in the block editor's ··· menu show contextual information for each assigned term without leaving the editor: Inclusion Badges (⇉N), Container Badges (⇇N), Redirect Indicators (italics + ↪), Hidden Terms (faded), and Sticky Pushpins (📌 toggle). Each toggle is independent and persists per user.
 * **Content-Based Tag Suggestions** — Replaces WordPress's "most used tags" suggestions in the Gutenberg editor with tags matched to the current post's content; suggestions are ranked by how prominently each tag appears in the title, excerpt, and body, with an optional ignore-words list
 * **Tag Creation Control** — Optionally prevent accidental creation of new tags in native post editor
+* **Reliable Tags Field** — Block editor tags aren't lost when entered during a slow server check or before the post's tags load
 * **Concurrent Edit Locking** — Heartbeat-based lock with take-over flow prevents two admins from editing the same term or relationship type simultaneously (can be disabled in Advanced settings if it conflicts with another plugin); navigating away with unsaved changes triggers a browser confirmation prompt
 * **Tabbed Settings** — Control cache expiration, permitted AJAX request frequency, frontend styles, and more
 

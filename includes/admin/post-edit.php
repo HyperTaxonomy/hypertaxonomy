@@ -104,12 +104,11 @@ function htax_enqueue_post_editor_assets( $hook ) {
         if ( $suggestions_enabled ) {
             $script_deps[] = 'htax-tag-suggestions-js';
         }
-        // Repairs the tag field's result when the "prevent tag creation" setting refuses a tag.
-        $tag_options = get_option( 'htax_settings', array() );
-        if ( ! empty( $tag_options['prevent_tag_creation'] ) && in_array( 'post_tag', $post_type_taxonomies, true ) ) {
+        // Keeps the Tags field from losing tags, with or without the "prevent tag creation" setting.
+        if ( in_array( 'post_tag', $post_type_taxonomies, true ) ) {
             wp_enqueue_script(
-                'htax-tag-restriction-js',
-                HTAX_PLUGIN_URL . 'admin/js/htax-tag-restriction.js',
+                'htax-tag-field-repair-js',
+                HTAX_PLUGIN_URL . 'admin/js/htax-tag-field-repair.js',
                 array( 'wp-api-fetch', 'wp-data', 'wp-core-data', 'wp-editor' ),
                 HTAX_VERSION,
                 true

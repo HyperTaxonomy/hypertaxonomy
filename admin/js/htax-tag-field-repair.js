@@ -1,15 +1,16 @@
 /**
- * Block editor support for the "prevent tag creation" setting.
+ * Keeps the block editor's Tags field from losing tags.
  *
- * The tag field sends a create request for every entered tag it hasn't loaded, and treats
- * an "already exists" reply as a match. It waits for the whole batch, so one refused tag
- * makes it drop the valid tags entered with it, and leave their pills on screen. If the
- * post's own tags haven't loaded yet, the same path can drop those as well.
+ * The field sends a create request for every entered tag it hasn't loaded, and treats an
+ * "already exists" reply as a match. It waits for the whole batch, so one refused tag makes
+ * it drop the valid tags entered with it, and leave their pills on screen. Entering a tag
+ * while an earlier batch is still running, or before the post's own tags have loaded, can
+ * drop tags in the same way.
  *
  * This script watches those requests without changing them. When a batch finishes, it
- * assigns the tags the server matched, restores any of the post's tags that were dropped,
- * and removes the pills of refused tags. The field's own message explains the refusal.
- * Saving is locked while a batch is pending, because the post's tags can briefly be wrong.
+ * assigns the tags the server resolved, restores any of the post's tags that were dropped,
+ * and removes the pills of tags refused by the "prevent tag creation" setting. Saving is
+ * locked while a batch is pending, because the post's tags can briefly be wrong.
  *
  * @package HyperTaxonomy
  * @since 1.0.0
@@ -24,11 +25,11 @@
     var EXISTS_CODE    = 'term_exists';
     var POLL_INTERVAL  = 200;
     var POLL_ATTEMPTS  = 40;
-    var LOCK_NAME      = 'htax-tag-restriction';
+    var LOCK_NAME      = 'htax-tag-field-repair';
 
     var pending  = 0;
     var snapshot = [];
-    var matched  = [];
+    var resolved = [];
     var refused  = [];
 
     function getPostTags() {
@@ -127,7 +128,7 @@
         }
 
         var current = getPostTags();
-        var next    = unique( snapshot.concat( current, matched ) );
+        var next    = unique( snapshot.concat( current, resolved ) );
         var changed = ! isSameSet( current, next );
 
         if ( changed ) {
@@ -173,7 +174,7 @@
 
         if ( 0 === pending ) {
             snapshot = getPostTags().slice();
-            matched  = [];
+            resolved = [];
             refused  = [];
             setSavingLocked( true );
         }
@@ -182,9 +183,14 @@
         var name   = options.data && options.data.name ? String( options.data.name ) : '';
         var result = next( options );
 
-        result.then( settle, function ( error ) {
+        result.then( function ( term ) {
+            if ( term && term.id ) {
+                resolved.push( term.id );
+            }
+            settle();
+        }, function ( error ) {
             if ( error && EXISTS_CODE === error.code && error.data && error.data.term_id ) {
-                matched.push( error.data.term_id );
+                resolved.push( error.data.term_id );
             } else if ( error && REFUSED_CODE === error.code ) {
                 refused.push( name.trim().toLowerCase() );
             }

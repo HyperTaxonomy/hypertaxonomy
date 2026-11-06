@@ -36,7 +36,7 @@ hypertaxonomy/
 │       ├── htax-group-admin.js               # Term Groups admin UI logic
 │       ├── htax-hierarchical-checklist.js    # Hierarchical checklist UI component
 │       ├── htax-post-edit.js                 # Post edit screen logic
-│       ├── htax-tag-restriction.js           # Tag field repair when "prevent tag creation" is on
+│       ├── htax-tag-field-repair.js          # Keeps the block editor's Tags field from losing tags
 │       ├── htax-settings.js                  # Settings page logic
 │       ├── htax-tables.js                    # List table filter logic, Screen Options sync, bulk group assignment
 │       ├── htax-tag-suggestions.js           # Content-based tag suggestion panels in the block editor sidebar
@@ -131,7 +131,7 @@ hypertaxonomy/
 │   ├── developer-reference/                  # Developer Reference section (PHP API, hooks, REST, capabilities)
 │   ├── architecture/                         # Architecture section (this reference, split into child pages)
 │   ├── contributing.md                       # Guide for HyperTaxonomy contributors (Design Principles, Patterns, Blocks, Error Handling, Debug)
-│   └── comparison.md                         # Comparing to Tag Groups
+│   └── comparison.md                         # Feature comparison
 │
 ├── includes/                                 # All PHP functionality
 │   │

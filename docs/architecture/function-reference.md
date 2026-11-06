@@ -229,7 +229,7 @@ Moves terms between taxonomies, natively or by detecting conversions made by oth
 
 ### Term Merge (includes/core/term-merge.php)
 
-- `htax_merge_terms( array $source_ids, int $target_id, string $taxonomy, bool $create_redirect = false )` - Move post assignments and relationships to the target in a transaction, then delete the sources and optionally create redirect stubs. Returns `{posts_reassigned, terms_deleted, redirects_created, target_id}`, or `WP_Error` after rolling back if a write fails. Fires `htax_before_merge_terms` and `htax_after_merge_terms`.
+- `htax_merge_terms( array $source_ids, int $target_id, string $taxonomy, bool $create_redirect = false )` - Move post assignments, group memberships, inclusions, exclusions, custom relationship types, and sticky pins to the target in a transaction, then delete the sources and optionally create redirect stubs. A source's icon and hidden status aren't transferred. Returns `{posts_reassigned, terms_deleted, redirects_created, target_id}`, or `WP_Error` after rolling back if a write fails. Fires `htax_before_merge_terms` and `htax_after_merge_terms`.
 
 ### Term Visibility (includes/core/term-visibility.php)
 

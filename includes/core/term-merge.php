@@ -19,8 +19,10 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * For each source term:
  * 1. Post assignments are moved to the target term.
- * 2. HT relationship records (group memberships, inclusions, exclusions) are
- *    transferred to the target, with deduplication via INSERT IGNORE.
+ * 2. HT relationship records (group memberships, inclusions, exclusions, custom
+ *    relationship types) are transferred to the target, with deduplication via
+ *    INSERT IGNORE. Sticky pins move to the target too. A source term's icon and
+ *    hidden status are not transferred: the target keeps its own.
  * 3. The source term is deleted (existing delete hooks handle search-index
  *    cleanup and relationship table cleanup automatically).
  * 4. If $create_redirect is true, a redirect stub with the source term's name
@@ -217,8 +219,10 @@ function htax_merge_terms( array $source_ids, int $target_id, string $taxonomy, 
     $all_post_ids = array_unique( array_map( 'intval', $all_post_ids ) );
 
     // ----------------------------------------------------------------
-    // 4. Transfer HT relationships — before deletion
+    // 4. Transfer HT relationships and sticky pins — before deletion
     // ----------------------------------------------------------------
+
+    $sticky_post_ids = array();
 
     foreach ( $source_ids as $source_id ) {
         // 4a. member_of: source is a member of some group → target inherits membership.
@@ -235,7 +239,7 @@ function htax_merge_terms( array $source_ids, int $target_id, string $taxonomy, 
         ) );
         $db_error = $db_error ?: $wpdb->last_error;
 
-        // 4b. includes/excludes where source is the subject:
+        // 4b. Other relationships where source is the subject, including custom types:
         //     "source includes/excludes X" → "target includes/excludes X"
         //     Skip rows where target_term_id = target (would create self-loop).
         $wpdb->query( $wpdb->prepare(
@@ -244,7 +248,7 @@ function htax_merge_terms( array $source_ids, int $target_id, string $taxonomy, 
             SELECT %d, target_term_id, relationship_type, %s, target_taxonomy
             FROM {$rel_table}
             WHERE source_term_id = %d
-            AND relationship_type IN ('includes', 'excludes')
+            AND relationship_type NOT IN ('member_of', 'redirect')
             AND target_term_id != %d",
             $target_id,
             $taxonomy,
@@ -253,7 +257,7 @@ function htax_merge_terms( array $source_ids, int $target_id, string $taxonomy, 
         ) );
         $db_error = $db_error ?: $wpdb->last_error;
 
-        // 4c. includes/excludes where source is the object:
+        // 4c. Other relationships where source is the object, including custom types:
         //     "X includes/excludes source" → "X includes/excludes target"
         //     Skip rows where source_term_id = target (would create self-loop).
         $wpdb->query( $wpdb->prepare(
@@ -262,7 +266,7 @@ function htax_merge_terms( array $source_ids, int $target_id, string $taxonomy, 
             SELECT source_term_id, %d, relationship_type, source_taxonomy, %s
             FROM {$rel_table}
             WHERE target_term_id = %d
-            AND relationship_type IN ('includes', 'excludes')
+            AND relationship_type NOT IN ('member_of', 'redirect')
             AND source_term_id != %d",
             $target_id,
             $taxonomy,
@@ -273,6 +277,34 @@ function htax_merge_terms( array $source_ids, int $target_id, string $taxonomy, 
 
         // redirect rows are intentionally not transferred; the delete hooks
         // for the source term will clean them up automatically in the next step.
+
+        // 4d. Sticky pins: a post pinned to source stays pinned, on the target. The archive
+        //     caps how many are shown, so going over the target's maximum loses nothing.
+        //     Rows for posts already pinned to the target are left for the delete hooks.
+        $source_sticky_key = htax_get_sticky_assignment_key( $source_id );
+        $target_sticky_key = htax_get_sticky_assignment_key( $target_id );
+        $sticky_post_ids   = array_merge(
+            $sticky_post_ids,
+            array_map( 'intval', $wpdb->get_col( $wpdb->prepare(
+                "SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = %s",
+                $source_sticky_key
+            ) ) )
+        );
+        $db_error = $db_error ?: $wpdb->last_error;
+
+        $wpdb->query( $wpdb->prepare(
+            "UPDATE {$wpdb->postmeta} source_pin
+            LEFT JOIN {$wpdb->postmeta} target_pin
+                ON target_pin.post_id = source_pin.post_id
+                AND target_pin.meta_key = %s
+            SET source_pin.meta_key = %s
+            WHERE source_pin.meta_key = %s
+            AND target_pin.meta_id IS NULL",
+            $target_sticky_key,
+            $target_sticky_key,
+            $source_sticky_key
+        ) );
+        $db_error = $db_error ?: $wpdb->last_error;
     }
 
     if ( $db_error ) {
@@ -282,6 +314,11 @@ function htax_merge_terms( array $source_ids, int $target_id, string $taxonomy, 
     }
 
     $wpdb->query( 'COMMIT' );
+
+    // The sticky pins were moved in SQL, so cached post meta is out of date.
+    foreach ( array_unique( $sticky_post_ids ) as $sticky_post_id ) {
+        wp_cache_delete( $sticky_post_id, 'post_meta' );
+    }
 
     // ----------------------------------------------------------------
     // 5. Delete source terms
@@ -349,6 +386,11 @@ function htax_merge_terms( array $source_ids, int $target_id, string $taxonomy, 
     clean_term_cache( $target_id, $taxonomy );
     htax_reload_term_caches_on_edit( $target_id );
     htax_delete_term_transients( $target_id );
+    htax_delete_transient( 'htax_sticky_' . $target_id );
+
+    // A symmetric relationship transferred from a source term can duplicate one the target
+    // already has in the other direction.
+    htax_cleanup_symmetric_relationship_duplicates();
 
     // The 'member_of' transfer (step 4a) moved the source terms' group memberships
     // to the target. Invalidate the caches for every group whose membership changed

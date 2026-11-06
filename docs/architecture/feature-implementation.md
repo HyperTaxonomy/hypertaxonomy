@@ -291,6 +291,8 @@ Pre-conversion guards: name collision in target taxonomy (rejects — consistent
 
 `htax_merge_terms()` creates redirect stubs with `htax_create_redirect_term()` after deleting the source terms, because a stub takes its source's name and slug. That step runs after the transaction, so a failed stub doesn't undo the merge: it just isn't counted in `redirects_created`.
 
+Sticky pins move in SQL inside the merge transaction, because the delete hooks remove a deleted term's pins. A post already pinned to the target keeps that pin. Symmetric custom relationships can end up duplicated when the target already has the reverse row, so `htax_cleanup_symmetric_relationship_duplicates()` runs after the sources are deleted.
+
 When a term merge transfers source terms' `member_of` group memberships to the target (`htax_merge_terms()` in term-merge.php), the set of affected group IDs is expanded to include group ancestors (group expansion is hierarchical, so a child group's member-list cache feeds its ancestors' expansions). For each affected group it deletes the `htax_grp_{group_id}_` transients, refreshes the group term count, and cleans the term cache, then fires `htax_term_groups_changed` once for the target term so the search index and other membership-change listeners stay consistent.
 
 ## Conflict Detection

@@ -23,23 +23,47 @@ function htax_is_term_hidden( $term_id ) {
 }
 
 /**
+ * Check whether the current request comes from wp-admin rather than the front end.
+ *
+ * AJAX and REST requests serve both, so they're judged by the page that sent them. One with
+ * no referring page, such as an API client, isn't a front-end visitor and counts as admin.
+ *
+ * @since 1.0.0
+ *
+ * @return bool True for wp-admin screens, requests sent from them, and API clients.
+ */
+function htax_is_admin_request() {
+    if ( ! wp_doing_ajax() && ! ( defined( 'REST_REQUEST' ) && REST_REQUEST ) ) {
+        return is_admin();
+    }
+
+    $referer = wp_get_raw_referer();
+    if ( ! $referer ) {
+        return true;
+    }
+
+    $referer_path = (string) wp_parse_url( $referer, PHP_URL_PATH );
+    $admin_path   = (string) wp_parse_url( admin_url(), PHP_URL_PATH );
+    return 0 === strpos( $referer_path, $admin_path );
+}
+
+/**
  * Check if current user can see hidden terms
  *
- * Returns true if the user holds the manage_term_visibility capability (explicit
- * admin grant) OR meets the site-wide hidden_terms_visibility role threshold.
- * Either condition is sufficient — capability takes priority.
+ * On the front end, the site-wide hidden_terms_visibility setting alone decides, so "Hidden
+ * from all users" hides terms from administrators too. In wp-admin, the
+ * manage_term_visibility capability also grants access, so those who manage hidden terms
+ * can always work with them there.
  *
  * @since 1.0.0
  * @param string $taxonomy Optional. Taxonomy slug (reserved for filter hooks).
  * @return bool True if user can see hidden terms, false otherwise.
  */
 function htax_can_see_hidden_terms( $taxonomy = '' ) {
-    // Explicit capability always grants access.
-    if ( current_user_can( 'manage_term_visibility' ) ) {
+    if ( htax_is_admin_request() && current_user_can( 'manage_term_visibility' ) ) {
         return true;
     }
 
-    // Fall back to the site-wide settings-based role threshold.
     $options    = get_option( 'htax_settings', array() );
     $visibility = isset( $options['hidden_terms_visibility'] ) ? $options['hidden_terms_visibility'] : 'post_editors';
 

@@ -22,7 +22,7 @@ Mark individual terms as **hidden** to use them for internal organization withou
 - Excluded from REST API and XML sitemaps for unauthorized users (exception: under "Visible to all users", sitemaps include hidden terms because sitemaps are not per-user)
 - HyperTaxonomy inclusion relationships do not surface posts from hidden terms in other terms' archives for unauthorized users
 - Inclusion relationships and redirects continue working normally for users with permission
-- Always visible in the WordPress admin regardless of the visibility setting
+- Under **Hidden from all users**, an Administrator gets the same 404 on the term's archive as a visitor, and can't preview it
 
 Editing a post doesn't remove hidden terms the user can't see, which can happen under the "Hidden from all users" option or with a custom role: the post keeps those terms. Only someone who can see a hidden term can remove it from a post.
 
@@ -32,9 +32,9 @@ Editing a post doesn't remove hidden terms the user can't see, which can happen 
 |---------|-------------------------|
 | Visible only to users who can edit posts (default) | Users with the `edit_posts` capability (Contributors, Authors, Editors and Administrators) |
 | Visible to all users | Everyone (useful for testing only) |
-| Hidden from all users | Only users with the `manage_term_visibility` capability (Editors and Administrators by default) |
+| Hidden from all users | No one on the front end, not even Administrators |
 
-Users with `manage_term_visibility` can always see hidden terms, whichever option is selected.
+This setting controls the front end. In wp-admin, including the post editor, users with the `manage_term_visibility` capability (Editors and Administrators by default) can always see hidden terms, whichever option is selected.
 
 **Hierarchy cascade:** When a term is hidden, HyperTaxonomy automatically marks all its WP descendants as hidden too. This keeps visibility explicit — no runtime ancestor traversal is needed and the hidden state is reliable across archives, search, post lists, and REST API responses.
 

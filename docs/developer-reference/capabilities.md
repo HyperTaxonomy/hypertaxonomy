@@ -14,7 +14,7 @@ HyperTaxonomy defines six custom capabilities. Activation adds them to the Admin
 | `manage_term_relationships` | Administrator, Editor | The Terms menu, Term Groups, and editing term inclusions, containers, and groups |
 | `manage_term_redirects` | Administrator, Editor | Set and remove term redirects |
 | `manage_term_icons` | Administrator, Editor | Upload and remove term icons |
-| `manage_term_visibility` | Administrator, Editor | Mark terms hidden/visible, and see hidden terms |
+| `manage_term_visibility` | Administrator, Editor | Mark terms hidden/visible, and see hidden terms in wp-admin. On the front end, the **Hidden Terms** setting alone decides |
 | `manage_term_sticky_posts` | Administrator, Editor | Pin posts to term archives |
 
 These capabilities aren't derived from `manage_categories` or `manage_options`, so a role has only what it has been granted. Removing one from Editor takes effect, and a custom role that should use these features needs them added.

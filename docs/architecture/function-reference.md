@@ -243,7 +243,8 @@ Hidden term logic: permission checks, write-time cascade, and frontend query fil
 - `htax_hide_term_on_read( $term )` - `get_term` filter: null for a term hidden from the caller
 - `htax_hide_terms_in_term_queries( $clauses )` - `terms_clauses` filter: excludes terms hidden from the caller from `WP_Term_Query`
 - `htax_keep_hidden_terms_on_save( $object_id, $terms, $tt_ids, $taxonomy, $append, $old_tt_ids )` - `set_object_terms` action: restores hidden terms a logged-in user who can't see them would otherwise remove by saving
-- `htax_can_see_hidden_terms( $taxonomy = '' )` - Returns true if the current user holds `manage_term_visibility` capability or meets the site-wide role threshold (`post_editors` = `edit_posts`, `all`, `none`)
+- `htax_is_admin_request()` - True for wp-admin screens and for AJAX and REST requests sent from them or with no referring page, such as API clients.
+- `htax_can_see_hidden_terms( $taxonomy = '' )` - Whether the current user can see hidden terms. In admin requests (`htax_is_admin_request()`), `manage_term_visibility` grants access. Otherwise, and for anyone without it, the `hidden_terms_visibility` setting decides: `all`, `post_editors` (`edit_posts`), or `none`. So `none` hides terms from Administrators on the front end.
 - `htax_get_all_hidden_term_ids()` - Returns all hidden term IDs from the DB; cached via persistent transient; invalidated on any visibility change
 - `htax_get_visible_term_ids( $term_ids )` - Filters an array of term IDs, removing hidden ones for unprivileged users
 - `htax_get_visible_wp_descendants( int $term_id, string $taxonomy )` - Returns WP descendants of a term excluding those marked hidden; relies on write-time cascade for completeness

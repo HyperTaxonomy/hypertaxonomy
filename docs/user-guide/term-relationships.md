@@ -51,7 +51,7 @@ When *Enable Term Group visibility options* is turned on in **Settings > HyperTa
 - **Cascades automatically** to all child groups — subgroups are hidden without requiring individual edits. When you make a parent visible, its children stay hidden unless you confirm making them visible too. A child can't be made visible while its parent is hidden.
 - **Does not affect archive expansion.** Posts continue to appear in term archives that include or use the group for expansion. Group membership behavior is shared across all users; only the group's own archive page is gated.
 
-**Settings > HyperTaxonomy > Display > Hidden Terms** controls who else can see hidden group archives: users who can edit posts, or everyone. Users with the `manage_term_visibility` capability (Editors and Administrators by default) can always see them.
+**Settings > HyperTaxonomy > Display > Hidden Terms** controls who can see hidden group archives: no one, users who can edit posts, or everyone.
 
 ---
 

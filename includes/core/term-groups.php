@@ -27,6 +27,18 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @return WP_Term[] Array of WP_Term objects indexed by term_id.
  */
 function htax_get_terms_in_groups( $group_ids, $taxonomy = 'post_tag' ) {
+    return htax_remove_terms_hidden_from_caller( htax_load_terms_in_groups( $group_ids, $taxonomy ) );
+}
+
+/**
+ * Read the members of the given groups, including hidden terms, from the cache shared by viewers.
+ *
+ * @since 1.0.0
+ * @param int[]  $group_ids Group term IDs.
+ * @param string $taxonomy  Taxonomy of the members.
+ * @return WP_Term[] Terms indexed by term ID.
+ */
+function htax_load_terms_in_groups( $group_ids, $taxonomy ) {
     if ( empty( $group_ids ) ) {
         return array();
     }

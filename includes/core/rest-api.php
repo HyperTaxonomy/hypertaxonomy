@@ -95,6 +95,20 @@ function htax_rest_field_requested( ?WP_REST_Request $request, string $field ): 
 }
 
 /**
+ * Check whether the current viewer may see a term in a REST response.
+ *
+ * Relationship lists come from caches shared between viewers and hold hidden terms, so each
+ * response has to check them.
+ *
+ * @since 1.0.0
+ * @param WP_Term $term Term.
+ * @return bool
+ */
+function htax_rest_is_term_visible( WP_Term $term ): bool {
+    return ! htax_is_term_hidden( $term->term_id ) || htax_can_see_hidden_terms( $term->taxonomy );
+}
+
+/**
  * Build a minimal term object for use inside htax_includes / htax_redirect fields.
  *
  * Contains only the fields needed to render a link without a follow-up request.
@@ -369,6 +383,9 @@ function htax_rest_build_relationships_data( WP_Term $term ): array {
         }
         $related = htax_get_related_terms( $term->term_id, $slug );
         foreach ( $related as $related_term ) {
+            if ( ! htax_rest_is_term_visible( $related_term ) ) {
+                continue;
+            }
             $result[] = array(
                 'relationship_type' => $slug,
                 'target_slug'       => $related_term->slug,

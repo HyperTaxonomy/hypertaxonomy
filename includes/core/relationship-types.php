@@ -403,6 +403,20 @@ function htax_make_relationship_type_local( string $slug ): bool {
  * @return WP_Term[] Related terms indexed by term_id.
  */
 function htax_get_related_terms( int $term_id, string $type_slug, bool $include_redirect_data = false, bool $skip_if_private = true ): array {
+    return htax_remove_terms_hidden_from_caller( htax_load_related_terms( $term_id, $type_slug, $include_redirect_data, $skip_if_private ) );
+}
+
+/**
+ * Read a term's related terms, including hidden terms, from the cache shared by viewers.
+ *
+ * @since 1.0.0
+ * @param int    $term_id               Term ID.
+ * @param string $type_slug             Relationship type slug.
+ * @param bool   $include_redirect_data Whether to return data for a redirect term.
+ * @param bool   $skip_if_private       Whether to return nothing for a private type.
+ * @return WP_Term[] Terms indexed by term ID.
+ */
+function htax_load_related_terms( int $term_id, string $type_slug, bool $include_redirect_data, bool $skip_if_private ): array {
     // Core built-in types (includes, container, member_of, redirect, excludes) each have
     // a dedicated function that handles caching, group expansion, never_include, etc.
     // Querying them through this generic API bypasses all that logic.
@@ -506,6 +520,18 @@ function htax_get_related_terms( int $term_id, string $type_slug, bool $include_
  * @return WP_Term[] Source terms indexed by term_id.
  */
 function htax_get_reverse_related_terms( int $term_id, string $type_slug ): array {
+    return htax_remove_terms_hidden_from_caller( htax_load_reverse_related_terms( $term_id, $type_slug ) );
+}
+
+/**
+ * Read the terms related to a term, including hidden terms, from the cache shared by viewers.
+ *
+ * @since 1.0.0
+ * @param int    $term_id   Term ID.
+ * @param string $type_slug Relationship type slug.
+ * @return WP_Term[] Terms indexed by term ID.
+ */
+function htax_load_reverse_related_terms( int $term_id, string $type_slug ): array {
     // Core built-in types have dedicated functions; this API is for non-core custom types only.
     $type_def = htax_get_relationship_type( $type_slug );
     if ( $type_def && ! empty( $type_def['is_core'] ) ) {

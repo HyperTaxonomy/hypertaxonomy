@@ -101,9 +101,10 @@ function htax_can_see_hidden_terms( $taxonomy = '' ) {
  *
  * @since 1.0.0
  * @param WP_Term|null $term The term being looked up, when the caller is a single-term lookup.
+ * @param int          $skip_frames Backtrace frames to skip before looking for the caller.
  * @return int[] Term IDs to hide; empty when nothing should be hidden.
  */
-function htax_get_term_ids_hidden_from_caller( ?WP_Term $term = null ): array {
+function htax_get_term_ids_hidden_from_caller( ?WP_Term $term = null, int $skip_frames = 1 ): array {
     if ( ! did_action( 'init' ) || wp_doing_cron() || ( is_admin() && ! wp_doing_ajax() ) ) {
         return array();
     }
@@ -141,7 +142,7 @@ function htax_get_term_ids_hidden_from_caller( ?WP_Term $term = null ): array {
     $plugin_dir        = wp_normalize_path( HTAX_PLUGIN_DIR );
 
     // Arguments are only needed for a single-term lookup, which reaches here only for a hidden term.
-    foreach ( array_slice( debug_backtrace( $term ? 0 : DEBUG_BACKTRACE_IGNORE_ARGS, 16 ), 1 ) as $frame ) {
+    foreach ( array_slice( debug_backtrace( $term ? 0 : DEBUG_BACKTRACE_IGNORE_ARGS, 16 ), $skip_frames ) as $frame ) {
         if ( in_array( $frame['function'], $real_term_callers, true ) ) {
             return array();
         }
@@ -227,6 +228,24 @@ function htax_hide_term_on_read( $term ) {
         return null;
     }
     return $term;
+}
+
+/**
+ * Apply the same rule to a list a public API function read from a cache shared between viewers.
+ *
+ * Those caches hold the real terms, so what comes out depends on who is asking: HyperTaxonomy's
+ * own code gets the full list and applies visibility itself, as the search index needs, while
+ * another plugin gets what the current viewer may see. Call this directly from the API function
+ * that the other plugin called, so that the backtrace finds that plugin.
+ *
+ * @since 1.0.0
+ * @param WP_Term[] $terms Terms indexed by term ID.
+ * @return WP_Term[] Terms the code asking may see.
+ */
+function htax_remove_terms_hidden_from_caller( array $terms ): array {
+    // Frame 2 is the API function; its file is whoever called it.
+    $hidden = htax_get_term_ids_hidden_from_caller( null, 2 );
+    return $hidden ? array_diff_key( $terms, array_flip( array_map( 'intval', $hidden ) ) ) : $terms;
 }
 
 /**

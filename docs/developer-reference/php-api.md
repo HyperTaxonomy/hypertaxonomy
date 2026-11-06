@@ -548,6 +548,8 @@ Results are cached in a transient (`htax_groups_{term_id}`).
 
 #### `htax_get_terms_in_groups( array $group_ids, string $taxonomy = 'post_tag' ): WP_Term[]`
 
+On front-end, REST and AJAX read requests, terms hidden from the current viewer are left out for callers in other plugins and themes.
+
 Returns all member terms of the given groups, indexed by term ID. Group hierarchy is expanded automatically — passing a parent group ID also returns terms belonging to its child groups, mirroring how WordPress expands `child_of` for `get_terms()`.
 
 ```php

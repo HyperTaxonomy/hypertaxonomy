@@ -141,7 +141,7 @@ function htax_rest_get_term_relationships( WP_REST_Request $request ) {
     $term_id = (int) $request['id'];
     $term    = get_term( $term_id );
 
-    if ( ! $term || is_wp_error( $term ) ) {
+    if ( ! $term || is_wp_error( $term ) || ! htax_rest_is_term_visible( $term ) ) {
         return new WP_Error( 'htax_not_found', __( 'Term not found.', 'hypertaxonomy' ), array( 'status' => 404 ) );
     }
 
@@ -169,6 +169,9 @@ function htax_rest_get_term_relationships( WP_REST_Request $request ) {
         }
 
         foreach ( $related_terms as $related ) {
+            if ( ! htax_rest_is_term_visible( $related ) ) {
+                continue;
+            }
             $response_data[] = array(
                 'relationship_type' => $type_slug,
                 'target_term_id'    => $related->term_id,

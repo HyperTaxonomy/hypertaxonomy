@@ -289,6 +289,9 @@ Public integration API for third-party plugins.
 - `htax_get_post_term_strengths( int $post_id, array $term_ids = [] ): array` - A post's direct term strengths from the model selected for related posts, normalized so the strongest is 1.0; terms the model has not scored are omitted
 - `htax_get_term_uris( int $term_id ): array` - External URIs for a term, from the `htax_term_uris` filter
 - `htax_relay_term_uris_changed( $term_id ): void` - Re-fires `tc_term_uris_changed` as `htax_term_uris_changed`
+- `htax_remove_terms_hidden_from_caller( array $terms ): array` - Applies hidden-term visibility to a shared-cache list for callers outside HyperTaxonomy
+- `htax_rest_is_term_visible( WP_Term $term ): bool` - Whether the current viewer may see a term in a REST response
+- `htax_load_terms_in_groups()`, `htax_load_related_terms()`, `htax_load_reverse_related_terms()` - Read those lists, including hidden terms, from caches shared between viewers. Their public `htax_get_*` wrappers apply visibility
 - `htax_get_term_external_posts( int $term_id, array $args = [] ): array` - External posts for a term, from the `htax_term_external_posts` filter; returns empty without firing the filter when the term is hidden from the current user. `$args` is passed to providers unchanged.
 - `htax_get_peer_sites(): array` - Known peer sites, from the `htax_peer_sites` filter
 - `htax_get_term_locations( int $term_id ): array` - Location rows for a term, from the `htax_term_locations` filter

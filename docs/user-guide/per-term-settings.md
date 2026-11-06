@@ -4,11 +4,11 @@ parent: User Guide
 nav_order: 4
 ---
 
-## Per-Term Settings
+# Per-Term Settings
 
 Settings that apply to individual terms independently of their relationships — visibility, icons, descriptions, sticky posts, and archive overrides.
 
-### Term Visibility
+## Term Visibility
 
 Mark individual terms as **hidden** to use them for internal organization without public exposure.
 
@@ -19,20 +19,22 @@ Mark individual terms as **hidden** to use them for internal organization withou
 - Excluded from search widget option lists (pills, checkboxes) and filter panels for **all users**
 - Don't match in PowerSearch or post list results for unauthorized users (a search for the hidden term finds nothing, while posts carrying it are still found through their other terms); privileged users can search by hidden terms
 - For unauthorized users, treated as if the term did not exist in Query Loop blocks, Latest Posts blocks, the REST API, and all other frontend post queries: filtering by a hidden term finds nothing, but posts that carry a hidden term still appear through their other terms (and in lists that don't filter by term)
-- Excluded from REST API and XML sitemaps for unauthorized users (exception: when the visibility setting is "all", sitemaps include hidden terms because sitemaps are not per-user)
+- Excluded from REST API and XML sitemaps for unauthorized users (exception: under "Visible to all users", sitemaps include hidden terms because sitemaps are not per-user)
 - HyperTaxonomy inclusion relationships do not surface posts from hidden terms in other terms' archives for unauthorized users
 - Inclusion relationships and redirects continue working normally for users with permission
 - Always visible in the WordPress admin regardless of the visibility setting
 
-Editing a post doesn't remove hidden terms the user can't see, which can happen under the `none` setting or with a custom role: the post keeps those terms. Only someone who can see a hidden term can remove it from a post.
+Editing a post doesn't remove hidden terms the user can't see, which can happen under the "Hidden from all users" option or with a custom role: the post keeps those terms. Only someone who can see a hidden term can remove it from a post.
 
 **Visibility setting** (Settings > HyperTaxonomy > Display > Hidden Terms):
 
 | Setting | Who can see hidden terms |
 |---------|-------------------------|
-| `post_editors` (default) | Users with the `edit_posts` capability (Contributors, Authors, Editors and Administrators) |
-| `all` | Everyone (useful for testing only) |
-| `none` | No one (admin can still edit terms but they appear hidden everywhere) |
+| Visible only to users who can edit posts (default) | Users with the `edit_posts` capability (Contributors, Authors, Editors and Administrators) |
+| Visible to all users | Everyone (useful for testing only) |
+| Hidden from all users | Only users with the `manage_term_visibility` capability (Editors and Administrators by default) |
+
+Users with `manage_term_visibility` can always see hidden terms, whichever option is selected.
 
 **Hierarchy cascade:** When a term is hidden, HyperTaxonomy automatically marks all its WP descendants as hidden too. This keeps visibility explicit — no runtime ancestor traversal is needed and the hidden state is reliable across archives, search, post lists, and REST API responses.
 
@@ -43,11 +45,11 @@ When making a hidden term visible again (via the term edit screen, Quick Edit, o
 **Enable per taxonomy:** Settings > HyperTaxonomy > Features > [taxonomy] > Visibility.
 
 **Setting visibility:**
-- **Term edit screen** — Check or uncheck the **Hidden** checkbox in the HyperTaxonomy fields.
+- **Term edit screen** — In the **Visibility** row, check or uncheck **Hide this term from public view**.
 - **Quick Edit** — Click Quick Edit on any term row to toggle the "Hidden from public display" checkbox inline, without leaving the list.
 - **Bulk actions** — Select multiple terms and choose **Make Hidden** or **Make Visible** from the Bulk Actions dropdown.
 
-While any ancestor term is hidden, the Hidden checkbox on its descendants is disabled in the UI — make the ancestor visible first before you can individually reveal a descendant.
+While any ancestor term is hidden, this checkbox on its descendants is disabled in the UI — make the ancestor visible first before you can individually reveal a descendant.
 
 **Limitation — native WordPress category hierarchy:**
 
@@ -59,7 +61,7 @@ This limitation does not affect flat taxonomies (tags) or non-hierarchical custo
 
 ---
 
-### Term Icons
+## Term Icons
 
 Upload a custom icon image for any term to display alongside it in shortcodes, search widgets, and theme templates.
 
@@ -94,27 +96,27 @@ Upload a custom icon image for any term to display alongside it in shortcodes, s
 
 ---
 
-### Archive Descriptions
+## Archive Descriptions
 
 Enable **Show Description** on any term to display its description as formatted HTML below the archive title. This allows rich, styled introductory text on term archive pages.
 
-To enable: Edit a term, expand **More options**, and check **Show Description**. The term's description field (standard WordPress) is then rendered as HTML on the archive page — above any sticky posts, if present. Requires **Archive Customization** enabled for the taxonomy (Settings > HyperTaxonomy > Features).
+To enable: Edit a term, expand **More options**, and check **Show Description**. The term's description field (standard WordPress) is then rendered as HTML on the archive page — above any sticky posts, if present. Requires **Archive Customization** enabled for the taxonomy (Settings > HyperTaxonomy > Features) and **Archive Description** enabled on the Display tab.
 
-The description field appears in the **More options** collapsible on both the Add New Term and Edit Term screens. Its helper text explains that the description is also indexed for PowerSearch autocomplete and relevance matching.
+The description field appears in the **More options** collapsible on both the Add New Term and Edit Term screens. Its helper text explains that the description can also be used for autocomplete suggestions and PowerSearch relevance matching, which depends on **Match term descriptions** in the Search tab (off by default).
 
 ---
 
-### Peer Sites
+## Peer Sites
 
 External knowledge-base identifiers, WordPress peer site connections, RSS/Atom feed link types, and the "See also" display on term archives are managed by the **[TermConnect](https://wordpress.org/plugins/termconnect/)** plugin. Install TermConnect and go to **Terms → Peer Sites** to configure link types for Wikidata, GeoNames, Wikipedia, peer WordPress sites, and other knowledge bases. The External Links panel on term edit screens and the "See also" section on term archives are provided by TermConnect when it is active.
 
-See the [TermConnect User Guide](https://wordpress.org/plugins/termconnect/) for full documentation.
+See the [TermConnect User Guide](https://hypertaxonomy.org/termconnect/user-guide/) for full documentation.
 
-**REST API:** External identifier data (Wikidata, GeoNames, etc.) is exposed via TermConnect's own `tc_links` field on term REST endpoints, gated by TermConnect's **Share identifiers with other sites** setting. HyperTaxonomy does not duplicate this in its own REST fields.
+**REST API:** External identifier data (Wikidata, GeoNames, etc.) is exposed via TermConnect's own `tc_links` field on term REST endpoints, gated by TermConnect's **Share external links** setting. HyperTaxonomy does not duplicate this in its own REST fields.
 
 ---
 
-### Sticky Posts
+## Sticky Posts
 
 Pin specific posts to appear at the top of a term's archive page, regardless of date or relevance order. Works with any enabled taxonomy (tags, categories, or custom taxonomies) and any indexed post type (posts, pages, or custom post types).
 
@@ -123,7 +125,7 @@ Pin specific posts to appear at the top of a term's archive page, regardless of 
 - At most the term's **Maximum sticky posts** (or the global setting) are pinned; any further sticky posts appear in their normal position. Pagination accounts for the pinned posts, so no regular post is skipped
 - Stickiness is per-term — a post can be sticky for specific terms without being sticky everywhere
 - The post must actually be assigned to that term to be sticky in its archive
-- Enable per taxonomy: Settings > HyperTaxonomy > Features > Archive Customization
+- Enable per taxonomy: Settings > HyperTaxonomy > Features > Archive Customization. **Sticky Posts** on the Display tab must also be on
 
 **To make a post sticky for specific terms:**
 1. Edit the post in the block editor
@@ -131,25 +133,25 @@ Pin specific posts to appear at the top of a term's archive page, regardless of 
 3. Click the 📌 pushpin next to each term where this post should appear at the top — it turns filled when active
 4. Update the post
 
-**Maximum sticky posts per term:** Configurable per term in the term edit screen (Archive Settings → Maximum sticky posts). Leave blank to use the global setting (Settings → HyperTaxonomy, default 10). The number pinned never exceeds the archive's posts per page.
+**Maximum sticky posts per term:** Configurable per term in the term edit screen (Archive Settings → **Maximum sticky posts**). Leave blank to use the global setting (Settings → HyperTaxonomy → Display, default 10). The number pinned never exceeds the archive's posts per page.
 
 ---
 
-### Archive Settings
+## Archive Settings
 
 Per-term archive overrides available on any enabled taxonomy's term edit screen (the **Archive Settings** section, shown when Archive Customization is enabled for that taxonomy):
 
 | Setting | What it does |
 |---------|-------------|
-| **Posts Per Page** | Override the global WordPress posts-per-page for this term's archive. Leave blank to use the WordPress default. |
-| **Max Sticky Posts** | Maximum number of sticky posts shown at the top of this term's archive. Leave blank to use the global maximum from Settings > HyperTaxonomy > Features. |
-| **Sort Order** | Default sort order for this term's archive, e.g. `date:desc` or `date:desc,title:asc`. Leave blank to use the site default. Can be overridden at runtime via the `?htax_orderby=` URL parameter (e.g. from a `[ht_sort_order_options action="navigate"]` picker on the archive page). |
+| **Posts per page** | Override the global WordPress posts-per-page for this term's archive. Leave blank to use the WordPress default. |
+| **Maximum sticky posts** | Maximum number of sticky posts shown at the top of this term's archive. Leave blank to use the global maximum from Settings > HyperTaxonomy > Display. |
+| **Sort order** | Default sort order for this term's archive. Click **+** to add criteria and drag them to change their order. Leave empty to use the site default. Can be overridden at runtime via the `?htax_orderby=` URL parameter (e.g. from a `[ht_sort_order_options action="navigate"]` picker on the archive page). |
 
 These settings apply to any enabled taxonomy (tags, categories, or custom taxonomies) — not just built-in ones.
 
 ---
 
-### Term Restructuring
+## Term Restructuring
 
 Two operations for permanently changing a term's identity rather than just its relationships:
 
@@ -158,11 +160,11 @@ Two operations for permanently changing a term's identity rather than just its r
 | **Merge** | Posts and relationships move from source term(s) to a target term | Yes — source terms deleted |
 | **Taxonomy conversion** | An existing term moves from one taxonomy to another | No — same term, new taxonomy |
 
-Both operations can create **redirect stubs** so old archive URLs continue to work, and both transfer **group memberships** to the appropriate destination.
+Both operations can create **redirect stubs** so old archive URLs continue to work. They treat group memberships differently: a merge transfers them to the target, while a conversion leaves them on the redirect stub.
 
-#### Merge Terms
+### Merge Terms
 
-Permanently consolidate duplicate or outdated terms into a single canonical term. All posts, group memberships, and relationships from the source terms are transferred to the target, and the source terms are deleted.
+Permanently consolidate duplicate or outdated terms into a single canonical term. Posts, group memberships, relationships, and sticky posts from the source terms are transferred to the target, and the source terms are deleted.
 
 **How to merge:**
 
@@ -177,8 +179,9 @@ Permanently consolidate duplicate or outdated terms into a single canonical term
 
 - All posts assigned to source terms are reassigned to the target term
 - Group memberships from source terms are added to the target term
-- Inclusion and exclusion relationships involving source terms are transferred to the target term
-- Source terms are deleted
+- Inclusions, exclusions, and custom relationship types involving source terms are transferred to the target term
+- Posts pinned to a source term are pinned to the target term. The target's **Maximum sticky posts** still limits how many are shown at once
+- Source terms are deleted. The target keeps its own icon, description, and visibility; those of the source terms aren't transferred
 
 **Redirect stubs (recommended):** When enabled, a new redirect term is created with each source term's name and slug, pointing to the target. Old archive URLs (e.g. `/tag/old-name/`) then 301-redirect to the target's archive, preserving SEO value and preventing broken links. If the target term is itself a redirect, stubs point directly to the chain's final destination.
 
@@ -186,7 +189,7 @@ Permanently consolidate duplicate or outdated terms into a single canonical term
 
 **Comparison with redirects:** Redirects leave both terms in place and redirect the archive URL. Merging physically reassigns all post relationships and deletes the source term. Use redirects for temporary or reversible consolidation; use merge for permanent cleanup.
 
-#### Convert Terms
+### Convert Terms
 
 **Terms > Convert Terms** moves terms from one taxonomy to another. A fresh term is created in the target taxonomy and all post assignments are moved to it. What happens to the old term depends on whether you choose to leave a redirect stub.
 
@@ -196,28 +199,25 @@ Permanently consolidate duplicate or outdated terms into a single canonical term
 2. Choose a source taxonomy. The term list loads automatically.
 3. Check the terms you want to convert. Use **Select all / Deselect all** as needed.
 4. Choose the target taxonomy.
-5. Optionally check **Create redirect stubs** (see below).
+5. Optionally check **Create 301 redirect stubs in the old taxonomy** (see below).
 6. Click **Convert Selected Terms**.
 
 **Limitations before converting:**
 
-- If a term with the same name already exists in the target taxonomy, that term is skipped with an error — use **Merge Terms** instead.
+- If a term with the same name already exists in the target taxonomy, that term is skipped with an error. Rename one of them, then convert again.
 - Terms that are already redirect stubs cannot be converted — remove the redirect on the term edit screen first.
 - The site's default category cannot be converted — change the default in Settings > Writing first.
 
 **With redirect stubs (default):**
 
-The old term stays in the old taxonomy and becomes the redirect stub — it keeps its original slug so existing archive URLs (`/category/example/`) continue to work and redirect to the new taxonomy archive. The stub retains all its own metadata: icon, group memberships, inclusion relationships, and parent-child position in the hierarchy. The new term in the target taxonomy starts clean with no inherited metadata, and its sticky post assignments are copied from the old term.
+The old term stays in the old taxonomy and becomes the redirect stub — it keeps its original slug so existing archive URLs (`/category/example/`) continue to work and redirect to the new taxonomy archive. The stub keeps its group memberships, inclusion relationships, and parent-child position in the hierarchy. The new term in the target taxonomy takes the old term's hidden status and sticky posts, and its icon if both taxonomies use the same icon dimensions. It has no group memberships or relationships.
 
 **Without redirect stubs:**
 
-The old term is deleted and its original URL slug is assigned to the new term, giving the new taxonomy archive a clean URL. The new term starts with no inherited metadata. Old archive URLs become 404s.
+The old term is deleted and its original URL slug is assigned to the new term, giving the new taxonomy archive a clean URL. The new term takes the old term's hidden status and sticky posts, and its icon if both taxonomies use the same icon dimensions. Group memberships and relationships are lost. Old archive URLs become 404s.
 
 **Reversible conversions (redirect case only):** Converting a term back to the original taxonomy automatically detects the redirect stub and unwinds the conversion — posts are moved back to the stub (which regains its original role as a normal term), and the replacement term is deleted.
 
 **Slugs:** The new term's slug is auto-generated when a redirect stub is created (the stub needs the original slug for URL routing). Without a redirect stub, the new term receives the original slug.
 
-**Integration with other tools.** HyperTaxonomy also tracks conversions made by the [Categories to Tags Converter](https://wordpress.org/plugins/wpcat2tag-importer/) and other plugins that use the standard WordPress term-creation and term-deletion hooks. For those conversions, redirect stubs and sticky post transfers are applied automatically. Direct database manipulation bypasses all hooks and is not tracked.
-
----
-
+**Integration with other tools.** HyperTaxonomy also tracks conversions made by the [Categories to Tags Converter](https://wordpress.org/plugins/wpcat2tag-importer/) and other plugins that use the standard WordPress term-creation and term-deletion hooks. For those conversions, redirect stubs, hidden status, icons, and sticky posts are handled automatically. Direct database manipulation bypasses all hooks and is not tracked.

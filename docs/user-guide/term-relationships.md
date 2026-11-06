@@ -37,21 +37,21 @@ The Term Groups admin screen (**Terms > Term Groups**, then click a group to edi
 - **Container For** — terms for which this group acts as a container group. Their posts appear in the archives of all group members belonging to the same taxonomy. Adding a term here is equivalent to setting this group as that term's container group on its own edit screen.
 - **Included By** — terms whose archives include all posts from members of this group (same taxonomy). Adding a term here adds this group to that term's included groups.
 - **Term Icon** — upload a custom icon for the group, used in group archive headings and shortcodes (requires *Enable Term Group icons* in **Settings > HyperTaxonomy > Features > Term Groups**).
-- **Hidden** — hide this group from public view (requires *Enable Term Group visibility options* in **Settings > HyperTaxonomy > Features > Term Groups**). See **Group Visibility** below.
+- **Visibility** — check **Hide this term from public view** to hide this group (requires *Enable Term Group visibility options* in **Settings > HyperTaxonomy > Features > Term Groups**). See **Group Visibility** below.
 - **Show Description** — checkbox to show the group's description below the archive heading.
 
 When you follow a group link from a term pill tooltip, the group edit page highlights the relevant pill and, for indirect associations, shows a context panel just above the **Group Members** section. If the association is direct (the term is an immediate member, or directly included/including), a blue border is drawn around the relevant pill in the **Group Members**, **Container For**, or **Included By** field — no extra notice is needed since the relationship is already visible there. If the association is indirect (the term is in a subgroup, a parent group, or a related ancestor group), the context panel names each intermediate group as a clickable link so you can navigate directly to where the relationship is defined.
 
 **Group Visibility**
 
-When *Enable Term Group visibility options* is turned on in **Settings > HyperTaxonomy > Features > Term Groups**, a **Hidden** checkbox appears on each group's edit screen. Hiding a group:
+When *Enable Term Group visibility options* is turned on in **Settings > HyperTaxonomy > Features > Term Groups**, a **Visibility** checkbox appears on each group's edit screen. Hiding a group:
 
 - Returns a **404** to unauthorized users who visit the group's archive URL directly.
 - **Excludes** the group from WordPress REST API group listings and XML sitemaps.
 - **Cascades automatically** to all child groups — subgroups are hidden without requiring individual edits. When you make a parent visible, its children stay hidden unless you confirm making them visible too. A child can't be made visible while its parent is hidden.
 - **Does not affect archive expansion.** Posts continue to appear in term archives that include or use the group for expansion. Group membership behavior is shared across all users; only the group's own archive page is gated.
 
-**Settings > HyperTaxonomy > Display > Hidden Terms** controls who can still see hidden group archives: no one, users who can edit posts, or everyone.
+**Settings > HyperTaxonomy > Display > Hidden Terms** controls who else can see hidden group archives: users who can edit posts, or everyone. Users with the `manage_term_visibility` capability (Editors and Administrators by default) can always see them.
 
 ---
 

@@ -11,17 +11,18 @@
  * 1. Native (htax_convert_term / htax_convert_terms_batch)
  *
  *    With redirect stub (create_redirect = true):
- *      - New term created in target taxonomy (fresh, no inherited metadata).
+ *      - New term created in target taxonomy. It takes the old term's hidden status,
+ *        sticky posts, and icon (when the taxonomies' icon dimensions match).
  *      - Post assignments moved via direct UPDATE on wp_term_relationships.
  *      - Old term stays in old taxonomy and becomes the redirect stub, keeping
  *        its original slug so /old-tax/old-slug correctly triggers the HT
- *        redirect. All old metadata (icon, groups, relationships) stays on the
- *        stub — it is in the correct taxonomy for it.
+ *        redirect. Its icon, groups, and relationships stay on the stub, which is
+ *        in the correct taxonomy for them.
  *
  *    Without redirect stub (create_redirect = false):
  *      - Old term deleted first, releasing its slug.
  *      - New term created in target taxonomy with the original slug for a clean
- *        URL. New term starts with no inherited metadata.
+ *        URL. It takes the same attributes as above; groups and relationships are lost.
  *
  *    Reverse conversion (user converts the new term back to the old taxonomy):
  *      - Detected via htax_find_auto_redirect_to_term().

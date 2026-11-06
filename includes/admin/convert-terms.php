@@ -241,13 +241,7 @@ function htax_render_convert_terms_page(): void {
 		<h1><?php esc_html_e( 'Convert Terms', 'hypertaxonomy' ); ?></h1>
 
 		<p><?php esc_html_e( 'Move terms from one taxonomy to another. Post assignments are preserved — no posts are removed from the site.', 'hypertaxonomy' ); ?></p>
-		<p><?php
-			printf(
-				/* translators: %s: link to Merge Terms page */
-				esc_html__( 'If a term with the same name already exists in the target taxonomy, use %s instead.', 'hypertaxonomy' ),
-				'<a href="' . esc_url( admin_url( 'admin.php?page=htax-merge-terms' ) ) . '">' . esc_html__( 'Merge Terms', 'hypertaxonomy' ) . '</a>'
-			);
-		?></p>
+		<p><?php esc_html_e( 'If a term with the same name already exists in the target taxonomy, it is skipped. Rename one of them, then convert again.', 'hypertaxonomy' ); ?></p>
 		<p style="color:#d63638;"><strong><?php esc_html_e( 'Warning: this operation cannot be undone. Back up your database before proceeding.', 'hypertaxonomy' ); ?></strong></p>
 		<p><?php esc_html_e( 'Note: HyperTaxonomy tracks conversions made through this page or plugins that use WordPress term creation and deletion hooks (such as the Categories to Tags Converter). Direct database manipulation bypasses this integration.', 'hypertaxonomy' ); ?></p>
 

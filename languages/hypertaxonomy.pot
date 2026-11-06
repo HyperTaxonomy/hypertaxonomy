@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-05 19:45-0500\n"
+"POT-Creation-Date: 2026-11-05 23:20-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
 #: includes/admin/admin-menu.php:34 includes/admin/admin-menu.php:35
-#: includes/admin/convert-terms.php:327 includes/admin/group-admin.php:72
+#: includes/admin/convert-terms.php:321 includes/admin/group-admin.php:72
 msgid "Terms"
 msgstr ""
 
@@ -35,11 +35,11 @@ msgstr ""
 msgid "Term Relationship Types"
 msgstr ""
 
-#: includes/admin/ajax.php:660 includes/admin/ajax.php:680
-#: includes/admin/ajax.php:711 includes/admin/ajax.php:743
-#: includes/admin/ajax.php:784 includes/admin/ajax.php:805
-#: includes/admin/ajax.php:848 includes/admin/ajax.php:890
-#: includes/admin/ajax.php:984 includes/admin/bulk-actions.php:240
+#: includes/admin/ajax.php:656 includes/admin/ajax.php:676
+#: includes/admin/ajax.php:707 includes/admin/ajax.php:739
+#: includes/admin/ajax.php:780 includes/admin/ajax.php:801
+#: includes/admin/ajax.php:844 includes/admin/ajax.php:886
+#: includes/admin/ajax.php:980 includes/admin/bulk-actions.php:240
 #: includes/admin/settings.php:3576 includes/admin/settings.php:3594
 #: includes/admin/term-icons.php:1062
 #: includes/classes/class-search-index.php:1213
@@ -47,40 +47,40 @@ msgstr ""
 msgid "Security check failed."
 msgstr ""
 
-#: includes/admin/ajax.php:664 includes/admin/ajax.php:684
-#: includes/admin/ajax.php:715 includes/admin/ajax.php:747
-#: includes/admin/ajax.php:788 includes/admin/ajax.php:810
-#: includes/admin/ajax.php:854 includes/admin/ajax.php:896
-#: includes/admin/ajax.php:988 includes/admin/settings.php:3572
+#: includes/admin/ajax.php:660 includes/admin/ajax.php:680
+#: includes/admin/ajax.php:711 includes/admin/ajax.php:743
+#: includes/admin/ajax.php:784 includes/admin/ajax.php:806
+#: includes/admin/ajax.php:850 includes/admin/ajax.php:892
+#: includes/admin/ajax.php:984 includes/admin/settings.php:3572
 #: includes/admin/settings.php:3590
 msgid "You do not have permission to perform this action."
 msgstr ""
 
-#: includes/admin/ajax.php:695
+#: includes/admin/ajax.php:691
 msgid "Invalid group mapping."
 msgstr ""
 
-#: includes/admin/ajax.php:754
+#: includes/admin/ajax.php:750
 msgid "Invalid integration mode."
 msgstr ""
 
-#: includes/admin/ajax.php:758
+#: includes/admin/ajax.php:754
 msgid "Invalid removal handling mode."
 msgstr ""
 
-#: includes/admin/ajax.php:823
+#: includes/admin/ajax.php:819
 msgid "No taxonomies selected."
 msgstr ""
 
-#: includes/admin/ajax.php:831
+#: includes/admin/ajax.php:827
 msgid "No valid taxonomies selected."
 msgstr ""
 
-#: includes/admin/ajax.php:865 includes/admin/ajax.php:909
+#: includes/admin/ajax.php:861 includes/admin/ajax.php:905
 msgid "No import data provided."
 msgstr ""
 
-#: includes/admin/ajax.php:944 includes/admin/term-icons.php:875
+#: includes/admin/ajax.php:940 includes/admin/term-icons.php:875
 msgid "Unauthorized."
 msgstr ""
 
@@ -165,7 +165,7 @@ msgstr ""
 msgid "Loading terms…"
 msgstr ""
 
-#: includes/admin/convert-terms.php:72 includes/admin/convert-terms.php:402
+#: includes/admin/convert-terms.php:72 includes/admin/convert-terms.php:396
 msgid "No terms found in this taxonomy."
 msgstr ""
 
@@ -185,11 +185,11 @@ msgstr ""
 msgid "Source and target taxonomies must be different."
 msgstr ""
 
-#: includes/admin/convert-terms.php:77 includes/admin/convert-terms.php:406
+#: includes/admin/convert-terms.php:77 includes/admin/convert-terms.php:400
 msgid "Select all"
 msgstr ""
 
-#: includes/admin/convert-terms.php:78 includes/admin/convert-terms.php:408
+#: includes/admin/convert-terms.php:78 includes/admin/convert-terms.php:402
 msgid "Deselect all"
 msgstr ""
 
@@ -204,11 +204,11 @@ msgstr ""
 
 #: includes/admin/convert-terms.php:104 includes/admin/settings.php:1284
 #: includes/admin/settings.php:2123 includes/admin/term-icons.php:1075
-#: includes/core/term-merge.php:62
+#: includes/core/term-merge.php:64
 msgid "Invalid taxonomy."
 msgstr ""
 
-#: includes/admin/convert-terms.php:128 includes/admin/convert-terms.php:467
+#: includes/admin/convert-terms.php:128 includes/admin/convert-terms.php:461
 #, php-format
 msgid "%d post"
 msgid_plural "%d posts"
@@ -225,107 +225,100 @@ msgid ""
 "posts are removed from the site."
 msgstr ""
 
-#: includes/admin/convert-terms.php:247
-#, php-format
+#: includes/admin/convert-terms.php:244
 msgid ""
-"If a term with the same name already exists in the target taxonomy, use %s "
-"instead."
+"If a term with the same name already exists in the target taxonomy, it is "
+"skipped. Rename one of them, then convert again."
 msgstr ""
 
-#: includes/admin/convert-terms.php:248 includes/admin/merge-terms.php:23
-#: includes/admin/merge-terms.php:24 includes/admin/merge-terms.php:101
-#: includes/admin/merge-terms.php:210
-msgid "Merge Terms"
-msgstr ""
-
-#: includes/admin/convert-terms.php:251 includes/admin/merge-terms.php:104
+#: includes/admin/convert-terms.php:245 includes/admin/merge-terms.php:104
 msgid ""
 "Warning: this operation cannot be undone. Back up your database before "
 "proceeding."
 msgstr ""
 
-#: includes/admin/convert-terms.php:252
+#: includes/admin/convert-terms.php:246
 msgid ""
 "Note: HyperTaxonomy tracks conversions made through this page or plugins "
 "that use WordPress term creation and deletion hooks (such as the Categories "
 "to Tags Converter). Direct database manipulation bypasses this integration."
 msgstr ""
 
-#: includes/admin/convert-terms.php:265
+#: includes/admin/convert-terms.php:259
 msgid "Conversion complete with errors — some terms were skipped."
 msgstr ""
 
-#: includes/admin/convert-terms.php:266
+#: includes/admin/convert-terms.php:260
 msgid "Conversion complete."
 msgstr ""
 
-#: includes/admin/convert-terms.php:271
+#: includes/admin/convert-terms.php:265
 msgid "No terms were converted."
 msgstr ""
 
-#: includes/admin/convert-terms.php:278
+#: includes/admin/convert-terms.php:272
 msgid "Terms converted:"
 msgstr ""
 
-#: includes/admin/convert-terms.php:283 includes/admin/merge-terms.php:134
+#: includes/admin/convert-terms.php:277 includes/admin/merge-terms.php:134
 msgid "Redirect stubs created:"
 msgstr ""
 
-#: includes/admin/convert-terms.php:289
+#: includes/admin/convert-terms.php:283
 msgid "Reverse conversions (stubs removed):"
 msgstr ""
 
-#: includes/admin/convert-terms.php:295
+#: includes/admin/convert-terms.php:289
 msgid "Skipped (see errors above):"
 msgstr ""
 
-#: includes/admin/convert-terms.php:307
+#: includes/admin/convert-terms.php:301
 msgid "Step 1 — Select terms to convert"
 msgstr ""
 
-#: includes/admin/convert-terms.php:312
+#: includes/admin/convert-terms.php:306
 msgid "From taxonomy"
 msgstr ""
 
-#: includes/admin/convert-terms.php:316 includes/admin/convert-terms.php:349
+#: includes/admin/convert-terms.php:310 includes/admin/convert-terms.php:343
 #: includes/admin/merge-terms.php:152
 #: includes/admin/relationship-types-admin.php:610
 #: blocks/shared/post-list-edit.js:116 blocks/shared/term-display-edit.js:87
 msgid "— Select taxonomy —"
 msgstr ""
 
-#: includes/admin/convert-terms.php:333
+#: includes/admin/convert-terms.php:327
 msgid "Select a source taxonomy to load terms."
 msgstr ""
 
-#: includes/admin/convert-terms.php:340
+#: includes/admin/convert-terms.php:334
 msgid "Step 2 — Convert to"
 msgstr ""
 
-#: includes/admin/convert-terms.php:345
+#: includes/admin/convert-terms.php:339
 msgid "To taxonomy"
 msgstr ""
 
-#: includes/admin/convert-terms.php:361 includes/admin/merge-terms.php:196
+#: includes/admin/convert-terms.php:355 includes/admin/merge-terms.php:196
 msgid "Redirect stubs"
 msgstr ""
 
-#: includes/admin/convert-terms.php:366
+#: includes/admin/convert-terms.php:360
 msgid "Create 301 redirect stubs in the old taxonomy"
 msgstr ""
 
-#: includes/admin/convert-terms.php:368
+#: includes/admin/convert-terms.php:362
 msgid ""
 "Keeps old archive URLs working by leaving a redirect stub that points "
 "browsers and search engines to the new taxonomy archive. Stubs can be "
 "removed later from the term edit screen."
 msgstr ""
 
-#: includes/admin/convert-terms.php:375
+#: includes/admin/convert-terms.php:369
 msgid "Convert Selected Terms"
 msgstr ""
 
-#: includes/admin/convert-terms.php:464
+#: includes/admin/convert-terms.php:458
 msgid "1 post"
 msgstr ""
 
@@ -866,6 +859,11 @@ msgstr ""
 msgid "Import failed"
 msgstr ""
 
+#: includes/admin/merge-terms.php:23 includes/admin/merge-terms.php:24
+#: includes/admin/merge-terms.php:101 includes/admin/merge-terms.php:210
+msgid "Merge Terms"
+msgstr ""
+
 #: includes/admin/merge-terms.php:48 includes/admin/term-edit.php:55
 msgid "An error occurred. Please try again."
 msgstr ""
@@ -946,47 +944,47 @@ msgid ""
 "target term's archive."
 msgstr ""
 
-#: includes/admin/post-edit.php:129
+#: includes/admin/post-edit.php:139
 msgid "Inclusion Badges"
 msgstr ""
 
-#: includes/admin/post-edit.php:130
+#: includes/admin/post-edit.php:140
 msgid "Show count of effective included terms for a given term (⇉N)"
 msgstr ""
 
-#: includes/admin/post-edit.php:133
+#: includes/admin/post-edit.php:143
 msgid "Container Badges"
 msgstr ""
 
-#: includes/admin/post-edit.php:134
+#: includes/admin/post-edit.php:144
 msgid "Show count of effective container terms for a given term (⇇N)"
 msgstr ""
 
-#: includes/admin/post-edit.php:137
+#: includes/admin/post-edit.php:147
 msgid "Redirect Indicators"
 msgstr ""
 
-#: includes/admin/post-edit.php:138
+#: includes/admin/post-edit.php:148
 msgid "Italicize redirecting terms and mark them with a ↪ symbol"
 msgstr ""
 
-#: includes/admin/post-edit.php:141 includes/admin/settings.php:1069
+#: includes/admin/post-edit.php:151 includes/admin/settings.php:1069
 msgid "Hidden Terms"
 msgstr ""
 
-#: includes/admin/post-edit.php:142
+#: includes/admin/post-edit.php:152
 msgid "Fade terms that are configured as hidden"
 msgstr ""
 
-#: includes/admin/post-edit.php:145
+#: includes/admin/post-edit.php:155
 msgid "Sticky Pushpins"
 msgstr ""
 
-#: includes/admin/post-edit.php:146
+#: includes/admin/post-edit.php:156
 msgid "Pin or unpin the post to a term’s archive without leaving the editor"
 msgstr ""
 
-#: includes/admin/post-edit.php:149
+#: includes/admin/post-edit.php:159
 msgid ""
 "HyperTaxonomy: relationship indicators (Inclusion Badges, Container Badges, "
 "Redirect Indicators, Hidden Terms, Sticky Pushpins) are available in the ··· "
@@ -994,11 +992,11 @@ msgid ""
 "immediately."
 msgstr ""
 
-#: includes/admin/post-edit.php:150
+#: includes/admin/post-edit.php:160
 msgid "Got it"
 msgstr ""
 
-#: includes/admin/post-edit.php:681
+#: includes/admin/post-edit.php:720
 #, php-format
 msgid "Not added because creating new tags is disabled: %s"
 msgstr ""
@@ -3905,7 +3903,7 @@ msgstr ""
 msgid "Support"
 msgstr ""
 
-#: includes/core/functions.php:493
+#: includes/core/functions.php:559
 msgid "Creating new tags is disabled. Please select from existing tags."
 msgstr ""
 
@@ -3929,7 +3927,7 @@ msgid "Post not found."
 msgstr ""
 
 #: includes/core/relationship-types-rest.php:145 includes/core/rest-api.php:470
-#: includes/core/term-conversion.php:128
+#: includes/core/term-conversion.php:129
 msgid "Term not found."
 msgstr ""
 
@@ -4204,32 +4202,32 @@ msgid ""
 "taxonomies."
 msgstr ""
 
-#: includes/core/term-conversion.php:123
+#: includes/core/term-conversion.php:124
 msgid "Invalid target taxonomy."
 msgstr ""
 
-#: includes/core/term-conversion.php:135
+#: includes/core/term-conversion.php:136
 msgid "Term is already in the target taxonomy."
 msgstr ""
 
-#: includes/core/term-conversion.php:141
+#: includes/core/term-conversion.php:142
 msgid "Conversions involving the group taxonomy are not supported."
 msgstr ""
 
-#: includes/core/term-conversion.php:162
+#: includes/core/term-conversion.php:163
 #, php-format
 msgid ""
 "A term named \"%1$s\" already exists in %2$s. Rename this term or the "
 "existing one first, then retry the conversion."
 msgstr ""
 
-#: includes/core/term-conversion.php:180
+#: includes/core/term-conversion.php:181
 msgid ""
 "This is the site's default category. Change the default category under "
 "Settings > Writing before converting this term."
 msgstr ""
 
-#: includes/core/term-conversion.php:206
+#: includes/core/term-conversion.php:207
 #, php-format
 msgid ""
 "This term shares a term_group value (%1$d) with another term already in "
@@ -4237,61 +4235,61 @@ msgid ""
 "converting would create a conflict. Change the term_group first."
 msgstr ""
 
-#: includes/core/term-conversion.php:221
+#: includes/core/term-conversion.php:222
 msgid ""
 "This term is already a redirect. Remove the redirect on the term edit screen "
 "before converting."
 msgstr ""
 
-#: includes/core/term-conversion.php:266 includes/core/term-conversion.php:372
+#: includes/core/term-conversion.php:267 includes/core/term-conversion.php:373
 msgid "Failed to create the term in the target taxonomy."
 msgstr ""
 
-#: includes/core/term-conversion.php:292 includes/core/term-conversion.php:399
+#: includes/core/term-conversion.php:293 includes/core/term-conversion.php:400
 msgid ""
 "Database error moving posts to the new term; the term was not converted."
 msgstr ""
 
-#: includes/core/term-conversion.php:488
+#: includes/core/term-conversion.php:489
 #, php-format
 msgid "Term #%d not found in source taxonomy."
 msgstr ""
 
-#: includes/core/term-conversion.php:1017
+#: includes/core/term-conversion.php:1018
 #, php-format
 msgid "Redirect to %1$s (%2$s)"
 msgstr ""
 
-#: includes/core/term-merge.php:51
+#: includes/core/term-merge.php:53
 msgid "You do not have permission to merge terms."
 msgstr ""
 
-#: includes/core/term-merge.php:55
+#: includes/core/term-merge.php:57
 msgid "No source terms specified."
 msgstr ""
 
-#: includes/core/term-merge.php:66
+#: includes/core/term-merge.php:68
 msgid "The specified taxonomy is not enabled for HyperTaxonomy."
 msgstr ""
 
-#: includes/core/term-merge.php:71
+#: includes/core/term-merge.php:73
 msgid "Target term not found."
 msgstr ""
 
-#: includes/core/term-merge.php:75
+#: includes/core/term-merge.php:77
 msgid "Target term cannot be one of the source terms."
 msgstr ""
 
-#: includes/core/term-merge.php:86
+#: includes/core/term-merge.php:88
 #, php-format
 msgid "Source term %d not found in the specified taxonomy."
 msgstr ""
 
-#: includes/core/term-merge.php:102
+#: includes/core/term-merge.php:104
 msgid "Could not resolve target term_taxonomy_id."
 msgstr ""
 
-#: includes/core/term-merge.php:281
+#: includes/core/term-merge.php:313
 msgid "Database error during term merge; all changes rolled back."
 msgstr ""
 

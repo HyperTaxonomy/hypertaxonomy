@@ -59,7 +59,7 @@ The main configuration hub. A **General** subtab controls which taxonomies Hyper
 - **Archive Titles** — Optionally show which terms are contributing to an archive's title (e.g. "JavaScript (including: React)")
 - **Archive Description** — Global gate for the per-term **Show Description** setting. When disabled, no term descriptions are output regardless of per-term preferences; saved per-term data is preserved.
 - **Sticky Posts** — Global gate: when disabled, no posts are pinned regardless of per-term or per-post settings. When enabled, configure: *Disable default sticky post styles* (if your theme provides its own) and *Maximum sticky posts per archive* (first page only, default 10).
-- **Hidden Terms** — Control who can see hidden terms on the frontend: hidden from all users, visible only to users who can edit posts (default), or visible to all users.
+- **Hidden Terms** — Control who can see hidden terms on the frontend: hidden from all users, visible only to users who can edit posts (default), or visible to all users. Users with the `manage_term_visibility` capability (Editors and Administrators by default) can always see them.
 - **Max Term Hierarchy Depth** — Default maximum nesting depth for `[ht_term_list]`, the Term List block, and the search widget's hierarchical checklists (`-1` = unlimited, `0` = top level only). Each can override this with its own `max_depth` attribute/setting.
 - **Frontend Styles** — Disable the default frontend stylesheet (`assets/css/htax-shortcodes.css`), which applies to both shortcodes and blocks. Check this if providing your own CSS via a theme or custom stylesheet.
 

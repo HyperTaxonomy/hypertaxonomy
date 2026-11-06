@@ -2857,8 +2857,8 @@ class HyperTaxonomy_Search_Widget {
 
         // If no taxonomy terms but has text search, we can still proceed
         // (will use text search filter in WHERE clause without relevance scoring)
-        // (exclusion-only queries also proceed: every post except the excluded ones).
-        if ( empty( $score_subqueries ) && empty( $text_search_query ) && empty( $pre_where_parts ) ) {
+        // (exclusion-only and filter-only queries also proceed: every post that passes them, newest first).
+        if ( empty( $score_subqueries ) && empty( $text_search_query ) && empty( $pre_where_parts ) && empty( $extra_where ) ) {
             return array( 'results' => array(), 'total' => 0 );
         }
 

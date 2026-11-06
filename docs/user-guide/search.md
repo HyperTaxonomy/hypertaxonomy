@@ -49,7 +49,7 @@ All states cap at 10 suggestions and exclude already-selected terms. The option 
 
 **`[ht_hidden_field]`** — Submits a set of term IDs without any visible UI. There are no interactive elements; the selection can only be set via shortcode attributes or changed by controllers at runtime.
 
-The three filter fields narrow `[ht_text_field]` results when a text field is present, or filter all site content when it is not.
+The three filter fields narrow `[ht_text_field]` results when a text field is present, or filter all site content when it is not. A filter panel works the same way with an AJAX search form: if nothing has been entered, changing a filter lists every post that matches it, newest first.
 
 All field shortcodes require a `name` parameter and accept an optional `id` for the field's HTML element (auto-generated if not specified). The visible field shortcodes (`[ht_text_field]`, `[ht_pills_field]`, `[ht_checklist_field]`) additionally share:
 

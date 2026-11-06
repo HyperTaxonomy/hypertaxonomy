@@ -768,6 +768,7 @@
                 $container.find('.htax-results-container').html(
                     notices + '<div class="htax-no-results">' + this.escapeHtml(noResultsMsg) + '</div>'
                 );
+                this.renderPaginationNav(0, 0, $container);
                 return;
             }
 

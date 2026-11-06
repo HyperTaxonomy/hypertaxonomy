@@ -958,7 +958,7 @@ class HyperTaxonomy_Shortcode_Post_List extends HyperTaxonomy_Shortcode_Base {
         $source_post_id = (int) wp_unslash( $_POST['source_post_id'] ?? 0 );
 
         if ( empty( $term_ids ) ) {
-            wp_send_json_error( array( 'message' => 'No term IDs' ), 400 );
+            wp_send_json_error( array( 'message' => __( 'No term IDs.', 'hypertaxonomy' ) ), 400 );
         }
 
         // Re-derive source-post term weights for paginated pages (related posts).

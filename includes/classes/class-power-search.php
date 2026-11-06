@@ -284,12 +284,12 @@ class HyperTaxonomy_Power_Search {
      */
     public function ajax_search_posts() {
         if ( ! check_ajax_referer( 'htax-power-search', 'nonce', false ) ) {
-            wp_send_json_error( array( 'message' => 'Security check failed' ), 403 );
+            wp_send_json_error( array( 'message' => __( 'Security check failed.', 'hypertaxonomy' ) ), 403 );
             return;
         }
 
         if ( ! htax_check_ajax_rate_limit( 'power_search', 30 ) ) {
-            wp_send_json_error( array( 'message' => 'Rate limit exceeded. Please wait a moment and try again.' ), 429 );
+            wp_send_json_error( array( 'message' => __( 'Rate limit exceeded. Please wait a moment and try again.', 'hypertaxonomy' ) ), 429 );
             return;
         }
 

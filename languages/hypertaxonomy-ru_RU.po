@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: hypertaxonomy 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-06 11:22-0500\n"
-"PO-Revision-Date: 2026-11-06 11:25-0500\n"
+"POT-Creation-Date: 2026-11-06 12:52-0500\n"
+"PO-Revision-Date: 2026-11-06 14:30-0500\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: ru\n"
@@ -36,17 +36,34 @@ msgstr "Группы терминов"
 msgid "Term Relationship Types"
 msgstr "Типы связей между терминами"
 
-#: includes/admin/ajax.php:564 includes/admin/ajax.php:584
-#: includes/admin/ajax.php:615 includes/admin/ajax.php:647
-#: includes/admin/ajax.php:688 includes/admin/ajax.php:709
-#: includes/admin/ajax.php:752 includes/admin/ajax.php:794
-#: includes/admin/ajax.php:888 includes/admin/bulk-actions.php:240
-#: includes/admin/settings.php:3575 includes/admin/settings.php:3593
-#: includes/admin/term-icons.php:1009
+#: includes/admin/ajax.php:150 includes/admin/ajax.php:564
+#: includes/admin/ajax.php:584 includes/admin/ajax.php:615
+#: includes/admin/ajax.php:647 includes/admin/ajax.php:688
+#: includes/admin/ajax.php:709 includes/admin/ajax.php:752
+#: includes/admin/ajax.php:794 includes/admin/ajax.php:888
+#: includes/admin/bulk-actions.php:240 includes/admin/settings.php:3575
+#: includes/admin/settings.php:3593 includes/admin/term-icons.php:1009
+#: includes/classes/class-power-search.php:287
 #: includes/classes/class-search-index.php:1213
+#: includes/classes/class-search-widget.php:3664
 #: includes/integrations/class-taxopress-integration.php:126
 msgid "Security check failed."
 msgstr "Проверка безопасности не пройдена."
+
+#: includes/admin/ajax.php:156 includes/admin/ajax.php:365
+#: includes/classes/class-power-search.php:292
+#: includes/classes/class-search-widget.php:3668
+msgid "Rate limit exceeded. Please wait a moment and try again."
+msgstr "Превышено ограничение на количество запросов. Подождите немного и повторите попытку."
+
+#: includes/admin/ajax.php:161 includes/admin/ajax.php:370
+#: includes/admin/term-edit.php:1996
+msgid "Insufficient permissions."
+msgstr "Недостаточно прав."
+
+#: includes/admin/ajax.php:385
+msgid "Invalid or disabled taxonomy."
+msgstr "Таксономия недопустима или отключена."
 
 #: includes/admin/ajax.php:568 includes/admin/ajax.php:588
 #: includes/admin/ajax.php:619 includes/admin/ajax.php:651
@@ -81,7 +98,7 @@ msgstr "Не выбрано ни одной допустимой таксоно�
 msgid "No import data provided."
 msgstr "Не переданы данные для импорта."
 
-#: includes/admin/ajax.php:848
+#: includes/admin/ajax.php:848 includes/admin/relationship-types-admin.php:33
 msgid "Unauthorized."
 msgstr "Нет доступа."
 
@@ -876,7 +893,7 @@ msgstr "Выберите файл для импорта"
 
 #: includes/admin/import-ui.php:79
 #: includes/classes/class-search-widget.php:2267
-#: includes/classes/class-search-widget.php:3745
+#: includes/classes/class-search-widget.php:3747
 msgid "Loading..."
 msgstr "Идёт загрузка…"
 
@@ -4136,10 +4153,6 @@ msgstr ""
 "Стрелки показывают, какая сторона добавила связь. Здесь можно удалить связи "
 "с любой стороны."
 
-#: includes/admin/term-edit.php:1996
-msgid "Insufficient permissions."
-msgstr "Недостаточно прав."
-
 #: includes/admin/term-icons.php:227 includes/admin/term-icons.php:286
 msgid "Term Icon"
 msgstr "Значок термина"
@@ -4326,17 +4339,17 @@ msgid "Please enter at least %d characters."
 msgstr "Введите не менее %d символов."
 
 #: includes/classes/class-power-search.php:100
-#: includes/classes/class-search-widget.php:3751
+#: includes/classes/class-search-widget.php:3753
 msgid "Previous"
 msgstr "Предыдущая"
 
 #: includes/classes/class-power-search.php:101
-#: includes/classes/class-search-widget.php:3753
+#: includes/classes/class-search-widget.php:3755
 msgid "Next"
 msgstr "Следующая"
 
 #: includes/classes/class-power-search.php:102
-#: includes/classes/class-search-widget.php:3755
+#: includes/classes/class-search-widget.php:3757
 #: includes/shortcodes/class-post-list.php:922
 #, php-format
 msgid "Page %1$d of %2$d"
@@ -4375,23 +4388,31 @@ msgstr "Скрыть расширенные параметры"
 msgid "Search results navigation"
 msgstr "Навигация по результатам поиска"
 
-#: includes/classes/class-search-widget.php:3746
+#: includes/classes/class-search-widget.php:3438
+msgid "Invalid fields format."
+msgstr "Недопустимый формат полей."
+
+#: includes/classes/class-search-widget.php:3451
+msgid "Invalid field type."
+msgstr "Недопустимый тип поля."
+
+#: includes/classes/class-search-widget.php:3748
 msgid "No results found"
 msgstr "Результатов не найдено"
 
-#: includes/classes/class-search-widget.php:3747
+#: includes/classes/class-search-widget.php:3749
 msgid "An error occurred"
 msgstr "Произошла ошибка"
 
-#: includes/classes/class-search-widget.php:3749
+#: includes/classes/class-search-widget.php:3751
 msgid "Please enter at least {n} characters."
 msgstr "Введите не менее {n} символов."
 
-#: includes/classes/class-search-widget.php:3756
+#: includes/classes/class-search-widget.php:3758
 msgid "Current Location"
 msgstr "Текущее местоположение"
 
-#: includes/classes/class-search-widget.php:3758
+#: includes/classes/class-search-widget.php:3760
 #, php-format
 msgid "by %s"
 msgstr "автор: %s"
@@ -5121,6 +5142,10 @@ msgstr "« Предыдущая"
 #: includes/shortcodes/class-post-list.php:930
 msgid "Next »"
 msgstr "Следующая »"
+
+#: includes/shortcodes/class-post-list.php:961
+msgid "No term IDs."
+msgstr "Не указаны идентификаторы терминов."
 
 #: includes/shortcodes/class-sort-order.php:44
 #: blocks/ht-sort-order-options/src/index.js:23

@@ -3435,7 +3435,7 @@ class HyperTaxonomy_Search_Widget {
         $query = isset( $_POST['fields'] ) ? wp_unslash( (array) $_POST['fields'] ) : array();
 
         if ( ! is_array( $query ) ) {
-            wp_send_json_error( 'Invalid fields format' );
+            wp_send_json_error( __( 'Invalid fields format.', 'hypertaxonomy' ) );
             return;
         }
 
@@ -3448,7 +3448,7 @@ class HyperTaxonomy_Search_Widget {
          */
         $allowed_types = apply_filters( 'htax_allowed_field_types', array( 'pills', 'checklist', 'text', 'hidden' ) );
         if ( ! $this->validate_field_types_recursive( $query, $allowed_types ) ) {
-            wp_send_json_error( 'Invalid field type' );
+            wp_send_json_error( __( 'Invalid field type.', 'hypertaxonomy' ) );
             return;
         }
         
@@ -3661,11 +3661,11 @@ class HyperTaxonomy_Search_Widget {
      */
     private function validate_ajax_request(): bool {
         if ( ! check_ajax_referer( 'htax-search-widget', 'nonce', false ) ) {
-            wp_send_json_error( array( 'message' => 'Security check failed' ), 403 );
+            wp_send_json_error( array( 'message' => __( 'Security check failed.', 'hypertaxonomy' ) ), 403 );
             return false;
         }
         if ( ! $this->check_rate_limit() ) {
-            wp_send_json_error( array( 'message' => 'Rate limit exceeded' ), 429 );
+            wp_send_json_error( array( 'message' => __( 'Rate limit exceeded. Please wait a moment and try again.', 'hypertaxonomy' ) ), 429 );
             return false;
         }
         return true;

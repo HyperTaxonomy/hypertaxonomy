@@ -147,18 +147,18 @@ function htax_check_ajax_rate_limit( $action, $limit = 60 ) {
  */
 function htax_ajax_get_group_terms() {
     if ( ! check_ajax_referer( 'htax-autocomplete', 'nonce', false ) ) {
-        wp_send_json_error( 'Security check failed' );
+        wp_send_json_error( __( 'Security check failed.', 'hypertaxonomy' ) );
         return;
     }
 
     // Rate limiting check (60 requests per minute)
     if ( ! htax_check_ajax_rate_limit( 'get_group_terms', 60 ) ) {
-        wp_send_json_error( 'Rate limit exceeded. Please wait a moment and try again.' );
+        wp_send_json_error( __( 'Rate limit exceeded. Please wait a moment and try again.', 'hypertaxonomy' ) );
         return;
     }
 
     if ( ! current_user_can( 'manage_term_relationships' ) ) {
-        wp_send_json_error( 'Insufficient permissions' );
+        wp_send_json_error( __( 'Insufficient permissions.', 'hypertaxonomy' ) );
         return;
     }
 
@@ -362,12 +362,12 @@ function htax_ajax_search_terms() {
 
     // Rate limiting check (100 requests per minute for autocomplete)
     if ( ! htax_check_ajax_rate_limit( 'search_terms', 100 ) ) {
-        wp_send_json_error( 'Rate limit exceeded. Please wait a moment and try again.' );
+        wp_send_json_error( __( 'Rate limit exceeded. Please wait a moment and try again.', 'hypertaxonomy' ) );
         return;
     }
 
     if ( ! current_user_can( 'manage_term_relationships' ) ) {
-        wp_send_json_error( 'Insufficient permissions' );
+        wp_send_json_error( __( 'Insufficient permissions.', 'hypertaxonomy' ) );
         return;
     }
 
@@ -382,7 +382,7 @@ function htax_ajax_search_terms() {
 
     $taxonomies = array_values( array_unique( array_filter( $requested, 'htax_is_taxonomy_enabled' ) ) );
     if ( empty( $taxonomies ) ) {
-        wp_send_json_error( 'Invalid or disabled taxonomy' );
+        wp_send_json_error( __( 'Invalid or disabled taxonomy.', 'hypertaxonomy' ) );
         return;
     }
 

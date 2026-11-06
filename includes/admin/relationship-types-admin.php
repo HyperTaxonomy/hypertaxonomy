@@ -30,7 +30,7 @@ function htax_ajax_count_ineligible_custom_relationships(): void {
     check_ajax_referer( 'htax_relationship_type_save', 'nonce' );
 
     if ( ! current_user_can( 'manage_options' ) ) {
-        wp_send_json_error( array( 'message' => 'Unauthorized' ), 403 );
+        wp_send_json_error( array( 'message' => __( 'Unauthorized.', 'hypertaxonomy' ) ), 403 );
     }
 
     global $wpdb;

@@ -40,8 +40,6 @@ function htax_extract_post_ids( $results ) {
  *
  * Returns the term's `_htax_sort_order` meta value parsed into a WP_Query-compatible
  * array orderby structure: [ 'date' => 'DESC', 'title' => 'ASC' ].
- * Only archive-valid fields are returned (search-only fields like relevance
- * are excluded). Returns an empty array when no sort order is configured.
  *
  * @since 1.0.0
  *

@@ -374,7 +374,7 @@ POST-mode forms submit once; the results pages are GET requests carrying `?htax_
   - Valid orders: asc, desc (defaults to desc if omitted)
   - Relevance works with text searches only in enhanced search
   - `last_comment` sorts by `last_comment_gmt`; `last_activity` sorts by `GREATEST(post_modified_gmt, last_comment_gmt)` — both columns are always present because all queries use `wp_htax_post_text` as the primary post source
-  - Also accepted on term archive URLs to override per-term sort order (archive-valid fields only: date, modified, title, author, comment_count); emitted by `[ht_sort_order_options action="navigate"]`
+  - Also accepted on term archive URLs to override per-term sort order; emitted by `[ht_sort_order_options action="navigate"]`
   - Example: `?s=test&htax_search=1&htax_orderby=date:desc,title:asc`
 
 **Sort Order Picker (includes/shortcodes/class-sort-order.php)**

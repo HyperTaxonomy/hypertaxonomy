@@ -630,9 +630,6 @@ class HyperTaxonomy_Power_Search {
         // Default weights (compatible with existing settings structure)
         // Note: container_group uses container's weight
         $default_multipliers = array(
-            'title'   => 2.0,
-            'content' => 1.0,
-            'excerpt' => 0.8,
             'taxonomies' => array(
                 'post_tag' => array(
                     'use_description' => false,
@@ -676,7 +673,7 @@ class HyperTaxonomy_Power_Search {
             ),
         );
 
-        $multipliers = array_replace_recursive( $default_multipliers, $multipliers );
+        $multipliers = array_replace_recursive( htax_get_default_text_weights(), $default_multipliers, $multipliers );
 
         // Auto-populate per-taxonomy defaults for any enabled custom taxonomy that has no
         // individual entry yet (e.g. newly added taxonomy, settings never saved for it).

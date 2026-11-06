@@ -506,9 +506,10 @@ class HyperTaxonomy_Shortcode_Post_List extends HyperTaxonomy_Shortcode_Base {
         $keyword_params = array();
         $relevance_col  = 'term_relevance';
         if ( '' !== $search_string ) {
-            $title_weight   = floatval( $options['relevance_multipliers']['title']   ?? 1.0 );
-            $content_weight = floatval( $options['relevance_multipliers']['content'] ?? 0.5 );
-            $excerpt_weight = floatval( $options['relevance_multipliers']['excerpt'] ?? 0.7 );
+            $text_weights   = array_replace( htax_get_default_text_weights(), $options['relevance_multipliers'] ?? array() );
+            $title_weight   = floatval( $text_weights['title'] );
+            $content_weight = floatval( $text_weights['content'] );
+            $excerpt_weight = floatval( $text_weights['excerpt'] );
 
             $parsed  = htax_parse_search_query( $search_string );
             $general = $parsed['general'];

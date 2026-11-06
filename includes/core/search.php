@@ -187,6 +187,24 @@ function htax_get_relevance_weights( string $taxonomy, ?array $options = null ):
     return ! empty( $configured ) ? $configured : htax_get_default_relevance_weights( $taxonomy );
 }
 
+/**
+ * Default weights for keyword matches in each post field.
+ *
+ * Used until the site has saved its own values on the Search settings tab, so a site
+ * ranks the same before and after its first save.
+ *
+ * @since 1.0.0
+ *
+ * @return array{title: float, content: float, excerpt: float}
+ */
+function htax_get_default_text_weights() {
+    return array(
+        'title'   => 1.0,
+        'content' => 0.8,
+        'excerpt' => 0.7,
+    );
+}
+
 function htax_get_default_relevance_weights( $taxonomy ) {
     if ( is_taxonomy_hierarchical( $taxonomy ) ) {
         return array(

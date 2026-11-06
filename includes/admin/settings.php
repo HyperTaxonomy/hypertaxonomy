@@ -45,6 +45,8 @@ class HyperTaxonomy_Settings {
      * Get default settings
      */
     private function get_defaults() {
+        $text_weights = htax_get_default_text_weights();
+
         return array(
             // General
             'enabled_taxonomies' => array( 'post_tag' => true, 'category' => true ),
@@ -127,9 +129,9 @@ class HyperTaxonomy_Settings {
             'rate_limit' => 30,
             'strength_model' => HTAX_DEFAULT_STRENGTH_MODEL,
             'relevance_multipliers' => array(
-                'title' => 1.0,
-                'content' => 0.8,
-                'excerpt' => 0.7,
+                'title' => $text_weights['title'],
+                'content' => $text_weights['content'],
+                'excerpt' => $text_weights['excerpt'],
                 'taxonomies' => array(
                     'post_tag' => array(
                         'direct' => array(
@@ -1846,7 +1848,7 @@ if ( function_exists( 'htax_the_archive_icon' ) ) {
                         </tr>
                     </table>
                     <p class="description">
-                        <?php esc_html_e( 'These weights control how matches are scored in text search mode. The search system supports multiple sorting modes (controlled by the orderby parameter): (1) Text Relevance Mode (orderby=text_relevance) - sorts by keyword match quality using these weights, with selected terms acting as filters; (2) Term Relevance Mode (orderby=relevance) - sorts by taxonomy term match strength, with keyword text acting as a filter; (3) Other sorting (orderby=date, title, etc.) - standard WordPress sorting. Weight values range from 0 to 1.0. Higher values give more importance to matches in that field.', 'hypertaxonomy' ); ?>
+                        <?php esc_html_e( 'These weights multiply keyword matches in each post field when PowerSearch, site search, or a post list with keywords ranks results by relevance. Weight values range from 0 to 1.0. Higher values give more importance to matches in that field.', 'hypertaxonomy' ); ?>
                     </p>
                 </td>
             </tr>

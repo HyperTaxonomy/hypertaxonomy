@@ -124,6 +124,30 @@ function htax_enqueue_post_editor_assets( $hook ) {
             'showCallout'  => empty( $dismissed ),
             'dismissNonce' => wp_create_nonce( 'htax_dismiss_prefs_callout' ),
             'ajaxUrl'      => admin_url( 'admin-ajax.php' ),
+            'items'        => array(
+                'inclusions' => array(
+                    'label' => __( 'Inclusion Badges', 'hypertaxonomy' ),
+                    'info'  => __( 'Show count of effective included terms for a given term (⇉N)', 'hypertaxonomy' ),
+                ),
+                'containers' => array(
+                    'label' => __( 'Container Badges', 'hypertaxonomy' ),
+                    'info'  => __( 'Show count of effective container terms for a given term (⇇N)', 'hypertaxonomy' ),
+                ),
+                'redirects'  => array(
+                    'label' => __( 'Redirect Indicators', 'hypertaxonomy' ),
+                    'info'  => __( 'Italicize redirecting terms and mark them with a ↪ symbol', 'hypertaxonomy' ),
+                ),
+                'visibility' => array(
+                    'label' => __( 'Hidden Terms', 'hypertaxonomy' ),
+                    'info'  => __( 'Fade terms that are configured as hidden', 'hypertaxonomy' ),
+                ),
+                'sticky'     => array(
+                    'label' => __( 'Sticky Pushpins', 'hypertaxonomy' ),
+                    'info'  => __( 'Pin or unpin the post to a term’s archive without leaving the editor', 'hypertaxonomy' ),
+                ),
+            ),
+            'calloutText'  => __( 'HyperTaxonomy: relationship indicators (Inclusion Badges, Container Badges, Redirect Indicators, Hidden Terms, Sticky Pushpins) are available in the ··· menu → HyperTaxonomy group. Each toggle is per-user and takes effect immediately.', 'hypertaxonomy' ),
+            'calloutDismiss' => __( 'Got it', 'hypertaxonomy' ),
         ) );
     }
 

@@ -49,33 +49,14 @@
         prefsDispatch.setDefaults( SCOPE, DEFAULTS );
     }
 
-    var ITEMS = [
-        {
-            key:   'inclusions',
-            label: 'Inclusion Badges',
-            info:  'Show count of effective included terms for a given term (⇉N)',
-        },
-        {
-            key:   'containers',
-            label: 'Container Badges',
-            info:  'Show count of effective container terms for a given term (⇇N)',
-        },
-        {
-            key:   'redirects',
-            label: 'Redirect Indicators',
-            info:  'Italicize redirecting terms and mark them with a ↪ symbol',
-        },
-        {
-            key:   'visibility',
-            label: 'Hidden Terms',
-            info:  'Fade terms that are configured as hidden',
-        },
-        {
-            key:   'sticky',
-            label: 'Sticky Pushpins',
-            info:  'Pin or unpin the post to a term’s archive without leaving the editor',
-        },
-    ];
+    var cfg   = window.htaxEditorPrefsConfig || {};
+    var ITEMS = Object.keys( DEFAULTS ).map( function ( key ) {
+        return {
+            key:   key,
+            label: cfg.items[ key ].label,
+            info:  cfg.items[ key ].info,
+        };
+    } );
 
     function HtaxEditorPrefs() {
         var prefs = useSelect( function ( select ) {
@@ -113,19 +94,18 @@
 
     // One-time callout: surface a Gutenberg notice on first visit so users
     // discover the ··· menu indicators without having to read documentation.
-    var cfg = window.htaxEditorPrefsConfig;
-    if ( cfg && cfg.showCallout && wp.notices && wp.domReady ) {
+    if ( cfg.showCallout && wp.notices && wp.domReady ) {
         wp.domReady( function () {
             var noticesDispatch = wp.data.dispatch( 'core/notices' );
             if ( ! noticesDispatch ) { return; }
             noticesDispatch.createNotice(
                 'info',
-                'HyperTaxonomy: relationship indicators (Inclusion Badges, Container Badges, Redirect Indicators, Hidden Terms, Sticky Pushpins) are available in the ··· menu → HyperTaxonomy group. Each toggle is per-user and takes effect immediately.',
+                cfg.calloutText,
                 {
                     id:            'htax-prefs-callout',
                     isDismissible: true,
                     actions: [ {
-                        label:   'Got it',
+                        label:   cfg.calloutDismiss,
                         onClick: function () {
                             wp.data.dispatch( 'core/notices' ).removeNotice( 'htax-prefs-callout' );
                             window.fetch( cfg.ajaxUrl, {

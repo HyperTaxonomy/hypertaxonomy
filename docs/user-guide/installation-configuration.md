@@ -4,6 +4,8 @@ parent: User Guide
 nav_order: 2
 ---
 
+# Installation & Configuration
+
 ## Requirements & Installation
 
 | Requirement | Minimum Version |
@@ -39,7 +41,7 @@ The main configuration hub. A **General** subtab controls which taxonomies Hyper
 
 **General subtab** — Enable or disable HyperTaxonomy for each available taxonomy via a checklist. Enabling a taxonomy activates its term edit fields and makes it available for all features below.
 
-**Per-taxonomy subtabs** — Configure which features are active for that taxonomy:
+**Per-taxonomy subtabs** — Configure which features are active for that taxonomy. Each feature is a checkbox on screen, such as *Enable relationships for Tags*:
 
 | Feature | What it enables |
 |---------|----------------|
@@ -50,14 +52,14 @@ The main configuration hub. A **General** subtab controls which taxonomies Hyper
 | Group Assignment | Term Groups membership for this taxonomy (required for Tag Groups / PublishPress Tag Groups import). |
 | Term Relationships | Inclusion/container relationships, group-based relationships, and custom relationship types. When disabled, no archive expansion occurs for that taxonomy. |
 | Archive Customization | Per-term archive description display, sticky posts, posts per page, and sort order. |
-| Share list of locations | When the [As the Crow Flies](https://wordpress.org/plugins/as-the-crow-flies/) (ATCF) plugin is active, HyperTaxonomy includes location data from ATCF in REST responses for this taxonomy (`schema:location`) — used by TermConnect's peer site matching and proximity-enhanced search. This row only appears when ATCF is active. |
+| Share list of locations | When the [As the Crow Flies](https://wordpress.org/plugins/as-the-crow-flies/) (ATCF) plugin is active, HyperTaxonomy includes location data from ATCF in REST responses for this taxonomy (`htax_locations`) — used by TermConnect's peer site matching and proximity-enhanced search. This row only appears when ATCF is active. |
 
 ### Display Tab
 
 - **Archive Titles** — Optionally show which terms are contributing to an archive's title (e.g. "JavaScript (including: React)")
 - **Archive Description** — Global gate for the per-term **Show Description** setting. When disabled, no term descriptions are output regardless of per-term preferences; saved per-term data is preserved.
 - **Sticky Posts** — Global gate: when disabled, no posts are pinned regardless of per-term or per-post settings. When enabled, configure: *Disable default sticky post styles* (if your theme provides its own) and *Maximum sticky posts per archive* (first page only, default 10).
-- **Hidden Terms** — Control which roles can see hidden terms on the frontend.
+- **Hidden Terms** — Control who can see hidden terms on the frontend: hidden from all users, visible only to users who can edit posts (default), or visible to all users.
 - **Max Term Hierarchy Depth** — Default maximum nesting depth for `[ht_term_list]`, the Term List block, and the search widget's hierarchical checklists (`-1` = unlimited, `0` = top level only). Each can override this with its own `max_depth` attribute/setting.
 - **Frontend Styles** — Disable the default frontend stylesheet (`assets/css/htax-shortcodes.css`), which applies to both shortcodes and blocks. Check this if providing your own CSS via a theme or custom stylesheet.
 
@@ -101,7 +103,7 @@ The Search tab is only available when at least one taxonomy has Search Enhanceme
   | Content match | 0.8 |
   | Excerpt match | 0.7 |
 
-  These weights apply in Text Relevance Mode (`orderby=text_relevance`). Higher values give more importance to matches in that field. In Term Relevance Mode (`orderby=relevance`), keyword text acts as a filter and these weights do not apply.
+  These weights multiply keyword matches in each post field when PowerSearch, site search, or a post list with keywords ranks results by relevance. Higher values give more importance to matches in that field.
 
 - **Rate Limiting** — Maximum AJAX search requests per user per minute (10–100). Protects against search abuse.
 
@@ -144,20 +146,26 @@ Description Match weights are configured independently from Name Match weights. 
   - *Autocomplete cache* — tag/term autocomplete suggestions in the admin post editor (default 5 min)
   - *Relationship cache* — redirect targets, hidden terms, group memberships, custom relationship type lookups (default: never expire)
   - *Sticky archive cache* — sticky post lists per term archive page (default: never expire)
-  - *Shortcode output cache* — `[ht_post_list]` and `[ht_related_posts]` rendered results (default: never expire)
+  - *Shortcode output cache* — `[ht_post_list]` and `[ht_related_posts]` rendered results (default 1 hour)
 - **Clear All Caches** — Purges every HyperTaxonomy transient at once.
 
 ### Export / Import Tab
 
 - **Export** — JSON-based backup of HyperTaxonomy data (relationships, redirects, group memberships) for selected taxonomies
 - **Import** — Restore from a previously exported JSON file
+- **Migrate** — Import from Tag Groups (PublishPress Tag Groups). See [Import & Migration](import-migration.html).
+- **Sync** — How HyperTaxonomy stays in step with Tag Groups after migrating
 
 ### Advanced Tab
 
 - **Concurrent Edit Locking** — Enable/disable the simultaneous-edit warning overlay on term edit screens. Uses the WordPress heartbeat API. Disable if it conflicts with another plugin that also hooks into the heartbeat.
-- **Post Editor Restrictions** — Optionally prevent accidental creation of new tags in the native post editor, guarding against misspelled or duplicate tags. Editors can still create terms via the Terms admin screens.
+- **Post Editor Term Loading** — Load a post's assigned tags from PHP so the block editor doesn't request each one over REST. Disable if a plugin adds custom fields to terms in the block editor.
+- **Post Editor Restrictions** — Optionally prevent accidental creation of new tags while editing posts, guarding against misspelled or duplicate tags. In the block editor, a new tag is refused with a message, and REST API requests to create a tag are refused too. In the Classic Editor, Quick Edit, and Bulk Edit, existing tags save normally and new ones are left off, with a notice listing them. Tags can still be created on the Tags screen, by imports, and by other plugins.
 - **Content-Based Tag Suggestions** — When enabled (default), replaces WordPress's "most used tags" list in the Gutenberg editor sidebar with tags matched to the current post's content. Suggestions are drawn from tags not already assigned to the post, ranked by how often each tag's name appears in the title (shown first), excerpt (shown second), or body (shown third), with count descending within each group. A **Words to ignore** field accepts a comma-separated list of words that are stripped from the post text before matching — useful for excluding generic terms like "post" or "page" that would otherwise produce false matches.
-- **Always load search assets** — Force the Search Widget and PowerSearch CSS/JS to load on every page. Enable only when using page builders or AJAX-loaded content where the shortcode may not be present on initial load.
+- **Search Assets** — *Always load search assets* forces the Search Widget and PowerSearch CSS/JS to load on every page. Enable only when using page builders or AJAX-loaded content where the shortcode may not be present on initial load.
+- **HyperTaxonomy Presence Header** — Add the `X-HyperTaxonomy` header to REST API responses. Peer sites, including TermConnect on remote installs, use it to detect HyperTaxonomy. Disable to opt out of being discovered as a vocabulary peer.
+- **Term Inclusion Relationships** — Include inclusion and synonym data in REST term responses. Disable on sites with deep relationship graphs where REST performance is a concern, or to keep vocabulary structure private.
+- **Custom Term Relationships and Relationship Types** — Expose custom relationship type definitions over REST, and include custom term relationships in REST term responses.
 - **Uninstall** — Option to delete all HyperTaxonomy data when the plugin is uninstalled.
 - **Health Check** — System status report: database table presence, search index state, and configuration validity.
 
@@ -165,7 +173,7 @@ Description Match weights are configured independently from Name Match weights. 
 
 ## Post Editor Features
 
-HyperTaxonomy can display contextual indicators directly in the Gutenberg and Classic post editors when you assign tags or categories to a post. Each indicator is controlled by a per-user toggle in the block editor's **··· menu** (More options) under the HyperTaxonomy group, and also requires the corresponding feature to be enabled on the taxonomy (Features → [Taxonomy]). Both the per-user toggle and the taxonomy feature must be on for an indicator to appear. Preferences persist per user and take effect immediately without saving.
+HyperTaxonomy can display contextual indicators directly in the Gutenberg and Classic post editors when you assign tags or categories to a post. Each indicator is controlled by a per-user toggle in the block editor's **··· menu** (More options) under the HyperTaxonomy group, and also requires the corresponding feature to be enabled on the taxonomy (Features → [Taxonomy]). Both the per-user toggle and the taxonomy feature must be on for an indicator to appear. Preferences persist per user and take effect immediately without saving. The toggles exist only in the block editor, so the Classic Editor always uses their defaults: Redirect Indicators and Hidden Terms on, the others off.
 
 On first visit to the block editor, a dismissible notice explains that these toggles exist and where to find them.
 
@@ -173,8 +181,8 @@ On first visit to the block editor, a dismissible notice explains that these tog
 
 When enabled, each term pill (flat taxonomies) or checklist entry (hierarchical taxonomies) can show:
 
-- **⇉ N** (light blue badge): This term's archive pulls in posts from N other terms. The tooltip lists their names. Appears when **Inclusion Badges** is on and the taxonomy has Inclusions & Containers enabled.
-- **⇇ N** (light green badge): N other terms pull in this term's posts. The tooltip lists those terms. Appears when **Container Badges** is on and the taxonomy has Inclusions & Containers enabled.
+- **⇉ N** (light blue badge): This term's archive pulls in posts from N other terms. The tooltip lists their names. Appears when **Inclusion Badges** is on and the taxonomy has Term Relationships enabled.
+- **⇇ N** (light green badge): N other terms pull in this term's posts. The tooltip lists those terms. Appears when **Container Badges** is on and the taxonomy has Term Relationships enabled.
 
 These are informational — they help you understand the reach of a term before assigning it to a post.
 
@@ -184,7 +192,7 @@ When **Redirect Indicators** is on (default) and the taxonomy has Redirects enab
 
 ### Hidden Terms
 
-When **Hidden Terms** is on (default) and the taxonomy has Term Visibility enabled, terms marked as hidden are displayed at reduced opacity. This signals that the term is not publicly visible on the frontend.
+When **Hidden Terms** is on (default) and the taxonomy has Visibility enabled, terms marked as hidden are displayed at reduced opacity. This signals that the term is not publicly visible on the frontend.
 
 ### Sticky Pushpins
 
@@ -196,6 +204,3 @@ When **Sticky Pushpins** is enabled in the ··· menu and the taxonomy has Arch
 - If a term is removed from the post, it is automatically unpinned.
 - The pin is per-term: a post can be sticky for one term but not another.
 - The post must be published for sticky pinning to take effect on the frontend.
-
----
-

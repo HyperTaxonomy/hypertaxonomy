@@ -4,6 +4,8 @@ parent: User Guide
 nav_order: 1
 ---
 
+# Introduction & Concepts
+
 ## Introduction
 
 ### Terms and Taxonomies
@@ -59,15 +61,15 @@ HyperTaxonomy adds **explicit term-to-term relationships** that work alongside �
 
 **Synonyms** — When Term A includes Term B and Term B includes Term A, they become synonyms. Posts from either term appear in both archives. Both terms retain separate identities, archive URLs, and positions in the hierarchy.
 
-**Group Inclusions** — Instead of including individual terms one by one, a term can include an entire Term Group. All current and future group members are included automatically — no maintenance as the group grows.
+**Group Inclusions** — Instead of including individual terms one by one, a term can include an entire Term Group. All current and future group members from the term's own taxonomy are included automatically — no maintenance as the group grows.
 
-**Container Groups** — The reverse of group inclusions. A term specifies Term Groups as its "containers," and its posts flow into the archives of every term that includes those groups. Useful when it is more natural to configure from the "child" side.
+**Container Groups** — The reverse of group inclusions. A term specifies Term Groups as its "containers," and its posts flow into the archives of the members of those groups. Useful when it is more natural to configure from the "child" side.
 
-**Exclusions** — Any term or group of terms can be explicitly removed from the included set. Exclusions always win regardless of which inclusion source added the term.
+**Exclusions** — Any term can be explicitly removed from the included set. Exclusions always win regardless of which inclusion source added the term.
 
 **Redirects** — Term A 301-redirects to Term B. Visitors to Term A's archive URL are sent to Term B's archive. Term A has no accessible archive of its own; all stored relationships resume if the redirect is later removed.
 
-**Custom Relationship Types** — User-defined relationships beyond the four built-in types. Inclusion-based custom types participate in archive expansion automatically (e.g. "Supersedes"). Other custom types store the relationship only and leave behavior to your theme or plugin (e.g. "Related"). Custom types can be **symmetric** (same label in both directions, single unified list in the term editor) or **asymmetric** (distinct forward and inverse labels, two separate panels).
+**Custom Relationship Types** — User-defined relationships beyond the built-in types. Inclusion-based custom types participate in archive expansion automatically (e.g. "Supersedes"). Other custom types store the relationship only and leave behavior to your theme or plugin (e.g. "Related"). Custom types can be **symmetric** (same label in both directions, single unified list in the term editor) or **asymmetric** (distinct forward and inverse labels, two separate panels).
 
 ### Design Philosophy
 
@@ -106,6 +108,3 @@ Term Groups (alternative perspectives):
 ```
 
 "Fishing" is a child of "Sporting Goods" (department view) and a member of "Summer Products" (seasonal view). Both perspectives coexist independently. The `/category/sporting-goods/` archive shows department content; `/group/summer-products/` shows seasonal content.
-
----
-

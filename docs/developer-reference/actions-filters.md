@@ -4,13 +4,13 @@ parent: Developer Reference
 nav_order: 5
 ---
 
-## Actions & Filters
+# Actions & Filters
 
-### Actions Fired by HyperTaxonomy
+## Actions Fired by HyperTaxonomy
 
 These actions fire when relationship data changes. Hook into them to react to changes — for example, to invalidate your own caches or trigger custom processing.
 
-**Important:** All these actions pass both old and new values. Cache is eagerly reloaded before actions fire, so reading relationship data within a callback will return the **new** state.
+**Important:** Cache is reloaded before these actions fire, so reading relationship data within a callback returns the **new** state. The `*_changed` relationship actions pass old and new values when the term edit screen saves. `htax_includes_changed`, `htax_containers_changed`, and `htax_excludes_changed` pass `null` for both when the change comes from `htax_add_term_relationship()`, `htax_remove_term_relationship()`, a merge, or hierarchy cleanup, so a callback that uses those arrays must handle `null`.
 
 #### `htax_includes_changed`
 
@@ -74,7 +74,7 @@ add_action( 'htax_custom_inclusions_changed', function( $term_id, $taxonomy, $af
 
 #### `htax_container_groups_changed`
 
-Fires when the set of Term Groups whose members' posts appear in this term's archive changes. Terms in a container group contribute their posts to the archive of any term that references that group as a container.
+Fires when a term's container groups change. A term's posts appear in the archives of the members of its container groups.
 
 ```php
 add_action( 'htax_container_groups_changed', function( $term_id, $taxonomy, $new_groups, $old_groups ) {
@@ -135,7 +135,7 @@ add_action( 'htax_term_visibility_changed', function( $term_id, $taxonomy ) {
 
 Fires immediately before HyperTaxonomy begins merging source terms into a target term — before post reassignment, relationship transfer, and deletion. This hook fires **before** HT's database transaction starts.
 
-Use this hook to snapshot any per-term data you want to migrate to the target. This includes both term meta (which `wp_delete_term()` deletes during the transaction) and data in separate tables (which survives `wp_delete_term()` but will be cleaned up by your own `deleted_term` handler). Snapshot everything here, before any of it is touched.
+Use this hook to snapshot any per-term data you want to migrate to the target. This includes both term meta (which `wp_delete_term()` deletes after the transaction commits) and data in separate tables (which survives `wp_delete_term()` but will be cleaned up by your own `deleted_term` handler). Snapshot everything here, before any of it is touched.
 
 ```php
 add_action( 'htax_before_merge_terms', function( $source_ids, $target_id, $taxonomy, $create_redirect ) {
@@ -167,6 +167,37 @@ add_action( 'htax_after_merge_terms', function( $source_ids, $target_id, $taxono
 ```
 
 **Typical pattern for companion plugins:** snapshot source data in `htax_before_merge_terms`, then apply it to the target in `htax_after_merge_terms`. Register a `deleted_term` handler for all term deletes — source terms deleted during a merge fire `deleted_term` the same as a standalone delete, so no suppression is needed. Also register a `delete_term_taxonomy` handler at an earlier priority for bulk taxonomy operations, where `deleted_term` does not fire.
+
+#### `htax_term_converted`
+
+Fires when a term finishes converting to another taxonomy, or when a converted term is restored. `$old_term_id` is the redirect stub or the deleted term, which may no longer exist. Use it to update records keyed by taxonomy.
+
+```php
+add_action( 'htax_term_converted', function( $new_term_id, $old_taxonomy, $new_taxonomy, $old_term_id ) {
+    // $new_term_id  — int, the term now in $new_taxonomy
+    // $old_taxonomy — string
+    // $new_taxonomy — string
+    // $old_term_id  — int
+}, 10, 4 );
+```
+
+#### `htax_relationship_saved` / `htax_relationship_deleted`
+
+Fire after `htax_add_term_relationship()` adds a row or `htax_remove_term_relationship()` removes one. For types mapped to `includes`, HyperTaxonomy queues a search index update for both terms. See [Custom Relationship Types](custom-taxonomy.html#custom-relationship-types).
+
+```php
+add_action( 'htax_relationship_saved', function( $source_term_id, $target_term_id, $type_slug ) {
+    // Same arguments for htax_relationship_deleted
+}, 10, 3 );
+```
+
+#### `htax_relationship_types`
+
+Fires on `init` at priority 0, after the built-in relationship types are registered. Call `htax_register_relationship_type()` here. See [Custom Relationship Types](custom-taxonomy.html#custom-relationship-types).
+
+#### `htax_relationship_types_admin_footer`
+
+Fires at the bottom of the **Terms → Term Relationship Types** admin page. Use it to add your own UI.
 
 #### `htax_term_archive_changed`
 
@@ -220,7 +251,7 @@ add_action( 'htax_term_strengths_updated', function( $post_id, $model, $term_ids
 }, 10, 3 );
 ```
 
-### Available Filters
+## Available Filters
 
 #### `htax_show_hidden_terms`
 
@@ -231,6 +262,16 @@ add_filter( 'htax_show_hidden_terms', function( $can_see, $taxonomy ) {
     // Return true/false or pass through $can_see
     return $can_see;
 }, 10, 2 );
+```
+
+#### `htax_remove_hidden_terms_from_list`
+
+Whether a hidden term is removed from a post's term list (`get_the_terms`) for a viewer who can't see it. Defaults to `true`. Return `false` to keep the term in the list; it still carries an `is_htax_hidden` property.
+
+```php
+add_filter( 'htax_remove_hidden_terms_from_list', function( $remove, $term, $taxonomy ) {
+    return $remove;
+}, 10, 3 );
 ```
 
 #### `htax_archive_description_append`
@@ -288,6 +329,16 @@ Return `true` to stop HyperTaxonomy printing its inline front-end styles, for a 
 add_filter( 'htax_disable_frontend_styles', '__return_true' );
 ```
 
+#### `htax_frontend_styles`
+
+Filters the inline CSS HyperTaxonomy prints on the front end. HTML tags are stripped from the result.
+
+```php
+add_filter( 'htax_frontend_styles', function( $css ) {
+    return $css . ' .htax-redirect-term { opacity: 1; }';
+} );
+```
+
 #### `htax_allowed_description_html`
 
 Filters the HTML tags and attributes allowed in term descriptions (the `wp_kses` allowed-tags array).
@@ -301,7 +352,11 @@ add_filter( 'htax_allowed_description_html', function( $allowed_tags ) {
 
 #### `htax_sync_remote_relationship_types`
 
-Handles the **Re-sync** action for a remote relationship type on the Term Relationships admin page, so the fetch can live in another plugin (TermConnect hooks it). Receives a result array and the source site URL; return `[ 'success' => bool, 'message' => string ]`.
+Handles the **Sync** action for a remote relationship type on the Term Relationship Types admin page, so the fetch can live in another plugin (TermConnect hooks it). Receives a result array and the source site URL; return `[ 'success' => bool, 'message' => string ]`.
+
+#### `htax_term_uris`, `htax_term_locations`, `htax_term_external_posts`, `htax_peer_sites`
+
+Filters that let a provider plugin supply external URIs, locations, external posts, and peer sites to other plugins on the same site. See [Provider Filters](php-api.html#provider-filters).
 
 #### `htax_search_proximity_where`
 
@@ -378,6 +433,3 @@ add_filter( 'htax_allowed_field_types', function( array $types ): array {
 **Parameters:** `string[] $types` — the current list of allowed type slugs.
 **Default types:** `['pills', 'checklist', 'text', 'hidden']`
 **Returns:** `string[]` — the modified list.
-
----
-

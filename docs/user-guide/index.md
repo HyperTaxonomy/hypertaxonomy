@@ -19,5 +19,6 @@ This guide is split into the following pages:
 - **[Display Shortcodes](display-shortcodes.html)** — `[ht_term_list]`, `[ht_term_index]`, `[ht_term_cloud]`, `[ht_term_groups]`, and their blocks.
 - **[Archive & Results Controls](archive-controls.html)** — sort order, filter panels, and the Gutenberg block extensions.
 - **[Import & Migration](import-migration.html)** — JSON export/import and migrating from Tag Groups (now PublishPress Tag Groups).
-- **[FAQ & Deactivation](faq-deactivation.html)** — feature-choice guidance, FAQ, troubleshooting, deactivation, and uninstall.
+- **[FAQ & Troubleshooting](faq.html)** — feature-choice guidance, FAQ, and troubleshooting.
+- **[Deactivation & Uninstall](deactivation-uninstall.html)** — what happens when you deactivate, reactivate, or uninstall.
 - **[Best Practices & Modeling](best-practices.html)** — how to structure content with HyperTaxonomy and how it fits alongside other plugins.

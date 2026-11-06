@@ -4,6 +4,8 @@ parent: User Guide
 nav_order: 9
 ---
 
+# Import & Migration
+
 ## Import & Export
 
 **Settings > HyperTaxonomy > Export / Import** has four subtabs: **Export**, **Import** (HyperTaxonomy JSON), **Migrate** (Tag Groups import), and **Sync** (how HyperTaxonomy stays in step with Tag Groups afterward).
@@ -11,20 +13,27 @@ nav_order: 9
 ### Export
 
 1. Select which taxonomies to include
-2. Click **Download Export File**
-3. A JSON file downloads containing all relationships, redirects, and group memberships for the selected taxonomies
+2. Optionally check **Include term-to-post assignments** (a WordPress export already covers these)
+3. Click **Download Export File**
 
-Terms are identified by slug for cross-site compatibility.
+The JSON file contains the terms, their relationships, redirects, group memberships, and term settings for the selected taxonomies. Terms and posts are identified by slug for cross-site compatibility.
 
 ### Import
 
-1. Click **Upload JSON File** and select your export file
-2. Review the preview showing what will be imported
-3. Click **Import**
+1. Under **Select Export File**, choose your export file
+2. Choose your options:
+   - **Update existing terms** (recommended) updates terms that already exist with the file's data
+   - **Import term-to-post assignments** applies them, if the file includes them
+3. Click **Preview Import** and review what will be imported
+4. Click **Start Import**
 
-What transfers: terms and their hierarchy (in any order in the file; parents are ignored on flat taxonomies), inclusion relationships, exclusion relationships, redirects, group memberships, and custom relationship types with their relationships.
+**What transfers:** terms and their hierarchy (in any order in the file; parents are ignored on flat taxonomies), inclusion relationships, exclusion relationships, redirects, group memberships, custom relationship types with their relationships, and term settings: visibility, show description, posts per page, maximum sticky posts, sort order, and placeholder color.
 
-What does not transfer: term icons, sticky post assignments, per-term settings (show description, posts per page override).
+**What depends on the destination site:**
+
+- **Sticky posts** are matched by post slug. A post with the same slug must already exist there; otherwise that pin is skipped. Import your posts first.
+- **Term icons** aren't copied. The file only records each icon's filename, and the import links the term to a media library image with the same filename. If there isn't one, the term is imported without its icon, with no warning. To keep icons on another site, copy the images into its media library first.
+- **Term-to-post assignments** are also matched by post slug.
 
 ---
 
@@ -76,10 +85,10 @@ Either way, **any group membership Tag Groups has no knowledge of is always pres
 
 On the **Sync** subtab, choose how mapped groups are treated, then save with **Save Sync Settings**:
 
-Tag Groups Pro parent group hierarchy is not kept in sync. It is applied once, when a group is first migrated, and changes made in Tag Groups afterward are not carried over.
-
 - **Independent (default).** Group names and membership stay fully editable in HyperTaxonomy. However, if they were migrated from Tag Groups, or if a group with the same name exists there, a subsequent migration can overwrite edits made here. The migration screen warns you when this applies.
 - **Locked.** Recommended for admins who plan to use Tag Groups as their primary group management tool. Only mapped groups' names and term membership are locked in HyperTaxonomy, so edits made here are not lost during a later migration. Unmapped groups (created manually or imported rather than migrated, with names that do not clash with migrated groups) are not locked and are not affected by future migrations. Changes made in Tag Groups are pulled in only when you run the migration.
+
+Tag Groups Pro parent group hierarchy is not kept in sync. It is applied once, when a group is first migrated, and changes made in Tag Groups afterward are not carried over.
 
 Under **Locked**, a separate **Sync continuously** checkbox applies Tag Groups changes as they happen, without re-running the migration. The checkbox is unavailable under Independent. It can be turned on before Tag Groups is activated; nothing syncs until it is. Enabling it runs one full resync first, to catch up on anything that changed while it was off.
 
@@ -92,6 +101,8 @@ Deleting a mapped group isn't blocked, but its own edit screen notes what happen
 When Locked mode is selected and Tag Groups is active, a term's edit screen swaps which group field is shown up front: Tag Groups' own field (the one that actually changes Tag-Groups-managed membership) takes the spot HT's Term Groups selector normally occupies, and the read-only Term Groups selector moves into the "More options" section instead. With Independent mode, or when Tag Groups isn't active, HT's own selector stays up front as usual.
 
 ### Import Statistics
+
+The summary at the end of a migration reports:
 
 | Statistic | Meaning |
 |-----------|---------|
@@ -109,11 +120,11 @@ When Locked mode is selected and Tag Groups is active, a term's edit screen swap
 **"No Tag Groups Data Found"**
 The `term_groups` option is empty or missing. Verify Tag Groups plugin was used and groups were created. Check that `term_groups` and `term_group_labels` exist in `wp_options`.
 
-**"Group Assignment feature not enabled"**
-Enable Group Assignment for the relevant taxonomy in Settings > Features, save, then re-run the migration.
+**Terms skipped, or a taxonomy's assignments missing**
+Terms in a taxonomy with Group Assignment off are counted as skipped, with no separate message. Enable Group Assignment for the taxonomy in **Settings > HyperTaxonomy > Features**, save, then re-run the migration.
 
 **Import times out**
-Increase PHP `max_execution_time` in php.ini.
+The migration runs in small batches, so a single large site rarely hits a limit. If a batch does time out, increase PHP `max_execution_time` in php.ini and run the migration again; it picks up where the data stands.
 
 **Duplicate groups created**
 Only possible on the *first* import of a given group — the name didn't match any existing HT group exactly. On every run after that, groups are matched by their tracked Tag Groups origin, not by name, so a later rename in Tag Groups updates the existing group instead of creating a duplicate. Delete the duplicate manually if it happens on first import.
@@ -135,7 +146,7 @@ Tag Groups Pro allows the same label under different parent groups, but each Hyp
 ```php
 // Old (Tag Groups / PublishPress Tag Groups)
 $groups = (new TagGroups_Term(123))->get_groups();
-$terms = (new TagGroups_Group(5))->get_all_term_ids_in_group();
+$terms = (new TagGroups_Group(5))->get_group_terms();
 
 // New (HyperTaxonomy)
 $groups = htax_get_term_groups(123);
@@ -157,6 +168,3 @@ Tag Groups data in `wp_options` and `wp_termmeta` is never touched and can coexi
 - Group Assignment must be enabled per taxonomy before importing
 - Group display order/position is not imported — HT's Term Groups don't currently have an equivalent custom-order concept to import it into
 - Tag Groups Free allows only one group per term; a term's group memberships on a Free install reflect that same limit after import, which is a faithful mirror of what Free itself stores, not an import restriction
-
----
-

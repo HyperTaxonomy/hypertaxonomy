@@ -293,7 +293,7 @@ Yes — WP Rocket, W3 Total Cache, WP Super Cache. HyperTaxonomy uses transients
 
 = Where can I find the full FAQ? =
 
-See [FAQ & Troubleshooting](https://hypertaxonomy.org/hypertaxonomy/user-guide/faq-deactivation.html) in the User Guide for questions about how inclusions, synonyms, exclusions, redirects, and sticky posts work.
+See [FAQ & Troubleshooting](https://hypertaxonomy.org/hypertaxonomy/user-guide/faq.html) in the User Guide for questions about how inclusions, synonyms, exclusions, redirects, and sticky posts work.
 
 == Developer Reference ==
 

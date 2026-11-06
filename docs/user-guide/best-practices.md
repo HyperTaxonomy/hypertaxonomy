@@ -1,7 +1,7 @@
 ---
 title: Best Practices & Modeling
 parent: User Guide
-nav_order: 11
+nav_order: 12
 ---
 
 # HyperTaxonomy Best Practices

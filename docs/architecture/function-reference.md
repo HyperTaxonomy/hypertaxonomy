@@ -355,6 +355,7 @@ POST-mode forms submit once; the results pages are GET requests carrying `?htax_
 - `htax_get_default_match_mode()` - Returns `'all'` or `'any'` from `htax_settings[default_match_mode]`; defaults to `'any'`.
 - `htax_build_orderby_sql( $orderby_parsed, $post_alias = 'pt', $relevance_column = 'term_relevance' )` - Build a SQL `ORDER BY` clause from a parsed orderby array
 - `htax_get_term_sort_order( $term_id )` - Get the parsed sort order for a term's archive
+- `htax_maybe_prevent_tag_creation( $response, $handler, $request )` - With the "prevent tag creation" setting on, refuse `POST /wp/v2/tags` requests sent from the post editing screens for tags that don't exist (`rest_request_before_callbacks`). Defined in `core/functions.php`.
 - `htax_get_default_text_weights()` - Default weights for keyword matches in the title, content, and excerpt. Used by PowerSearch, post lists, and the settings defaults until the site has saved its own values.
 - `htax_get_relevance_weights( string $taxonomy, ?array $options = null ): array` - Configured relevance weights for a taxonomy, falling back to defaults
 - `htax_get_default_expand_types(): array` / `htax_get_expand_types_for_taxonomy( string $taxonomy ): array` - Site-wide default relationship expansion types for search, and the active types for a taxonomy after site settings and feature flags
@@ -637,7 +638,7 @@ Loaded unconditionally (outside `is_admin()`) so the REST field is available dur
 - `htax_register_sticky_rest_field()` - Register `htax_sticky_terms` REST field on all eligible public post types (via `rest_api_init`)
 - `htax_rest_get_sticky_terms()` - REST GET callback: return sticky term IDs keyed by taxonomy slug
 - `htax_rest_update_sticky_terms()` - REST UPDATE callback: write/delete `_htax_sticky_{term_id}` post meta and invalidate caches
-- `htax_remove_new_tags_from_post_request()` - With the "prevent tag creation" setting on, remove tags that don't exist yet from Classic Editor, Quick Edit, and Bulk Edit saves (`admin_init`). WordPress stops assigning a post's tags at the first one it can't create, so refusing the new tag at insertion would discard the whole tag change.
+- `htax_remove_new_tags_from_post_request()` - With the "prevent tag creation" setting on, remove tags that don't exist yet from Classic Editor saves (`admin_init`). WordPress stops assigning a post's tags at the first one it can't create, so refusing the new tag at insertion would discard the whole tag change.
 - `htax_show_tags_not_created_notice()` - Show the editor which tags were left off their last post save (`admin_notices`).
 - `htax_get_sticky_terms_by_taxonomy( int $post_id )` - Return a post's sticky term IDs grouped by taxonomy slug; shared by the REST GET callback and the update callback's change detection (called with a post ID only — no `$request` needed)
 

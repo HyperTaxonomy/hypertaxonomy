@@ -154,7 +154,7 @@ Tag Groups stores groups as plugin-specific data outside the WordPress taxonomy 
 
 **Content-based tag suggestions.** In the Gutenberg post editor, HyperTaxonomy replaces WordPress's site-wide "most used tags" suggestions with tags matched to the current post's content. Suggestions are drawn from unassigned tags whose names appear in the post's title (shown first), excerpt, then body, each group ordered by occurrence count. A configurable ignore-words list excludes generic terms from matching. TaxoPress Pro offers suggestions in its own post editor metabox rather than in the native tag panel, and adds AI-generated suggestions from services such as OpenAI.
 
-**Prevent accidental term creation.** An optional setting blocks new tags from being created while editing posts. Existing tags can still be assigned freely; only creation of new ones is blocked.
+**Prevent accidental term creation.** An optional setting blocks new tags from being created in the post editor. Existing tags can still be assigned freely; only creation of new ones is blocked.
 
 **Term icons.** HyperTaxonomy allows assigning a media library image to any term. Where no image is assigned, a color placeholder is shown instead. Icons appear in term lists, clouds, and index displays, and alongside term labels in search widget filter controls.
 

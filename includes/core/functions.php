@@ -464,37 +464,48 @@ function htax_get_current_taxonomy() {
 }
 
 /**
- * Block new post_tag term creation from the block editor when the "prevent tag creation"
+ * Refuse the block editor's request to create a tag when the "prevent tag creation"
  * setting is on.
  *
- * The block editor creates a tag through a REST request before saving the post. The Tags
- * screen, imports, and other plugins' sync jobs aren't post editing, so they keep working.
- * Tags sent by name with a post save are handled by htax_remove_new_tags_from_post_request().
+ * The block editor creates a typed or pasted tag through a REST request as soon as it's
+ * entered. Only requests sent from the post editing screens are refused, so other REST
+ * clients keep working. The block editor also sends this request for an existing tag it
+ * hasn't loaded yet, and uses the "already exists" reply, so those requests pass through.
+ * Tags typed into the Classic Editor are handled by htax_remove_new_tags_from_post_request().
  * Registered here (not in settings.php) because settings.php only loads inside is_admin(),
  * but REST API requests are not admin.
  *
- * @param string $term     The term name being inserted.
- * @param string $taxonomy The taxonomy.
- * @return string|WP_Error $term unchanged, or WP_Error to block insertion.
+ * @since 1.0.0
+ *
+ * @param mixed           $response Response to replace the requested one, usually null.
+ * @param array           $handler  Route handler.
+ * @param WP_REST_Request $request  The request.
+ * @return mixed $response unchanged, or WP_Error to refuse the request.
  */
-function htax_maybe_prevent_tag_creation( $term, $taxonomy ) {
-    if ( 'post_tag' !== $taxonomy ) {
-        return $term;
+function htax_maybe_prevent_tag_creation( $response, $handler, $request ) {
+    if ( 'POST' !== $request->get_method() || '/wp/v2/tags' !== $request->get_route() ) {
+        return $response;
     }
 
     $options = get_option( 'htax_settings', array() );
     if ( empty( $options['prevent_tag_creation'] ) ) {
-        return $term;
+        return $response;
     }
 
-    if ( defined( 'REST_REQUEST' ) && REST_REQUEST ) {
-        return new WP_Error(
-            'tag_creation_disabled',
-            __( 'Creating new tags is disabled. Please select from existing tags.', 'hypertaxonomy' ),
-            array( 'status' => 403 )
-        );
+    $referer = wp_get_referer();
+    $screen  = $referer ? basename( (string) wp_parse_url( $referer, PHP_URL_PATH ) ) : '';
+    if ( ! in_array( $screen, array( 'post.php', 'post-new.php' ), true ) ) {
+        return $response;
     }
 
-    return $term;
+    if ( term_exists( (string) $request->get_param( 'name' ), 'post_tag' ) ) {
+        return $response;
+    }
+
+    return new WP_Error(
+        'tag_creation_disabled',
+        __( 'Creating new tags is disabled. Please select from existing tags.', 'hypertaxonomy' ),
+        array( 'status' => 403 )
+    );
 }
 

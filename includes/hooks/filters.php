@@ -226,7 +226,7 @@ unset( $htax_options );
 
 add_filter( 'wp_sitemaps_taxonomies_query_args', 'htax_filter_sitemap_terms_query', 10, 2 );
 
-add_filter( 'pre_insert_term', 'htax_maybe_prevent_tag_creation', 10, 2 );
+add_filter( 'rest_request_before_callbacks', 'htax_maybe_prevent_tag_creation', 10, 3 );
 
 // ==============================================================================
 // DYNAMIC FILTERS (Applied Conditionally)

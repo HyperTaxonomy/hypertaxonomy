@@ -61,11 +61,15 @@
 
 				if (!searchTerm) {
 					$items.show();
+					HtaxHierarchicalChecklist.toggleNoMatches($checklist, false);
 					return;
 				}
 
 				searchTimer = setTimeout(function() {
 					HtaxHierarchicalChecklist.filterItems($items, searchTerm);
+					HtaxHierarchicalChecklist.toggleNoMatches($checklist, !$items.filter(function() {
+						return this.style.display !== 'none';
+					}).length);
 				}, 200);
 			});
 		},
@@ -90,6 +94,16 @@
 					$item.toggle(hasMatchingChild);
 				}
 			});
+		},
+
+		toggleNoMatches: function($checklist, show) {
+			var $message = $checklist.siblings('.htax-checklist-empty');
+
+			if (!show) {
+				$message.remove();
+			} else if (!$message.length) {
+				$('<p class="htax-checklist-empty"></p>').text($checklist.data('empty-text')).insertAfter($checklist);
+			}
 		},
 
 		initAccessibility: function() {

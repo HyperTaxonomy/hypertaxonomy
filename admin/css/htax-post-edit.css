@@ -141,40 +141,6 @@
     align-self: center;
 }
 
-/* ── Sticky Terms Meta Box Styles ────────────────────────────────────────── */
-.htax-sticky-section {
-    margin-bottom: 15px;
-}
-
-.htax-sticky-section h4 {
-    margin: 10px 0 5px 0;
-    font-size: 13px;
-    font-weight: 600;
-}
-
-.htax-sticky-term-list {
-    max-height: 150px;
-    overflow-y: auto;
-    border: 1px solid #ddd;
-    padding: 5px;
-    background: #fff;
-}
-
-.htax-sticky-term-item {
-    display: block;
-    margin: 3px 0;
-    padding: 2px 0;
-}
-
-.htax-sticky-term-item input[type="checkbox"] {
-    margin-right: 5px;
-}
-
-.htax-sticky-term-item.term-removed {
-    opacity: 0.5;
-    text-decoration: line-through;
-}
-
 /* ── Sticky pin ───────────────────────────────────────────────────────────── */
 .htax-sticky-pin {
     display: inline-flex;

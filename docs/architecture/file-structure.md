@@ -46,11 +46,12 @@ hypertaxonomy/
 ├── assets/                                   # Frontend assets
 │   ├── css/
 │   │   ├── htax-filter-options.css           # Filter options panel styles
-│   │   ├── htax-search.css                   # PowerSearch result styles
+│   │   ├── htax-search.css                   # PowerSearch form, search result and pagination styles (every front-end page)
 │   │   ├── htax-search-widget.css            # Advanced search widget styles
 │   │   ├── htax-shortcodes.css               # Shared shortcode/block output styles
 │   │   ├── htax-sort-order.css               # Sort order picker component styles
-│   │   └── htax-term-icons.css               # Term icon styles
+│   │   ├── htax-term-icons.css               # Term icon styles
+│   │   └── htax-term-picker.css              # Pills and autocomplete, shared by admin term screens and the search widget
 │   ├── images/
 │   │   ├── icon-128x128.png                  # Plugin icon
 │   │   └── icon-256x256.png                  # Plugin icon (retina)

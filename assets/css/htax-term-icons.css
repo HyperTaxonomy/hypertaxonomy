@@ -164,37 +164,12 @@ a.htax-pill:focus {
     background: #e0e0e0;
 }
 
-.htax-pill-locked .htax-pill-remove {
-    display: none;
-}
-
 .htax-pill-text {
     flex: 1;
     min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-}
-
-.htax-pill-remove {
-    margin-left: 5px;
-    background: none;
-    border: none;
-    color: #787c82;
-    cursor: pointer;
-    padding: 0;
-    width: 16px;
-    height: 16px;
-    line-height: 14px;
-    text-align: center;
-    border-radius: 50%;
-    transition: all 0.2s;
-    font-size: 16px;
-}
-
-.htax-pill-remove:hover {
-    background: rgba(0,0,0,0.1);
-    color: #d63638;
 }
 
 /* Term list display (for themes) */

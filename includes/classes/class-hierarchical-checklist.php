@@ -263,7 +263,7 @@ function htax_hierarchical_checklist( $args = array() ) {
             <?php endif; ?>
 
             <div class="htax-checklist-container" style="max-height: <?php echo absint( $args['max_height'] ); ?>px; overflow: auto; border: 1px solid #c3c4c7; border-top: 0; background-color: #fff; padding: 0 0.9em; margin: 0; box-sizing: border-box;">
-                <ul id="<?php echo esc_attr( $args['id'] ); ?>" class="categorychecklist htax-checklist form-no-clear">
+                <ul id="<?php echo esc_attr( $args['id'] ); ?>" class="categorychecklist htax-checklist form-no-clear" data-empty-text="<?php esc_attr_e( 'No items found.', 'hypertaxonomy' ); ?>">
                     <?php
                     echo htax_render_checklist_terms( $all_terms, array(
                         'taxonomy'       => $taxonomy,
@@ -323,7 +323,7 @@ function htax_render_checklist_terms( $terms, $args = array() ) {
     }
 
     if ( empty( $terms ) ) {
-        return '<li>' . esc_html__( 'No items found.', 'hypertaxonomy' ) . '</li>';
+        return '<li class="htax-checklist-empty">' . esc_html__( 'No items found.', 'hypertaxonomy' ) . '</li>';
     }
 
     // Use custom walker if provided, otherwise use default

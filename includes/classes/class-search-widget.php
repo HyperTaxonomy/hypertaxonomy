@@ -3725,9 +3725,16 @@ class HyperTaxonomy_Search_Widget {
         );
 
         wp_enqueue_style(
+            'htax-term-picker',
+            HTAX_PLUGIN_URL . 'assets/css/htax-term-picker.css',
+            array( 'jquery-ui' ),
+            HTAX_VERSION
+        );
+
+        wp_enqueue_style(
             'htax-search-widget',
             HTAX_PLUGIN_URL . 'assets/css/htax-search-widget.css',
-            array( 'jquery-ui' ),
+            array( 'jquery-ui', 'htax-term-picker' ),
             HTAX_VERSION
         );
 
@@ -3738,7 +3745,6 @@ class HyperTaxonomy_Search_Widget {
                 'loading'    => __( 'Loading...', 'hypertaxonomy' ),
                 'no_results' => __( 'No results found', 'hypertaxonomy' ),
                 'error'      => __( 'An error occurred', 'hypertaxonomy' ),
-                'min_chars'          => __( 'Please enter at least 2 characters', 'hypertaxonomy' ),
                 /* translators: {n} is replaced with the minimum character count */
                 'min_length_message' => __( 'Please enter at least {n} characters.', 'hypertaxonomy' ),
                 /* translators: pagination previous button label */

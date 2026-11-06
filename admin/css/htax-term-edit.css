@@ -122,85 +122,11 @@
     text-decoration: none;
 }
 
-/* Pills and containers */
-.htax-tag-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px;
-    align-items: center;
-    padding: 4px;
-    border: 1px solid #8c8f94;
-    border-radius: 4px;
-    min-height: 38px;  /* floor = 1 row (24px incl. margin) + 8px padding + 6px buffer */
-    max-height: 166px; /*5 rows × 26px (actual) + 4 row-gaps × 4px + 10px overhead = 156px */
-    overflow-y: auto;
-    background: #fff;
-    cursor: text;
-    width: 100%;
-    max-width: 600px;
-    box-sizing: border-box;
-}
-
-.htax-tag-container:focus-within {
-    border-color: #2271b1;
-    box-shadow: 0 0 0 1px #2271b1;
-    outline: 2px solid transparent;
-}
-
-/* Scrollbar styling for better appearance */
-.htax-tag-container::-webkit-scrollbar {
-    width: 8px;
-}
-
-.htax-tag-container::-webkit-scrollbar-track {
-    background: #f0f0f1;
-    border-radius: 4px;
-}
-
-.htax-tag-container::-webkit-scrollbar-thumb {
-    background: #c3c4c7;
-    border-radius: 4px;
-}
-
-.htax-tag-container::-webkit-scrollbar-thumb:hover {
-    background: #8c8f94;
-}
-
-.htax-pill {
-    display: inline-flex;
-    align-items: center;
-    padding: 1px 5px;
-    background: #f0f0f1;
-    border: 1px solid #ddd;
-    border-radius: 3px;
-    font-size: 13px;
-    margin: 1px;
-    position: relative;
-    cursor: default;
-    white-space: nowrap;
-    height: 22px;
-    line-height: 1.4;
-}
-
-.htax-pill.selected {
-    background: #2271b1;
-    color: #fff;
-    border-color: #135e96;
-}
-
 .htax-sym-arrow {
     font-size: 0.78em;
     opacity: 0.5;
     margin-left: 3px;
     letter-spacing: -0.5px;
-}
-
-.htax-pill[data-dir="rev"] {
-    border-style: dashed;
-}
-
-.htax-pill.selected .htax-remove {
-    color: #fff;
 }
 
 /* Synonym icon (⟳ two-arrow circle — bidirectional inclusion indicator) */
@@ -281,18 +207,7 @@
     color: #2e7d32;
 }
 
-/* Terms included via container group membership — light green (reverse path) */
-.htax-pill.via-container-group {
-    background: #eef7ef;
-    border: 1px solid #a5d6a7;
-    color: #2e7d32;
-}
-
-/* Indirect containers via included groups — light blue (matches data-via-groups indirect color) */
-
 /* === Hide indirect and reverse relationships toggle === */
-
-/* The checkbox row is hidden — the control is exposed as an icon-button in the field label */
 
 /* Icon-button injected by JS into the field label header */
 .htax-via-header-btn {
@@ -316,80 +231,10 @@
     height: 16px;
 }
 
-/* Summary group pills: hidden by default (visible only when hiding indirect pills) */
-
-/* When checkbox is checked (.htax-via-hidden on the pill container):
-   - Hide the individual via-group expanded pills
-   - Show the compact group-name summary pills instead */
-.htax-tag-container.htax-via-hidden .via-container-group {
-    display: none;
-}
-
 /* Edit form (merged pill container): hide all htax-indirect pills across all tabs.
    Group pills remain visible — they already show what's configured as the summary. */
 .htax-inclusions-field.htax-via-hidden .htax-indirect {
     display: none;
-}
-
-/* Checkbox row layout */
-
-/* Path count badge for group-based relationships */
-
-/* Remove pill button */
-.htax-remove {
-    background: none;
-    border: none;
-    color: #666;
-    cursor: pointer;
-    font-size: 18px;
-    margin-left: 4px;
-    padding: 0;
-    line-height: 1;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 15px;
-    height: 15px;
-}
-
-.htax-remove:hover {
-    color: #d63638;
-}
-
-.htax-remove:focus {
-    outline: none;
-    color: #d63638;
-}
-
-.htax-remove .screen-reader-text {
-    position: absolute !important;
-    clip: rect(1px, 1px, 1px, 1px);
-    word-wrap: normal !important;
-    border: 0;
-    height: 1px;
-    margin: -1px;
-    overflow: hidden;
-    padding: 0;
-    width: 1px;
-}
-
-/* Search input */
-.htax-search {
-    flex: 0 1 auto;
-    min-width: 80px;
-    max-width: 100%;
-    border: none !important;
-    outline: none !important;
-    background: transparent !important;
-    padding: 1px 4px !important;
-    font-size: 13px !important;
-    margin: 1px !important;
-    line-height: 20px !important;
-    box-shadow: none !important;
-    color: #2c3338;
-    height: 22px !important;
-    min-height: 0 !important;
-    box-sizing: border-box !important;
 }
 
 /* Term-add "+" button — match pill dimensions so swapping pill↔button never changes row height. */
@@ -400,17 +245,6 @@
     padding: 0 4px !important;
     line-height: 1 !important;
     flex-shrink: 0;
-}
-
-.htax-search:focus {
-    border: none !important;
-    box-shadow: none !important;
-    outline: none !important;
-}
-
-.htax-search::placeholder {
-    color: #8c8f94;
-    font-style: normal;
 }
 
 /* Redirect section */
@@ -466,74 +300,6 @@
     font-weight: 500;
 }
 
-/* Groups container */
-.htax-groups-container {
-    margin-bottom: 10px;
-}
-
-.htax-groups-field .description {
-    margin-top: 5px;
-}
-
-/* Autocomplete styles */
-.ui-autocomplete {
-    max-height: 300px !important;
-    overflow-y: auto !important;
-    overflow-x: hidden !important;
-    background: #fff;
-    border: 1px solid #ddd;
-    border-top: 1px solid #ccc;
-    font-size: 13px;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
-    z-index: 999999;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    margin-top: 1px;
-}
-
-.ui-menu {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: block;
-    outline: none;
-}
-
-.ui-autocomplete .ui-menu-item {
-    margin: 0;
-    padding: 0;
-    cursor: pointer;
-    list-style: none;
-}
-
-.ui-autocomplete .ui-menu-item div {
-    display: block;
-    padding: 3px 8px;
-    margin: 0;
-    clear: both;
-    font-weight: normal;
-    line-height: 1.4;
-    color: #333;
-    white-space: nowrap;
-    text-decoration: none;
-}
-
-.ui-autocomplete .ui-menu-item:hover div,
-.ui-autocomplete .ui-state-focus div,
-.ui-autocomplete .ui-state-active div {
-    background: #0073aa;
-    color: #fff;
-}
-
-.ui-menu-item .match {
-    font-weight: bold;
-    text-decoration: underline;
-}
-
-.ui-autocomplete .ui-menu-item:hover .match,
-.ui-autocomplete .ui-state-focus .match {
-    color: #fff;
-}
-
 /* Admin list view styles */
 .wp-list-table tbody tr[data-term-redirect="1"] .row-title {
     font-style: italic;
@@ -549,60 +315,9 @@
     width: 120px;
 }
 
-/* Form field spacing */
-.form-field.htax-groups-field {
-    border-bottom: 1px solid #f0f0f1;
-    padding-bottom: 15px;
-    margin-bottom: 15px;
-}
-
 /* Hidden field styling */
 input[type="hidden"][name^="htax_"] {
     display: none;
-}
-
-/* Disabled state */
-.htax-tag-container[style*="opacity: 0.6"] {
-    cursor: not-allowed;
-}
-
-.htax-tag-container[style*="opacity: 0.6"] .htax-search {
-    cursor: not-allowed;
-}
-
-/* Responsive adjustments */
-@media screen and (max-width: 782px) {
-    .htax-tag-container {
-        max-height: 176px;
-    }
-    
-    .htax-pill {
-        padding: 3px 7px;
-        font-size: 14px;
-        height: 26px;
-    }
-    
-    .htax-search {
-        font-size: 14px !important;
-        padding: 3px !important;
-        height: 24px !important;
-    }
-    
-    .htax-remove {
-        width: 17px;
-        height: 17px;
-        font-size: 19px;
-    }
-}
-
-/* Accessibility improvements */
-.htax-pill:focus {
-    outline: 2px solid #2271b1;
-    outline-offset: 1px;
-}
-
-.htax-search:focus {
-    outline: none !important;
 }
 
 /* Loading state */
@@ -630,97 +345,6 @@ input[type="hidden"][name^="htax_"] {
 
 @keyframes htax-spin {
     to { -webkit-transform: rotate(360deg); transform: rotate(360deg); }
-}
-
-/* Autocomplete styles to match WordPress native */
-.htax-tag-container + .ui-autocomplete,
-.htax-search + .ui-autocomplete {
-    background: #fff !important;
-    border: 1px solid #ddd !important;
-    border-top: none !important;
-    box-shadow: 0 1px 2px rgba(0,0,0,.07) !important;
-    z-index: 999999 !important;
-    max-height: 300px !important;
-    overflow-y: auto !important;
-    overflow-x: hidden !important;
-    margin-top: -1px !important;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
-}
-
-.ui-autocomplete .ui-menu-item {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-}
-
-.ui-autocomplete .ui-menu-item > div {
-    display: block;
-    padding: 6px 10px !important;
-    margin: 0;
-    font-size: 13px !important;
-    line-height: 18px !important;
-    color: #32373c !important;
-    background: #fff !important;
-    border: none !important;
-    cursor: pointer;
-    text-decoration: none;
-    white-space: normal;
-}
-
-.ui-autocomplete .ui-menu-item > div:hover,
-.ui-autocomplete .ui-state-focus > div,
-.ui-autocomplete .ui-state-active > div,
-.ui-autocomplete .ui-menu-item-focus > div {
-    background: #0073aa !important;
-    color: #fff !important;
-    outline: none !important;
-    box-shadow: none !important;
-}
-
-/* Bold matching text */
-.ui-autocomplete .ui-menu-item strong {
-    font-weight: 600;
-    color: inherit;
-}
-
-/* Style for description matches */
-.ui-autocomplete .htax-desc-match {
-    color: #666;
-    font-size: 11px;
-    margin-left: 5px;
-    font-style: italic;
-}
-
-/* Remove default jQuery UI theme styling */
-.ui-autocomplete.ui-widget {
-    font-family: inherit !important;
-}
-
-.ui-autocomplete .ui-state-active,
-.ui-autocomplete .ui-state-focus {
-    border: none !important;
-    background: transparent !important;
-    font-weight: normal !important;
-    color: inherit !important;
-}
-
-/* Ensure the autocomplete appears directly below the input */
-.htax-tag-container {
-    position: relative;
-}
-
-/* Match WordPress tag selector hover color */
-.ui-autocomplete .ui-menu-item > div:hover {
-    background: #0073aa !important;
-    color: #fff !important;
-}
-
-.ui-autocomplete .ui-menu-item > div:hover strong {
-    color: #fff !important;
-}
-
-.ui-autocomplete .ui-menu-item > div:hover .htax-desc-match {
-    color: #e6f3ff !important;
 }
 
 /* Remove padding from form-field containing Term Groups checklist */

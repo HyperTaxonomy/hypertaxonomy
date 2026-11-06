@@ -235,33 +235,8 @@ tr.form-field .htax-hierarchical-checklist-wrapper {
 }
 
 /* ==========================================================================
-   Loading and Empty States
+   Empty State
    ========================================================================== */
-
-.htax-checklist-loading {
-	padding: 20px;
-	text-align: center;
-	color: #646970;
-}
-
-.htax-checklist-loading::before {
-	content: "";
-	display: inline-block;
-	width: 20px;
-	height: 20px;
-	border: 2px solid #f0f0f1;
-	border-top-color: #2271b1;
-	border-radius: 50%;
-	animation: htax-checklist-spin 0.6s linear infinite;
-	margin-right: 8px;
-	vertical-align: middle;
-}
-
-@keyframes htax-checklist-spin {
-	to {
-		transform: rotate(360deg);
-	}
-}
 
 /* Empty state */
 .htax-checklist-empty {

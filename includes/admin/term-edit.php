@@ -40,7 +40,8 @@ function htax_enqueue_admin_assets( $hook ) {
     }
 
     wp_enqueue_style( 'htax-sort-order-css', HTAX_PLUGIN_URL . 'assets/css/htax-sort-order.css', array(), HTAX_VERSION );
-    wp_enqueue_style( 'htax-term-edit-css', HTAX_PLUGIN_URL . 'admin/css/htax-term-edit.css', array( 'htax-sort-order-css' ), HTAX_VERSION );
+    wp_enqueue_style( 'htax-term-picker', HTAX_PLUGIN_URL . 'assets/css/htax-term-picker.css', array(), HTAX_VERSION );
+    wp_enqueue_style( 'htax-term-edit-css', HTAX_PLUGIN_URL . 'admin/css/htax-term-edit.css', array( 'htax-sort-order-css', 'htax-term-picker' ), HTAX_VERSION );
     wp_enqueue_script( 'htax-sort-order-js', HTAX_PLUGIN_URL . 'assets/js/htax-sort-order.js', array( 'jquery' ), HTAX_VERSION, true );
     wp_enqueue_style( 'htax-hierarchical-checklist-css', HTAX_PLUGIN_URL . 'admin/css/htax-hierarchical-checklist.css', array(), HTAX_VERSION );
     wp_enqueue_script( 'htax-hierarchical-checklist-js', HTAX_PLUGIN_URL . 'admin/js/htax-hierarchical-checklist.js', array( 'jquery' ), HTAX_VERSION, true );

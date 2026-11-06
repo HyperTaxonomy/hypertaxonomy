@@ -271,7 +271,7 @@ jQuery(document).ready(function($) {
                         nonce:    HTAX_Ajax.nonce
                     },
                     success: resp,
-                    error:   function() { resp([]); }
+                    error:   function(xhr) { showAjaxError(xhr); resp([]); }
                 });
             },
             select: function(e, ui) {
@@ -453,7 +453,7 @@ jQuery(document).ready(function($) {
                             return { id: item.id, value: item.value, label: item.label };
                         }));
                     },
-                    error: function() { resp([]); }
+                    error: function(xhr) { showAjaxError(xhr); resp([]); }
                 });
             },
             select: function(e, ui) {
@@ -534,7 +534,7 @@ jQuery(document).ready(function($) {
                                 return { id: item.id, value: item.value, label: item.label };
                             }));
                         },
-                        error: function() { resp([]); }
+                        error: function(xhr) { showAjaxError(xhr); resp([]); }
                     });
                 },
                 select: function(e, ui) {
@@ -798,8 +798,26 @@ jQuery(document).ready(function($) {
     }
 
 
-    function escAttr(str) {
-        return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    /**
+     * Show a notice when an AJAX request fails. Autocomplete aborts its previous
+     * request on each keystroke, which is not a failure.
+     */
+    function showAjaxError(xhr) {
+        if (xhr && 'abort' === xhr.statusText) {
+            return;
+        }
+        var $wrap = $('.wrap').first();
+        if ($wrap.find('.htax-ajax-error').length) {
+            return;
+        }
+        var $notice = $('<div class="notice notice-error htax-ajax-error" role="alert"><p></p></div>');
+        $notice.find('p').text(HTAX_Ajax.error_message);
+        var $title = $wrap.children('h1').first();
+        if ($title.length) {
+            $notice.insertAfter($title);
+        } else {
+            $wrap.prepend($notice);
+        }
     }
 
     function refreshIndirectTermPills($container) {
@@ -930,7 +948,8 @@ jQuery(document).ready(function($) {
                     updateMergedHiddenInputs($container);
                     updateSynonymHighlighting();
                 }
-            }
+            },
+            error: showAjaxError
         });
     }
 
@@ -980,7 +999,8 @@ jQuery(document).ready(function($) {
                     updateMergedHiddenInputs($container);
                     updateSynonymHighlighting();
                 }
-            }
+            },
+            error: showAjaxError
         });
     }
 
@@ -1436,7 +1456,7 @@ jQuery(document).ready(function($) {
                     dataType: 'json',
                     data:     { action: 'htax_search_terms', taxonomy: tax, term: request.term, nonce: HTAX_Ajax.nonce },
                     success:  function( data ) { response( $.isArray(data) ? data : [] ); },
-                    error:    function() { response([]); }
+                    error:    function(xhr) { showAjaxError(xhr); response([]); }
                 });
             },
             select: function( event, ui ) {

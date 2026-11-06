@@ -39,7 +39,8 @@ function htax_enqueue_merge_terms_assets( $hook ) {
         return;
     }
 
-    wp_enqueue_style( 'htax-term-edit-css', HTAX_PLUGIN_URL . 'admin/css/htax-term-edit.css', array(), HTAX_VERSION );
+    wp_enqueue_style( 'htax-term-picker', HTAX_PLUGIN_URL . 'assets/css/htax-term-picker.css', array(), HTAX_VERSION );
+    wp_enqueue_style( 'htax-term-edit-css', HTAX_PLUGIN_URL . 'admin/css/htax-term-edit.css', array( 'htax-term-picker' ), HTAX_VERSION );
     wp_enqueue_script( 'htax-term-edit-js', HTAX_PLUGIN_URL . 'admin/js/htax-term-edit.js', array( 'jquery', 'jquery-ui-autocomplete' ), HTAX_VERSION, true );
     wp_localize_script( 'htax-term-edit-js', 'HTAX_Ajax', array(
         'ajax_url'          => admin_url( 'admin-ajax.php' ),

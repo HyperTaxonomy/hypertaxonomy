@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: hypertaxonomy 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-06 00:14-0500\n"
-"PO-Revision-Date: 2026-11-06 00:14-0500\n"
+"POT-Creation-Date: 2026-11-06 11:22-0500\n"
+"PO-Revision-Date: 2026-11-06 11:25-0500\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: ru\n"
@@ -26,8 +26,8 @@ msgstr "Термины"
 
 #: includes/admin/admin-menu.php:47 includes/admin/admin-menu.php:48
 #: includes/admin/settings.php:469 includes/admin/settings.php:555
-#: includes/admin/tables.php:796 includes/admin/term-edit.php:907
-#: includes/admin/term-edit.php:914 includes/core/taxonomies.php:43
+#: includes/admin/tables.php:796 includes/admin/term-edit.php:908
+#: includes/admin/term-edit.php:915 includes/core/taxonomies.php:43
 msgid "Term Groups"
 msgstr "Группы терминов"
 
@@ -36,52 +36,52 @@ msgstr "Группы терминов"
 msgid "Term Relationship Types"
 msgstr "Типы связей между терминами"
 
-#: includes/admin/ajax.php:656 includes/admin/ajax.php:676
-#: includes/admin/ajax.php:707 includes/admin/ajax.php:739
-#: includes/admin/ajax.php:780 includes/admin/ajax.php:801
-#: includes/admin/ajax.php:844 includes/admin/ajax.php:886
-#: includes/admin/ajax.php:980 includes/admin/bulk-actions.php:240
-#: includes/admin/settings.php:3576 includes/admin/settings.php:3594
-#: includes/admin/term-icons.php:1062
+#: includes/admin/ajax.php:564 includes/admin/ajax.php:584
+#: includes/admin/ajax.php:615 includes/admin/ajax.php:647
+#: includes/admin/ajax.php:688 includes/admin/ajax.php:709
+#: includes/admin/ajax.php:752 includes/admin/ajax.php:794
+#: includes/admin/ajax.php:888 includes/admin/bulk-actions.php:240
+#: includes/admin/settings.php:3575 includes/admin/settings.php:3593
+#: includes/admin/term-icons.php:1009
 #: includes/classes/class-search-index.php:1213
 #: includes/integrations/class-taxopress-integration.php:126
 msgid "Security check failed."
 msgstr "Проверка безопасности не пройдена."
 
-#: includes/admin/ajax.php:660 includes/admin/ajax.php:680
-#: includes/admin/ajax.php:711 includes/admin/ajax.php:743
-#: includes/admin/ajax.php:784 includes/admin/ajax.php:806
-#: includes/admin/ajax.php:850 includes/admin/ajax.php:892
-#: includes/admin/ajax.php:984 includes/admin/settings.php:3572
-#: includes/admin/settings.php:3590
+#: includes/admin/ajax.php:568 includes/admin/ajax.php:588
+#: includes/admin/ajax.php:619 includes/admin/ajax.php:651
+#: includes/admin/ajax.php:692 includes/admin/ajax.php:714
+#: includes/admin/ajax.php:758 includes/admin/ajax.php:800
+#: includes/admin/ajax.php:892 includes/admin/settings.php:3571
+#: includes/admin/settings.php:3589
 msgid "You do not have permission to perform this action."
 msgstr "У вас нет доступа для выполнения этого действия."
 
-#: includes/admin/ajax.php:691
+#: includes/admin/ajax.php:599
 msgid "Invalid group mapping."
 msgstr "Недопустимое сопоставление групп."
 
-#: includes/admin/ajax.php:750
+#: includes/admin/ajax.php:658
 msgid "Invalid integration mode."
 msgstr "Недопустимый режим интеграции."
 
-#: includes/admin/ajax.php:754
+#: includes/admin/ajax.php:662
 msgid "Invalid removal handling mode."
 msgstr "Недопустимый режим обработки удалений."
 
-#: includes/admin/ajax.php:819
+#: includes/admin/ajax.php:727
 msgid "No taxonomies selected."
 msgstr "Таксономии не выбраны."
 
-#: includes/admin/ajax.php:827
+#: includes/admin/ajax.php:735
 msgid "No valid taxonomies selected."
 msgstr "Не выбрано ни одной допустимой таксономии."
 
-#: includes/admin/ajax.php:861 includes/admin/ajax.php:905
+#: includes/admin/ajax.php:769 includes/admin/ajax.php:813
 msgid "No import data provided."
 msgstr "Не переданы данные для импорта."
 
-#: includes/admin/ajax.php:940 includes/admin/term-icons.php:875
+#: includes/admin/ajax.php:848
 msgid "Unauthorized."
 msgstr "Нет доступа."
 
@@ -93,8 +93,8 @@ msgstr "Сделать видимым"
 msgid "Make Hidden"
 msgstr "Скрыть"
 
-#: includes/admin/bulk-actions.php:35 includes/admin/term-icons.php:252
-#: includes/admin/term-icons.php:300
+#: includes/admin/bulk-actions.php:35 includes/admin/term-icons.php:251
+#: includes/admin/term-icons.php:299
 msgid "Remove Icon"
 msgstr "Удалить значок"
 
@@ -134,7 +134,7 @@ msgstr[0] "Обновлены группы для %d термина."
 msgstr[1] "Обновлены группы для %d терминов."
 msgstr[2] "Обновлены группы для %d терминов."
 
-#: includes/admin/bulk-actions.php:252 includes/admin/term-edit.php:1989
+#: includes/admin/bulk-actions.php:252 includes/admin/term-edit.php:1990
 msgid "Invalid request."
 msgstr "Недопустимый запрос."
 
@@ -203,13 +203,13 @@ msgstr "Очистить выбор"
 #: includes/admin/relationship-types-admin.php:244
 #: includes/admin/relationship-types-admin.php:301
 #: includes/admin/relationship-types-admin.php:327
-#: includes/admin/term-icons.php:976
+#: includes/admin/term-icons.php:923
 #: includes/integrations/class-taxopress-integration.php:129
 msgid "Permission denied."
 msgstr "Доступ запрещён."
 
 #: includes/admin/convert-terms.php:104 includes/admin/settings.php:1284
-#: includes/admin/settings.php:2123 includes/admin/term-icons.php:1075
+#: includes/admin/settings.php:2123 includes/admin/term-icons.php:1022
 #: includes/core/term-merge.php:64
 msgid "Invalid taxonomy."
 msgstr "Недопустимая таксономия."
@@ -222,7 +222,7 @@ msgstr[0] "%d запись"
 msgstr[1] "%d записи"
 msgstr[2] "%d записей"
 
-#: includes/admin/convert-terms.php:151 includes/admin/merge-terms.php:58
+#: includes/admin/convert-terms.php:151 includes/admin/merge-terms.php:59
 msgid "You do not have sufficient permissions to access this page."
 msgstr "У вас недостаточно прав для доступа к этой странице."
 
@@ -242,7 +242,7 @@ msgstr ""
 "Если термин с таким же названием уже существует в целевой таксономии, он "
 "будет пропущен. Переименуйте один из них и повторите преобразование."
 
-#: includes/admin/convert-terms.php:245 includes/admin/merge-terms.php:104
+#: includes/admin/convert-terms.php:245 includes/admin/merge-terms.php:105
 msgid ""
 "Warning: this operation cannot be undone. Back up your database before "
 "proceeding."
@@ -277,7 +277,7 @@ msgstr "Ни один термин не был преобразован."
 msgid "Terms converted:"
 msgstr "Преобразовано терминов:"
 
-#: includes/admin/convert-terms.php:277 includes/admin/merge-terms.php:134
+#: includes/admin/convert-terms.php:277 includes/admin/merge-terms.php:135
 msgid "Redirect stubs created:"
 msgstr "Создано рудиментов для перенаправления:"
 
@@ -298,7 +298,7 @@ msgid "From taxonomy"
 msgstr "Из таксономии"
 
 #: includes/admin/convert-terms.php:310 includes/admin/convert-terms.php:343
-#: includes/admin/merge-terms.php:152
+#: includes/admin/merge-terms.php:153
 #: includes/admin/relationship-types-admin.php:610
 #: blocks/shared/post-list-edit.js:117 blocks/shared/term-display-edit.js:87
 msgid "— Select taxonomy —"
@@ -316,7 +316,7 @@ msgstr "Шаг 2 — Преобразовать в"
 msgid "To taxonomy"
 msgstr "В таксономию"
 
-#: includes/admin/convert-terms.php:355 includes/admin/merge-terms.php:196
+#: includes/admin/convert-terms.php:355 includes/admin/merge-terms.php:197
 msgid "Redirect stubs"
 msgstr "Рудименты для перенаправления"
 
@@ -439,13 +439,13 @@ msgstr ""
 "Изменения, сделанные здесь, будут отменены при следующей миграции."
 
 #: includes/admin/group-admin.php:187 includes/admin/group-admin.php:992
-#: includes/admin/term-edit.php:594
+#: includes/admin/term-edit.php:595
 #: includes/shortcodes/class-sort-order.php:131 blocks/shared/components.js:245
 msgid "Remove"
 msgstr "Удалить"
 
 #: includes/admin/group-admin.php:188 includes/admin/group-admin.php:994
-#: includes/admin/term-edit.php:1310 includes/admin/term-edit.php:1816
+#: includes/admin/term-edit.php:1311 includes/admin/term-edit.php:1817
 msgid "Remove term:"
 msgstr "Удалить термин:"
 
@@ -544,12 +544,12 @@ msgstr ""
 "Ошибка базы данных при сохранении членства в группах; изменения отменены."
 
 #: includes/admin/group-admin.php:791 includes/admin/group-admin.php:904
-#: includes/core/relationship-types.php:698
-#: includes/core/term-relationships.php:1667
+#: includes/core/relationship-types.php:724
+#: includes/core/term-relationships.php:1704
 msgid "Database error saving relationship."
 msgstr "Ошибка базы данных при сохранении связи."
 
-#: includes/admin/group-admin.php:950 includes/admin/term-edit.php:1067
+#: includes/admin/group-admin.php:950 includes/admin/term-edit.php:1068
 msgid "Add…"
 msgstr "Добавить…"
 
@@ -558,10 +558,10 @@ msgid "Custom Relationships"
 msgstr "Пользовательские связи"
 
 #: includes/admin/group-admin.php:1074 includes/admin/group-admin.php:1075
-#: includes/admin/term-edit.php:1745 includes/admin/term-edit.php:1746
-#: includes/admin/term-edit.php:1774 includes/admin/term-edit.php:1775
-#: includes/admin/term-edit.php:1826 includes/admin/term-edit.php:1847
-#: includes/admin/term-edit.php:1848 includes/admin/term-edit.php:1917
+#: includes/admin/term-edit.php:1746 includes/admin/term-edit.php:1747
+#: includes/admin/term-edit.php:1775 includes/admin/term-edit.php:1776
+#: includes/admin/term-edit.php:1827 includes/admin/term-edit.php:1848
+#: includes/admin/term-edit.php:1849 includes/admin/term-edit.php:1918
 #, php-format
 msgid "Add %s…"
 msgstr "Добавить %s…"
@@ -700,7 +700,7 @@ msgstr ""
 
 #: includes/admin/import-hypertaxonomy.php:133
 #: includes/admin/import-hypertaxonomy.php:134
-#: includes/admin/import-hypertaxonomy.php:657
+#: includes/admin/import-hypertaxonomy.php:658
 msgid "Unknown"
 msgstr "Не распознано"
 
@@ -773,56 +773,56 @@ msgstr "Ошибка при создании связи от %s к %s: %s"
 msgid "Could not set groups for %1$s: %2$s"
 msgstr "Не удалось задать группы для %1$s: %2$s"
 
-#: includes/admin/import-hypertaxonomy.php:644
+#: includes/admin/import-hypertaxonomy.php:645
 msgid "Import Progress"
 msgstr "Ход импорта"
 
-#: includes/admin/import-hypertaxonomy.php:650
-#: includes/admin/import-hypertaxonomy.php:671
+#: includes/admin/import-hypertaxonomy.php:651
+#: includes/admin/import-hypertaxonomy.php:672
 #: includes/admin/tag-groups-migrate-ui.php:181
 msgid "Error:"
 msgstr "Ошибка:"
 
-#: includes/admin/import-hypertaxonomy.php:656
+#: includes/admin/import-hypertaxonomy.php:657
 #, php-format
 msgid "Importing from: %s"
 msgstr "Импорт из: %s"
 
-#: includes/admin/import-hypertaxonomy.php:661
+#: includes/admin/import-hypertaxonomy.php:662
 #, php-format
 msgid "Found %d terms and %d relationships to process..."
 msgstr "Найдено %d терминов и %d связей для обработки…"
 
-#: includes/admin/import-hypertaxonomy.php:681
-#: includes/admin/import-hypertaxonomy.php:705
+#: includes/admin/import-hypertaxonomy.php:682
+#: includes/admin/import-hypertaxonomy.php:706
 msgid "Warnings:"
 msgstr "Предупреждения:"
 
-#: includes/admin/import-hypertaxonomy.php:691
+#: includes/admin/import-hypertaxonomy.php:692
 msgid "Import Complete!"
 msgstr "Импорт завершён!"
 
-#: includes/admin/import-hypertaxonomy.php:694
+#: includes/admin/import-hypertaxonomy.php:695
 msgid "Terms Created:"
 msgstr "Создано терминов:"
 
-#: includes/admin/import-hypertaxonomy.php:695
+#: includes/admin/import-hypertaxonomy.php:696
 msgid "Terms Updated:"
 msgstr "Обновлено терминов:"
 
-#: includes/admin/import-hypertaxonomy.php:696
+#: includes/admin/import-hypertaxonomy.php:697
 msgid "Terms Skipped:"
 msgstr "Пропущено терминов:"
 
-#: includes/admin/import-hypertaxonomy.php:697
+#: includes/admin/import-hypertaxonomy.php:698
 msgid "Relationships Created:"
 msgstr "Создано связей между терминами:"
 
-#: includes/admin/import-hypertaxonomy.php:698
+#: includes/admin/import-hypertaxonomy.php:699
 msgid "Relationships Skipped:"
 msgstr "Пропущено связей между терминами:"
 
-#: includes/admin/import-hypertaxonomy.php:701
+#: includes/admin/import-hypertaxonomy.php:702
 msgid "Posts Assigned:"
 msgstr "Создано связей между терминами и записями:"
 
@@ -875,8 +875,8 @@ msgid "Please select a file to import"
 msgstr "Выберите файл для импорта"
 
 #: includes/admin/import-ui.php:79
-#: includes/classes/class-search-widget.php:2294
-#: includes/classes/class-search-widget.php:3765
+#: includes/classes/class-search-widget.php:2267
+#: includes/classes/class-search-widget.php:3745
 msgid "Loading..."
 msgstr "Идёт загрузка…"
 
@@ -945,27 +945,27 @@ msgid "Import failed"
 msgstr "Не удалось выполнить импорт"
 
 #: includes/admin/merge-terms.php:23 includes/admin/merge-terms.php:24
-#: includes/admin/merge-terms.php:101 includes/admin/merge-terms.php:210
+#: includes/admin/merge-terms.php:102 includes/admin/merge-terms.php:211
 msgid "Merge Terms"
 msgstr "Слияние терминов"
 
-#: includes/admin/merge-terms.php:48 includes/admin/term-edit.php:55
+#: includes/admin/merge-terms.php:49 includes/admin/term-edit.php:56
 msgid "An error occurred. Please try again."
 msgstr "Произошла ошибка. Пожалуйста, попробуйте ещё раз."
 
-#: includes/admin/merge-terms.php:75
+#: includes/admin/merge-terms.php:76
 msgid "Please select a taxonomy."
 msgstr "Выберите таксономию."
 
-#: includes/admin/merge-terms.php:77
+#: includes/admin/merge-terms.php:78
 msgid "Please specify at least one source term."
 msgstr "Укажите хотя бы один исходный термин."
 
-#: includes/admin/merge-terms.php:79
+#: includes/admin/merge-terms.php:80
 msgid "Please specify a target term."
 msgstr "Укажите целевой термин."
 
-#: includes/admin/merge-terms.php:103
+#: includes/admin/merge-terms.php:104
 msgid ""
 "Permanently move all posts from one or more source terms to a target term, "
 "transfer group memberships and relationships, then delete the source terms."
@@ -974,7 +974,7 @@ msgstr ""
 "их связи с другими терминами и членство в группах, в целевой термин, а затем "
 "удалить исходные термины, без возможности отмены."
 
-#: includes/admin/merge-terms.php:109
+#: includes/admin/merge-terms.php:110
 msgid ""
 "TaxoPress is active and has its own term-merge tool. If you came from there: "
 "it does not transfer HyperTaxonomy relationship data (group memberships, "
@@ -986,33 +986,33 @@ msgstr ""
 "удаляемого термина — и поэтому им не следует пользоваться для слияния "
 "терминов с такими связями."
 
-#: includes/admin/merge-terms.php:120
+#: includes/admin/merge-terms.php:121
 msgid "Merge complete."
 msgstr "Слияние завершено."
 
-#: includes/admin/merge-terms.php:125
+#: includes/admin/merge-terms.php:126
 msgid "Posts reassigned:"
 msgstr "Перенесено записей:"
 
-#: includes/admin/merge-terms.php:129
+#: includes/admin/merge-terms.php:130
 msgid "Source terms deleted:"
 msgstr "Удалено исходных терминов:"
 
-#: includes/admin/merge-terms.php:148
+#: includes/admin/merge-terms.php:149
 #: includes/admin/relationship-types-admin.php:607
 #: blocks/shared/post-list-edit.js:145 blocks/shared/term-display-edit.js:119
 msgid "Taxonomy"
 msgstr "Таксономия"
 
-#: includes/admin/merge-terms.php:164
+#: includes/admin/merge-terms.php:165
 msgid "Source terms"
 msgstr "Исходные термины"
 
-#: includes/admin/merge-terms.php:171 includes/admin/merge-terms.php:187
+#: includes/admin/merge-terms.php:172 includes/admin/merge-terms.php:188
 msgid "Type a term name…"
 msgstr "Введите имя термина…"
 
-#: includes/admin/merge-terms.php:176
+#: includes/admin/merge-terms.php:177
 msgid ""
 "Add one or more terms to merge (type and select). Their posts and "
 "relationships will be moved to the target term."
@@ -1020,20 +1020,20 @@ msgstr ""
 "Добавьте один или несколько терминов для слияния (введите и выберите). Их "
 "записи и связи будут перенесены в целевой термин."
 
-#: includes/admin/merge-terms.php:181
+#: includes/admin/merge-terms.php:182
 msgid "Target term"
 msgstr "Целевой термин"
 
-#: includes/admin/merge-terms.php:192
+#: includes/admin/merge-terms.php:193
 msgid "The term that source posts and relationships will be merged into."
 msgstr "Термин, в который будут объединены записи и связи исходных терминов."
 
-#: includes/admin/merge-terms.php:201
+#: includes/admin/merge-terms.php:202
 msgid "Create 301 redirect stubs for deleted terms"
 msgstr ""
 "Создавать рудименты для перенаправления (статус 301) при удалении терминов"
 
-#: includes/admin/merge-terms.php:203
+#: includes/admin/merge-terms.php:204
 msgid ""
 "Keeps old archive URLs working by creating redirect stubs pointing to the "
 "target term's archive."
@@ -1409,7 +1409,7 @@ msgid "Update Relationship Type"
 msgstr "Обновить тип связи"
 
 #: includes/admin/relationship-types-admin.php:668
-#: includes/admin/term-icons.php:1439
+#: includes/admin/term-icons.php:1386
 msgid "Cancel"
 msgstr "Отменить"
 
@@ -1504,7 +1504,7 @@ msgid "Icons"
 msgstr "Значки"
 
 #: includes/admin/settings.php:376
-#: includes/classes/class-search-widget.php:2191
+#: includes/classes/class-search-widget.php:2164
 msgid "Search"
 msgstr "Поиск"
 
@@ -3202,25 +3202,21 @@ msgid "Deleting icons..."
 msgstr "Идёт удаление значков…"
 
 #: includes/admin/settings.php:3526
-msgid "Icons deleted successfully!"
-msgstr "Значки успешно удалены!"
-
-#: includes/admin/settings.php:3527
 msgid "Error deleting icons. Please try again."
 msgstr "Ошибка при удалении значков. Попробуйте ещё раз."
 
-#: includes/admin/settings.php:3528
+#: includes/admin/settings.php:3527
 msgid ""
 "Are you sure you want to reset all relevance weights to their default values?"
 msgstr ""
 "Вы уверены, что хотите сбросить все значения коэффициента релевантности к "
 "значениям по умолчанию?"
 
-#: includes/admin/settings.php:3529
+#: includes/admin/settings.php:3528
 msgid "Relevance weights have been reset to default values."
 msgstr "Значения коэффициента релевантности сброшены к значениям по умолчанию."
 
-#: includes/admin/settings.php:3617
+#: includes/admin/settings.php:3616
 msgid "All caches cleared successfully!"
 msgstr "Все кэшированные данные успешно очищены!"
 
@@ -3272,8 +3268,8 @@ msgstr "Скрытые"
 msgid "Ungrouped"
 msgstr "Без группы"
 
-#: includes/admin/tables.php:311 includes/admin/term-edit.php:930
-#: includes/admin/term-edit.php:966
+#: includes/admin/tables.php:311 includes/admin/term-edit.php:931
+#: includes/admin/term-edit.php:967
 msgid "Managed by Tag Groups — edit this group's membership there instead."
 msgstr ""
 "Управляется в плагине Tag Groups — состав этой группы можно изменить там."
@@ -3286,8 +3282,8 @@ msgstr "Значок"
 msgid "No icon"
 msgstr "Без значка"
 
-#: includes/admin/tables.php:436 includes/admin/term-edit.php:287
-#: includes/admin/term-edit.php:291
+#: includes/admin/tables.php:436 includes/admin/term-edit.php:288
+#: includes/admin/term-edit.php:292
 msgid "Visibility"
 msgstr "Видимость"
 
@@ -3296,7 +3292,7 @@ msgid "Hidden from public display"
 msgstr "Скрыто от публичного показа"
 
 #: includes/admin/tables.php:518 includes/admin/tables.php:523
-#: includes/admin/term-edit.php:419 includes/admin/term-edit.php:426
+#: includes/admin/term-edit.php:420 includes/admin/term-edit.php:427
 msgid "Redirect"
 msgstr "Перенаправление"
 
@@ -3713,7 +3709,7 @@ msgstr ""
 msgid "Save Sync Settings"
 msgstr "Сохранить настройки синхронизации"
 
-#: includes/admin/tag-groups-sync-ui.php:120 includes/admin/term-icons.php:1440
+#: includes/admin/tag-groups-sync-ui.php:120 includes/admin/term-icons.php:1387
 msgid "Saving…"
 msgstr "Идёт сохранение…"
 
@@ -3795,8 +3791,8 @@ msgstr "Другой редактор перехватил редактиров�
 msgid "has taken over editing this relationship type."
 msgstr "перехватил(а) редактирование этого типа связи."
 
-#: includes/admin/term-edit.php:90 includes/admin/term-edit.php:295
-#: includes/admin/term-edit.php:306
+#: includes/admin/term-edit.php:91 includes/admin/term-edit.php:296
+#: includes/admin/term-edit.php:307
 msgid ""
 "Cannot make visible: a parent term is hidden. Make the parent term visible "
 "first."
@@ -3804,24 +3800,24 @@ msgstr ""
 "Невозможно сделать видимым: родительский термин скрыт. Сначала сделайте "
 "родительский термин видимым."
 
-#: includes/admin/term-edit.php:156 includes/admin/term-edit.php:189
+#: includes/admin/term-edit.php:157 includes/admin/term-edit.php:190
 msgid "More options"
 msgstr "Дополнительные настройки"
 
-#: includes/admin/term-edit.php:220 includes/admin/term-edit.php:555
-#: includes/admin/term-icons.php:1436
+#: includes/admin/term-edit.php:221 includes/admin/term-edit.php:556
+#: includes/admin/term-icons.php:1383
 msgid "term"
 msgstr "термин"
 
-#: includes/admin/term-edit.php:224 includes/admin/term-edit.php:228
+#: includes/admin/term-edit.php:225 includes/admin/term-edit.php:229
 msgid "Show Description"
 msgstr "Показывать описание"
 
-#: includes/admin/term-edit.php:235
+#: includes/admin/term-edit.php:236
 msgid "Display description below archive heading"
 msgstr "Отображать описание под заголовком архива"
 
-#: includes/admin/term-edit.php:241
+#: includes/admin/term-edit.php:242
 #, php-format
 msgid ""
 "Show the term description, above sticky posts for this %s if any, using "
@@ -3832,11 +3828,11 @@ msgstr ""
 "есть, используя возможности темы, когда они доступны. Разрешённые HTML-теги: "
 "strong, em, a, code, br, p, ul, ol, li, blockquote, h3, h4, span."
 
-#: includes/admin/term-edit.php:302
+#: includes/admin/term-edit.php:303
 msgid "Hide this term from public view"
 msgstr "Скрыть этот термин от публичного просмотра"
 
-#: includes/admin/term-edit.php:311
+#: includes/admin/term-edit.php:312
 msgid ""
 "The group archive returns a 404 to unauthorized users and the group is "
 "excluded from REST API responses and sitemaps. Subgroups are hidden "
@@ -3848,7 +3844,7 @@ msgstr ""
 "автоматически. Не влияет на записи, появляющиеся в архивах терминов, которые "
 "включают эту группу — раскрытие групп не изменяется."
 
-#: includes/admin/term-edit.php:313
+#: includes/admin/term-edit.php:314
 msgid ""
 "For users who can't see hidden terms (Settings → HyperTaxonomy → Display → "
 "Hidden Terms), the term archive returns a 404 and the term is treated as if "
@@ -3863,48 +3859,48 @@ msgstr ""
 "нельзя найти записи. Записи, связанные с этим термином, по-прежнему доступны "
 "через другие их термины."
 
-#: includes/admin/term-edit.php:436
+#: includes/admin/term-edit.php:437
 #, php-format
 msgid "Redirect this %s to another term"
 msgstr "Перенаправить этот термин (%s) на другой"
 
-#: includes/admin/term-edit.php:442
+#: includes/admin/term-edit.php:443
 msgid "Target taxonomy:"
 msgstr "Целевая таксономия:"
 
-#: includes/admin/term-edit.php:458
+#: includes/admin/term-edit.php:459
 msgid "Remove Redirect Target"
 msgstr "Удалить цель перенаправления"
 
-#: includes/admin/term-edit.php:459
+#: includes/admin/term-edit.php:460
 msgid "Remove redirect target:"
 msgstr "Удалить цель перенаправления:"
 
-#: includes/admin/term-edit.php:465 includes/admin/term-edit.php:468
+#: includes/admin/term-edit.php:466 includes/admin/term-edit.php:469
 msgid "Set redirect target"
 msgstr "Задать цель перенаправления"
 
-#: includes/admin/term-edit.php:471 includes/admin/term-edit.php:472
+#: includes/admin/term-edit.php:472 includes/admin/term-edit.php:473
 msgid "Choose redirect target..."
 msgstr "Выбрать цель перенаправления…"
 
-#: includes/admin/term-edit.php:473
+#: includes/admin/term-edit.php:474
 msgid "Change redirect target..."
 msgstr "Изменить цель перенаправления…"
 
-#: includes/admin/term-edit.php:523 includes/admin/term-edit.php:530
+#: includes/admin/term-edit.php:524 includes/admin/term-edit.php:531
 msgid "Archive Settings"
 msgstr "Настройки архива"
 
-#: includes/admin/term-edit.php:540
+#: includes/admin/term-edit.php:541
 msgid "Posts per page:"
 msgstr "Записей на странице:"
 
-#: includes/admin/term-edit.php:552
+#: includes/admin/term-edit.php:553
 msgid "tag"
 msgstr "метка"
 
-#: includes/admin/term-edit.php:558
+#: includes/admin/term-edit.php:559
 #, php-format
 msgid ""
 "Override WordPress Reading Settings for this %s's archive. Leave empty to "
@@ -3913,11 +3909,11 @@ msgstr ""
 "Переопределить настройки чтения WordPress для архива этого термина (%s). "
 "Оставьте пустым, чтобы использовать значение по умолчанию (%d записей)."
 
-#: includes/admin/term-edit.php:569
+#: includes/admin/term-edit.php:570
 msgid "Maximum sticky posts:"
 msgstr "Максимальное количество закреплённых записей:"
 
-#: includes/admin/term-edit.php:581
+#: includes/admin/term-edit.php:582
 #, php-format
 msgid ""
 "Maximum sticky posts for this %s's archive. Leave empty to use global "
@@ -3927,59 +3923,59 @@ msgstr ""
 "Оставьте пустым, чтобы использовать общую настройку (%d записей). "
 "Автоматически уменьшается, если записей на странице меньше."
 
-#: includes/admin/term-edit.php:591
+#: includes/admin/term-edit.php:592
 msgid "Sort order:"
 msgstr "Порядок сортировки:"
 
-#: includes/admin/term-edit.php:595
+#: includes/admin/term-edit.php:596
 #: includes/shortcodes/class-sort-order.php:129 blocks/shared/components.js:221
 msgid "Ascending — click to toggle"
 msgstr "По возрастанию — нажмите для переключения"
 
-#: includes/admin/term-edit.php:596
+#: includes/admin/term-edit.php:597
 #: includes/shortcodes/class-sort-order.php:130 blocks/shared/components.js:222
 msgid "Descending — click to toggle"
 msgstr "По убыванию — нажмите для переключения"
 
-#: includes/admin/term-edit.php:598
+#: includes/admin/term-edit.php:599
 msgid "site default"
 msgstr "по умолчанию для всего сайта"
 
-#: includes/admin/term-edit.php:601 includes/admin/term-edit.php:602
+#: includes/admin/term-edit.php:602 includes/admin/term-edit.php:603
 msgid "Add sort criterion"
 msgstr "Добавить критерий сортировки"
 
-#: includes/admin/term-edit.php:607
+#: includes/admin/term-edit.php:608
 #: includes/shortcodes/class-filter-options.php:139
-#: includes/shortcodes/class-filter-options.php:1099
+#: includes/shortcodes/class-filter-options.php:1049
 #: includes/shortcodes/class-sort-order.php:39
 #: blocks/ht-sort-order-options/src/index.js:18
 msgid "Date"
 msgstr "Дата"
 
-#: includes/admin/term-edit.php:608
+#: includes/admin/term-edit.php:609
 msgid "Last modified"
 msgstr "Время последнего изменения"
 
-#: includes/admin/term-edit.php:609 includes/shortcodes/class-sort-order.php:41
+#: includes/admin/term-edit.php:610 includes/shortcodes/class-sort-order.php:41
 #: blocks/ht-sort-order-options/src/index.js:20 blocks/shared/components.js:150
 msgid "Title"
 msgstr "Заголовок"
 
-#: includes/admin/term-edit.php:610
+#: includes/admin/term-edit.php:611
 #: includes/shortcodes/class-filter-options.php:184
-#: includes/shortcodes/class-filter-options.php:1111
+#: includes/shortcodes/class-filter-options.php:1061
 #: includes/shortcodes/class-sort-order.php:42
 #: blocks/ht-sort-order-options/src/index.js:21 blocks/shared/components.js:151
 msgid "Author"
 msgstr "Автор"
 
-#: includes/admin/term-edit.php:611 includes/shortcodes/class-sort-order.php:43
+#: includes/admin/term-edit.php:612 includes/shortcodes/class-sort-order.php:43
 #: blocks/ht-sort-order-options/src/index.js:22
 msgid "Comments"
 msgstr "Количество комментариев"
 
-#: includes/admin/term-edit.php:619
+#: includes/admin/term-edit.php:620
 msgid ""
 "Override the default post sort order for this term's archive. Click + to add "
 "criteria; drag pills to reorder."
@@ -3988,7 +3984,7 @@ msgstr ""
 "термина. Нажмите «+», чтобы добавить критерии; порядок можно изменить при "
 "помощи перетаскивания капсул."
 
-#: includes/admin/term-edit.php:678
+#: includes/admin/term-edit.php:679
 msgid ""
 "Cannot make term visible: a parent term is hidden. Make the parent term "
 "visible first."
@@ -3996,24 +3992,24 @@ msgstr ""
 "Невозможно сделать термин видимым: родительский термин скрыт. Сначала "
 "сделайте родительский термин видимым."
 
-#: includes/admin/term-edit.php:717
+#: includes/admin/term-edit.php:718
 msgid "Term visibility settings saved successfully."
 msgstr "Настройки видимости термина успешно сохранены."
 
-#: includes/admin/term-edit.php:938
+#: includes/admin/term-edit.php:939
 #, php-format
 msgid "Remove from group %s"
 msgstr "Удалить из группы «%s»"
 
-#: includes/admin/term-edit.php:939
+#: includes/admin/term-edit.php:940
 msgid "Remove:"
 msgstr "Удалить:"
 
-#: includes/admin/term-edit.php:947 includes/admin/term-edit.php:949
+#: includes/admin/term-edit.php:948 includes/admin/term-edit.php:950
 msgid "Add to groups"
 msgstr "Добавить в группы"
 
-#: includes/admin/term-edit.php:974
+#: includes/admin/term-edit.php:975
 #, php-format
 msgid ""
 "Assign this %s to one or more groups. Group members are displayed together "
@@ -4025,24 +4021,24 @@ msgstr ""
 "группах и участие в связях определяют логику включения в архивы и в "
 "результаты PowerSearch на основании релевантности."
 
-#: includes/admin/term-edit.php:1159
+#: includes/admin/term-edit.php:1160
 msgid "Groups:"
 msgstr "Группы:"
 
-#: includes/admin/term-edit.php:1167
+#: includes/admin/term-edit.php:1168
 #, php-format
 msgid "Remove group %s"
 msgstr "Удалить группу «%s»"
 
-#: includes/admin/term-edit.php:1168
+#: includes/admin/term-edit.php:1169
 msgid "Remove group:"
 msgstr "Удалить группу:"
 
-#: includes/admin/term-edit.php:1176 includes/admin/term-edit.php:1178
+#: includes/admin/term-edit.php:1177 includes/admin/term-edit.php:1179
 msgid "Add group"
 msgstr "Добавить группу"
 
-#: includes/admin/term-edit.php:1283
+#: includes/admin/term-edit.php:1284
 msgid ""
 "Overridden — this term is also excluded, so this direct include has no "
 "effect on the archive."
@@ -4050,89 +4046,89 @@ msgstr ""
 "Переопределено — этот термин также исключён, поэтому это прямое включение не "
 "влияет на архив."
 
-#: includes/admin/term-edit.php:1302
+#: includes/admin/term-edit.php:1303
 msgid "Redirects here"
 msgstr "Перенаправляется сюда"
 
-#: includes/admin/term-edit.php:1304
+#: includes/admin/term-edit.php:1305
 msgid "Redirects elsewhere — inclusions not in effect"
 msgstr "Перенаправляется на другой термин — включения не действуют"
 
-#: includes/admin/term-edit.php:1304
+#: includes/admin/term-edit.php:1305
 msgid "Redirects elsewhere"
 msgstr "Перенаправляется на другой термин"
 
-#: includes/admin/term-edit.php:1308 includes/admin/term-edit.php:1814
-#: includes/admin/term-edit.php:1896 includes/admin/term-edit.php:1907
+#: includes/admin/term-edit.php:1309 includes/admin/term-edit.php:1815
+#: includes/admin/term-edit.php:1897 includes/admin/term-edit.php:1908
 #, php-format
 msgid "Remove %s"
 msgstr "Удалить: %s"
 
-#: includes/admin/term-edit.php:1324 includes/admin/term-edit.php:1326
+#: includes/admin/term-edit.php:1325 includes/admin/term-edit.php:1327
 #, php-format
 msgid "Add %s"
 msgstr "Добавить: %s"
 
-#: includes/admin/term-edit.php:1341
+#: includes/admin/term-edit.php:1342
 msgid "via groups:"
 msgstr "через группы:"
 
-#: includes/admin/term-edit.php:1685 includes/admin/term-edit.php:1689
+#: includes/admin/term-edit.php:1686 includes/admin/term-edit.php:1690
 msgid "Term Relationships"
 msgstr "Связи терминов"
 
-#: includes/admin/term-edit.php:1695
+#: includes/admin/term-edit.php:1696
 msgid "Hide indirect and reverse relationships"
 msgstr "Скрыть косвенные и обратные связи"
 
-#: includes/admin/term-edit.php:1707
+#: includes/admin/term-edit.php:1708
 msgid "Containers / Includes"
 msgstr "Контейнеры / Включения"
 
-#: includes/admin/term-edit.php:1731
+#: includes/admin/term-edit.php:1732
 #, php-format
 msgid "Container %s"
 msgstr "Термины-контейнеры (%s)"
 
-#: includes/admin/term-edit.php:1751
+#: includes/admin/term-edit.php:1752
 #, php-format
 msgid "Archives of each of these %1$s will include posts with this %2$s."
 msgstr ""
 "Архивы каждого из этих терминов (%1$s) будут включать записи с этим термином "
 "(%2$s)."
 
-#: includes/admin/term-edit.php:1759
+#: includes/admin/term-edit.php:1760
 #, php-format
 msgid "Included %s"
 msgstr "Включённые термины (%s)"
 
-#: includes/admin/term-edit.php:1780
+#: includes/admin/term-edit.php:1781
 #, php-format
 msgid "This %1$s's archive will include posts with any of these %2$s."
 msgstr ""
 "Архив этого термина (%1$s) будет включать записи с любым из этих терминов "
 "(%2$s)."
 
-#: includes/admin/term-edit.php:1789
+#: includes/admin/term-edit.php:1790
 #, php-format
 msgid "Excluded %s"
 msgstr "Исключённые термины (%s)"
 
-#: includes/admin/term-edit.php:1821 includes/admin/term-edit.php:1823
-#: includes/admin/term-edit.php:1912 includes/admin/term-edit.php:1914
+#: includes/admin/term-edit.php:1822 includes/admin/term-edit.php:1824
+#: includes/admin/term-edit.php:1913 includes/admin/term-edit.php:1915
 msgid "Add term"
 msgstr "Добавить термин"
 
-#: includes/admin/term-edit.php:1832
+#: includes/admin/term-edit.php:1833
 #, php-format
 msgid "Remove specific %s from the included set."
 msgstr "Удалить конкретные термины (%s) из набора включённых."
 
-#: includes/admin/term-edit.php:1834
+#: includes/admin/term-edit.php:1835
 msgid "Also applies to custom inclusion-based relationships."
 msgstr "Также применяется к пользовательским связям на основе включения."
 
-#: includes/admin/term-edit.php:1924
+#: includes/admin/term-edit.php:1925
 msgid ""
 "Arrows show which side added the link. You can remove links from either side "
 "here."
@@ -4140,28 +4136,28 @@ msgstr ""
 "Стрелки показывают, какая сторона добавила связь. Здесь можно удалить связи "
 "с любой стороны."
 
-#: includes/admin/term-edit.php:1995
+#: includes/admin/term-edit.php:1996
 msgid "Insufficient permissions."
 msgstr "Недостаточно прав."
 
-#: includes/admin/term-icons.php:228 includes/admin/term-icons.php:287
+#: includes/admin/term-icons.php:227 includes/admin/term-icons.php:286
 msgid "Term Icon"
 msgstr "Значок термина"
 
-#: includes/admin/term-icons.php:236
+#: includes/admin/term-icons.php:235
 msgid "Term icon"
 msgstr "Значок термина"
 
-#: includes/admin/term-icons.php:247 includes/admin/term-icons.php:1462
+#: includes/admin/term-icons.php:246 includes/admin/term-icons.php:1409
 msgid "Replace Icon"
 msgstr "Заменить значок"
 
-#: includes/admin/term-icons.php:247 includes/admin/term-icons.php:296
-#: includes/admin/term-icons.php:1461
+#: includes/admin/term-icons.php:246 includes/admin/term-icons.php:295
+#: includes/admin/term-icons.php:1408
 msgid "Upload Icon"
 msgstr "Загрузить значок"
 
-#: includes/admin/term-icons.php:261 includes/admin/term-icons.php:309
+#: includes/admin/term-icons.php:260 includes/admin/term-icons.php:308
 #, php-format
 msgid ""
 "Required: %1$d×%2$d px exactly, or larger (you will be prompted to crop). "
@@ -4173,7 +4169,7 @@ msgstr ""
 "размера; если естественные пропорции SVG отличаются от настроек значка, "
 "показывается предупреждение."
 
-#: includes/admin/term-icons.php:603
+#: includes/admin/term-icons.php:602
 msgid ""
 "Invalid file format. Please upload an image file in one of the supported "
 "formats."
@@ -4181,7 +4177,7 @@ msgstr ""
 "Недопустимый формат файла. Пожалуйста, загрузите файл с изображением в одном "
 "из поддерживаемых форматов."
 
-#: includes/admin/term-icons.php:616
+#: includes/admin/term-icons.php:615
 #, php-format
 msgid ""
 "Image must be at least %1$d×%2$d pixels. Please upload an image at least "
@@ -4190,34 +4186,34 @@ msgstr ""
 "Изображение должно быть не менее %1$d×%2$d пикселей. Пожалуйста, загрузите "
 "изображение не меньше этого размера."
 
-#: includes/admin/term-icons.php:988
+#: includes/admin/term-icons.php:935
 msgid "Invalid crop parameters."
 msgstr "Недопустимые параметры обрезки."
 
-#: includes/admin/term-icons.php:992
+#: includes/admin/term-icons.php:939
 msgid "Invalid attachment."
 msgstr "Недопустимое вложение."
 
-#: includes/admin/term-icons.php:998 includes/admin/term-icons.php:1004
-#: includes/admin/term-icons.php:1441
+#: includes/admin/term-icons.php:945 includes/admin/term-icons.php:951
+#: includes/admin/term-icons.php:1388
 msgid "Crop failed. Please try again."
 msgstr "Не удалось обрезать. Попробуйте ещё раз."
 
-#: includes/admin/term-icons.php:1029
+#: includes/admin/term-icons.php:976
 msgid "Could not determine the file format of the cropped image."
 msgstr "Не удалось определить формат файла обрезанного изображения."
 
-#: includes/admin/term-icons.php:1068
+#: includes/admin/term-icons.php:1015
 #: includes/classes/class-search-index.php:1218
 #: includes/classes/class-search-index.php:1286
 msgid "Unauthorized access."
 msgstr "Несанкционированный доступ."
 
-#: includes/admin/term-icons.php:1098
+#: includes/admin/term-icons.php:1045
 msgid "Failed to retrieve terms."
 msgstr "Не удалось получить термины."
 
-#: includes/admin/term-icons.php:1152
+#: includes/admin/term-icons.php:1099
 #, php-format
 msgid "Successfully deleted %d icon."
 msgid_plural "Successfully deleted %d icons."
@@ -4225,15 +4221,15 @@ msgstr[0] "Успешно удалён %d значок."
 msgstr[1] "Успешно удалено %d значка."
 msgstr[2] "Успешно удалено %d значков."
 
-#: includes/admin/term-icons.php:1433
+#: includes/admin/term-icons.php:1380
 msgid "Select Icon"
 msgstr "Выбрать значок"
 
-#: includes/admin/term-icons.php:1434
+#: includes/admin/term-icons.php:1381
 msgid "Use as icon"
 msgstr "Использовать как значок"
 
-#: includes/admin/term-icons.php:1436
+#: includes/admin/term-icons.php:1383
 #, php-format
 msgid ""
 "Remove this icon? The image will remain in the Media Library, but will no "
@@ -4242,15 +4238,15 @@ msgstr ""
 "Удалить этот значок? Изображение останется в медиабиблиотеке, но больше не "
 "будет связано с этим термином (%s)."
 
-#: includes/admin/term-icons.php:1437
+#: includes/admin/term-icons.php:1384
 msgid "Crop Icon"
 msgstr "Обрезать значок"
 
-#: includes/admin/term-icons.php:1438
+#: includes/admin/term-icons.php:1385
 msgid "Crop & use"
 msgstr "Обрезать и использовать"
 
-#: includes/admin/term-icons.php:1444
+#: includes/admin/term-icons.php:1391
 #, php-format
 msgid ""
 "Image is too small. Required minimum: %1$d×%2$d px. Please upload a larger "
@@ -4259,7 +4255,7 @@ msgstr ""
 "Изображение слишком маленькое. Требуемый минимум: %1$d×%2$d px. Пожалуйста, "
 "загрузите изображение большего размера."
 
-#: includes/admin/term-icons.php:1449
+#: includes/admin/term-icons.php:1396
 #, php-format
 msgid ""
 "This SVG's natural size is %1$d×%2$d px, but the icon slot is %3$d×%4$d px — "
@@ -4270,7 +4266,7 @@ msgstr ""
 "px — пропорции различаются. Он может отображаться растянутым или с полями. "
 "Всё равно использовать?"
 
-#: includes/admin/term-icons.php:1452
+#: includes/admin/term-icons.php:1399
 #, php-format
 msgid ""
 "Drag the selection to choose which %1$d×%2$d px region to use. The selection "
@@ -4306,6 +4302,7 @@ msgstr[2] "%d групп терминов"
 msgid "Search..."
 msgstr "Найти…"
 
+#: includes/classes/class-hierarchical-checklist.php:266
 #: includes/classes/class-hierarchical-checklist.php:326
 msgid "No items found."
 msgstr "Ничего не найдено."
@@ -4329,17 +4326,17 @@ msgid "Please enter at least %d characters."
 msgstr "Введите не менее %d символов."
 
 #: includes/classes/class-power-search.php:100
-#: includes/classes/class-search-widget.php:3772
+#: includes/classes/class-search-widget.php:3751
 msgid "Previous"
 msgstr "Предыдущая"
 
 #: includes/classes/class-power-search.php:101
-#: includes/classes/class-search-widget.php:3774
+#: includes/classes/class-search-widget.php:3753
 msgid "Next"
 msgstr "Следующая"
 
 #: includes/classes/class-power-search.php:102
-#: includes/classes/class-search-widget.php:3776
+#: includes/classes/class-search-widget.php:3755
 #: includes/shortcodes/class-post-list.php:922
 #, php-format
 msgid "Page %1$d of %2$d"
@@ -4362,43 +4359,39 @@ msgstr "Введите поисковый запрос…"
 msgid "Type to search..."
 msgstr "Введите текст для поиска…"
 
-#: includes/classes/class-search-widget.php:2166
+#: includes/classes/class-search-widget.php:2139
 msgid "Select..."
 msgstr "Выберите…"
 
-#: includes/classes/class-search-widget.php:2216
+#: includes/classes/class-search-widget.php:2189
 msgid "Show advanced options"
 msgstr "Показать расширенные параметры"
 
-#: includes/classes/class-search-widget.php:2217
+#: includes/classes/class-search-widget.php:2190
 msgid "Hide advanced options"
 msgstr "Скрыть расширенные параметры"
 
-#: includes/classes/class-search-widget.php:2295
+#: includes/classes/class-search-widget.php:2268
 msgid "Search results navigation"
 msgstr "Навигация по результатам поиска"
 
-#: includes/classes/class-search-widget.php:3766
+#: includes/classes/class-search-widget.php:3746
 msgid "No results found"
 msgstr "Результатов не найдено"
 
-#: includes/classes/class-search-widget.php:3767
+#: includes/classes/class-search-widget.php:3747
 msgid "An error occurred"
 msgstr "Произошла ошибка"
 
-#: includes/classes/class-search-widget.php:3768
-msgid "Please enter at least 2 characters"
-msgstr "Введите не менее 2 символов"
-
-#: includes/classes/class-search-widget.php:3770
+#: includes/classes/class-search-widget.php:3749
 msgid "Please enter at least {n} characters."
 msgstr "Введите не менее {n} символов."
 
-#: includes/classes/class-search-widget.php:3777
+#: includes/classes/class-search-widget.php:3756
 msgid "Current Location"
 msgstr "Текущее местоположение"
 
-#: includes/classes/class-search-widget.php:3779
+#: includes/classes/class-search-widget.php:3758
 #, php-format
 msgid "by %s"
 msgstr "автор: %s"
@@ -4486,7 +4479,7 @@ msgstr ""
 msgid "Post not found."
 msgstr "Запись не найдена."
 
-#: includes/core/relationship-types-rest.php:145 includes/core/rest-api.php:470
+#: includes/core/relationship-types-rest.php:145 includes/core/rest-api.php:487
 #: includes/core/term-conversion.php:129
 msgid "Term not found."
 msgstr "Термин не найден."
@@ -4537,77 +4530,77 @@ msgstr "Название «%1$s» уже используется типом «%
 msgid "The inverse label \"%1$s\" is already used by the \"%2$s\" type."
 msgstr "Обратное название «%1$s» уже используется типом «%2$s»."
 
-#: includes/core/relationship-types.php:637
+#: includes/core/relationship-types.php:663
 msgid "Use the dedicated API for this relationship type."
 msgstr "Используйте специальный API для этого типа связи."
 
-#: includes/core/relationship-types.php:642
+#: includes/core/relationship-types.php:668
 msgid "Relationship type not registered."
 msgstr "Тип связи не зарегистрирован."
 
-#: includes/core/relationship-types.php:649
+#: includes/core/relationship-types.php:675
 msgid "Source term ID is invalid."
 msgstr "Недопустимый идентификатор исходного термина."
 
-#: includes/core/relationship-types.php:652
+#: includes/core/relationship-types.php:678
 msgid "Target term ID is invalid."
 msgstr "Недопустимый идентификатор целевого термина."
 
-#: includes/core/relationship-types.php:661
+#: includes/core/relationship-types.php:687
 msgid "A relationship cannot have group terms on both source and target."
 msgstr "Связь не может иметь термины-группы одновременно в источнике и в цели."
 
-#: includes/core/relationship-types.php:666
+#: includes/core/relationship-types.php:692
 msgid "A term cannot include itself."
 msgstr "Термин не может включать сам себя."
 
-#: includes/core/relationship-types.php:671
+#: includes/core/relationship-types.php:697
 msgid "Source term taxonomy is not allowed for this relationship type."
 msgstr "Таксономия исходного термина не разрешена для этого типа связи."
 
-#: includes/core/relationship-types.php:674
+#: includes/core/relationship-types.php:700
 msgid "Target term taxonomy is not allowed for this relationship type."
 msgstr "Таксономия целевого термина не разрешена для этого типа связи."
 
-#: includes/core/relationship-types.php:679
+#: includes/core/relationship-types.php:705
 msgid "Includes-type relationships must connect terms in the same taxonomy."
 msgstr ""
 "Типы связи на основе включения могут соединять только термины из одной и той "
 "же таксономии."
 
-#: includes/core/relationship-types.php:965
+#: includes/core/relationship-types.php:991
 msgid "Member of"
 msgstr "Входит в"
 
-#: includes/core/relationship-types.php:966
+#: includes/core/relationship-types.php:992
 msgid "Contains member"
 msgstr "Содержит"
 
-#: includes/core/relationship-types.php:974
+#: includes/core/relationship-types.php:1000
 msgid "Includes"
 msgstr "Включает"
 
-#: includes/core/relationship-types.php:975
+#: includes/core/relationship-types.php:1001
 msgid "Is included into"
 msgstr "Включается в"
 
-#: includes/core/relationship-types.php:983
+#: includes/core/relationship-types.php:1009
 msgid "Excludes"
 msgstr "Исключает"
 
-#: includes/core/relationship-types.php:984
+#: includes/core/relationship-types.php:1010
 msgid "Is excluded from"
 msgstr "Исключается из"
 
-#: includes/core/relationship-types.php:992
+#: includes/core/relationship-types.php:1018
 msgid "Redirects to"
 msgstr "Перенаправляется на"
 
-#: includes/core/relationship-types.php:993
+#: includes/core/relationship-types.php:1019
 msgid "Target of redirect from"
 msgstr "Является целью перенаправления"
 
-#: includes/core/search.php:969
+#: includes/core/search.php:967
 #, php-format
 msgid "%s result found"
 msgid_plural "%s results found"
@@ -4884,45 +4877,45 @@ msgstr "Не удалось определить term_taxonomy_id целевог
 msgid "Database error during term merge; all changes rolled back."
 msgstr "Ошибка базы данных во время слияния терминов; все изменения отменены."
 
-#: includes/core/term-relationships.php:1355
+#: includes/core/term-relationships.php:1392
 msgid "Security verification failed. Please refresh the page and try again."
 msgstr ""
 "Проверка безопасности не пройдена. Обновите страницу и попробуйте ещё раз."
 
-#: includes/core/term-relationships.php:1393
+#: includes/core/term-relationships.php:1430
 msgid "Manage Term Visibility"
 msgstr "Настройки видимости термина"
 
-#: includes/core/term-relationships.php:1402
+#: includes/core/term-relationships.php:1439
 msgid "Manage Term Icons"
 msgstr "Управление значками терминов"
 
-#: includes/core/term-relationships.php:1437
+#: includes/core/term-relationships.php:1474
 msgid "Manage Term Relationships"
 msgstr "Управление связями терминов"
 
-#: includes/core/term-relationships.php:1449
+#: includes/core/term-relationships.php:1486
 #, php-format
 msgid ""
 "You do not have the required permissions to edit term settings. Missing: %s"
 msgstr ""
 "У вас нет необходимых прав для изменения настроек термина. Отсутствует: %s"
 
-#: includes/core/term-relationships.php:1549
+#: includes/core/term-relationships.php:1586
 msgid "Invalid redirect: cannot redirect to self or empty target."
 msgstr ""
 "Недопустимое перенаправление: нельзя перенаправить на себя или на пустую "
 "цель."
 
-#: includes/core/term-relationships.php:1554
+#: includes/core/term-relationships.php:1591
 msgid "Invalid redirect target."
 msgstr "Недопустимая цель перенаправления."
 
-#: includes/core/term-relationships.php:1594
+#: includes/core/term-relationships.php:1631
 msgid "Redirect saved."
 msgstr "Перенаправление сохранено."
 
-#: includes/core/term-relationships.php:1601
+#: includes/core/term-relationships.php:1638
 #, php-format
 msgid ""
 "Circular redirect resolved: \"%s\" was previously redirecting here, so its "
@@ -4931,7 +4924,7 @@ msgstr ""
 "Циклическое перенаправление устранено: термин «%s» ранее перенаправлялся "
 "сюда, поэтому его перенаправление удалено."
 
-#: includes/core/term-relationships.php:1615
+#: includes/core/term-relationships.php:1652
 #, php-format
 msgid ""
 "\"%1$s\" is itself a redirect, so this term now redirects directly to "
@@ -4940,7 +4933,7 @@ msgstr ""
 "Термин «%1$s» сам является перенаправлением, поэтому этот термин теперь "
 "перенаправляется напрямую на «%2$s»."
 
-#: includes/core/term-relationships.php:1645
+#: includes/core/term-relationships.php:1682
 #, php-format
 msgid "1 other redirect updated: \"%1$s\" now redirects directly to \"%2$s\"."
 msgid_plural ""
@@ -4955,31 +4948,31 @@ msgstr[2] ""
 "Обновлено ещё %3$d перенаправлений: «%1$s» теперь перенаправляются напрямую "
 "на «%2$s»."
 
-#: includes/core/term-relationships.php:1659
+#: includes/core/term-relationships.php:1696
 msgid "Failed to save redirect. Check for circular redirects."
 msgstr ""
 "Не удалось сохранить перенаправление. Проверьте наличие циклических "
 "перенаправлений."
 
-#: includes/core/term-relationships.php:1673
+#: includes/core/term-relationships.php:1710
 msgid "Redirect removed successfully."
 msgstr "Перенаправление успешно удалено."
 
-#: includes/core/term-relationships.php:1743
+#: includes/core/term-relationships.php:1780
 #, php-format
 msgid "Some %s groups were not added: %s"
 msgstr "Некоторые группы (%s) не добавлены: %s"
 
-#: includes/core/term-relationships.php:2235
+#: includes/core/term-relationships.php:2272
 msgid "Term relationships saved successfully."
 msgstr "Связи терминов успешно сохранены."
 
-#: includes/core/term-relationships.php:2385
+#: includes/core/term-relationships.php:2422
 #, php-format
 msgid "Database error saving relationships for term #%d: %s"
 msgstr "Ошибка базы данных при сохранении связей для термина #%d: %s"
 
-#: includes/core/term-relationships.php:3028
+#: includes/core/term-relationships.php:3065
 #, php-format
 msgid ""
 "HyperTaxonomy: Cleaned up conflicting relationships for term #%d due to "
@@ -5006,45 +4999,45 @@ msgstr ""
 msgid "the comparison guide"
 msgstr "comparison guide"
 
-#: includes/integrations/class-atcf-integration.php:142
+#: includes/integrations/class-atcf-integration.php:163
 msgid ""
 "The distance filter field requires the As the Crow Flies plugin to be active."
 msgstr ""
 "Поле фильтра по расстоянию требует активного плагина As the Crow Flies."
 
-#: includes/integrations/class-atcf-integration.php:202
+#: includes/integrations/class-atcf-integration.php:223
 msgid "Within"
 msgstr "В пределах"
 
-#: includes/integrations/class-atcf-integration.php:206
+#: includes/integrations/class-atcf-integration.php:227
 msgid "Search radius"
 msgstr "Радиус поиска"
 
-#: includes/integrations/class-atcf-integration.php:211
+#: includes/integrations/class-atcf-integration.php:232
 #, php-format
 msgid "%1$d %2$s"
 msgstr "%1$d %2$s"
 
-#: includes/integrations/class-atcf-integration.php:218
+#: includes/integrations/class-atcf-integration.php:239
 msgid "of"
 msgstr "от"
 
-#: includes/integrations/class-atcf-integration.php:226
+#: includes/integrations/class-atcf-integration.php:247
 msgid "Postal code"
 msgstr "Почтовый индекс"
 
-#: includes/integrations/class-atcf-integration.php:227
+#: includes/integrations/class-atcf-integration.php:248
 msgid "Enter postal code"
 msgstr "Введите почтовый индекс"
 
-#: includes/integrations/class-atcf-integration.php:232
-#: includes/integrations/class-atcf-integration.php:233
-#: includes/integrations/class-atcf-integration.php:243
-#: includes/integrations/class-atcf-integration.php:244
+#: includes/integrations/class-atcf-integration.php:253
+#: includes/integrations/class-atcf-integration.php:254
+#: includes/integrations/class-atcf-integration.php:264
+#: includes/integrations/class-atcf-integration.php:265
 msgid "Share current location"
 msgstr "Поделиться текущим местоположением"
 
-#: includes/integrations/class-atcf-integration.php:700
+#: includes/integrations/class-atcf-integration.php:721
 msgid ""
 "We couldn't determine your location, so the results aren't filtered by "
 "distance from you."
@@ -5052,7 +5045,7 @@ msgstr ""
 "Не удалось определить ваше местоположение, поэтому результаты не "
 "отфильтрованы по расстоянию от вас."
 
-#: includes/integrations/class-atcf-integration.php:707
+#: includes/integrations/class-atcf-integration.php:728
 #, php-format
 msgid ""
 "No location found for \"%s\", so the results aren't filtered by distance "
@@ -5061,7 +5054,7 @@ msgstr ""
 "Местоположение «%s» не найдено, поэтому результаты не отфильтрованы по "
 "расстоянию от него."
 
-#: includes/integrations/class-atcf-integration.php:726
+#: includes/integrations/class-atcf-integration.php:747
 msgid ""
 "We couldn't determine your location, so the results are near the default "
 "location instead."
@@ -5087,33 +5080,33 @@ msgid "HyperTaxonomy's own merge tool"
 msgstr "встроенную функцию слияния терминов HyperTaxonomy"
 
 #: includes/shortcodes/class-filter-options.php:162
-#: includes/shortcodes/class-filter-options.php:1105
+#: includes/shortcodes/class-filter-options.php:1055
 #: includes/shortcodes/class-sort-order.php:40
 #: blocks/ht-sort-order-options/src/index.js:19
 msgid "Modified"
 msgstr "Дата изменения"
 
 #: includes/shortcodes/class-filter-options.php:215
-#: includes/shortcodes/class-filter-options.php:1172
-#: includes/shortcodes/class-filter-options.php:1173
+#: includes/shortcodes/class-filter-options.php:1122
+#: includes/shortcodes/class-filter-options.php:1123
 msgid "Filter"
 msgstr "Фильтровать"
 
-#: includes/shortcodes/class-filter-options.php:1202
+#: includes/shortcodes/class-filter-options.php:1152
 msgid "Clear filters"
 msgstr "Очистить фильтры"
 
-#: includes/shortcodes/class-filter-options.php:1331
-#: includes/shortcodes/class-filter-options.php:1332
+#: includes/shortcodes/class-filter-options.php:1281
+#: includes/shortcodes/class-filter-options.php:1282
 msgid "From"
 msgstr "От"
 
-#: includes/shortcodes/class-filter-options.php:1333
+#: includes/shortcodes/class-filter-options.php:1283
 msgid "–"
 msgstr "–"
 
-#: includes/shortcodes/class-filter-options.php:1336
-#: includes/shortcodes/class-filter-options.php:1337
+#: includes/shortcodes/class-filter-options.php:1286
+#: includes/shortcodes/class-filter-options.php:1287
 msgid "To"
 msgstr "До"
 
@@ -5153,11 +5146,11 @@ msgstr "ID"
 msgid "Add sort field"
 msgstr "Добавить поле сортировки"
 
-#: includes/shortcodes/class-term-groups.php:67
+#: includes/shortcodes/class-term-groups.php:74
 msgid "The Term Groups taxonomy is not registered."
 msgstr "Таксономия групп терминов не зарегистрирована."
 
-#: includes/shortcodes/class-term-groups.php:80
+#: includes/shortcodes/class-term-groups.php:87
 msgid "No valid taxonomies specified."
 msgstr "Не указано ни одной допустимой таксономии."
 

@@ -3523,7 +3523,6 @@ if ( function_exists( 'htax_the_archive_icon' ) ) {
                 'deleteAllIconsNonce'     => wp_create_nonce( 'htax-delete-all-icons' ),
                 'confirmDeleteAllIcons'   => __( 'Are you sure you want to delete all icons for %s? This action cannot be undone.', 'hypertaxonomy' ),
                 'deletingIcons'           => __( 'Deleting icons...', 'hypertaxonomy' ),
-                'iconsDeletedSuccess'     => __( 'Icons deleted successfully!', 'hypertaxonomy' ),
                 'iconsDeleteError'        => __( 'Error deleting icons. Please try again.', 'hypertaxonomy' ),
                 'confirmResetWeights'     => __( 'Are you sure you want to reset all relevance weights to their default values?', 'hypertaxonomy' ),
                 'weightsResetSuccess'     => __( 'Relevance weights have been reset to default values.', 'hypertaxonomy' ),

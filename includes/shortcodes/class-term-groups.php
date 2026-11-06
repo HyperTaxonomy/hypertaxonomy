@@ -54,6 +54,10 @@ class HyperTaxonomy_Term_Groups extends HyperTaxonomy_Shortcode_Base {
     public function shortcode_handler( $atts ) {
         $transient_batch = new HyperTaxonomy_Transient_Batch();
 
+        // One instance serves every use of this shortcode on a page, and each starts fresh.
+        $this->processed_terms   = array();
+        $this->group_terms_cache = array();
+
         // Enqueue styles
         $this->enqueue_styles();
 

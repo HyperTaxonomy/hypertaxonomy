@@ -10,7 +10,7 @@ heading_anchors: true
 color_scheme: light
 aux_links:
   "GitHub": ["https://github.com/HyperTaxonomy/hypertaxonomy"]
-  "HyperTaxonomy suite": ["https://hypertaxonomy.org"]
+  "HyperTaxonomy Suite": ["https://hypertaxonomy.org"]
 aux_links_new_tab: true
 # Local QA docs (gitignored); also excluded from the docs site build.
 exclude:

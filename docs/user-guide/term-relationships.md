@@ -4,7 +4,7 @@ parent: User Guide
 nav_order: 3
 ---
 
-## Term Relationships
+# Term Relationships
 
 All relationship configuration is done on individual term edit screens — edit any tag, category, or custom taxonomy term and scroll to the HyperTaxonomy section. HyperTaxonomy also adds a top-level **Terms** menu to the admin sidebar containing **Term Groups**, **Merge Terms**, **Convert Terms**, and **Term Relationship Types**. When TermConnect is active, **Peer Sites** also appears in this menu (managed by TermConnect).
 
@@ -12,7 +12,7 @@ Term edit screens are protected against simultaneous editing: if another admin a
 
 If you navigate away from a term edit screen with unsaved changes, the browser shows a confirmation prompt before leaving the page.
 
-### Term Groups
+## Term Groups
 
 **Creating groups:**
 
@@ -48,14 +48,14 @@ When *Enable Term Group visibility options* is turned on in **Settings > HyperTa
 
 - Returns a **404** to unauthorized users who visit the group's archive URL directly.
 - **Excludes** the group from WordPress REST API group listings and XML sitemaps.
-- **Cascades automatically** to all child groups — subgroups are hidden without requiring individual edits. Making a parent visible does not automatically un-hide its children; each must be made visible separately.
+- **Cascades automatically** to all child groups — subgroups are hidden without requiring individual edits. When you make a parent visible, its children stay hidden unless you confirm making them visible too. A child can't be made visible while its parent is hidden.
 - **Does not affect archive expansion.** Posts continue to appear in term archives that include or use the group for expansion. Group membership behavior is shared across all users; only the group's own archive page is gated.
 
-The hidden terms role threshold (**Settings > HyperTaxonomy > Display > Hidden Terms**) controls which roles can still see hidden group archives.
+**Settings > HyperTaxonomy > Display > Hidden Terms** controls who can still see hidden group archives: no one, users who can edit posts, or everyone.
 
 ---
 
-### Term Relationships
+## Relationship Types and Term Fields
 
 **Built-in and custom relationship types** are listed at **Terms > Term Relationship Types**. The built-in table shows the four core types (includes, excludes, redirect, member_of) and their properties. Below it, user-defined types are listed with an **Edit / Delete** link for each.
 
@@ -66,7 +66,7 @@ The hidden terms role threshold (**Settings > HyperTaxonomy > Display > Hidden T
 
 Neither kind can be converted to the other after creation. The slug is also locked after first save and cannot be edited.
 
-**Label uniqueness.** Every type — built-in and custom — must have a unique label and inverse label. The four built-in labels are: *Includes*, *Is included into*, *Excludes*, *Is excluded from*, *Redirects to*, *Target of redirect from*, *Member of*, *Contains member*. Attempting to save a custom type whose label or inverse label matches any of these (or any other existing custom type's labels) will produce a validation error.
+**Label uniqueness.** Every type — built-in and custom — must have a unique label and inverse label. The labels and inverse labels of the four built-in types are: *Includes* / *Is included into*, *Excludes* / *Is excluded from*, *Redirects to* / *Target of redirect from*, and *Member of* / *Contains member*. Attempting to save a custom type whose label or inverse label matches any of these (or any other existing custom type's labels) will produce a validation error.
 
 **Groups and custom types.** Term Groups can be used on either side of inclusion-based custom relationships, just like the built-in Includes type. Storage-only custom types do not support groups, because group expansion is tied to archive query behavior which storage-only types do not implement.
 
@@ -97,6 +97,7 @@ The built-in panels appear in this order: **Container Tags** → **Included Tags
 | Gray | Directly included terms |
 | Light-blue/gray gradient | Direct terms that are also members of included groups |
 | Light-green/gray gradient | Direct terms that are also pulled in via container groups |
+| Light-blue/light-green gradient | Direct terms that are also reachable via both group paths |
 
 *Includes panel — non-removable pills (indirect):*
 
@@ -116,6 +117,7 @@ The built-in panels appear in this order: **Container Tags** → **Included Tags
 | Green | Container groups |
 | Light-green/gray gradient | Direct containers also in this term's container groups |
 | Light-blue/gray gradient | Direct containers that also include a group this term is a member of |
+| Light-blue/light-green gradient | Direct containers that are also reachable via both group paths |
 
 *Containers panel — non-removable pills (indirect):*
 
@@ -147,76 +149,76 @@ The built-in panels appear in this order: **Container Tags** → **Included Tags
 
 Group name links open that group's edit page with context. `→ via:` links follow a membership path (the pill's term is a member of the linked group or one of its subgroups); `← via:` links follow an includes path (the linked group includes the pill's term, or the pill's term includes the linked group). On the group edit page, if the association is direct the relevant pill is highlighted with a blue border. If it is indirect — the term is in a subgroup, a parent group, or an ancestor group — a context panel just above **Group Members** names each intermediate group as a further link so you can navigate to where the relationship is defined.
 
-#### Direct Inclusions
+### Direct Inclusions
 
 Posts assigned to the **included term** appear in this term's archive.
 
-**To add an included term:** Use the **Included Terms** autocomplete field. Type to search, select a term, save.
+**To add an included term:** Use the **Included** autocomplete field, which is named for the taxonomy (for example, **Included Tags**). Type to search, select a term, save.
 
 **Constraints:**
 - Inclusions are direct only, never recursive. If A includes B and B includes C, A does **not** include C.
-- Terms from different flat taxonomies cannot directly include each other (cross-taxonomy is only supported for redirects and group memberships).
-- Terms from hierarchical taxonomies cannot include their ancestors (parent, grandparent) — WordPress hierarchy already handles that direction; including ancestors would create infinite loops in queries.
+- Terms from different taxonomies cannot directly include each other (cross-taxonomy is only supported for redirects and group memberships).
+- Terms from hierarchical taxonomies cannot include their ancestors or descendants, which keeps inclusions cross-branch. Descendants' posts already appear through the WordPress hierarchy, and including an ancestor would expand the archive far beyond its intended scope.
 
-#### Containers
+### Containers
 
 A **container** is the inverse view of an inclusion. When term B lists term A as a container, B's posts appear in A's archive — exactly the same as A including B, just configured from the other direction.
 
 Both directions produce identical results. Use whichever is more natural for your workflow:
-- "What terms should appear in my archive?" → use Included Terms
-- "Which archives should my posts appear in?" → use Container Terms
+- "What terms should appear in my archive?" → use the **Included** field
+- "Which archives should my posts appear in?" → use the **Container** field
 
-#### Synonyms
+### Synonyms
 
 When two terms include each other (A includes B **and** B includes A), they become synonyms. Posts from either term appear in both archives. Synonyms are marked with the ⇆ icon on their pills in the admin interface.
 
-**To create a synonym:** Add Term B to Term A's Included Terms, and Term A to Term B's Included Terms, then save each term.
+**To create a synonym:** Add Term B to Term A's **Included** field, and Term A to Term B's **Included** field, then save each term.
 
 Circular inclusion (A includes B, B includes A) is explicitly supported and useful. It differs from circular redirects, which are prevented.
 
-#### Group Inclusions
+### Group Inclusions
 
-Instead of including individual terms one by one, include an entire Term Group. All current and future members of that group are automatically included — no manual maintenance as the group grows.
+Instead of including individual terms one by one, include an entire Term Group. All current and future members of that group from the term's own taxonomy are automatically included — no manual maintenance as the group grows.
 
-**To add a group inclusion:** Use the **Included Groups** field on the term edit screen. Select one or more Term Groups.
+**To add a group inclusion:** Search for the group in the **Included** field on the term edit screen, which accepts both terms and groups.
 
 **Example:** "Emergency Conditions" includes group "Chest Pain Causes". When a new condition is added to that group, it automatically appears in Emergency Conditions archives.
 
 Groups are hierarchical: including a parent group includes all terms from that group and all its descendant groups.
 
-#### Container Groups
+### Container Groups
 
-The reverse of group inclusions. A term specifies which Term Groups it belongs to as a **container** — meaning this term's posts appear in the archives of every term that is a member of those groups.
+The reverse of group inclusions. A term specifies Term Groups as its **containers**, so its posts appear in the archives of the members of those groups that belong to the same taxonomy.
 
-**To add a container group:** Use the **Container Groups** field. When this term is added to a container group, its posts flow into the archive of every term that is a member of that group.
+**To add a container group:** Search for the group in the **Container** field on the term edit screen, which accepts both terms and groups.
 
-**Example:** "Pneumonia" has container groups "Chest Pain Causes" and "Fever Causes". Any term whose archive includes those groups will automatically show Pneumonia posts.
+**Example:** "Pneumonia" has container groups "Chest Pain Causes" and "Fever Causes". The archive of every term in those groups shows Pneumonia posts.
 
 Container group terms appear with a green background in the admin interface, and the terms included as a result (via container groups) appear in light-green and cannot be removed individually — remove them by changing the term's container group membership instead.
 
-#### Path count badge
+### Path count badge
 
 Direct includes (editable, with × button) are listed first, sorted A–Z. Indirect includes (via groups, read-only) follow under a **via groups:** label, also sorted A–Z.
 
 When a term is reachable via more than one path (directly included, via one or more included groups, and/or via container groups), a small **N** badge (white circle) appears on its pill. Hover anywhere on the pill to see a tooltip listing the exact paths:
 
-- **→ via: Group A, Group B** — groups through which this term is included (from the Included Groups field)
+- **→ via: Group A, Group B** — groups through which this term is included (from the groups in the **Included** field)
 - **← via: Group C** — groups through which a reverse container-group path brings this term in
 
 A term with no badge has exactly one path. Remove or change group memberships to reduce path count.
 
-#### Hiding indirect and reverse relationships
+### Hiding indirect and reverse relationships
 
-When a term belongs to large groups, the non-removable indirect pills can become unwieldy. A **Hide indirect and reverse relationships** toggle (eye icon, 👁) appears in the Included Terms and Container Terms field headers whenever group-based indirect terms are present for that specific term. Click it to switch between the two views.
+When a term belongs to large groups, the non-removable indirect pills can become unwieldy. A **Hide indirect and reverse relationships** button (eye icon) appears next to the **Term Relationships** label whenever the term has indirect pills. It applies across all relationship tabs:
 
-- **Unchecked (default):** all indirect group-expanded pills are shown individually (current full view).
-- **Checked:** individual indirect pills are hidden; each sourcing group is shown as a compact group-name pill instead — making it clear which groups are the source without listing every member term.
+- **Off (default):** all indirect pills are shown individually.
+- **On:** individual indirect pills are hidden. Group pills stay visible, so it's still clear which groups are the source without listing every member term.
 
 The state is saved per-term so terms with large groups can be collapsed while others stay expanded. The preference persists across page loads in the browser (stored locally; not tied to your account).
 
-#### Exclusions
+### Exclusions
 
-Exclusions remove specific terms or groups from the included set without affecting native WordPress parent/child relationships.
+Exclusions remove specific terms from the included set without affecting native WordPress parent/child relationships.
 
 **Processing order (applied to term archives):**
 
@@ -245,11 +247,11 @@ Exclusions never affect native WordPress parent/child hierarchy. A child categor
 - **Direct includes** that are also excluded are shown with strikethrough text and reduced opacity. The × button remains active so the redundant direct include can be removed. The exclusion wins at runtime regardless.
 - **Indirect includes** (added via groups) that are excluded are suppressed entirely from the includes panel — they are not in the archive and showing them would be misleading. The group pill itself is unaffected; remove the exclusion to restore the indirect pill.
 
-**To add exclusions:** Use the **Exclude Terms** field on the term edit screen.
+**To add exclusions:** Use the **Excluded** field on the term edit screen, which is named for the taxonomy (for example, **Excluded Tags**).
 
 > **Note for display shortcodes:** The `[ht_term_list]`, `[ht_term_cloud]`, `[ht_term_groups]`, and `[ht_term_index]` shortcodes have their own `exclude_groups` attribute that removes group members from the displayed term list. This is a shortcode display filter, separate from the term archive processing described above.
 
-#### Redirects
+### Redirects
 
 Set a 301 redirect from this term to another term. Visitors going to this term's archive URL are redirected to the target term's archive.
 
@@ -267,11 +269,8 @@ Set a 301 redirect from this term to another term. Visitors going to this term's
 - Circular inclusion (A includes B, B includes A) = valid synonyms
 - Circular redirects (A→B→A) = invalid, automatically resolved
 
-**To set a redirect:** Use the **Redirect To** field on the term edit screen. Select the target term and taxonomy.
+**To set a redirect:** On the term edit screen, check **Redirect this tag to another term** (named for the taxonomy), choose the target taxonomy, then choose the target term.
 
-**Relationships while redirecting:** All relationships set on a redirect term — inclusions, exclusions, external links (Wikidata etc.), sticky posts, and custom relationship types — are preserved in the database but have no effect on archives, search results, or `[ht_post_list]` while the redirect is active. The redirect term has no accessible archive of its own, so there is nothing to expand into. The inclusions section is not shown in the term edit screen while a redirect is active; it reappears when the redirect is removed.
+**Relationships while redirecting:** All relationships set on a redirect term — inclusions, exclusions, external links (Wikidata etc., when TermConnect is active), sticky posts, and custom relationship types — are preserved in the database but have no effect on archives, search results, or `[ht_post_list]` while the redirect is active. The redirect term has no accessible archive of its own, so there is nothing to expand into. The inclusions section is not shown in the term edit screen while a redirect is active; it reappears when the redirect is removed.
 
 For hierarchical taxonomies (categories and hierarchical custom taxonomies), posts assigned to descendants of a redirect term are also suspended from matching searches for that term or any of its ancestors, because the path runs through the redirect. This too is restored automatically when the redirect is removed.
-
----
-

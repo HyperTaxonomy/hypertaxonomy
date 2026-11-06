@@ -393,7 +393,7 @@ function htax_enqueue_post_editor_assets( $hook ) {
     // Whether to show the pins is a per-user preference (core/preferences htax/post-edit).
     // Users without manage_term_sticky_posts get no pins: the REST write path ignores
     // their sticky changes, so showing the pins would offer edits that never save.
-    if ( $is_block_editor && HyperTaxonomy_Capabilities::current_user_can( 'manage_term_sticky_posts' ) ) {
+    if ( $is_block_editor && current_user_can( 'manage_term_sticky_posts' ) ) {
         $sticky_config = array();
         $tax_objects   = get_object_taxonomies( $screen->post_type, 'objects' );
         foreach ( $tax_objects as $tax_obj ) {
@@ -518,7 +518,7 @@ function htax_rest_update_sticky_terms( $value, $post ) {
     if ( ! current_user_can( 'edit_post', $post->ID ) ) {
         return;
     }
-    if ( ! HyperTaxonomy_Capabilities::current_user_can( 'manage_term_sticky_posts' ) ) {
+    if ( ! current_user_can( 'manage_term_sticky_posts' ) ) {
         return;
     }
     if ( ! is_array( $value ) && ! is_object( $value ) ) {

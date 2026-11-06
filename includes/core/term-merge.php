@@ -47,7 +47,7 @@ function htax_merge_terms( array $source_ids, int $target_id, string $taxonomy, 
     // 1. Validate
     // ----------------------------------------------------------------
 
-    if ( ! HyperTaxonomy_Capabilities::current_user_can( 'manage_term_relationships' ) ) {
+    if ( ! current_user_can( 'manage_term_relationships' ) ) {
         return new WP_Error( 'htax_permission_denied', __( 'You do not have permission to merge terms.', 'hypertaxonomy' ) );
     }
 

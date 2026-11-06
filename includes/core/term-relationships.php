@@ -1389,7 +1389,7 @@ function htax_save_term_data( $term_id, $tt_id = 0 ) {
                        isset( $_POST['htax_max_sticky_posts'] );
 
     if ( ( $visibility_enabled && $has_visibility_data ) || $has_archive_data ) {
-        if ( ! HyperTaxonomy_Capabilities::current_user_can( 'manage_term_visibility' ) ) {
+        if ( ! current_user_can( 'manage_term_visibility' ) ) {
             $missing_caps[] = __( 'Manage Term Visibility', 'hypertaxonomy' );
         }
     }
@@ -1398,7 +1398,7 @@ function htax_save_term_data( $term_id, $tt_id = 0 ) {
     $icons_enabled = isset( $features['icons'] ) && $features['icons'];
     $has_icon_data = isset( $_POST['htax_icon_id'] );
 
-    if ( $icons_enabled && $has_icon_data && ! HyperTaxonomy_Capabilities::current_user_can( 'manage_term_icons' ) ) {
+    if ( $icons_enabled && $has_icon_data && ! current_user_can( 'manage_term_icons' ) ) {
         $missing_caps[] = __( 'Manage Term Icons', 'hypertaxonomy' );
     }
 
@@ -1433,7 +1433,7 @@ function htax_save_term_data( $term_id, $tt_id = 0 ) {
     $needs_relationship_permission = ( $redirects_enabled && $has_redirect_data ) ||
                                      ( $term_relationships_enabled && ( $has_inclusion_data || $has_group_data || $has_custom_rel_data ) );
 
-    if ( $needs_relationship_permission && ! HyperTaxonomy_Capabilities::current_user_can( 'manage_term_relationships' ) ) {
+    if ( $needs_relationship_permission && ! current_user_can( 'manage_term_relationships' ) ) {
         $missing_caps[] = __( 'Manage Term Relationships', 'hypertaxonomy' );
     }
 

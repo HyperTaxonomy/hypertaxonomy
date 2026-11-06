@@ -35,7 +35,7 @@ function htax_is_term_hidden( $term_id ) {
  */
 function htax_can_see_hidden_terms( $taxonomy = '' ) {
     // Explicit capability always grants access.
-    if ( HyperTaxonomy_Capabilities::current_user_can( 'manage_term_visibility' ) ) {
+    if ( current_user_can( 'manage_term_visibility' ) ) {
         return true;
     }
 

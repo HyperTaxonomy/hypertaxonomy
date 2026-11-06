@@ -157,7 +157,7 @@ function htax_ajax_get_group_terms() {
         return;
     }
 
-    if ( ! HyperTaxonomy_Capabilities::current_user_can( 'manage_term_relationships' ) ) {
+    if ( ! current_user_can( 'manage_term_relationships' ) ) {
         wp_send_json_error( 'Insufficient permissions' );
         return;
     }
@@ -370,7 +370,7 @@ function htax_ajax_search_terms() {
         return;
     }
 
-    if ( ! HyperTaxonomy_Capabilities::current_user_can( 'manage_term_relationships' ) ) {
+    if ( ! current_user_can( 'manage_term_relationships' ) ) {
         wp_send_json_error( 'Insufficient permissions' );
         return;
     }
@@ -574,7 +574,7 @@ function htax_ajax_search_groups() {
         return;
     }
 
-    if ( ! HyperTaxonomy_Capabilities::current_user_can( 'manage_term_relationships' ) ) {
+    if ( ! current_user_can( 'manage_term_relationships' ) ) {
         wp_send_json_error( 'Insufficient permissions' );
         return;
     }
@@ -940,7 +940,7 @@ add_action( 'wp_ajax_htax_import', 'htax_ajax_import' );
 function htax_ajax_count_hidden_descendants() {
     check_ajax_referer( 'htax-visibility', 'nonce' );
 
-    if ( ! HyperTaxonomy_Capabilities::current_user_can( 'manage_term_visibility' ) ) {
+    if ( ! current_user_can( 'manage_term_visibility' ) ) {
         wp_send_json_error( array( 'message' => __( 'Unauthorized.', 'hypertaxonomy' ) ), 403 );
     }
 
@@ -984,7 +984,7 @@ function htax_ajax_clear_strength_model() {
         wp_send_json_error( array( 'message' => __( 'Security check failed.', 'hypertaxonomy' ) ) );
         return;
     }
-    if ( ! HyperTaxonomy_Capabilities::current_user_can( 'manage_hypertaxonomy_settings' ) ) {
+    if ( ! current_user_can( 'manage_hypertaxonomy_settings' ) ) {
         wp_send_json_error( array( 'message' => __( 'You do not have permission to perform this action.', 'hypertaxonomy' ) ) );
         return;
     }

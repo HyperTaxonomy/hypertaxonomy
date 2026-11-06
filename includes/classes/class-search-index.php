@@ -1214,7 +1214,7 @@ class HyperTaxonomy_Search_Index_Manager {
             return;
         }
 
-        if ( ! HyperTaxonomy_Capabilities::current_user_can( 'manage_hypertaxonomy_settings' ) ) {
+        if ( ! current_user_can( 'manage_hypertaxonomy_settings' ) ) {
             wp_send_json_error( array( 'message' => __( 'Unauthorized access.', 'hypertaxonomy' ) ) );
             return;
         }
@@ -1282,7 +1282,7 @@ class HyperTaxonomy_Search_Index_Manager {
     public function ajax_bulk_rebuild() {
         check_ajax_referer( 'htax-rebuild-index', 'nonce' );
 
-        if (!HyperTaxonomy_Capabilities::current_user_can('manage_hypertaxonomy_settings')) {
+        if (!current_user_can('manage_hypertaxonomy_settings')) {
             wp_die( __( 'Unauthorized access.', 'hypertaxonomy' ), 403 );
         }
 

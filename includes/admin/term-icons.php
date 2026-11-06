@@ -972,7 +972,7 @@ class HyperTaxonomy_Term_Icons {
     public function ajax_crop_term_icon() {
         check_ajax_referer( 'htax_crop_term_icon', 'nonce' );
 
-        if ( ! HyperTaxonomy_Capabilities::current_user_can( 'manage_term_icons' ) ) {
+        if ( ! current_user_can( 'manage_term_icons' ) ) {
             wp_send_json_error( array( 'message' => __( 'Permission denied.', 'hypertaxonomy' ) ) );
         }
 
@@ -1064,7 +1064,7 @@ class HyperTaxonomy_Term_Icons {
         }
 
         // Check capabilities
-        if ( ! HyperTaxonomy_Capabilities::current_user_can( 'manage_hypertaxonomy_settings' ) ) {
+        if ( ! current_user_can( 'manage_hypertaxonomy_settings' ) ) {
             wp_send_json_error( array( 'message' => __( 'Unauthorized access.', 'hypertaxonomy' ) ) );
             return;
         }

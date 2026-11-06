@@ -1021,7 +1021,7 @@ function htax_add_group_custom_relationships_field( WP_Term $term ): void {
         return;
     }
 
-    if ( ! HyperTaxonomy_Capabilities::current_user_can( 'manage_term_relationships' ) ) {
+    if ( ! current_user_can( 'manage_term_relationships' ) ) {
         return;
     }
 
@@ -1290,7 +1290,7 @@ add_action( 'group_edit_form_fields', 'htax_group_context_panel', 15 );
  * @param int $term_id Group term ID.
  */
 function htax_save_group_custom_type_relationships( int $term_id ): void {
-    if ( ! HyperTaxonomy_Capabilities::current_user_can( 'manage_term_relationships' ) ) {
+    if ( ! current_user_can( 'manage_term_relationships' ) ) {
         return;
     }
 

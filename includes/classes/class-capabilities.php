@@ -72,13 +72,6 @@ class HyperTaxonomy_Capabilities {
             }
         }
     }
-
-    /**
-     * Check if current user has a specific HyperTaxonomy capability
-     */
-    public static function current_user_can( $capability ) {
-        return current_user_can( $capability );
-    }
 }
 
 // Initialize

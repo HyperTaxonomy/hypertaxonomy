@@ -1567,7 +1567,7 @@ function htax_add_inclusions_tabs_field( $term_or_taxonomy ): void {
         return;
     }
 
-    if ( ! HyperTaxonomy_Capabilities::current_user_can( 'manage_term_relationships' ) ) {
+    if ( ! current_user_can( 'manage_term_relationships' ) ) {
         return;
     }
 
@@ -1992,7 +1992,7 @@ function htax_handle_add_custom_relationship_from_form(): void {
 
     check_admin_referer( 'htax_add_custom_relationship_' . $source_id );
 
-    if ( ! HyperTaxonomy_Capabilities::current_user_can( 'manage_term_relationships' ) ) {
+    if ( ! current_user_can( 'manage_term_relationships' ) ) {
         wp_die( esc_html__( 'Insufficient permissions.', 'hypertaxonomy' ) );
     }
 

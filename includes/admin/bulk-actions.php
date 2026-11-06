@@ -79,7 +79,7 @@ function htax_handle_bulk_actions( $redirect_to, $action, $term_ids ) {
             case 'htax_make_hidden':
                 // Check manage_term_visibility capability
                 if ( htax_taxonomy_has_feature( $taxonomy, 'visibility' ) &&
-                     HyperTaxonomy_Capabilities::current_user_can( 'manage_term_visibility' ) ) {
+                     current_user_can( 'manage_term_visibility' ) ) {
                     $is_hidden = '1' === get_term_meta( $term_id, '_htax_is_hidden', true );
                     if ( 'htax_make_visible' === $action && $is_hidden ) {
                         // Skip silently if any ancestor is still hidden at processing time.
@@ -126,7 +126,7 @@ function htax_handle_bulk_actions( $redirect_to, $action, $term_ids ) {
             case 'htax_remove_icon':
                 // Check manage_term_icons capability
                 if ( htax_taxonomy_has_feature( $taxonomy, 'icons' ) &&
-                     HyperTaxonomy_Capabilities::current_user_can( 'manage_term_icons' ) ) {
+                     current_user_can( 'manage_term_icons' ) ) {
                     $icon_id = get_term_meta( $term_id, '_htax_icon_id', true );
                     if ( $icon_id ) {
                         $other_users = get_terms( array(
@@ -265,7 +265,7 @@ function htax_ajax_bulk_assign_groups() {
         return;
     }
 
-    if ( ! HyperTaxonomy_Capabilities::current_user_can( 'manage_term_relationships' ) ) {
+    if ( ! current_user_can( 'manage_term_relationships' ) ) {
         wp_send_json_error( array( 'message' => __( 'You do not have permission to manage term relationships.', 'hypertaxonomy' ) ) );
         return;
     }

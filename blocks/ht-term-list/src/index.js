@@ -44,7 +44,7 @@ function DisplayPanel( { attributes, setAttributes } ) {
 				__nextHasNoMarginBottom
 			/>
 			<TextControl
-				label={ __( 'Max depth (-1 = global setting, 0 = unlimited)', 'hypertaxonomy' ) }
+				label={ __( 'Max depth (-1 = global setting, 0 = top level only)', 'hypertaxonomy' ) }
 				type="number"
 				value={ max_depth }
 				onChange={ ( val ) => setAttributes( { max_depth: val } ) }

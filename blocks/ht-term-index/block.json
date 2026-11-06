@@ -62,10 +62,6 @@
             "type": "string",
             "default": "true"
         },
-        "empty_message": {
-            "type": "string",
-            "default": ""
-        },
         "format": {
             "type": "string",
             "default": "ul"

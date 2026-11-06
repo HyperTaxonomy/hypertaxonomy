@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-05 23:46-0500\n"
+"POT-Creation-Date: 2026-11-05 23:56-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -4525,11 +4525,11 @@ msgstr ""
 msgid "Add sort field"
 msgstr ""
 
-#: includes/shortcodes/class-term-groups.php:63
+#: includes/shortcodes/class-term-groups.php:67
 msgid "The Term Groups taxonomy is not registered."
 msgstr ""
 
-#: includes/shortcodes/class-term-groups.php:76
+#: includes/shortcodes/class-term-groups.php:80
 msgid "No valid taxonomies specified."
 msgstr ""
 
@@ -4845,7 +4845,7 @@ msgid "Descending"
 msgstr ""
 
 #: blocks/ht-term-list/src/index.js:47
-msgid "Max depth (-1 = global setting, 0 = unlimited)"
+msgid "Max depth (-1 = global setting, 0 = top level only)"
 msgstr ""
 
 #: blocks/ht-term-list/src/index.js:55

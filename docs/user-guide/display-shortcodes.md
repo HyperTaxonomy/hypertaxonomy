@@ -4,15 +4,15 @@ parent: User Guide
 nav_order: 7
 ---
 
-## Display Shortcodes
+# Display Shortcodes
 
 Four built-in shortcodes for displaying terms on any page or widget. No dependencies required.
 
 **Default styles:** A minimal stylesheet is automatically included when shortcodes or blocks are rendered. Disable in Settings > HyperTaxonomy > Display (Frontend Styles) if providing custom styles. The stylesheet is at `assets/css/htax-shortcodes.css`.
 
-### Common Parameters
+## Common Parameters
 
-All four shortcodes share these parameters:
+`[ht_term_list]`, `[ht_term_index]`, and `[ht_term_cloud]` share these parameters. `[ht_term_groups]` shares most of them; see [its section](#ht_term_groups) for the differences.
 
 > **Term and group attributes accept slugs or IDs.** `include_terms` / `exclude_terms` accept a comma-separated list of term IDs **or** slugs (resolved within the shortcode's `taxonomy`); `include_groups` / `exclude_groups` accept group IDs or slugs (resolved within the `group` taxonomy). IDs and slugs may be mixed; a purely numeric token is treated as an ID.
 
@@ -35,7 +35,7 @@ Inclusion/exclusion uses a 4-step process distinct from term relationship proces
 | Parameter | Description | Default |
 |-----------|-------------|---------|
 | `header` | Header text; supports `{group_names}`, `{term_count}`, `{total_count}` | — |
-| `header_link_behavior` | How group names appear in `{group_names}`: `none`, `link`, `toggle` | none |
+| `header_link_behavior` | How group names appear in `{group_names}`: `none`, `link`, `toggle` | `none`, or `toggle` when `collapsible` is on |
 | `group_name_delimiter` | Delimiter between group names in `{group_names}` | `, ` |
 | `prepend` | Template prepended to each term | — |
 | `append` | Template appended to each term | — |
@@ -84,7 +84,7 @@ Inclusion/exclusion uses a 4-step process distinct from term relationship proces
 
 ---
 
-### [ht_term_list]
+## [ht_term_list]
 
 Hierarchical or flat term list with optional depth control, indentation, and collapsible sections.
 
@@ -94,7 +94,7 @@ Hierarchical or flat term list with optional depth control, indentation, and col
 |-----------|-------------|---------|
 | `orderby` | Sort by: `name`, `count`, `term_id`, `slug` | `name` |
 | `order` | `ASC` or `DESC` | `ASC` |
-| `max_depth` | Max hierarchy depth (`-1` = use setting, `0+` = specific depth) | `-1` |
+| `max_depth` | Max hierarchy depth (`-1` = use the **Max Term Hierarchy Depth** setting, `0` = top level only, `1+` = that many levels of children) | `-1` |
 | `font_size` | Base font size in pixels | 12 |
 | `indent_style` | `padding`, `dash`, or `none` | `padding` |
 | `indent_size` | Pixels for padding indent | 20 |
@@ -119,18 +119,18 @@ Hierarchical or flat term list with optional depth control, indentation, and col
 
 [ht_term_list taxonomy="post_tag" include_groups="10" exclude_groups="15" exclude_terms="42"]
 
-[ht_term_list append='{is_redirect?" → {target}":" ({count})"}']
+[ht_term_list append="{is_redirect? → {target}: ({count})}"]
 ```
 
-### HT Term List Block
+## HT Term List Block
 
 The **HT Term List** block is the block-editor equivalent of `[ht_term_list]`. Find it in the inserter under **HyperTaxonomy → HT Term List**, or search for "hypertaxonomy".
 
-The **Term Source** panel configures the taxonomy, hide-empty, include/exclude groups, and include/exclude terms. The **Display** panel covers sort order and direction, max depth, indent style, columns, collapsible behavior, header link behavior (`none`, `link`, `toggle`), minimum post count filter, and optional header text (supports `{total_count}` and `{group_names}` placeholders).
+The **Term Source** panel configures the taxonomy, hide-empty, include/exclude groups, and include/exclude terms. The **Display** panel covers sort order and direction, max depth, indent style, columns, collapsible behavior, header link behavior (`none`, `link`, `toggle`), minimum post count filter, and optional header text (supports `{term_count}`, `{total_count}`, and `{group_names}` placeholders).
 
 ---
 
-### [ht_term_index]
+## [ht_term_index]
 
 Alphabetical index with A–Z navigation. Terms are always sorted alphabetically.
 
@@ -143,7 +143,6 @@ Alphabetical index with A–Z navigation. Terms are always sorted alphabetically
 | `navigation_position` | `top`, `bottom`, or `both` | `top` |
 | `show_count` | Show post count per term | `true` |
 | `uppercase_letters` | Uppercase letter headers | `true` |
-| `empty_message` | Message to show for letters that have no terms | — |
 | `format` | Render terms as `ul` (unordered list), `ol` (ordered list), or `div` (inline with separator between items) | `ul` |
 | `separator` | HTML separator between terms when `format="div"` | — |
 | `div_class` | Additional CSS class for the container element | — |
@@ -160,15 +159,15 @@ Alphabetical index with A–Z navigation. Terms are always sorted alphabetically
 [ht_term_index include_groups="5,8" show_count="false"]
 ```
 
-### HT Term Index Block
+## HT Term Index Block
 
 The **HT Term Index** block is the block-editor equivalent of `[ht_term_index]`. Find it in the inserter under **HyperTaxonomy → HT Term Index**, or search for "hypertaxonomy".
 
-The **Term Source** panel configures taxonomy and include/exclude filters. The **Display** panel controls A–Z navigation, letter headers, navigation position, columns, post count visibility, letter case, empty letter message, list format (`ul`/`ol`/`div`), separator (for `div` format), minimum post count filter, container class/id, and optional header text (supports `{term_count}`, `{total_count}`, and `{group_names}` placeholders).
+The **Term Source** panel configures taxonomy and include/exclude filters. The **Display** panel controls A–Z navigation, letter headers, navigation position, columns, post count visibility, minimum post count filter, additional CSS class, and optional header text (supports `{term_count}`, `{total_count}`, and `{group_names}` placeholders). Letter case, list format, separator, and container class and ID are available through the shortcode only.
 
 ---
 
-### [ht_term_cloud]
+## [ht_term_cloud]
 
 Tag cloud with font sizes proportional to post counts.
 
@@ -195,7 +194,7 @@ Tag cloud with font sizes proportional to post counts.
     header="{group_names} — {total_count} posts total"]
 ```
 
-### HT Term Cloud Block
+## HT Term Cloud Block
 
 The **HT Term Cloud** block is the block-editor equivalent of `[ht_term_cloud]`. Find it in the inserter under **HyperTaxonomy → HT Term Cloud**, or search for "hypertaxonomy".
 
@@ -203,11 +202,15 @@ The **Term Source** panel configures taxonomy and include/exclude filters. The *
 
 ---
 
-### [ht_term_groups]
+## [ht_term_groups]
 
 Collapsible tree structure showing Term Groups with member terms nested inside. Uniquely supports multiple taxonomies simultaneously.
 
 **Note:** This shortcode uses `taxonomies` (plural) instead of `taxonomy`, and `include_groups` selects which root-level groups to display rather than filtering term membership.
+
+**Common parameters:** the **Content selection**, **Template**, and **Redirect display** parameters apply, except `taxonomy`, `include_terms`, `exclude_terms`, `header`, `header_link_behavior`, and `group_name_delimiter`, which have no effect here. Use `include_groups` and `exclude_groups` to choose what the tree shows.
+
+**Terms in several groups:** a term appears under every group it belongs to. A parent group's count includes its child groups' terms, but a term shown in a child group isn't repeated under its parent.
 
 **Additional parameters:**
 
@@ -222,6 +225,8 @@ Collapsible tree structure showing Term Groups with member terms nested inside. 
 | `group_icon` | Icon for groups — emoji or HTML | `📁` |
 | `term_icon` | Icon for terms — emoji or HTML; used as fallback when `show_term_icons="auto"` | `📄` |
 | `show_term_icons` | `never` — always use `term_icon` text; `auto` — use uploaded HyperTaxonomy icon per term, fall back to `term_icon` | `never` |
+| `div_class` | Additional CSS class for the container element | — |
+| `div_id` | CSS `id` for the container element | — |
 
 **Examples:**
 
@@ -233,11 +238,8 @@ Collapsible tree structure showing Term Groups with member terms nested inside. 
 [ht_term_groups taxonomies="post_tag" collapsible="collapsed" auto_collapse="true"]
 ```
 
-### HT Term Groups Block
+## HT Term Groups Block
 
 The **HT Term Groups** block is the block-editor equivalent of `[ht_term_groups]`. Find it in the inserter under **HyperTaxonomy → HT Term Groups**, or search for "hypertaxonomy".
 
-The **Term Source** panel accepts one or more taxonomy slugs (equivalent to the `taxonomies` attribute) and include/exclude group filters. The **Display** panel controls collapsible behavior, auto-collapse, empty group visibility, and group/term count display.
-
----
-
+The **Term Source** panel accepts one or more taxonomy slugs (equivalent to the `taxonomies` attribute) and include/exclude group filters. The **Display** panel controls collapsible behavior, auto-collapse, empty group visibility, group/term count display, **Term icons**, and additional CSS class.

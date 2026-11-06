@@ -30,7 +30,6 @@ class HyperTaxonomy_Term_Index extends HyperTaxonomy_Term_Display_Base {
             // Display options
             'show_count' => 'true', // Show post count for each term
             'uppercase_letters' => 'true', // Use uppercase for letter headers
-            'empty_message' => '', // Message to show for letters with no terms
 
             // Template parameters
             'format' => 'ul',    // 'ul', 'ol', or 'div' (div uses separator between terms)

@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: hypertaxonomy 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-05 23:46-0500\n"
-"PO-Revision-Date: 2026-11-05 23:46-0500\n"
+"POT-Creation-Date: 2026-11-05 23:56-0500\n"
+"PO-Revision-Date: 2026-11-05 23:56-0500\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: ru\n"
@@ -5151,11 +5151,11 @@ msgstr "ID"
 msgid "Add sort field"
 msgstr "Добавить поле сортировки"
 
-#: includes/shortcodes/class-term-groups.php:63
+#: includes/shortcodes/class-term-groups.php:67
 msgid "The Term Groups taxonomy is not registered."
 msgstr "Таксономия групп терминов не зарегистрирована."
 
-#: includes/shortcodes/class-term-groups.php:76
+#: includes/shortcodes/class-term-groups.php:80
 msgid "No valid taxonomies specified."
 msgstr "Не указано ни одной допустимой таксономии."
 
@@ -5488,8 +5488,8 @@ msgid "Descending"
 msgstr "По убыванию"
 
 #: blocks/ht-term-list/src/index.js:47
-msgid "Max depth (-1 = global setting, 0 = unlimited)"
-msgstr "Максимальная глубина (-1 = общая настройка, 0 = без ограничения)"
+msgid "Max depth (-1 = global setting, 0 = top level only)"
+msgstr "Максимальная глубина (-1 = общая настройка, 0 = только верхний уровень)"
 
 #: blocks/ht-term-list/src/index.js:55
 msgid "Indent style"
@@ -5610,7 +5610,9 @@ msgstr "Повышать записи, совпадающие с заголов�
 msgid ""
 "Posts whose text matches the current post's title rank higher. Turn off to "
 "rank by shared terms only."
-msgstr "Записи, текст которых совпадает с заголовком текущей записи, ранжируются выше. Отключите, чтобы ранжировать только по общим терминам."
+msgstr ""
+"Записи, текст которых совпадает с заголовком текущей записи, ранжируются "
+"выше. Отключите, чтобы ранжировать только по общим терминам."
 
 #: blocks/shared/post-list-edit.js:234
 msgid "Filters"
@@ -5684,7 +5686,9 @@ msgstr "Строка метаданных"
 msgid ""
 "Template for the meta line below the title. Supports post placeholders such "
 "as {date}, {author}, and {modified}. Leave empty to hide."
-msgstr "Шаблон строки метаданных под заголовком. Поддерживает заполнители записи, такие как {date}, {author} и {modified}. Оставьте пустым, чтобы скрыть."
+msgstr ""
+"Шаблон строки метаданных под заголовком. Поддерживает заполнители записи, "
+"такие как {date}, {author} и {modified}. Оставьте пустым, чтобы скрыть."
 
 #: blocks/shared/post-list-edit.js:327
 msgid "Format"
@@ -5745,7 +5749,9 @@ msgstr "Шаблон"
 msgid ""
 "CSS class slug appended as htax-result-{name}. Leave \"default\" unless your "
 "theme provides a custom template."
-msgstr "Ярлык CSS-класса, добавляемый как htax-result-{name}. Оставьте «default», если только ваша тема не предоставляет пользовательский шаблон."
+msgstr ""
+"Ярлык CSS-класса, добавляемый как htax-result-{name}. Оставьте «default», "
+"если только ваша тема не предоставляет пользовательский шаблон."
 
 #: blocks/shared/post-list-edit.js:370
 msgid "No-results message"

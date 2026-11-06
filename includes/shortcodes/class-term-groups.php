@@ -312,20 +312,28 @@ class HyperTaxonomy_Term_Groups extends HyperTaxonomy_Shortcode_Base {
             $child_is_open = $is_open;
         }
 
+        // A group's terms include those of its child groups, so a term shown in a child isn't
+        // repeated in its parent. Sibling groups don't affect each other, so a term in two
+        // groups shows in both. Each call leaves its subtree's terms in $processed_terms.
+        $shown_in_subtree = array();
         foreach ( $child_groups as $child_group ) {
-            $output .= $this->render_group( $child_group, $taxonomies, $depth + 1, $child_is_open );
+            $this->processed_terms = array();
+            $output               .= $this->render_group( $child_group, $taxonomies, $depth + 1, $child_is_open );
+            $shown_in_subtree     += $this->processed_terms;
         }
 
         // Render terms
-        if ( ! empty( $terms ) ) {
-            $output .= '<div class="htax-group-terms">';
-            foreach ( $terms as $term ) {
-                if ( ! isset( $this->processed_terms[ $term->term_id ] ) ) {
-                    $this->processed_terms[ $term->term_id ] = true;
-                    $output .= $this->render_term( $term, $depth );
-                }
+        $terms_output = '';
+        foreach ( $terms as $term ) {
+            if ( ! isset( $shown_in_subtree[ $term->term_id ] ) ) {
+                $shown_in_subtree[ $term->term_id ] = true;
+                $terms_output .= $this->render_term( $term, $depth );
             }
-            $output .= '</div>';
+        }
+        $this->processed_terms = $shown_in_subtree;
+
+        if ( '' !== $terms_output ) {
+            $output .= '<div class="htax-group-terms">' . $terms_output . '</div>';
         }
 
         $output .= '</div>'; // Close htax-group-content

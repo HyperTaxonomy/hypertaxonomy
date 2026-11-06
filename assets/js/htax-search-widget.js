@@ -574,8 +574,12 @@
 
         /**
          * Perform AJAX search
+         *
+         * @param {number}  page               Results page.
+         * @param {boolean} clearIfNoCriteria  Empty the results area instead of reporting no
+         *                                     results when there is nothing to search or filter by.
          */
-        performSearch(page = 1) {
+        performSearch(page = 1, clearIfNoCriteria = false) {
             const fieldData = this.collectFieldDataHierarchical(this.$form, 'AND', true);
 
             // Find results container
@@ -631,7 +635,10 @@
             $.post(HTAX_Search.ajax_url, postData, (response) => {
                 $results.find('.htax-loading').hide();
 
-                if (response.success) {
+                if (response.success && clearIfNoCriteria && response.data.no_criteria) {
+                    $results.find('.htax-results-container').empty();
+                    this.renderPaginationNav(0, 0, $results);
+                } else if (response.success) {
                     this.renderResults(response.data, $results);
                 } else {
                     $results.find('.htax-results-container').html(

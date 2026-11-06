@@ -2720,7 +2720,8 @@ class HyperTaxonomy_Search_Widget {
      * @param string $search_in   Comma-separated list of fields to search (title,content,excerpt or 'all')
      * @param string $extra_where Additional SQL WHERE fragment (with leading AND) appended to the query.
      * @param int    $max_results Hard cap on total results across all pages (0 = no cap).
-     * @return array{results: int[], total: int}
+     * @return array{results: int[], total: int, no_criteria?: bool} no_criteria is true when
+     *               the search had nothing to search or filter by.
      */
     public function get_posts_by_custom_sql( $query, $orderby_parsed, $posts_per_page, $page, $text_search_query = '', $min_score = 0, $search_in = 'all', $extra_where = '', $max_results = 0 ) {
         global $wpdb;
@@ -2859,7 +2860,7 @@ class HyperTaxonomy_Search_Widget {
         // (will use text search filter in WHERE clause without relevance scoring)
         // (exclusion-only and filter-only queries also proceed: every post that passes them, newest first).
         if ( empty( $score_subqueries ) && empty( $text_search_query ) && empty( $pre_where_parts ) && empty( $extra_where ) ) {
-            return array( 'results' => array(), 'total' => 0 );
+            return array( 'results' => array(), 'total' => 0, 'no_criteria' => true );
         }
 
         // Union all field scores (may be empty if text-only search)
@@ -3511,6 +3512,7 @@ class HyperTaxonomy_Search_Widget {
                 'max_pages'    => 0,
                 'current_page' => $page,
                 'notices'      => htax_get_search_notices(),
+                'no_criteria'  => ! empty( $search_result['no_criteria'] ),
             ) );
             return;
         }

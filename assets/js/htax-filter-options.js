@@ -371,7 +371,8 @@
         $results.data('htax-filter', newState || {});
         const formId = $('.htax-search-form[data-results="' + $results.attr('id') + '"]').attr('id');
         if (formId && typeof HTAXSearchWidget !== 'undefined' && HTAXSearchWidget.forms && HTAXSearchWidget.forms[formId]) {
-            HTAXSearchWidget.forms[formId].performSearch(1);
+            // Clearing the last filter with nothing entered returns to the state before any search.
+            HTAXSearchWidget.forms[formId].performSearch(1, true);
         }
     });
 

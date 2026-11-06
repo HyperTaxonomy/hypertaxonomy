@@ -32,7 +32,7 @@ The JSON file contains the terms, their relationships, redirects, group membersh
 **What depends on the destination site:**
 
 - **Sticky posts** are matched by post slug. A post with the same slug must already exist there; otherwise that pin is skipped. Import your posts first.
-- **Term icons** aren't copied. The file only records each icon's filename, and the import links the term to a media library image with the same filename. If there isn't one, the term is imported without its icon, with no warning. To keep icons on another site, copy the images into its media library first.
+- **Term icons** aren't copied. The file only records each icon's URL, and the import links the term to a media library image with the same filename, so IDs don't need to match and the image's address on the old site doesn't matter. To keep icons on another site, get the images into its media library first, for example with the WordPress exporter and importer, and keep their filenames. A file renamed on the way in, such as `php-1.png`, won't match. If there's no match, the term is imported without its icon, with no warning. If a different image on that site has the same filename, the term is linked to that image instead. Check the icons after importing.
 - **Term-to-post assignments** are also matched by post slug.
 
 ---

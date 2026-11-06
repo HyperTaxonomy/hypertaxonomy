@@ -621,9 +621,10 @@ function htax_import_icon_from_url( $url ) {
     $attachment_id = $wpdb->get_var( $wpdb->prepare(
         "SELECT post_id FROM {$wpdb->postmeta}
         WHERE meta_key = '_wp_attached_file'
-        AND meta_value LIKE %s
+        AND ( meta_value = %s OR meta_value LIKE %s )
         LIMIT 1",
-        '%' . $wpdb->esc_like( $filename )
+        $filename,
+        '%/' . $wpdb->esc_like( $filename )
     ) );
 
     return $attachment_id ? (int) $attachment_id : 0;

@@ -46,7 +46,7 @@ function htax_set_term_edit_lock( int $term_id ): void {
  * @param int $term_id Term ID.
  * @return WP_User|false
  */
-function htax_check_term_edit_lock( int $term_id ): WP_User|false {
+function htax_check_term_edit_lock( int $term_id ) {
     $lock = get_term_meta( $term_id, '_htax_edit_lock', true );
     if ( ! $lock ) {
         return false;
@@ -88,7 +88,7 @@ function htax_set_rt_edit_lock( string $slug ): void {
  * @param string $slug Relationship type slug.
  * @return WP_User|false
  */
-function htax_check_rt_edit_lock( string $slug ): WP_User|false {
+function htax_check_rt_edit_lock( string $slug ) {
     $lock = htax_get_transient( 'htax_rt_lock_' . $slug );
     if ( false === $lock ) {
         return false;

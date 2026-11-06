@@ -3722,7 +3722,7 @@
             $results.data('orderby', newValue || 'relevance:desc,date:desc');
             const instance = $results.data('htax-form-instance');
             if (instance) {
-                instance.performSearch(1);
+                instance.performSearch(1, true);
             }
         });
     });

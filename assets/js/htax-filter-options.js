@@ -331,11 +331,14 @@
     // Post list AJAX integration
     // =========================================================================
 
-    // Listen for filter changes on filter panels that are siblings of
-    // .htax-post-list-wrapper (inside .htax-post-list-block).
+    // Listen for filter changes on filter panels beside a post list. The list's wrapper is
+    // inside .htax-post-list-block when the list has its own controls.
     $(document).on('htax:filter-change', '[data-htax-filter-root]', function (_e, newState) {
         const $root    = $(this);
         let $wrapper   = $root.siblings('.htax-post-list-wrapper');
+        if (!$wrapper.length) {
+            $wrapper = $root.siblings('.htax-post-list-block').find('.htax-post-list-wrapper').first();
+        }
         if (!$wrapper.length) {
             // The filters= inline shorthand on [ht_post_list] renders the filter panel
             // inside its own .htax-controls-bar, which is itself a sibling of
@@ -353,11 +356,14 @@
 
     /**
      * Find the search results a filter panel controls. A [ht_filter_options] panel sits
-     * beside the results; the filters= shorthand on [ht_search_results] sits in a controls
-     * bar inside .htax-search-results-block.
+     * beside the results, or beside .htax-search-results-block when the results have their
+     * own controls; the filters= shorthand sits in a controls bar inside that block.
      */
     function findFilterResults($root) {
-        const $results = $root.siblings('.htax-search-results');
+        let $results = $root.siblings('.htax-search-results');
+        if (!$results.length) {
+            $results = $root.siblings('.htax-search-results-block').find('.htax-search-results').first();
+        }
         return $results.length ? $results : $root.closest('.htax-search-results-block').find('.htax-search-results').first();
     }
 

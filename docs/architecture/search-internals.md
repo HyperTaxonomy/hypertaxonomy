@@ -55,7 +55,7 @@ AND pt.post_id IN (
 
 Enforcing exclusion and required-all conditions before LIMIT keeps page sizes and total counts accurate.
 
-**AJAX path**: `ajax_search_posts()` passes the raw `$fields` structure (field_name → field_data with `terms`, `taxonomy`, `match`, and optional `expand_types` keys) directly to `get_posts_by_custom_sql()`, which POST searches also use.
+**AJAX path**: `ajax_search_posts()` passes the raw `$fields` structure (field_name → field_data with `terms`, `taxonomy`, `match`, and optional `expand_types` keys) directly to `get_posts_by_custom_sql()`, which POST searches also use. A search with only a filter panel selection lists matching posts unscored, newest first. With no text, terms, exclusions or filter, the function returns no posts and sets `no_criteria`, which `ajax_search_posts()` includes in its response.
 
 **`relationship_type IN (...)`** is computed per field by `HyperTaxonomy_Search_Widget::normalize_expand_types()`. By default it includes all types active for the taxonomy (`direct` always; `hierarchy` when hierarchical; `container` when `term_relationships` feature enabled; `redirect_target` when `redirects` feature enabled). A field carrying `expand_types` overrides this: `"all"` → feature-flag defaults; `"none"` → `direct` only; comma-separated tokens (`container`, `hierarchy`, `redirect`) → explicit subset. The `expand` shortcode attribute on `[ht_pills_field]`, `[ht_checklist_field]`, `[ht_hidden_field]`, and `[ht_distance_field]` sets this value.
 

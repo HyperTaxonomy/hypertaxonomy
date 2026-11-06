@@ -401,7 +401,7 @@ Shared renderer and shortcode handler for the pill-based sort order picker compo
 
 **sort_order_options attribute on result shortcodes:**
 - `[ht_post_list sort_order_options="..."]` — renders picker as sibling of `.htax-post-list-wrapper` inside `.htax-post-list-block`; `htax-post-list.js` handles `htax:sort-change` by updating `data-orderby` and calling `loadPage($wrapper, 1)`
-- `[ht_search_results sort_order_options="..."]` — renders picker inside `.htax-search-results` before the results container. Both search widget and PowerSearch store their JS instance on the container via `$results.data('htax-form-instance', this)`; the single delegated `htax:sort-change` handler in `htax-search-widget.js` reads this reference and calls `instance.performSearch(1)` regardless of which form type is in use. Pagination prev/next buttons use the same stored reference.
+- `[ht_search_results sort_order_options="..."]` — renders picker in a `.htax-controls-bar` above `.htax-search-results`, both inside `.htax-search-results-block`. Both search widget and PowerSearch store their JS instance on the container via `$results.data('htax-form-instance', this)`; the single delegated `htax:sort-change` handler in `htax-search-widget.js` reads this reference and calls `instance.performSearch(1)` regardless of which form type is in use. Pagination prev/next buttons use the same stored reference.
 
 **Filter Options Panel (includes/shortcodes/class-filter-options.php)**
 
@@ -431,10 +431,10 @@ Collapsible filter panel supporting term, date range, and author filters. Works 
 - State is stored in `this.state` (current) and `this.initial` (initial/seed); `isDirty()` compares them to control the "Clear filters" button visibility.
 - `commit( newState )` — updates state and fires `htax:filter-change` (event mode), navigates (navigate mode), or submits the ancestor form (submit mode).
 - `resetToInitial()` — restores all UI controls to initial values and calls `commit(initial)`.
-- Three delegated `htax:filter-change` handlers wire up to result shortcodes:
+- Three delegated `htax:filter-change` handlers wire up to result shortcodes. Each finds its target beside the panel, inside a result block beside the panel, or in the block containing the panel:
   - Post list: sets `$wrapper.data('htax-filter', newState)` then triggers `htax:load-page` on `.htax-post-list-wrapper`
-  - Search widget: sets `$results.data('htax-filter', newState)` then calls `HTAXSearchWidget.forms[formId].performSearch(1)`
-  - PowerSearch: sets `$results.data('htax-filter', newState)` then calls the `FulltextSearchForm` instance's `performSearch(1)`
+  - Search widget: sets `$results.data('htax-filter', newState)` then calls `HTAXSearchWidget.forms[formId].performSearch(1, true)`, finding the form through `data-results`. The second argument empties the results area, rather than reporting no results, when the response has `no_criteria` set. The widget's `htax:sort-change` handler passes it too.
+  - PowerSearch: sets `$results.data('htax-filter', newState)` then calls the `PowerSearchForm` instance's `performSearch(1)` if anything has been typed; otherwise the filter waits for the first search
 
 **Filter state integration in AJAX handlers:**
 - All three AJAX search handlers (`ajax_load_page` in post list, `ajax_search_posts` in search widget and PowerSearch) read `$_POST['htax_filter']`, parse via `htax_parse_filter_state_ajax()`, build SQL via `htax_build_filter_sql()`, and pass the result as `$extra_where` / `user_filter_sql` to the query layer.
@@ -443,7 +443,7 @@ Collapsible filter panel supporting term, date range, and author filters. Works 
 **`filters`/`filter_options` inline attributes on result shortcodes:**
 - Available on `[ht_post_list]` and `[ht_search_results]` (the unified results container used by both search widget and PowerSearch).
 - When set, `htax_parse_inline_filters()` → `htax_resolve_filter_configs()` → `htax_render_filter_options()` is called at render time (always `action=""`).
-- The filter panel HTML is prepended as a sibling of the results wrapper inside a block div (`.htax-post-list-block`, `.htax-search-results-block`). The JS filter-change handlers rely on this sibling relationship.
+- The filter panel HTML is placed in a `.htax-controls-bar` above the results wrapper, both inside a block div (`.htax-post-list-block`, `.htax-search-results-block`). The JS filter-change handlers find the results through that block.
 - `[ht_post_list]` also passes resolved `filter_terms` IDs as `$primary_seed_ids` so the filter panel UI matches the initial page-load query result.
 
 **ATCF Integration (includes/integrations/class-atcf-integration.php)**

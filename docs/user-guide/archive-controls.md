@@ -113,7 +113,7 @@ Adds a term-based filter group. One `[ht_filter_terms]` per taxonomy per panel.
 - At most one `[ht_filter_terms]` may have `primary="true"`. If none is marked, the first one is treated as primary.
 - With the inline `filters=` form on `[ht_post_list]`, the primary filter's initial selection also includes the list's `filter_terms`, and those terms are forced into the option pool even if the pool definition does not cover them.
 - `primary="true"` is invalid with `match="none"` (silently demoted to non-primary).
-- An empty selection is a no-op — removing all selected terms shows all posts.
+- An empty selection is a no-op — removing all selected terms shows all posts. The exception is an AJAX search form with nothing entered: removing the last selection empties the results area.
 
 **Archive term exclusion:** On a term archive page, the archive's own term is automatically excluded from the option pool for any `[ht_filter_terms]` whose `taxonomy` matches the archive's taxonomy. No explicit `exclude_term_options` needed.
 

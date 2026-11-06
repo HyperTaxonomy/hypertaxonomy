@@ -251,6 +251,10 @@ add_action( 'htax_term_strengths_updated', function( $post_id, $model, $term_ids
 }, 10, 3 );
 ```
 
+#### `htax_term_uris_changed` / `htax_term_locations_changed`
+
+Fire with `int $term_id` when a term's external URIs or locations change. HyperTaxonomy re-fires these from TermConnect's `tc_term_uris_changed` and As the Crow Flies' `atcf_term_location_changed`, so a plugin that reads `htax_get_term_uris()` or `htax_get_term_locations()` can clear its caches without depending on either plugin.
+
 ## Available Filters
 
 #### `htax_show_hidden_terms`

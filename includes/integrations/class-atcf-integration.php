@@ -55,6 +55,27 @@ class HyperTaxonomy_ATCF_Integration {
         // TermConnect is not active (the filter never fires; the action self-guards).
         add_filter( 'tc_index_extra_uris', array( __CLASS__, 'add_location_uris' ), 10, 2 );
         add_action( 'atcf_term_location_changed', array( __CLASS__, 'refresh_tc_uri_index' ) );
+
+        // Re-fire under HyperTaxonomy's namespace, so that plugins using
+        // htax_get_term_locations() can clear their caches without depending on ATCF.
+        add_action( 'atcf_term_location_changed', array( __CLASS__, 'relay_term_location_changed' ) );
+    }
+
+    /**
+     * Re-fire ATCF's location change as htax_term_locations_changed.
+     *
+     * @since 1.0.0
+     * @param int $term_id Term whose locations changed.
+     * @return void
+     */
+    public static function relay_term_location_changed( $term_id ): void {
+        /**
+         * Fires when a term's locations change.
+         *
+         * @since 1.0.0
+         * @param int $term_id Term ID.
+         */
+        do_action( 'htax_term_locations_changed', (int) $term_id );
     }
 
     // --------------------------------------------------------------------------

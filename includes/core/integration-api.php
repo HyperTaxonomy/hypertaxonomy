@@ -421,6 +421,26 @@ function htax_get_term_uris( int $term_id ): array {
     return apply_filters( 'htax_term_uris', array(), $term_id );
 }
 
+add_action( 'tc_term_uris_changed', 'htax_relay_term_uris_changed' );
+
+/**
+ * Re-fire TermConnect's URI change under HyperTaxonomy's namespace, so that plugins
+ * using htax_get_term_uris() can clear their caches without depending on TermConnect.
+ *
+ * @since 1.0.0
+ * @param int $term_id Term whose external URIs changed.
+ * @return void
+ */
+function htax_relay_term_uris_changed( $term_id ): void {
+    /**
+     * Fires when a term's external URIs change.
+     *
+     * @since 1.0.0
+     * @param int $term_id Term ID.
+     */
+    do_action( 'htax_term_uris_changed', (int) $term_id );
+}
+
 /**
  * Return location rows attached to a term, sourced from any active plugin
  * that registers on this filter (e.g. As the Crow Flies provides location rows).

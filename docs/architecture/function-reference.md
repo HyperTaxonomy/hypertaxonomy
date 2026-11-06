@@ -288,6 +288,7 @@ Public integration API for third-party plugins.
 - `htax_get_local_post_scores( array $term_ids, array $args = [] ): array` - Score local posts for a set of terms using the search index, gated by each taxonomy's relationship features and by term visibility; returns `post_id => score`, or empty when the index table is unavailable. `$args['exclude']` omits post IDs.
 - `htax_get_post_term_strengths( int $post_id, array $term_ids = [] ): array` - A post's direct term strengths from the model selected for related posts, normalized so the strongest is 1.0; terms the model has not scored are omitted
 - `htax_get_term_uris( int $term_id ): array` - External URIs for a term, from the `htax_term_uris` filter
+- `htax_relay_term_uris_changed( $term_id ): void` - Re-fires `tc_term_uris_changed` as `htax_term_uris_changed`
 - `htax_get_term_external_posts( int $term_id, array $args = [] ): array` - External posts for a term, from the `htax_term_external_posts` filter; returns empty without firing the filter when the term is hidden from the current user. `$args` is passed to providers unchanged.
 - `htax_get_peer_sites(): array` - Known peer sites, from the `htax_peer_sites` filter
 - `htax_get_term_locations( int $term_id ): array` - Location rows for a term, from the `htax_term_locations` filter

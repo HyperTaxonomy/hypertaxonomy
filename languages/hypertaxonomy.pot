@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-05 23:20-0500\n"
+"POT-Creation-Date: 2026-11-05 23:46-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -283,7 +283,7 @@ msgstr ""
 #: includes/admin/convert-terms.php:310 includes/admin/convert-terms.php:343
 #: includes/admin/merge-terms.php:152
 #: includes/admin/relationship-types-admin.php:610
-#: blocks/shared/post-list-edit.js:116 blocks/shared/term-display-edit.js:87
+#: blocks/shared/post-list-edit.js:117 blocks/shared/term-display-edit.js:87
 msgid "— Select taxonomy —"
 msgstr ""
 
@@ -792,8 +792,8 @@ msgid "Please select a file to import"
 msgstr ""
 
 #: includes/admin/import-ui.php:79
-#: includes/classes/class-search-widget.php:2295
-#: includes/classes/class-search-widget.php:3766
+#: includes/classes/class-search-widget.php:2294
+#: includes/classes/class-search-widget.php:3765
 msgid "Loading..."
 msgstr ""
 
@@ -908,7 +908,7 @@ msgstr ""
 
 #: includes/admin/merge-terms.php:148
 #: includes/admin/relationship-types-admin.php:607
-#: blocks/shared/post-list-edit.js:144 blocks/shared/term-display-edit.js:119
+#: blocks/shared/post-list-edit.js:145 blocks/shared/term-display-edit.js:119
 msgid "Taxonomy"
 msgstr ""
 
@@ -1361,7 +1361,7 @@ msgstr ""
 #: includes/admin/settings.php:374 blocks/ht-sort-order-options/src/index.js:81
 #: blocks/ht-term-cloud/src/index.js:19 blocks/ht-term-groups/src/index.js:21
 #: blocks/ht-term-index/src/index.js:20 blocks/ht-term-list/src/index.js:22
-#: blocks/shared/post-list-edit.js:288
+#: blocks/shared/post-list-edit.js:300
 msgid "Display"
 msgstr ""
 
@@ -1370,7 +1370,7 @@ msgid "Icons"
 msgstr ""
 
 #: includes/admin/settings.php:376
-#: includes/classes/class-search-widget.php:2192
+#: includes/classes/class-search-widget.php:2191
 msgid "Search"
 msgstr ""
 
@@ -3730,7 +3730,7 @@ msgid ""
 "size is fixed — only its position can be moved."
 msgstr ""
 
-#: includes/classes/class-blocks.php:254 includes/classes/class-blocks.php:255
+#: includes/classes/class-blocks.php:259 includes/classes/class-blocks.php:260
 #: includes/shortcodes/class-sort-order.php:99
 #: includes/shortcodes/class-sort-order.php:100
 #: includes/shortcodes/class-sort-order.php:190
@@ -3773,23 +3773,23 @@ msgid "An error occurred during search."
 msgstr ""
 
 #: includes/classes/class-power-search.php:99
-#: includes/classes/class-power-search.php:319
+#: includes/classes/class-power-search.php:310
 #, php-format
 msgid "Please enter at least %d characters."
 msgstr ""
 
 #: includes/classes/class-power-search.php:100
-#: includes/classes/class-search-widget.php:3773
+#: includes/classes/class-search-widget.php:3772
 msgid "Previous"
 msgstr ""
 
 #: includes/classes/class-power-search.php:101
-#: includes/classes/class-search-widget.php:3775
+#: includes/classes/class-search-widget.php:3774
 msgid "Next"
 msgstr ""
 
 #: includes/classes/class-power-search.php:102
-#: includes/classes/class-search-widget.php:3777
+#: includes/classes/class-search-widget.php:3776
 #: includes/shortcodes/class-post-list.php:922
 #, php-format
 msgid "Page %1$d of %2$d"
@@ -3804,51 +3804,51 @@ msgstr ""
 msgid "Index cleared. Rebuilding %d posts..."
 msgstr ""
 
-#: includes/classes/class-search-widget.php:930
+#: includes/classes/class-search-widget.php:929
 msgid "Enter search terms..."
 msgstr ""
 
-#: includes/classes/class-search-widget.php:1100
+#: includes/classes/class-search-widget.php:1099
 msgid "Type to search..."
 msgstr ""
 
-#: includes/classes/class-search-widget.php:2167
+#: includes/classes/class-search-widget.php:2166
 msgid "Select..."
 msgstr ""
 
-#: includes/classes/class-search-widget.php:2217
+#: includes/classes/class-search-widget.php:2216
 msgid "Show advanced options"
 msgstr ""
 
-#: includes/classes/class-search-widget.php:2218
+#: includes/classes/class-search-widget.php:2217
 msgid "Hide advanced options"
 msgstr ""
 
-#: includes/classes/class-search-widget.php:2296
+#: includes/classes/class-search-widget.php:2295
 msgid "Search results navigation"
 msgstr ""
 
-#: includes/classes/class-search-widget.php:3767
+#: includes/classes/class-search-widget.php:3766
 msgid "No results found"
 msgstr ""
 
-#: includes/classes/class-search-widget.php:3768
+#: includes/classes/class-search-widget.php:3767
 msgid "An error occurred"
 msgstr ""
 
-#: includes/classes/class-search-widget.php:3769
+#: includes/classes/class-search-widget.php:3768
 msgid "Please enter at least 2 characters"
 msgstr ""
 
-#: includes/classes/class-search-widget.php:3771
+#: includes/classes/class-search-widget.php:3770
 msgid "Please enter at least {n} characters."
 msgstr ""
 
-#: includes/classes/class-search-widget.php:3778
+#: includes/classes/class-search-widget.php:3777
 msgid "Current Location"
 msgstr ""
 
-#: includes/classes/class-search-widget.php:3780
+#: includes/classes/class-search-widget.php:3779
 #, php-format
 msgid "by %s"
 msgstr ""
@@ -4593,7 +4593,7 @@ msgstr ""
 msgid "Categories only"
 msgstr ""
 
-#: blocks/ht-power-search/src/index.js:87 blocks/shared/post-list-edit.js:189
+#: blocks/ht-power-search/src/index.js:87 blocks/shared/post-list-edit.js:190
 msgid "Posts per page"
 msgstr ""
 
@@ -4601,7 +4601,7 @@ msgstr ""
 msgid "Max results across all pages (0 = no cap)"
 msgstr ""
 
-#: blocks/ht-power-search/src/index.js:103 blocks/shared/post-list-edit.js:201
+#: blocks/ht-power-search/src/index.js:103 blocks/shared/post-list-edit.js:202
 msgid "Sort order"
 msgstr ""
 
@@ -4644,7 +4644,7 @@ msgstr ""
 #: blocks/ht-sort-order-options/src/index.js:120
 #: blocks/ht-term-cloud/src/index.js:73 blocks/ht-term-groups/src/index.js:65
 #: blocks/ht-term-index/src/index.js:79 blocks/ht-term-list/src/index.js:116
-#: blocks/shared/post-list-edit.js:424
+#: blocks/shared/post-list-edit.js:436
 msgid "Additional CSS class"
 msgstr ""
 
@@ -4804,7 +4804,7 @@ msgid "Top & bottom"
 msgstr ""
 
 #: blocks/ht-term-index/src/index.js:45 blocks/ht-term-list/src/index.js:66
-#: blocks/shared/post-list-edit.js:340
+#: blocks/shared/post-list-edit.js:352
 msgid "Columns"
 msgstr ""
 
@@ -4908,239 +4908,249 @@ msgstr ""
 msgid "+ Add sort field"
 msgstr ""
 
-#: blocks/shared/post-list-edit.js:115
+#: blocks/shared/post-list-edit.js:116
 msgid "— All taxonomies —"
 msgstr ""
 
-#: blocks/shared/post-list-edit.js:140 blocks/shared/term-display-edit.js:101
+#: blocks/shared/post-list-edit.js:141 blocks/shared/term-display-edit.js:101
 msgid "Term Source"
 msgstr ""
 
-#: blocks/shared/post-list-edit.js:152 blocks/shared/term-display-edit.js:138
+#: blocks/shared/post-list-edit.js:153 blocks/shared/term-display-edit.js:138
 msgid "Include terms"
 msgstr ""
 
-#: blocks/shared/post-list-edit.js:158 blocks/shared/term-display-edit.js:144
+#: blocks/shared/post-list-edit.js:159 blocks/shared/term-display-edit.js:144
 msgid "Exclude terms"
 msgstr ""
 
-#: blocks/shared/post-list-edit.js:164 blocks/shared/term-display-edit.js:153
+#: blocks/shared/post-list-edit.js:165 blocks/shared/term-display-edit.js:153
 msgid "Include groups"
 msgstr ""
 
-#: blocks/shared/post-list-edit.js:169 blocks/shared/term-display-edit.js:158
+#: blocks/shared/post-list-edit.js:170 blocks/shared/term-display-edit.js:158
 msgid "Exclude groups"
 msgstr ""
 
-#: blocks/shared/post-list-edit.js:179
+#: blocks/shared/post-list-edit.js:180
 msgid "Query"
 msgstr ""
 
-#: blocks/shared/post-list-edit.js:183
+#: blocks/shared/post-list-edit.js:184
 msgid "Post type"
 msgstr ""
 
-#: blocks/shared/post-list-edit.js:195
+#: blocks/shared/post-list-edit.js:196
 msgid "Max results (0 = no cap)"
 msgstr ""
 
-#: blocks/shared/post-list-edit.js:209
+#: blocks/shared/post-list-edit.js:210
 msgid "Keyword search"
 msgstr ""
 
-#: blocks/shared/post-list-edit.js:211
+#: blocks/shared/post-list-edit.js:212
 msgid ""
 "Boosts relevance for posts matching this text. Supports field operators: "
 "title:word, content:word, excerpt:word. Prefix with + to require or - to "
 "penalize. Does not filter out non-matching posts."
 msgstr ""
 
-#: blocks/shared/post-list-edit.js:222
+#: blocks/shared/post-list-edit.js:221
+msgid "Boost posts matching the current post's title"
+msgstr ""
+
+#: blocks/shared/post-list-edit.js:223
+msgid ""
+"Posts whose text matches the current post's title rank higher. Turn off to "
+"rank by shared terms only."
+msgstr ""
+
+#: blocks/shared/post-list-edit.js:234
 msgid "Filters"
 msgstr ""
 
-#: blocks/shared/post-list-edit.js:226
+#: blocks/shared/post-list-edit.js:238
 msgid "Restrict to terms (all must match)"
 msgstr ""
 
-#: blocks/shared/post-list-edit.js:228
+#: blocks/shared/post-list-edit.js:240
 msgid ""
 "Posts must have ALL of these terms. Uses the selected taxonomy for "
 "autocomplete."
 msgstr ""
 
-#: blocks/shared/post-list-edit.js:236
+#: blocks/shared/post-list-edit.js:248
 msgid "Restrict to groups"
 msgstr ""
 
-#: blocks/shared/post-list-edit.js:238
+#: blocks/shared/post-list-edit.js:250
 msgid "Posts must have at least one term from each listed group."
 msgstr ""
 
-#: blocks/shared/post-list-edit.js:245
+#: blocks/shared/post-list-edit.js:257
 msgid "Exclude by terms"
 msgstr ""
 
-#: blocks/shared/post-list-edit.js:247
+#: blocks/shared/post-list-edit.js:259
 msgid "Posts with ANY of these terms are excluded."
 msgstr ""
 
-#: blocks/shared/post-list-edit.js:255
+#: blocks/shared/post-list-edit.js:267
 msgid "Exclude by groups"
 msgstr ""
 
-#: blocks/shared/post-list-edit.js:257
+#: blocks/shared/post-list-edit.js:269
 msgid "Posts with any term from ANY of these groups are excluded."
 msgstr ""
 
-#: blocks/shared/post-list-edit.js:264
+#: blocks/shared/post-list-edit.js:276
 msgid "Inline filter panel"
 msgstr ""
 
-#: blocks/shared/post-list-edit.js:266
+#: blocks/shared/post-list-edit.js:278
 msgid ""
 "Renders a frontend filter UI. Add keywords: date_published, date_modified, "
 "author, or any taxonomy slug."
 msgstr ""
 
-#: blocks/shared/post-list-edit.js:277
+#: blocks/shared/post-list-edit.js:289
 msgid "Filter options (positional, comma-separated)"
 msgstr ""
 
-#: blocks/shared/post-list-edit.js:292
+#: blocks/shared/post-list-edit.js:304
 msgid "Show thumbnail"
 msgstr ""
 
-#: blocks/shared/post-list-edit.js:299
+#: blocks/shared/post-list-edit.js:311
 msgid "Show excerpt"
 msgstr ""
 
-#: blocks/shared/post-list-edit.js:306
+#: blocks/shared/post-list-edit.js:318
 msgid "Meta line"
 msgstr ""
 
-#: blocks/shared/post-list-edit.js:308
-msgid ""
-"Template for the meta line below the title. Tokens: {date}, {author}, "
-"{modified}. Leave empty to hide."
-msgstr ""
-
-#: blocks/shared/post-list-edit.js:315
-msgid "Format"
-msgstr ""
-
-#: blocks/shared/post-list-edit.js:316
-msgid "ul/ol: title-only list. div: full card with thumbnail/excerpt/meta."
-msgstr ""
-
-#: blocks/shared/post-list-edit.js:319
-msgid "Unordered list (ul)"
-msgstr ""
-
 #: blocks/shared/post-list-edit.js:320
-msgid "Ordered list (ol)"
-msgstr ""
-
-#: blocks/shared/post-list-edit.js:321
-msgid "Article cards (div)"
+msgid ""
+"Template for the meta line below the title. Supports post placeholders such "
+"as {date}, {author}, and {modified}. Leave empty to hide."
 msgstr ""
 
 #: blocks/shared/post-list-edit.js:327
-msgid "Thumbnail size"
+msgid "Format"
 msgstr ""
 
-#: blocks/shared/post-list-edit.js:330
-msgid "Thumbnail"
+#: blocks/shared/post-list-edit.js:328
+msgid "ul/ol: title-only list. div: full card with thumbnail/excerpt/meta."
 msgstr ""
 
 #: blocks/shared/post-list-edit.js:331
-msgid "Medium (default)"
+msgid "Unordered list (ul)"
 msgstr ""
 
 #: blocks/shared/post-list-edit.js:332
-msgid "Medium large"
+msgid "Ordered list (ol)"
 msgstr ""
 
 #: blocks/shared/post-list-edit.js:333
+msgid "Article cards (div)"
+msgstr ""
+
+#: blocks/shared/post-list-edit.js:339
+msgid "Thumbnail size"
+msgstr ""
+
+#: blocks/shared/post-list-edit.js:342
+msgid "Thumbnail"
+msgstr ""
+
+#: blocks/shared/post-list-edit.js:343
+msgid "Medium (default)"
+msgstr ""
+
+#: blocks/shared/post-list-edit.js:344
+msgid "Medium large"
+msgstr ""
+
+#: blocks/shared/post-list-edit.js:345
 msgid "Large"
 msgstr ""
 
-#: blocks/shared/post-list-edit.js:334
+#: blocks/shared/post-list-edit.js:346
 msgid "Full"
 msgstr ""
 
-#: blocks/shared/post-list-edit.js:341
+#: blocks/shared/post-list-edit.js:353
 msgid "Number of columns (div: CSS grid; ul/ol: multi-column text flow)."
 msgstr ""
 
-#: blocks/shared/post-list-edit.js:349 blocks/shared/term-display-edit.js:172
+#: blocks/shared/post-list-edit.js:361 blocks/shared/term-display-edit.js:172
 msgid "Template"
 msgstr ""
 
-#: blocks/shared/post-list-edit.js:351
+#: blocks/shared/post-list-edit.js:363
 msgid ""
-"CSS class slug appended as htax-template-{name}. Leave \"default\" unless "
-"your theme provides a custom template."
+"CSS class slug appended as htax-result-{name}. Leave \"default\" unless your "
+"theme provides a custom template."
 msgstr ""
 
-#: blocks/shared/post-list-edit.js:358
+#: blocks/shared/post-list-edit.js:370
 msgid "No-results message"
 msgstr ""
 
-#: blocks/shared/post-list-edit.js:359
+#: blocks/shared/post-list-edit.js:371
 msgid "Shown when the query returns no results. Leave empty to render nothing."
 msgstr ""
 
-#: blocks/shared/post-list-edit.js:366
+#: blocks/shared/post-list-edit.js:378
 msgid "Frontend sort picker fields"
 msgstr ""
 
-#: blocks/shared/post-list-edit.js:368
+#: blocks/shared/post-list-edit.js:380
 msgid ""
 "Fields shown in the frontend sort-order picker. Leave empty to hide the "
 "picker."
 msgstr ""
 
-#: blocks/shared/post-list-edit.js:379
+#: blocks/shared/post-list-edit.js:391
 msgid "Sort picker alignment"
 msgstr ""
 
-#: blocks/shared/post-list-edit.js:382 blocks/shared/post-list-edit.js:396
+#: blocks/shared/post-list-edit.js:394 blocks/shared/post-list-edit.js:408
 msgid "Default (left)"
 msgstr ""
 
-#: blocks/shared/post-list-edit.js:383 blocks/shared/post-list-edit.js:397
+#: blocks/shared/post-list-edit.js:395 blocks/shared/post-list-edit.js:409
 msgid "Left"
 msgstr ""
 
-#: blocks/shared/post-list-edit.js:384 blocks/shared/post-list-edit.js:398
+#: blocks/shared/post-list-edit.js:396 blocks/shared/post-list-edit.js:410
 msgid "Right"
 msgstr ""
 
-#: blocks/shared/post-list-edit.js:385 blocks/shared/post-list-edit.js:399
+#: blocks/shared/post-list-edit.js:397 blocks/shared/post-list-edit.js:411
 msgid "Center"
 msgstr ""
 
-#: blocks/shared/post-list-edit.js:393
+#: blocks/shared/post-list-edit.js:405
 msgid "Filter panel alignment"
 msgstr ""
 
-#: blocks/shared/post-list-edit.js:406
+#: blocks/shared/post-list-edit.js:418
 msgid "Prepend HTML (per post)"
 msgstr ""
 
-#: blocks/shared/post-list-edit.js:408
+#: blocks/shared/post-list-edit.js:420
 msgid ""
 "HTML inserted before each post item. Supports placeholders: {id}, {title}, "
 "{url}, {date}, {modified}, {author}, {excerpt}, {comment_count}, "
 "{thumbnail}, {thumbnail:large}."
 msgstr ""
 
-#: blocks/shared/post-list-edit.js:415
+#: blocks/shared/post-list-edit.js:427
 msgid "Append HTML (per post)"
 msgstr ""
 
-#: blocks/shared/post-list-edit.js:417
+#: blocks/shared/post-list-edit.js:429
 msgid "HTML inserted after each post item. Same placeholders as prepend."
 msgstr ""
 

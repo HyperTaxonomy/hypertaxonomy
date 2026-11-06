@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: hypertaxonomy 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-05 23:20-0500\n"
-"PO-Revision-Date: 2026-11-05 23:20-0500\n"
+"POT-Creation-Date: 2026-11-05 23:46-0500\n"
+"PO-Revision-Date: 2026-11-05 23:46-0500\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: ru\n"
@@ -238,7 +238,9 @@ msgstr ""
 msgid ""
 "If a term with the same name already exists in the target taxonomy, it is "
 "skipped. Rename one of them, then convert again."
-msgstr "Если термин с таким же названием уже существует в целевой таксономии, он будет пропущен. Переименуйте один из них и повторите преобразование."
+msgstr ""
+"Если термин с таким же названием уже существует в целевой таксономии, он "
+"будет пропущен. Переименуйте один из них и повторите преобразование."
 
 #: includes/admin/convert-terms.php:245 includes/admin/merge-terms.php:104
 msgid ""
@@ -298,7 +300,7 @@ msgstr "Из таксономии"
 #: includes/admin/convert-terms.php:310 includes/admin/convert-terms.php:343
 #: includes/admin/merge-terms.php:152
 #: includes/admin/relationship-types-admin.php:610
-#: blocks/shared/post-list-edit.js:116 blocks/shared/term-display-edit.js:87
+#: blocks/shared/post-list-edit.js:117 blocks/shared/term-display-edit.js:87
 msgid "— Select taxonomy —"
 msgstr "— Выберите таксономию —"
 
@@ -873,8 +875,8 @@ msgid "Please select a file to import"
 msgstr "Выберите файл для импорта"
 
 #: includes/admin/import-ui.php:79
-#: includes/classes/class-search-widget.php:2295
-#: includes/classes/class-search-widget.php:3766
+#: includes/classes/class-search-widget.php:2294
+#: includes/classes/class-search-widget.php:3765
 msgid "Loading..."
 msgstr "Идёт загрузка…"
 
@@ -998,7 +1000,7 @@ msgstr "Удалено исходных терминов:"
 
 #: includes/admin/merge-terms.php:148
 #: includes/admin/relationship-types-admin.php:607
-#: blocks/shared/post-list-edit.js:144 blocks/shared/term-display-edit.js:119
+#: blocks/shared/post-list-edit.js:145 blocks/shared/term-display-edit.js:119
 msgid "Taxonomy"
 msgstr "Таксономия"
 
@@ -1493,7 +1495,7 @@ msgstr "Функции"
 #: includes/admin/settings.php:374 blocks/ht-sort-order-options/src/index.js:81
 #: blocks/ht-term-cloud/src/index.js:19 blocks/ht-term-groups/src/index.js:21
 #: blocks/ht-term-index/src/index.js:20 blocks/ht-term-list/src/index.js:22
-#: blocks/shared/post-list-edit.js:288
+#: blocks/shared/post-list-edit.js:300
 msgid "Display"
 msgstr "Отображение"
 
@@ -1502,7 +1504,7 @@ msgid "Icons"
 msgstr "Значки"
 
 #: includes/admin/settings.php:376
-#: includes/classes/class-search-widget.php:2192
+#: includes/classes/class-search-widget.php:2191
 msgid "Search"
 msgstr "Поиск"
 
@@ -4277,7 +4279,7 @@ msgstr ""
 "Перетащите рамку, чтобы выбрать, какую область %1$d×%2$d px использовать. "
 "Размер рамки фиксирован — можно перемещать только её положение."
 
-#: includes/classes/class-blocks.php:254 includes/classes/class-blocks.php:255
+#: includes/classes/class-blocks.php:259 includes/classes/class-blocks.php:260
 #: includes/shortcodes/class-sort-order.php:99
 #: includes/shortcodes/class-sort-order.php:100
 #: includes/shortcodes/class-sort-order.php:190
@@ -4321,23 +4323,23 @@ msgid "An error occurred during search."
 msgstr "Во время поиска произошла ошибка."
 
 #: includes/classes/class-power-search.php:99
-#: includes/classes/class-power-search.php:319
+#: includes/classes/class-power-search.php:310
 #, php-format
 msgid "Please enter at least %d characters."
 msgstr "Введите не менее %d символов."
 
 #: includes/classes/class-power-search.php:100
-#: includes/classes/class-search-widget.php:3773
+#: includes/classes/class-search-widget.php:3772
 msgid "Previous"
 msgstr "Предыдущая"
 
 #: includes/classes/class-power-search.php:101
-#: includes/classes/class-search-widget.php:3775
+#: includes/classes/class-search-widget.php:3774
 msgid "Next"
 msgstr "Следующая"
 
 #: includes/classes/class-power-search.php:102
-#: includes/classes/class-search-widget.php:3777
+#: includes/classes/class-search-widget.php:3776
 #: includes/shortcodes/class-post-list.php:922
 #, php-format
 msgid "Page %1$d of %2$d"
@@ -4352,51 +4354,51 @@ msgstr "Ошибка базы данных. Проверьте журналы."
 msgid "Index cleared. Rebuilding %d posts..."
 msgstr "Индекс очищен. Идёт перестроение %d записей…"
 
-#: includes/classes/class-search-widget.php:930
+#: includes/classes/class-search-widget.php:929
 msgid "Enter search terms..."
 msgstr "Введите поисковый запрос…"
 
-#: includes/classes/class-search-widget.php:1100
+#: includes/classes/class-search-widget.php:1099
 msgid "Type to search..."
 msgstr "Введите текст для поиска…"
 
-#: includes/classes/class-search-widget.php:2167
+#: includes/classes/class-search-widget.php:2166
 msgid "Select..."
 msgstr "Выберите…"
 
-#: includes/classes/class-search-widget.php:2217
+#: includes/classes/class-search-widget.php:2216
 msgid "Show advanced options"
 msgstr "Показать расширенные параметры"
 
-#: includes/classes/class-search-widget.php:2218
+#: includes/classes/class-search-widget.php:2217
 msgid "Hide advanced options"
 msgstr "Скрыть расширенные параметры"
 
-#: includes/classes/class-search-widget.php:2296
+#: includes/classes/class-search-widget.php:2295
 msgid "Search results navigation"
 msgstr "Навигация по результатам поиска"
 
-#: includes/classes/class-search-widget.php:3767
+#: includes/classes/class-search-widget.php:3766
 msgid "No results found"
 msgstr "Результатов не найдено"
 
-#: includes/classes/class-search-widget.php:3768
+#: includes/classes/class-search-widget.php:3767
 msgid "An error occurred"
 msgstr "Произошла ошибка"
 
-#: includes/classes/class-search-widget.php:3769
+#: includes/classes/class-search-widget.php:3768
 msgid "Please enter at least 2 characters"
 msgstr "Введите не менее 2 символов"
 
-#: includes/classes/class-search-widget.php:3771
+#: includes/classes/class-search-widget.php:3770
 msgid "Please enter at least {n} characters."
 msgstr "Введите не менее {n} символов."
 
-#: includes/classes/class-search-widget.php:3778
+#: includes/classes/class-search-widget.php:3777
 msgid "Current Location"
 msgstr "Текущее местоположение"
 
-#: includes/classes/class-search-widget.php:3780
+#: includes/classes/class-search-widget.php:3779
 #, php-format
 msgid "by %s"
 msgstr "автор: %s"
@@ -5217,7 +5219,7 @@ msgstr "Только в метках"
 msgid "Categories only"
 msgstr "Только в рубриках"
 
-#: blocks/ht-power-search/src/index.js:87 blocks/shared/post-list-edit.js:189
+#: blocks/ht-power-search/src/index.js:87 blocks/shared/post-list-edit.js:190
 msgid "Posts per page"
 msgstr "Количество записей на странице"
 
@@ -5225,7 +5227,7 @@ msgstr "Количество записей на странице"
 msgid "Max results across all pages (0 = no cap)"
 msgstr "Максимум результатов на всех страницах (0 = без ограничения)"
 
-#: blocks/ht-power-search/src/index.js:103 blocks/shared/post-list-edit.js:201
+#: blocks/ht-power-search/src/index.js:103 blocks/shared/post-list-edit.js:202
 msgid "Sort order"
 msgstr "Порядок сортировки"
 
@@ -5276,7 +5278,7 @@ msgstr ""
 #: blocks/ht-sort-order-options/src/index.js:120
 #: blocks/ht-term-cloud/src/index.js:73 blocks/ht-term-groups/src/index.js:65
 #: blocks/ht-term-index/src/index.js:79 blocks/ht-term-list/src/index.js:116
-#: blocks/shared/post-list-edit.js:424
+#: blocks/shared/post-list-edit.js:436
 msgid "Additional CSS class"
 msgstr "Дополнительный CSS-класс"
 
@@ -5445,7 +5447,7 @@ msgid "Top & bottom"
 msgstr "Сверху и снизу"
 
 #: blocks/ht-term-index/src/index.js:45 blocks/ht-term-list/src/index.js:66
-#: blocks/shared/post-list-edit.js:340
+#: blocks/shared/post-list-edit.js:352
 msgid "Columns"
 msgstr "Столбцы"
 
@@ -5549,47 +5551,47 @@ msgstr "Переместить вниз"
 msgid "+ Add sort field"
 msgstr "+ Добавить поле сортировки"
 
-#: blocks/shared/post-list-edit.js:115
+#: blocks/shared/post-list-edit.js:116
 msgid "— All taxonomies —"
 msgstr "— Все таксономии —"
 
-#: blocks/shared/post-list-edit.js:140 blocks/shared/term-display-edit.js:101
+#: blocks/shared/post-list-edit.js:141 blocks/shared/term-display-edit.js:101
 msgid "Term Source"
 msgstr "Источник терминов"
 
-#: blocks/shared/post-list-edit.js:152 blocks/shared/term-display-edit.js:138
+#: blocks/shared/post-list-edit.js:153 blocks/shared/term-display-edit.js:138
 msgid "Include terms"
 msgstr "Включить термины"
 
-#: blocks/shared/post-list-edit.js:158 blocks/shared/term-display-edit.js:144
+#: blocks/shared/post-list-edit.js:159 blocks/shared/term-display-edit.js:144
 msgid "Exclude terms"
 msgstr "Исключить термины"
 
-#: blocks/shared/post-list-edit.js:164 blocks/shared/term-display-edit.js:153
+#: blocks/shared/post-list-edit.js:165 blocks/shared/term-display-edit.js:153
 msgid "Include groups"
 msgstr "Включить группы"
 
-#: blocks/shared/post-list-edit.js:169 blocks/shared/term-display-edit.js:158
+#: blocks/shared/post-list-edit.js:170 blocks/shared/term-display-edit.js:158
 msgid "Exclude groups"
 msgstr "Исключить группы"
 
-#: blocks/shared/post-list-edit.js:179
+#: blocks/shared/post-list-edit.js:180
 msgid "Query"
 msgstr "Запрос"
 
-#: blocks/shared/post-list-edit.js:183
+#: blocks/shared/post-list-edit.js:184
 msgid "Post type"
 msgstr "Тип записи"
 
-#: blocks/shared/post-list-edit.js:195
+#: blocks/shared/post-list-edit.js:196
 msgid "Max results (0 = no cap)"
 msgstr "Максимальное количество результатов (0 = без ограничения)"
 
-#: blocks/shared/post-list-edit.js:209
+#: blocks/shared/post-list-edit.js:210
 msgid "Keyword search"
 msgstr "Поиск по ключевым словам"
 
-#: blocks/shared/post-list-edit.js:211
+#: blocks/shared/post-list-edit.js:212
 msgid ""
 "Boosts relevance for posts matching this text. Supports field operators: "
 "title:word, content:word, excerpt:word. Prefix with + to require or - to "
@@ -5600,15 +5602,25 @@ msgstr ""
 "Добавьте префикс +, чтобы сделать обязательным, или -, чтобы понизить. Не "
 "отфильтровывает несоответствующие записи."
 
-#: blocks/shared/post-list-edit.js:222
+#: blocks/shared/post-list-edit.js:221
+msgid "Boost posts matching the current post's title"
+msgstr "Повышать записи, совпадающие с заголовком текущей записи"
+
+#: blocks/shared/post-list-edit.js:223
+msgid ""
+"Posts whose text matches the current post's title rank higher. Turn off to "
+"rank by shared terms only."
+msgstr "Записи, текст которых совпадает с заголовком текущей записи, ранжируются выше. Отключите, чтобы ранжировать только по общим терминам."
+
+#: blocks/shared/post-list-edit.js:234
 msgid "Filters"
 msgstr "Фильтры"
 
-#: blocks/shared/post-list-edit.js:226
+#: blocks/shared/post-list-edit.js:238
 msgid "Restrict to terms (all must match)"
 msgstr "Ограничить по терминам (все должны совпадать)"
 
-#: blocks/shared/post-list-edit.js:228
+#: blocks/shared/post-list-edit.js:240
 msgid ""
 "Posts must have ALL of these terms. Uses the selected taxonomy for "
 "autocomplete."
@@ -5616,35 +5628,35 @@ msgstr ""
 "Записи должны иметь ВСЕ эти термины. Использует выбранную таксономию для "
 "автозаполнения."
 
-#: blocks/shared/post-list-edit.js:236
+#: blocks/shared/post-list-edit.js:248
 msgid "Restrict to groups"
 msgstr "Ограничить по группам"
 
-#: blocks/shared/post-list-edit.js:238
+#: blocks/shared/post-list-edit.js:250
 msgid "Posts must have at least one term from each listed group."
 msgstr "Записи должны иметь хотя бы один термин из каждой указанной группы."
 
-#: blocks/shared/post-list-edit.js:245
+#: blocks/shared/post-list-edit.js:257
 msgid "Exclude by terms"
 msgstr "Исключить по терминам"
 
-#: blocks/shared/post-list-edit.js:247
+#: blocks/shared/post-list-edit.js:259
 msgid "Posts with ANY of these terms are excluded."
 msgstr "Записи с ЛЮБЫМ из этих терминов исключаются."
 
-#: blocks/shared/post-list-edit.js:255
+#: blocks/shared/post-list-edit.js:267
 msgid "Exclude by groups"
 msgstr "Исключить по группам"
 
-#: blocks/shared/post-list-edit.js:257
+#: blocks/shared/post-list-edit.js:269
 msgid "Posts with any term from ANY of these groups are excluded."
 msgstr "Записи с любым термином из ЛЮБОЙ из этих групп исключаются."
 
-#: blocks/shared/post-list-edit.js:264
+#: blocks/shared/post-list-edit.js:276
 msgid "Inline filter panel"
 msgstr "Встроенная панель фильтров"
 
-#: blocks/shared/post-list-edit.js:266
+#: blocks/shared/post-list-edit.js:278
 msgid ""
 "Renders a frontend filter UI. Add keywords: date_published, date_modified, "
 "author, or any taxonomy slug."
@@ -5652,108 +5664,104 @@ msgstr ""
 "Отображает интерфейс фильтрации на внешней части сайта. Добавьте ключевые "
 "слова: date_published, date_modified, author или любой ярлык таксономии."
 
-#: blocks/shared/post-list-edit.js:277
+#: blocks/shared/post-list-edit.js:289
 msgid "Filter options (positional, comma-separated)"
 msgstr "Параметры фильтров (позиционные, через запятую)"
 
-#: blocks/shared/post-list-edit.js:292
+#: blocks/shared/post-list-edit.js:304
 msgid "Show thumbnail"
 msgstr "Показывать миниатюру"
 
-#: blocks/shared/post-list-edit.js:299
+#: blocks/shared/post-list-edit.js:311
 msgid "Show excerpt"
 msgstr "Показывать отрывок"
 
-#: blocks/shared/post-list-edit.js:306
+#: blocks/shared/post-list-edit.js:318
 msgid "Meta line"
 msgstr "Строка метаданных"
 
-#: blocks/shared/post-list-edit.js:308
+#: blocks/shared/post-list-edit.js:320
 msgid ""
-"Template for the meta line below the title. Tokens: {date}, {author}, "
-"{modified}. Leave empty to hide."
-msgstr ""
-"Шаблон строки метаданных под заголовком. Токены: {date}, {author}, "
-"{modified}. Оставьте пустым, чтобы скрыть."
+"Template for the meta line below the title. Supports post placeholders such "
+"as {date}, {author}, and {modified}. Leave empty to hide."
+msgstr "Шаблон строки метаданных под заголовком. Поддерживает заполнители записи, такие как {date}, {author} и {modified}. Оставьте пустым, чтобы скрыть."
 
-#: blocks/shared/post-list-edit.js:315
+#: blocks/shared/post-list-edit.js:327
 msgid "Format"
 msgstr "Формат"
 
-#: blocks/shared/post-list-edit.js:316
+#: blocks/shared/post-list-edit.js:328
 msgid "ul/ol: title-only list. div: full card with thumbnail/excerpt/meta."
 msgstr ""
 "ul/ol: список только с заголовками. div: полная карточка с миниатюрой/"
 "отрывком/метаданными."
 
-#: blocks/shared/post-list-edit.js:319
+#: blocks/shared/post-list-edit.js:331
 msgid "Unordered list (ul)"
 msgstr "Маркированный список (ul)"
 
-#: blocks/shared/post-list-edit.js:320
+#: blocks/shared/post-list-edit.js:332
 msgid "Ordered list (ol)"
 msgstr "Нумерованный список (ol)"
 
-#: blocks/shared/post-list-edit.js:321
+#: blocks/shared/post-list-edit.js:333
 msgid "Article cards (div)"
 msgstr "Карточки статей (div)"
 
-#: blocks/shared/post-list-edit.js:327
+#: blocks/shared/post-list-edit.js:339
 msgid "Thumbnail size"
 msgstr "Размер миниатюры"
 
-#: blocks/shared/post-list-edit.js:330
+#: blocks/shared/post-list-edit.js:342
 msgid "Thumbnail"
 msgstr "Миниатюра"
 
-#: blocks/shared/post-list-edit.js:331
+#: blocks/shared/post-list-edit.js:343
 msgid "Medium (default)"
 msgstr "Средний (по умолчанию)"
 
-#: blocks/shared/post-list-edit.js:332
+#: blocks/shared/post-list-edit.js:344
 msgid "Medium large"
 msgstr "Между средним и большим"
 
-#: blocks/shared/post-list-edit.js:333
+#: blocks/shared/post-list-edit.js:345
 msgid "Large"
 msgstr "Большой"
 
-#: blocks/shared/post-list-edit.js:334
+#: blocks/shared/post-list-edit.js:346
 msgid "Full"
 msgstr "Полный"
 
-#: blocks/shared/post-list-edit.js:341
+#: blocks/shared/post-list-edit.js:353
 msgid "Number of columns (div: CSS grid; ul/ol: multi-column text flow)."
 msgstr ""
 "Количество столбцов (div: CSS-сетка; ul/ol: многоколоночный текстовый поток)."
 
-#: blocks/shared/post-list-edit.js:349 blocks/shared/term-display-edit.js:172
+#: blocks/shared/post-list-edit.js:361 blocks/shared/term-display-edit.js:172
 msgid "Template"
 msgstr "Шаблон"
 
-#: blocks/shared/post-list-edit.js:351
+#: blocks/shared/post-list-edit.js:363
 msgid ""
-"CSS class slug appended as htax-template-{name}. Leave \"default\" unless "
-"your theme provides a custom template."
-msgstr ""
-"Ярлык CSS-класса, добавляемый как htax-template-{name}. Оставьте «default», "
-"если только ваша тема не предоставляет пользовательский шаблон."
+"CSS class slug appended as htax-result-{name}. Leave \"default\" unless your "
+"theme provides a custom template."
+msgstr "Ярлык CSS-класса, добавляемый как htax-result-{name}. Оставьте «default», если только ваша тема не предоставляет пользовательский шаблон."
 
-#: blocks/shared/post-list-edit.js:358
+#: blocks/shared/post-list-edit.js:370
 msgid "No-results message"
 msgstr "Сообщение при отсутствии результатов"
 
-#: blocks/shared/post-list-edit.js:359
+#: blocks/shared/post-list-edit.js:371
 msgid "Shown when the query returns no results. Leave empty to render nothing."
 msgstr ""
 "Показывается, когда запрос не возвращает результатов. Оставьте пустым, чтобы "
 "ничего не отображать."
 
-#: blocks/shared/post-list-edit.js:366
+#: blocks/shared/post-list-edit.js:378
 msgid "Frontend sort picker fields"
 msgstr "Поля выбора сортировки на внешней части сайта"
 
-#: blocks/shared/post-list-edit.js:368
+#: blocks/shared/post-list-edit.js:380
 msgid ""
 "Fields shown in the frontend sort-order picker. Leave empty to hide the "
 "picker."
@@ -5761,35 +5769,35 @@ msgstr ""
 "Поля, отображаемые в выборе порядка сортировки на внешней части сайта. "
 "Оставьте пустым, чтобы скрыть выбор."
 
-#: blocks/shared/post-list-edit.js:379
+#: blocks/shared/post-list-edit.js:391
 msgid "Sort picker alignment"
 msgstr "Выравнивание выбора сортировки"
 
-#: blocks/shared/post-list-edit.js:382 blocks/shared/post-list-edit.js:396
+#: blocks/shared/post-list-edit.js:394 blocks/shared/post-list-edit.js:408
 msgid "Default (left)"
 msgstr "По умолчанию (слева)"
 
-#: blocks/shared/post-list-edit.js:383 blocks/shared/post-list-edit.js:397
+#: blocks/shared/post-list-edit.js:395 blocks/shared/post-list-edit.js:409
 msgid "Left"
 msgstr "Слева"
 
-#: blocks/shared/post-list-edit.js:384 blocks/shared/post-list-edit.js:398
+#: blocks/shared/post-list-edit.js:396 blocks/shared/post-list-edit.js:410
 msgid "Right"
 msgstr "Справа"
 
-#: blocks/shared/post-list-edit.js:385 blocks/shared/post-list-edit.js:399
+#: blocks/shared/post-list-edit.js:397 blocks/shared/post-list-edit.js:411
 msgid "Center"
 msgstr "По центру"
 
-#: blocks/shared/post-list-edit.js:393
+#: blocks/shared/post-list-edit.js:405
 msgid "Filter panel alignment"
 msgstr "Выравнивание панели фильтров"
 
-#: blocks/shared/post-list-edit.js:406
+#: blocks/shared/post-list-edit.js:418
 msgid "Prepend HTML (per post)"
 msgstr "HTML в начале (для каждой записи)"
 
-#: blocks/shared/post-list-edit.js:408
+#: blocks/shared/post-list-edit.js:420
 msgid ""
 "HTML inserted before each post item. Supports placeholders: {id}, {title}, "
 "{url}, {date}, {modified}, {author}, {excerpt}, {comment_count}, "
@@ -5799,11 +5807,11 @@ msgstr ""
 "значения переменных: {id}, {title}, {url}, {date}, {modified}, {author}, "
 "{excerpt}, {comment_count}, {thumbnail}, {thumbnail:large}."
 
-#: blocks/shared/post-list-edit.js:415
+#: blocks/shared/post-list-edit.js:427
 msgid "Append HTML (per post)"
 msgstr "HTML в конце (для каждой записи)"
 
-#: blocks/shared/post-list-edit.js:417
+#: blocks/shared/post-list-edit.js:429
 msgid "HTML inserted after each post item. Same placeholders as prepend."
 msgstr ""
 "HTML, вставляемый после каждого элемента записи. Те же переменные, что и в "

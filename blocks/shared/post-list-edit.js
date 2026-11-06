@@ -90,6 +90,7 @@ export function createEdit( blockName, opts = {} ) {
 			sort_order_align,
 			filters_align,
 			search,
+			title_boost,
 			prepend,
 			append,
 			image_size,
@@ -215,6 +216,17 @@ export function createEdit( blockName, opts = {} ) {
 								onChange={ ( val ) => setAttributes( { search: val } ) }
 							/>
 						) }
+						{ ! showTermSourceFilters && (
+							<ToggleControl
+								label={ __( 'Boost posts matching the current post\'s title', 'hypertaxonomy' ) }
+								help={ __(
+									'Posts whose text matches the current post\'s title rank higher. Turn off to rank by shared terms only.',
+									'hypertaxonomy'
+								) }
+								checked={ false !== title_boost }
+								onChange={ ( val ) => setAttributes( { title_boost: val } ) }
+							/>
+						) }
 					</PanelBody>
 
 					{ /* ── Filters ─────────────────────────────────────────── */ }
@@ -305,7 +317,7 @@ export function createEdit( blockName, opts = {} ) {
 						<TextControl
 							label={ __( 'Meta line', 'hypertaxonomy' ) }
 							help={ __(
-								'Template for the meta line below the title. Tokens: {date}, {author}, {modified}. Leave empty to hide.',
+								'Template for the meta line below the title. Supports post placeholders such as {date}, {author}, and {modified}. Leave empty to hide.',
 								'hypertaxonomy'
 							) }
 							value={ meta }
@@ -348,7 +360,7 @@ export function createEdit( blockName, opts = {} ) {
 						<TextControl
 							label={ __( 'Template', 'hypertaxonomy' ) }
 							help={ __(
-								'CSS class slug appended as htax-template-{name}. Leave "default" unless your theme provides a custom template.',
+								'CSS class slug appended as htax-result-{name}. Leave "default" unless your theme provides a custom template.',
 								'hypertaxonomy'
 							) }
 							value={ template }

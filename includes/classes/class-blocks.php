@@ -162,6 +162,11 @@ class HyperTaxonomy_Blocks {
         }
         setup_postdata( $post );
 
+        // An explicit empty search turns off the automatic title boost.
+        if ( isset( $attributes['title_boost'] ) && false === $attributes['title_boost'] ) {
+            $attributes['search'] = '';
+        }
+
         $instance = new HyperTaxonomy_Shortcode_Related_Posts();
         $output   = $instance->render_for_block( $attributes );
 

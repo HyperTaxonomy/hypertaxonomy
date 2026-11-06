@@ -4,13 +4,13 @@ parent: User Guide
 nav_order: 6
 ---
 
-## Post List Shortcodes
+# Post List Shortcodes
 
 Two shortcodes for displaying posts from the local search index. For fetching posts from peer WordPress sites and RSS/Atom feeds, see the `[tc_peer_posts]` shortcode in the TermConnect documentation.
 
 > **Term and group attributes accept slugs or IDs.** Every term/group attribute below (`include_terms`, `exclude_terms`, `filter_terms`, `filter_out_terms`, `include_groups`, `exclude_groups`, `filter_groups`, `filter_out_groups`) accepts a comma-separated list of either numeric IDs **or** slugs, and the two may be mixed (e.g. `include_terms="news,42,featured"`). Term slugs resolve within the shortcode's `taxonomy`; group slugs resolve within the `group` taxonomy. A purely numeric token is always treated as an ID.
 
-### Common Parameters
+## Common Parameters
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
@@ -23,7 +23,7 @@ Two shortcodes for displaying posts from the local search index. For fetching po
 | `sort_order_align` | Horizontal alignment of the sort picker in the controls bar: `left`, `right`, or `center`. Empty = default (left). Controls bar renders when sort picker or filter panel is present; both controls appear inline in a flex row. | — |
 | `show_thumbnail` | Show featured image (`div` format only) | `true` |
 | `show_excerpt` | Show post excerpt (`div` format only) | `true` |
-| `meta` | Template string for the meta line rendered below the post title in `div` format. Supports tokens: `{date}`, `{author}`, `{modified}`. Leave empty to hide the meta line entirely. | `{date} by {author}` |
+| `meta` | Template string for the meta line rendered below the post title in `div` format. Supports the post placeholders below, such as `{date}`, `{author}`, and `{modified}`. Leave empty to hide the meta line entirely. | `{date} by {author}` |
 | `image_size` | WordPress registered image size used for the thumbnail in `div` format. Any size registered via `add_image_size()` or the built-in sizes (`thumbnail`, `medium`, `medium_large`, `large`, `full`) is accepted. | `medium` |
 | `columns` | Number of columns. For `div` format: CSS grid layout. For `ul`/`ol` format: CSS multi-column text flow. Responsive — automatically collapses to 2 columns on tablet (≤ 768 px) and 1 column on mobile (≤ 480 px). | `1` |
 | `format` | Output format: `ul` (unordered list), `ol` (ordered list), or `div` (full article cards). `ul`/`ol` render a `<ul>`/`<ol>` with one `<li>` per post containing only the title linked. `div` renders full article cards with thumbnail, excerpt, and meta. For `ol` with pagination, numbering continues across pages (page 2 starts at `posts_per_page + 1`). | `ul` |
@@ -37,7 +37,7 @@ Two shortcodes for displaying posts from the local search index. For fetching po
 | `filters` | Comma-separated keywords to generate an inline filter panel. Shorthand alternative to a separate `[ht_filter_options]` shortcode. Keywords: `date_published`, `date_modified`, `author`, or any taxonomy slug. First taxonomy slug becomes the primary filter (seeded from `filter_terms` if present). | — |
 | `filter_options` | Comma-separated per-position options aligned to `filters`. For taxonomy filters: `group:N` (pool from group N). For date filters: `single` (single date picker). Empty position = all defaults. | — |
 | `filters_align` | Horizontal alignment of the filter panel in the controls bar: `left`, `right`, or `center`. Empty = default (left). | — |
-| `search` | Keyword string that boosts relevance for matching posts. Does not remove non-matching posts — it only raises their score. Supports field operators: `title:word`, `content:word`, `excerpt:word`. Prefix a term with `+` to make it required, `-` to penalize it. Boolean phrases in `"double quotes"` are matched as a phrase. | — |
+| `search` | Keyword string that boosts relevance for matching posts. Does not remove non-matching posts — it only raises their score. Supports field operators: `title:word`, `content:word`, `excerpt:word`. Prefix a term with `+` to require it for the boost, `-` to deny the boost to posts containing it. Boolean phrases in `"double quotes"` are matched as a phrase. | — |
 | `prepend` | HTML template inserted before each post item in the list. Supports post placeholders (see table below). | — |
 | `append` | HTML template inserted after each post item in the list. Supports post placeholders (see table below). | — |
 
@@ -73,7 +73,7 @@ Two shortcodes for displaying posts from the local search index. For fetching po
 
 ---
 
-### [ht_post_list]
+## [ht_post_list]
 
 Displays posts that belong to the specified terms or term groups. Uses the search index — so if term A includes term B, posts tagged with B appear automatically when term A is specified, with appropriate relevance weighting.
 
@@ -91,7 +91,7 @@ Include/exclude uses the same 4-step logic as the term display shortcodes: (1) i
 
 If no `include_terms` or `include_groups` is specified, the shortcode renders nothing — this prevents accidentally displaying all posts on the site.
 
-**Keyword boosting with `search`:** The `search` attribute adjusts relevance scores for posts that match the given text, but does not remove non-matching posts from the results. Pair it with `orderby="relevance:desc,date:desc"` to float matching posts to the top. Field operators (`title:`, `content:`, `excerpt:`) restrict matching to a single field; unqualified terms match across all three. Use `+term` to require a term (posts that don't match it score zero for that component) and `-term` to penalize it.
+**Keyword boosting with `search`:** The `search` attribute adjusts relevance scores for posts that match the given text, but does not remove non-matching posts from the results. Pair it with `orderby="relevance:desc,date:desc"` to float matching posts to the top. Field operators (`title:`, `content:`, `excerpt:`) restrict matching to a single field; unqualified terms match across all three. Use `+term` to require a term (posts that don't match it get no boost from that field) and `-term` to deny the boost to posts containing it. Those posts stay in the results.
 
 **Examples:**
 
@@ -123,7 +123,7 @@ If no `include_terms` or `include_groups` is specified, the shortcode renders no
 
 ---
 
-### HT Post List Block
+## HT Post List Block
 
 The **HT Post List** Gutenberg block is the block-editor equivalent of `[ht_post_list]`. It produces identical output — the same queries, pagination, AJAX, relevance scoring, and template rendering — because the block's render callback delegates directly to the shortcode handler.
 
@@ -132,16 +132,16 @@ Find it in the block inserter under **HyperTaxonomy → HT Post List**, or searc
 The block has four inspector panels:
 
 **Term Source**
-Configure which posts to retrieve. Select the taxonomy, then pick include/exclude terms using an autocomplete token field (type term names — IDs are stored automatically). Include/exclude groups accept comma-separated Term Group IDs.
+Configure which posts to retrieve. Select the taxonomy, then pick include/exclude terms and groups using autocomplete token fields (type names — IDs are stored automatically).
 
 **Query**
-Select post type from a live dropdown. Set posts per page and max results. The **Sort order** builder lets you add, remove, and reorder sort criteria with a ▲/▼ direction toggle — the same fields available in `[ht_sort_order_options]`: date, modified, title, author, comment count, latest comment, latest activity, ID, and relevance.
+Select post type from a live dropdown. Set posts per page and max results. **Keyword search** is the `search` attribute. The **Sort order** builder lets you add, remove, and reorder sort criteria with a ▲/▼ direction toggle — the same fields available in `[ht_sort_order_options]`: date, modified, title, author, comment count, latest comment, latest activity, ID, and relevance.
 
 **Filters**
-Add hard AND constraints on top of the include/exclude selection. *Restrict to terms* requires all listed terms to match (equivalent to `filter_terms`). *Restrict to groups* requires at least one term from each group (equivalent to `filter_groups`). *Exclude terms* removes posts with any of the listed terms (equivalent to `filter_out_terms`). *Exclude groups* removes posts with any term from any of those groups (equivalent to `filter_out_groups`). *Inline filter panel* accepts the same keyword list as the `filters` shortcode attribute (`date_published`, `date_modified`, `author`, or any taxonomy slug) with optional positional `filter_options`.
+Add hard AND constraints on top of the include/exclude selection. *Restrict to terms (all must match)* requires all listed terms to match (equivalent to `filter_terms`). *Restrict to groups* requires at least one term from each group (equivalent to `filter_groups`). *Exclude by terms* removes posts with any of the listed terms (equivalent to `filter_out_terms`). *Exclude by groups* removes posts with any term from any of those groups (equivalent to `filter_out_groups`). *Inline filter panel* accepts the same keyword list as the `filters` shortcode attribute (`date_published`, `date_modified`, `author`, or any taxonomy slug), and *Filter options* is the positional `filter_options` attribute.
 
 **Display**
-Toggle thumbnail and excerpt. Set the meta line template (tokens: `{date}`, `{author}`, `{modified}`; empty = hide). Set the template slug (maps to `htax-template-{name}` CSS class), no-posts message, additional CSS class, and the fields available in the optional frontend sort picker.
+Toggle thumbnail and excerpt. Set the meta line template (post placeholders such as `{date}`, `{author}`, and `{modified}`; empty = hide), **Format**, **Thumbnail size**, and **Columns**. Set the template slug (maps to the `htax-result-{name}` CSS class), no-results message, additional CSS class, and the fields available in the optional frontend sort picker, along with **Sort picker alignment** and **Filter panel alignment**. **Prepend HTML** and **Append HTML** are the `prepend` and `append` attributes.
 
 The editor canvas shows a **live server-side preview** that updates as attributes change. Pagination controls, filter panels, and interactive elements are disabled in the preview.
 
@@ -149,19 +149,19 @@ No shortcode is needed — the block renders everything the shortcode does, conf
 
 ---
 
-### HT Related Posts Block
+## HT Related Posts Block
 
 The **HT Related Posts** Gutenberg block is the block-editor equivalent of `[ht_related_posts]`. It works in any post editor and in FSE post templates — anywhere WordPress provides a post context.
 
 Find it in the block inserter under **HyperTaxonomy → HT Related Posts**, or search for "hypertaxonomy". To display related content from peer WordPress sites and RSS/Atom feeds alongside local posts, use TermConnect's **Peer Posts** block instead.
 
-The block has the same Query, Filters, and Display inspector panels as the Post List block, including the meta line template field. The **Term Source** panel shows only the taxonomy selector — include/exclude term and group controls are not present because the term set is derived automatically from the current post. The taxonomy selector offers an **— All taxonomies —** choice (the empty value) that pools the current post's terms across every taxonomy it belongs to; pick a single taxonomy to restrict matching to it. (For a fixed subset of taxonomies, use the shortcode with a comma-separated `taxonomy` list.)
+The block has the same Query, Filters, and Display inspector panels as the Post List block, including the meta line template field. The Query panel has **Boost posts matching the current post's title** in place of Keyword search (on by default; see *Automatic title boosting* below). The **Term Source** panel shows only the taxonomy selector — include/exclude term and group controls are not present because the term set is derived automatically from the current post. The taxonomy selector offers an **— All taxonomies —** choice (the empty value) that pools the current post's terms across every taxonomy it belongs to; pick a single taxonomy to restrict matching to it. (For a fixed subset of taxonomies, use the shortcode with a comma-separated `taxonomy` list.)
 
 The editor canvas shows a live server-side preview rendered for the post being edited.
 
 ---
 
-### [ht_related_posts]
+## [ht_related_posts]
 
 Displays posts that share taxonomy terms with the current post. Intended for single post pages (silently renders nothing elsewhere).
 
@@ -173,7 +173,7 @@ Term IDs are derived automatically from the current post's direct taxonomy term 
 
 The default sort order is `relevance:desc,date:desc`: posts that share more (or higher-weighted) terms rank first, with date as a tiebreaker. Each of the current post's terms is also weighted by **how central it is to that post** (its TF-based association strength), so results sharing the post's main subjects rank above those sharing only an incidental tag.
 
-**Automatic title boosting:** By default, the current post's title is injected as a `search` keyword to further boost posts whose content matches the title. To disable this, pass an explicit empty value: `search=""`.
+**Automatic title boosting:** By default, the current post's title is injected as a `search` keyword to further boost posts whose content matches the title. To disable this, pass an explicit empty value, `search=""`, or turn off **Boost posts matching the current post's title** in the block.
 
 ```
 [ht_related_posts taxonomy="post_tag"]
@@ -194,9 +194,6 @@ The default sort order is `relevance:desc,date:desc`: posts that share more (or 
     prepend='<span class="htax-date">{date}</span> ']
 ```
 
-#### Peer/feed content
+### Peer/feed content
 
 `[ht_related_posts]` shows only local posts. To blend in related content from peer WordPress sites and RSS/Atom feeds — matched to the current post's terms, including shared-identifier and synonym matching, and grouped by source — use TermConnect's `[tc_peer_posts]` shortcode or **Peer Posts** block. See the TermConnect documentation for details.
-
----
-

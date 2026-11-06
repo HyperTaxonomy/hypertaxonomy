@@ -130,6 +130,10 @@
         "columns": {
             "type": "string",
             "default": "1"
+        },
+        "title_boost": {
+            "type": "boolean",
+            "default": true
         }
     },
     "example": {},

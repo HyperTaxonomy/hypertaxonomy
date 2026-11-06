@@ -1,9 +1,9 @@
 ---
-title: Comparing to Tag Groups
+title: Feature Comparison
 nav_order: 7
 ---
 
-# Feature Comparison: HyperTaxonomy vs. Tag Groups
+# Feature Comparison
 
 Comparing **HyperTaxonomy** with **Tag Groups** (rebranded "PublishPress Tag Groups" in October 2026) — a popular plugin, commonly used for taxonomy term organization and management.
 

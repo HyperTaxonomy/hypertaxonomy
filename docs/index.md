@@ -19,7 +19,7 @@ Part of the [HyperTaxonomy suite](https://hypertaxonomy.org) of interoperable Wo
 - **[Developer Reference](developer-reference/)** — for theme and plugin developers: custom taxonomy integration, the PHP API, actions, filters, REST endpoints, capabilities, and the As the Crow Flies integration.
 - **[Architecture](architecture/)** — for contributors: file structure, database schema, caching, hook execution order, search internals, and conflict detection.
 - **[Contributing](contributing.html)** — for HyperTaxonomy contributors: design principles, coding standards, implementation patterns, block builds, error handling, and debug tools.
-- **[Comparing to Tag Groups](comparison.html)** — a feature-by-feature comparison of HyperTaxonomy with the PublishPress Tag Groups plugin.
+- **[Feature Comparison](comparison.html)** — a feature-by-feature comparison of HyperTaxonomy with the PublishPress Tag Groups plugin.
 
 ## Requirements
 

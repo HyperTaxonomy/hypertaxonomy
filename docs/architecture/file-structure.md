@@ -52,7 +52,6 @@ hypertaxonomy/
 │   │   ├── htax-sort-order.css               # Sort order picker component styles
 │   │   ├── htax-term-icons.css               # Term icon styles
 │   │   └── htax-term-picker.css              # Pills and autocomplete, shared by admin term screens and the search widget
-│   ├── images/                               # Plugin icons
 │   └── js/
 │       ├── htax-filter-options.js            # Filter options panel logic
 │       ├── htax-geo.js                       # near:me browser-geolocation support (search widget + PowerSearch)

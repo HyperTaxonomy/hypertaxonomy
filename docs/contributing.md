@@ -28,7 +28,7 @@ For integrating HyperTaxonomy in your theme or plugin, see the [Developer Refere
 - **Hooks Registered Last** — `includes/bootstrap.php` loads `includes/hooks/actions.php` and `includes/hooks/filters.php` after the files that define their callbacks. Most callbacks are named functions, so other code can remove or replace them.
 - **Caching Strategy** — Three layers: static request-scope cache (unbounded per-request arrays; `htax_get_valid_term()` uses a bounded variant capped at 500 entries with FIFO eviction), transients (database-backed, survive page loads), object cache (Redis/Memcached when available). Selective invalidation — narrow keys are cleared on specific events rather than broad cache flushes.
 - **Graceful Degradation** — Term Groups is built-in; no external plugin dependency. Features gate themselves via `htax_taxonomy_has_feature()` so disabling a feature at the settings level has immediate effect without code changes.
-- **Security** — ABSPATH checks on every file, nonce verification on AJAX and form saves, `current_user_can()` / HyperTaxonomy capability checks before writes, `$wpdb->prepare()` for SQL that includes variable values, and `wp_unslash()` before sanitizing `$_POST` strings.
+- **Security** — ABSPATH checks on every file, nonce verification on AJAX and form saves, `current_user_can()` checks with HyperTaxonomy's capabilities before writes, `$wpdb->prepare()` for SQL that includes variable values, and `wp_unslash()` before sanitizing `$_POST` strings.
 - **Atomicity** — Functions that replace related rows do their writes inside a MySQL transaction and check for a database error after each write. If any write fails, the transaction rolls back. See [Transactions](#transactions).
 
 ---

@@ -1045,7 +1045,7 @@ function htax_invalidate_term_caches_on_delete( $term_id_or_term, $tt_id = 0, $t
             $cache_key      = 'htax_grp_' . $group_id . '_' . $taxonomy;
             $cached_members = htax_get_transient( $cache_key );
             if ( false !== $cached_members && is_array( $cached_members ) ) {
-                unset( $cached_members[ $term_id ] );
+                $cached_members = array_values( array_diff( $cached_members, array( (int) $term_id ) ) );
                 htax_set_transient( $cache_key, $cached_members, htax_get_cache_duration( 'relationship' ) );
             }
         }
@@ -1228,14 +1228,15 @@ function htax_update_group_membership_caches( $term_id, $taxonomy, $new_groups, 
         }
 
         // Surgical update
-        if ( $is_member_of_new && ! isset( $cached_members[ $term_id ] ) ) {
+        $is_cached = in_array( (int) $term_id, $cached_members, true );
+        if ( $is_member_of_new && ! $is_cached ) {
             // Add term to cache
-            $cached_members[ $term_id ] = $term;
-            htax_set_transient( $cache_key, $cached_members, htax_get_cache_duration( 'relationship' ) ); // No TTL
-        } elseif ( ! $is_member_of_new && isset( $cached_members[ $term_id ] ) ) {
+            $cached_members[] = (int) $term_id;
+            htax_set_transient( $cache_key, $cached_members, htax_get_cache_duration( 'relationship' ) );
+        } elseif ( ! $is_member_of_new && $is_cached ) {
             // Remove term from cache
-            unset( $cached_members[ $term_id ] );
-            htax_set_transient( $cache_key, $cached_members, htax_get_cache_duration( 'relationship' ) ); // No TTL
+            $cached_members = array_values( array_diff( $cached_members, array( (int) $term_id ) ) );
+            htax_set_transient( $cache_key, $cached_members, htax_get_cache_duration( 'relationship' ) );
         }
         // else: No change needed for this group
     }

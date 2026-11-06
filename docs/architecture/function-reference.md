@@ -291,7 +291,9 @@ Public integration API for third-party plugins.
 - `htax_relay_term_uris_changed( $term_id ): void` - Re-fires `tc_term_uris_changed` as `htax_term_uris_changed`
 - `htax_remove_terms_hidden_from_caller( array $terms ): array` - Applies hidden-term visibility to a shared-cache list for callers outside HyperTaxonomy
 - `htax_rest_is_term_visible( WP_Term $term ): bool` - Whether the current viewer may see a term in a REST response
-- `htax_load_terms_in_groups()`, `htax_load_related_terms()`, `htax_load_reverse_related_terms()` - Read those lists, including hidden terms, from caches shared between viewers. Their public `htax_get_*` wrappers apply visibility
+- `htax_get_terms_by_ids( array $term_ids, string $taxonomy ): array` - Term objects for a list of IDs, loading any not in memory in one query
+- `htax_resolve_filter_term_ids( array $raw, string $taxonomy, string $include_groups, string $exclude_groups, string $include_terms, string $exclude_terms ): array` - Resolves a filter field's option pool or initial selection
+- `htax_load_terms_in_groups()`, `htax_load_related_terms()`, `htax_load_reverse_related_terms()`, `htax_load_included_terms()`, `htax_load_container_terms()`, `htax_load_synonym_terms()` - Read those lists, including hidden terms, from caches shared between viewers. Their public `htax_get_*` wrappers apply visibility
 - `htax_get_term_external_posts( int $term_id, array $args = [] ): array` - External posts for a term, from the `htax_term_external_posts` filter; returns empty without firing the filter when the term is hidden from the current user. `$args` is passed to providers unchanged.
 - `htax_get_peer_sites(): array` - Known peer sites, from the `htax_peer_sites` filter
 - `htax_get_term_locations( int $term_id ): array` - Location rows for a term, from the `htax_term_locations` filter
@@ -681,7 +683,6 @@ Loaded unconditionally (outside `is_admin()`) so the REST field is available dur
 **AJAX Handlers (includes/admin/ajax.php)**
 - `htax_ajax_get_group_terms()` - Get terms from Term Groups
 - `htax_ajax_search_terms()` - Autocomplete search (6-bucket ranking); searches every taxonomy in `taxonomies[]`, labeling results by taxonomy when there is more than one; optional `include_groups` / `exclude_groups` (comma-separated group IDs expanded to term IDs via `htax_get_terms_in_groups()` to restrict the option pool); results cached via `htax_get_cache_duration('autocomplete')`
-- `htax_ajax_get_group_term_ids()` (`wp_ajax_htax_get_group_term_ids`, also `nopriv`) — Returns all term IDs belonging to the given `groups` (comma-separated) for `taxonomy`. Rate-limited; nonce required for admin users. Used by the search widget JS to determine which selected pills to animate-remove when a group is excluded from the option pool.
 - `htax_ajax_import_tag_groups_init()` (`wp_ajax_htax_import_tag_groups_init`) - Chunked import, first request: resolves/creates/renames groups, applies hierarchy, detects deletions. Accepts `mode` (`mirror`|`keep`) for this run only; the choice is chosen per run in the import modal and not persisted.
 - `htax_ajax_import_tag_groups_batch()` (`wp_ajax_htax_import_tag_groups_batch`) - Chunked import, batch request: assigns one batch of terms. Accepts `group_mapping`, `offset`, `batch_size`, `mode`.
 - `htax_ajax_import_tag_groups_finish()` (`wp_ajax_htax_import_tag_groups_finish`) - Chunked import, final request: clears caches, stores the run snapshot via `htax_store_tag_groups_import_snapshot()`.
@@ -691,7 +692,6 @@ Loaded unconditionally (outside `is_admin()`) so the REST field is available dur
 - `htax_ajax_preview_import()` - Preview HyperTaxonomy import data
 - `htax_ajax_import()` - Import HyperTaxonomy data from JSON
 - `htax_ajax_count_hidden_descendants()` — `wp_ajax_htax_count_hidden_descendants` handler; accepts `term_ids[]`, `taxonomy`, `nonce`; for each term ID returns a count of hidden descendants via `get_term_children()` filtered against `htax_get_all_hidden_term_ids()`. Descendants that are themselves present in `term_ids` are excluded from every count — when a parent and child are both selected for bulk "Make Visible", the child does not inflate the cascade-prompt count since it will be made visible on its own. Called before bulk and Quick Edit make-visible saves to decide whether to show the cascade modal.
-- `htax_ajax_search_groups()` - Autocomplete search for group terms
 - `htax_ajax_save_tag_groups_sync_settings()` - Save the Tag Groups Sync subtab settings in one request
 - `htax_ajax_clear_strength_model()` - Settings → Search → Clear Scores: remove every score stored for an external strength model
 - `htax_check_ajax_rate_limit( $action, $limit = 60 )` - Rate limit check for AJAX requests

@@ -259,6 +259,19 @@ function htax_get_ids_of_redirects_to( $target_id, $taxonomies = null ) {
  * @return WP_Term[] Array of WP_Term objects indexed by term_id
  */
 function htax_get_included_terms( $term, bool $include_redirect_data = false, bool $include_disabled = false ) {
+    return htax_remove_terms_hidden_from_caller( htax_load_included_terms( $term, $include_redirect_data, $include_disabled ) );
+}
+
+/**
+ * Read a term's included terms, including hidden terms, from the cache shared by viewers.
+ *
+ * @since 1.0.0
+ * @param int|WP_Term $term                  Term or term ID.
+ * @param bool        $include_redirect_data Whether to return data for a redirect term.
+ * @param bool        $include_disabled      Whether to return data while the feature is disabled.
+ * @return WP_Term[] Terms indexed by term ID.
+ */
+function htax_load_included_terms( $term, bool $include_redirect_data, bool $include_disabled ) {
     // Accept either term ID or WP_Term object
     if ( is_object( $term ) && isset( $term->term_id ) ) {
         $term_id = $term->term_id;
@@ -434,6 +447,18 @@ function htax_get_included_terms( $term, bool $include_redirect_data = false, bo
  * @return WP_Term[] Array of WP_Term objects indexed by term_id
  */
 function htax_get_container_terms( $term, bool $include_disabled = false ) {
+    return htax_remove_terms_hidden_from_caller( htax_load_container_terms( $term, $include_disabled ) );
+}
+
+/**
+ * Read a term's container terms, including hidden terms, from the cache shared by viewers.
+ *
+ * @since 1.0.0
+ * @param int|WP_Term $term             Term or term ID.
+ * @param bool        $include_disabled Whether to return data while the feature is disabled.
+ * @return WP_Term[] Terms indexed by term ID.
+ */
+function htax_load_container_terms( $term, bool $include_disabled ) {
     // Accept either term ID or WP_Term object
     if ( is_object( $term ) && isset( $term->term_id ) ) {
         $term_id = $term->term_id;
@@ -616,6 +641,18 @@ function htax_get_container_terms( $term, bool $include_disabled = false ) {
  * @return WP_Term[] Array of WP_Term objects indexed by term_id.
  */
 function htax_get_synonym_terms( $term, bool $include_redirect_data = false ) {
+    return htax_remove_terms_hidden_from_caller( htax_load_synonym_terms( $term, $include_redirect_data ) );
+}
+
+/**
+ * Read a term's synonym terms, including hidden terms, from the cache shared by viewers.
+ *
+ * @since 1.0.0
+ * @param int|WP_Term $term                  Term or term ID.
+ * @param bool        $include_redirect_data Whether to return data for a redirect term.
+ * @return WP_Term[] Terms indexed by term ID.
+ */
+function htax_load_synonym_terms( $term, bool $include_redirect_data ) {
     if ( is_object( $term ) && isset( $term->term_id ) ) {
         $term_id  = $term->term_id;
         $term_obj = $term;

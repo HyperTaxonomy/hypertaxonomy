@@ -291,6 +291,13 @@ abstract class HyperTaxonomy_Shortcode_Base {
     protected function load_redirect_terms( $taxonomy ) {
         global $wpdb;
 
+        // A page can hold many shortcodes for the same taxonomy.
+        $loaded = &htax_request_cache( 'shortcode_redirect_terms' );
+        if ( isset( $loaded[ $taxonomy ] ) ) {
+            $this->redirect_terms = $loaded[ $taxonomy ] + $this->redirect_terms;
+            return;
+        }
+
         $results = $wpdb->get_results( $wpdb->prepare(
             "SELECT tr.source_term_id as term_id, tr.target_term_id as redirect_to, t.slug
              FROM {$wpdb->prefix}htax_term_relationships tr
@@ -304,12 +311,14 @@ abstract class HyperTaxonomy_Shortcode_Base {
             return;
         }
 
+        $loaded[ $taxonomy ] = array();
         foreach ( $results as $row ) {
-            $this->redirect_terms[ $row->term_id ] = array(
+            $loaded[ $taxonomy ][ $row->term_id ] = array(
                 'target_id' => $row->redirect_to,
                 'slug' => $row->slug
             );
         }
+        $this->redirect_terms = $loaded[ $taxonomy ] + $this->redirect_terms;
     }
 
     /**

@@ -316,7 +316,7 @@ function htax_resolve_filter_configs( array $raw_configs, array $filter_state, $
             }
 
             // Resolve option pool
-            $pool_ids = htax_resolve_filter_term_pool( $raw, $taxonomy );
+            $pool_ids = htax_resolve_filter_term_ids( $raw, $taxonomy, 'include_group_options', 'exclude_group_options', 'include_term_options', 'exclude_term_options' );
 
             // Exclude archive term from pool
             if ( $archive_exclude_term ) {
@@ -324,7 +324,7 @@ function htax_resolve_filter_configs( array $raw_configs, array $filter_state, $
             }
 
             // Resolve initial selection
-            $initial_ids = htax_resolve_filter_initial_selection( $raw, $taxonomy );
+            $initial_ids = htax_resolve_filter_term_ids( $raw, $taxonomy, 'include_groups', 'exclude_groups', 'include_terms', 'exclude_terms' );
 
             // Primary: seed with extra IDs and force them into the pool
             if ( ! empty( $raw['primary'] ) && ! empty( $primary_seed_ids ) ) {
@@ -425,33 +425,38 @@ function htax_resolve_filter_configs( array $raw_configs, array $filter_state, $
 }
 
 /**
- * Resolve option pool term IDs from a raw terms config.
+ * Resolve term IDs from a raw terms config, for an option pool or an initial selection.
  *
- * Uses the same 4-step pool logic as the search widget field:
- *   1. include_group_options → expand to term IDs
- *   2. exclude_group_options → remove from pool
- *   3. include_term_options  → add individual term IDs
- *   4. exclude_term_options  → remove individual term IDs
+ * Uses the same 4-step logic as the search widget field:
+ *   1. Included groups → expand to term IDs
+ *   2. Excluded groups → remove from the list
+ *   3. Included terms  → add individual term IDs
+ *   4. Excluded terms  → remove individual term IDs
  *
- * @param  array  $raw      Raw config from child shortcode.
- * @param  string $taxonomy Taxonomy slug.
- * @return int[]            Resolved term IDs for the option pool.
+ * @since 1.0.0
+ * @param array  $raw            Raw term config.
+ * @param string $taxonomy       Taxonomy slug.
+ * @param string $include_groups Config key holding the groups to include.
+ * @param string $exclude_groups Config key holding the groups to exclude.
+ * @param string $include_terms  Config key holding the terms to include.
+ * @param string $exclude_terms  Config key holding the terms to exclude.
+ * @return int[] Resolved term IDs.
  */
-function htax_resolve_filter_term_pool( array $raw, string $taxonomy ): array {
+function htax_resolve_filter_term_ids( array $raw, string $taxonomy, string $include_groups, string $exclude_groups, string $include_terms, string $exclude_terms ): array {
     $include_ids = array();
     $exclude_ids = array();
     $include_specified = false;
 
-    if ( ! empty( $raw['include_group_options'] ) ) {
+    if ( ! empty( $raw[ $include_groups ] ) ) {
         $include_specified = true;
-        $group_terms       = htax_get_terms_in_groups( htax_parse_term_ids( $raw['include_group_options'], 'group' ), $taxonomy );
+        $group_terms       = htax_get_terms_in_groups( htax_parse_term_ids( $raw[ $include_groups ], 'group' ), $taxonomy );
         if ( ! empty( $group_terms ) ) {
             $include_ids = array_map( 'intval', array_keys( $group_terms ) );
         }
     }
 
-    if ( ! empty( $raw['exclude_group_options'] ) ) {
-        $excl_group_terms = htax_get_terms_in_groups( htax_parse_term_ids( $raw['exclude_group_options'], 'group' ), $taxonomy );
+    if ( ! empty( $raw[ $exclude_groups ] ) ) {
+        $excl_group_terms = htax_get_terms_in_groups( htax_parse_term_ids( $raw[ $exclude_groups ], 'group' ), $taxonomy );
         if ( ! empty( $excl_group_terms ) ) {
             $exclude_ids = array_merge( $exclude_ids, array_map( 'intval', array_keys( $excl_group_terms ) ) );
         }
@@ -461,69 +466,14 @@ function htax_resolve_filter_term_pool( array $raw, string $taxonomy ): array {
         $include_ids = array_values( array_diff( $include_ids, $exclude_ids ) );
     }
 
-    if ( ! empty( $raw['include_term_options'] ) ) {
+    if ( ! empty( $raw[ $include_terms ] ) ) {
         $include_specified = true;
-        $individual        = array_map( 'intval', htax_parse_term_ids( $raw['include_term_options'], $taxonomy ) );
+        $individual        = array_map( 'intval', htax_parse_term_ids( $raw[ $include_terms ], $taxonomy ) );
         $include_ids       = array_values( array_unique( array_merge( $include_ids, $individual ) ) );
     }
 
-    if ( ! empty( $raw['exclude_term_options'] ) ) {
-        $excl = array_map( 'intval', htax_parse_term_ids( $raw['exclude_term_options'], $taxonomy ) );
-        $exclude_ids = array_merge( $exclude_ids, $excl );
-    }
-
-    if ( ! empty( $include_ids ) && ! empty( $exclude_ids ) ) {
-        $include_ids = array_values( array_diff( $include_ids, $exclude_ids ) );
-    }
-
-    if ( $include_specified && empty( $include_ids ) ) {
-        return array();
-    }
-
-    return $include_ids;
-}
-
-/**
- * Resolve initial selection term IDs from a raw terms config.
- *
- * Uses the same 4-step logic with include_groups / exclude_groups / include_terms / exclude_terms.
- *
- * @param  array  $raw      Raw config from child shortcode.
- * @param  string $taxonomy Taxonomy slug.
- * @return int[]            Resolved initial selection term IDs.
- */
-function htax_resolve_filter_initial_selection( array $raw, string $taxonomy ): array {
-    $include_ids = array();
-    $exclude_ids = array();
-    $include_specified = false;
-
-    if ( ! empty( $raw['include_groups'] ) ) {
-        $include_specified = true;
-        $group_terms       = htax_get_terms_in_groups( htax_parse_term_ids( $raw['include_groups'], 'group' ), $taxonomy );
-        if ( ! empty( $group_terms ) ) {
-            $include_ids = array_map( 'intval', array_keys( $group_terms ) );
-        }
-    }
-
-    if ( ! empty( $raw['exclude_groups'] ) ) {
-        $excl_group_terms = htax_get_terms_in_groups( htax_parse_term_ids( $raw['exclude_groups'], 'group' ), $taxonomy );
-        if ( ! empty( $excl_group_terms ) ) {
-            $exclude_ids = array_merge( $exclude_ids, array_map( 'intval', array_keys( $excl_group_terms ) ) );
-        }
-    }
-
-    if ( ! empty( $include_ids ) && ! empty( $exclude_ids ) ) {
-        $include_ids = array_values( array_diff( $include_ids, $exclude_ids ) );
-    }
-
-    if ( ! empty( $raw['include_terms'] ) ) {
-        $include_specified = true;
-        $individual        = array_map( 'intval', htax_parse_term_ids( $raw['include_terms'], $taxonomy ) );
-        $include_ids       = array_values( array_unique( array_merge( $include_ids, $individual ) ) );
-    }
-
-    if ( ! empty( $raw['exclude_terms'] ) ) {
-        $excl = array_map( 'intval', htax_parse_term_ids( $raw['exclude_terms'], $taxonomy ) );
+    if ( ! empty( $raw[ $exclude_terms ] ) ) {
+        $excl = array_map( 'intval', htax_parse_term_ids( $raw[ $exclude_terms ], $taxonomy ) );
         $exclude_ids = array_merge( $exclude_ids, $excl );
     }
 

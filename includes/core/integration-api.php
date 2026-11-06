@@ -221,6 +221,9 @@ function htax_adjust_term_counts( array $terms, ?array $taxonomies, array $args 
 
     global $wpdb;
 
+    // Expanding every term from cold caches stores several values per term.
+    $transient_batch = new HyperTaxonomy_Transient_Batch();
+
     // First pass: collect terms that need expansion and compute their expanded ID sets.
     // Grouped by taxonomy so we can issue one query per taxonomy instead of one per term.
     // Key structure: $by_taxonomy[ $taxonomy ][ $index ] = [ 'term' => WP_Term, 'expanded_ids' => int[] ]

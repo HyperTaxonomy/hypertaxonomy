@@ -667,10 +667,10 @@ class HyperTaxonomy_Search_Widget {
         
         // Handle link and button types differently - just wrap the content
         if ( 'link' === $atts['type'] ) {
-            return $this->render_link_controller( $atts, $content );
+            return $this->render_wrapped_controller( $atts, $content, 'link' );
         }
         if ( 'button' === $atts['type'] ) {
-            return $this->render_button_controller( $atts, $content );
+            return $this->render_wrapped_controller( $atts, $content, 'button' );
         }
         
         // For other types, process nested options
@@ -1738,41 +1738,15 @@ class HyperTaxonomy_Search_Widget {
     }
     
     /**
-     * Render link controller - just wraps content with proper attributes
+     * Render a link or button controller, which wraps content holding links or buttons with data-actions.
+     *
+     * @param array  $atts    Controller attributes.
+     * @param string $content Shortcode content.
+     * @param string $type    'link' or 'button'.
+     * @return string HTML.
      */
-    private function render_link_controller( $atts, $content ) {
-        $classes = array( 'htax-controller-wrapper', 'htax-controller-link' );
-        $classes[] = 'htax-show-' . $atts['show_when'];
-        if ( 'never' === $atts['show_when'] ) {
-            $classes[] = 'htax-hidden';
-        }
-        if ( 'true' !== $atts['enabled'] ) {
-            $classes[] = 'htax-disabled';
-        }
-        if ( ! empty( $atts['class'] ) ) {
-            $classes[] = $atts['class'];
-        }
-        
-        $output = '<div class="' . esc_attr( implode( ' ', $classes ) ) . '" ';
-        $output .= 'id="' . esc_attr( $atts['id'] ) . '-wrapper" ';
-        $output .= 'data-controller-name="' . esc_attr( $atts['name'] ) . '" ';
-        $output .= 'data-controller-type="link" ';
-        $output .= $this->get_group_data_attr();
-        $output .= '>';
-
-        // Process the content (which should contain links with data-actions)
-        $output .= do_shortcode( $content );
-        
-        $output .= '</div>';
-        
-        return $output;
-    }
-
-    /**
-     * Render button controller - similar to link but wraps buttons with proper attributes
-     */
-    private function render_button_controller( $atts, $content ) {
-        $classes = array( 'htax-controller-wrapper', 'htax-controller-button' );
+    private function render_wrapped_controller( $atts, $content, $type ) {
+        $classes = array( 'htax-controller-wrapper', 'htax-controller-' . $type );
         $classes[] = 'htax-show-' . $atts['show_when'];
         if ( 'never' === $atts['show_when'] ) {
             $classes[] = 'htax-hidden';
@@ -1787,11 +1761,10 @@ class HyperTaxonomy_Search_Widget {
         $output = '<div class="' . esc_attr( implode( ' ', $classes ) ) . '" ';
         $output .= 'id="' . esc_attr( $atts['id'] ) . '-wrapper" ';
         $output .= 'data-controller-name="' . esc_attr( $atts['name'] ) . '" ';
-        $output .= 'data-controller-type="button" ';
+        $output .= 'data-controller-type="' . esc_attr( $type ) . '" ';
         $output .= $this->get_group_data_attr();
         $output .= '>';
 
-        // Process the content (which should contain buttons with data-actions)
         $output .= do_shortcode( $content );
 
         $output .= '</div>';

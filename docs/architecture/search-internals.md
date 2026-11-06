@@ -482,9 +482,6 @@ These are the term and group autocomplete endpoints. For the other handlers, see
 ### wp_ajax_htax_get_group_terms
 Get terms from specified Term Groups
 
-### wp_ajax_htax_search_groups
-Admin-only group term autocomplete. Requires `htax-autocomplete` nonce and `manage_term_relationships` capability. Returns bucket-sorted results via `htax_run_term_autocomplete_search()`.
-
 ### wp_ajax_htax_search_terms
 Autocomplete for the term edit screen's relationship fields. Requires `htax-autocomplete` nonce and `manage_term_relationships` capability. Searches every enabled taxonomy in `taxonomies[]`. With more than one, each label names its taxonomy, and results are ordered by names starting with the search, then names containing it, then description matches. Groups are added through their own checklist, not this endpoint. Hidden terms are filtered out for users who can't see them.
 

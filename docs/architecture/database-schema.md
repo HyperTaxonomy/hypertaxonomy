@@ -278,7 +278,7 @@ PowerSearch query execution, scoring, thresholds, and index management are descr
 - `htax_redir_{term_id}` / `htax_redirect_terms` - A term's redirect target, and all term IDs that have a redirect
 - `htax_groups_{term_id}` - The groups a term belongs to
 - `htax_syno_{term_id}` - A term's synonyms
-- `htax_grp_{group_id}_{taxonomy}` - A group's member terms for a taxonomy
+- `htax_grp_{group_id}_{taxonomy}` - The IDs of a group's member terms for a taxonomy. IDs rather than term objects, because these rows can load on every page
 - `htax_hidden_terms` - All hidden term IDs
 - `htax_term_data_{term_id}` - A term's data captured before an edit, for parent-change detection
 - `htax_sticky_{term_id}` - A term's validated sticky post IDs

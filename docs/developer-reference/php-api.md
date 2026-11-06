@@ -550,6 +550,8 @@ Results are cached in a transient (`htax_groups_{term_id}`).
 
 On front-end, REST and AJAX read requests, terms hidden from the current viewer are left out for callers in other plugins and themes.
 
+The same applies to `htax_get_included_terms()`, `htax_get_container_terms()`, `htax_get_synonym_terms()`, `htax_get_related_terms()` and `htax_get_reverse_related_terms()`.
+
 Returns all member terms of the given groups, indexed by term ID. Group hierarchy is expanded automatically — passing a parent group ID also returns terms belonging to its child groups, mirroring how WordPress expands `child_of` for `get_terms()`.
 
 ```php

@@ -422,9 +422,6 @@ add_action( 'wp_footer', 'htax_debug_info' );
 add_action( 'wp_ajax_htax_dismiss_prefs_callout', 'htax_ajax_dismiss_prefs_callout' );
 add_action( 'wp_ajax_htax_get_group_terms', 'htax_ajax_get_group_terms' );
 add_action( 'wp_ajax_htax_search_terms', 'htax_ajax_search_terms' );
-add_action( 'wp_ajax_htax_get_group_term_ids', 'htax_ajax_get_group_term_ids' );
-add_action( 'wp_ajax_nopriv_htax_get_group_term_ids', 'htax_ajax_get_group_term_ids' );
-add_action( 'wp_ajax_htax_search_groups', 'htax_ajax_search_groups' );
 add_action( 'wp_ajax_htax_count_ineligible_custom_relationships', 'htax_ajax_count_ineligible_custom_relationships' );
 
 // ==============================================================================

@@ -154,7 +154,6 @@ class HyperTaxonomy_Term_Icons {
         add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_scripts' ) );
         
         // AJAX handlers
-        add_action( 'wp_ajax_htax_get_term_icons', array( $this, 'ajax_get_term_icons' ) );
         add_action( 'wp_ajax_htax_delete_all_icons', array( $this, 'ajax_delete_all_icons' ) );
         add_action( 'wp_ajax_htax_crop_term_icon',   array( $this, 'ajax_crop_term_icon' ) );
 
@@ -860,59 +859,7 @@ class HyperTaxonomy_Term_Icons {
         $index = abs( crc32( $slug ) ) % count( self::$color_palette );
         return self::$color_palette[ $index ];
     }
-    
-    /**
-     * AJAX handler to get multiple term icons
-     */
-    public function ajax_get_term_icons() {
-        // Basic security check
-        if ( ! check_ajax_referer( 'htax-search-widget', 'nonce', false ) ) {
-            wp_send_json_error( 'Security check failed' );
-            return;
-        }
 
-        if ( ! current_user_can( 'read' ) ) {
-            wp_send_json_error( array( 'message' => __( 'Unauthorized.', 'hypertaxonomy' ) ), 403 );
-        }
-
-        $term_ids = isset( $_POST['term_ids'] ) ? array_map( 'intval', wp_unslash( (array) $_POST['term_ids'] ) ) : array();
-        $taxonomy = isset( $_POST['taxonomy'] ) ? sanitize_key( wp_unslash( $_POST['taxonomy'] ) ) : 'post_tag';
-        $size = isset( $_POST['size'] ) ? sanitize_key( wp_unslash( $_POST['size'] ) ) : 'htax-icon-small';
-        
-        if ( empty( $term_ids ) ) {
-            wp_send_json_error( 'No term IDs provided' );
-            return;
-        }
-        
-        // Get taxonomy-specific icon display setting
-        $show_icons = htax_get_icon_display_for_taxonomy( $taxonomy );
-
-        // Prime the term-meta cache once so the per-term get_term_icon_data() calls
-        // below hit cache instead of querying _htax_icon_id per term (these IDs come
-        // from the request, so they are not already lazy-load queued).
-        update_termmeta_cache( $term_ids );
-
-        $result = array();
-
-        foreach ( $term_ids as $term_id ) {
-            $data = $this->get_term_icon_data( $term_id, $size );
-            
-            if ( 'never' === $show_icons ) {
-                $result[ $term_id ] = array(
-                    'has_icon' => false,
-                    'show_placeholder' => false
-                );
-            } elseif ( 'always' === $show_icons ) {
-                $result[ $term_id ] = $data;
-                $result[ $term_id ]['show_placeholder'] = ! $data['has_icon'];
-            } else { // when_available
-                $result[ $term_id ] = $data;
-                $result[ $term_id ]['show_placeholder'] = false;
-            }
-        }
-        
-        wp_send_json_success( $result );
-    }
     
     /**
      * Cleanup icon when term is deleted

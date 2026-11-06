@@ -188,7 +188,7 @@ function htax_ajax_get_group_terms() {
 /**
  * Run a term autocomplete search and return bucket-sorted results.
  *
- * Shared by htax_ajax_search_terms() and htax_ajax_search_groups(). Callers handle
+ * Used by htax_ajax_search_terms(). Callers handle
  * auth, caching, and any post-processing (hidden-term filtering, icon appending).
  *
  * @since 1.0.0
@@ -510,98 +510,6 @@ function htax_ajax_search_terms() {
 
     wp_send_json( $results );
 }
-
-/**
- * AJAX handler: Return all term IDs belonging to the given group IDs.
- *
- * Used by the search widget JS to determine which currently-selected pills
- * should be removed when a group is excluded from the option pool.
- *
- * @since 1.0.0
- */
-function htax_ajax_get_group_term_ids() {
-    if ( ! htax_check_ajax_rate_limit( 'get_group_term_ids', 100 ) ) {
-        wp_send_json_error( 'Rate limit exceeded' );
-        return;
-    }
-
-    $nonce_valid = check_ajax_referer( 'htax-autocomplete', 'nonce', false ) ||
-                   check_ajax_referer( 'htax-search-widget', 'nonce', false );
-    if ( ! $nonce_valid ) {
-        wp_send_json_error( 'Security check failed' );
-        return;
-    }
-
-    $groups   = isset( $_GET['groups'] ) ? htax_parse_term_ids( sanitize_text_field( wp_unslash( $_GET['groups'] ) ) ) : array();
-    $taxonomy = isset( $_GET['taxonomy'] ) ? sanitize_key( wp_unslash( $_GET['taxonomy'] ) ) : 'post_tag';
-
-    if ( empty( $groups ) || ! htax_is_taxonomy_enabled( $taxonomy ) ) {
-        wp_send_json_success( array() );
-        return;
-    }
-
-    $term_objects = htax_get_terms_in_groups( $groups, $taxonomy );
-    $term_ids     = array_values( array_map( 'intval', array_keys( $term_objects ) ) );
-
-    if ( ! htax_can_see_hidden_terms() ) {
-        $term_ids = array_values( array_filter( $term_ids, static function( $id ) {
-            return ! htax_is_term_hidden( $id );
-        } ) );
-    }
-
-    wp_send_json_success( $term_ids );
-}
-
-/**
- * AJAX handler: Search for group terms with autocomplete
- *
- * Admin-only counterpart to htax_ajax_search_terms() for the 'group' taxonomy.
- *
- * @since 1.0.0
- */
-function htax_ajax_search_groups() {
-    if ( ! check_ajax_referer( 'htax-autocomplete', 'nonce', false ) ) {
-        wp_send_json_error( 'Security check failed' );
-        return;
-    }
-
-    if ( ! htax_check_ajax_rate_limit( 'search_groups', 100 ) ) {
-        wp_send_json_error( 'Rate limit exceeded. Please wait a moment and try again.' );
-        return;
-    }
-
-    if ( ! current_user_can( 'manage_term_relationships' ) ) {
-        wp_send_json_error( 'Insufficient permissions' );
-        return;
-    }
-
-    $search = isset( $_GET['term'] ) ? sanitize_text_field( wp_unslash( $_GET['term'] ) ) : '';
-    if ( strlen( $search ) < 2 ) {
-        wp_send_json( array() );
-        return;
-    }
-
-    $exclude    = isset( $_GET['exclude'] ) ? array_map( 'intval', wp_unslash( (array) $_GET['exclude'] ) ) : array();
-    $current_id = isset( $_GET['current'] ) ? intval( $_GET['current'] ) : 0;
-
-    if ( $current_id ) {
-        $exclude[] = $current_id;
-    }
-
-    $cache_key = htax_generate_transient_key( 'htax_ac_grp_', md5( $search . '|' . implode( ',', $exclude ) ) );
-    $cached    = htax_get_transient( $cache_key );
-    if ( false !== $cached ) {
-        wp_send_json( $cached );
-        return;
-    }
-
-    $results = htax_run_term_autocomplete_search( 'group', $search, $exclude );
-
-    htax_set_transient( $cache_key, $results, htax_get_cache_duration( 'autocomplete' ) );
-
-    wp_send_json( $results );
-}
-
 
 /**
  * Helper: Find search string after non-letter boundary

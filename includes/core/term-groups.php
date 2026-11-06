@@ -46,24 +46,25 @@ function htax_load_terms_in_groups( $group_ids, $taxonomy ) {
     // Expand parent groups to their children using native WordPress API.
     $expanded_group_ids = htax_get_group_hierarchy( $group_ids );
 
-    // Each group is cached separately for targeted invalidation.
+    // Each group is cached separately for targeted invalidation, as a list of term IDs:
+    // these rows load on every page, and a large group's term objects are far bigger.
     // Separate cached groups from uncached so we can batch-query the latter.
-    $all_terms    = array(); // Indexed by term_id to handle overlaps.
-    $uncached_ids = array();
+    $all_term_ids_found = array(); // Indexed by term_id to handle overlaps.
+    $uncached_ids       = array();
 
     foreach ( $expanded_group_ids as $group_id ) {
         $cache_key = 'htax_grp_' . $group_id . '_' . $taxonomy;
         $cached    = htax_get_transient( $cache_key );
 
         if ( false !== $cached ) {
-            $all_terms = $all_terms + $cached;
+            $all_term_ids_found += array_flip( $cached );
         } else {
             $uncached_ids[] = $group_id;
         }
     }
 
     if ( empty( $uncached_ids ) ) {
-        return $all_terms;
+        return htax_get_terms_by_ids( array_keys( $all_term_ids_found ), $taxonomy );
     }
 
     // Batch-fetch all relationship rows for uncached groups in one query,
@@ -117,21 +118,42 @@ function htax_load_terms_in_groups( $group_ids, $taxonomy ) {
 
     // Build per-group result sets, cache each individually, then merge.
     foreach ( $uncached_ids as $group_id ) {
-        $group_term_objects = array();
+        $group_term_ids = array();
 
         foreach ( $term_ids_by_group[ $group_id ] as $term_id ) {
             if ( isset( $term_objects[ $term_id ] ) ) {
-                $group_term_objects[ $term_id ] = $term_objects[ $term_id ];
+                $group_term_ids[] = $term_id;
             }
         }
 
         $cache_key = 'htax_grp_' . $group_id . '_' . $taxonomy;
-        htax_set_transient( $cache_key, $group_term_objects, htax_get_cache_duration( 'relationship' ) );
+        htax_set_transient( $cache_key, $group_term_ids, htax_get_cache_duration( 'relationship' ) );
 
-        $all_terms = $all_terms + $group_term_objects;
+        $all_term_ids_found += array_flip( $group_term_ids );
     }
 
-    return $all_terms;
+    return htax_get_terms_by_ids( array_keys( $all_term_ids_found ), $taxonomy );
+}
+
+/**
+ * Get term objects for a list of IDs, loading any that aren't in memory in one query.
+ *
+ * @since 1.0.0
+ * @param int[]  $term_ids Term IDs.
+ * @param string $taxonomy Taxonomy.
+ * @return WP_Term[] Terms indexed by term ID, in the order given. Terms that no longer exist are left out.
+ */
+function htax_get_terms_by_ids( array $term_ids, string $taxonomy ): array {
+    _prime_term_caches( $term_ids );
+
+    $terms = array();
+    foreach ( $term_ids as $term_id ) {
+        $term = get_term( $term_id, $taxonomy );
+        if ( $term instanceof WP_Term ) {
+            $terms[ $term_id ] = $term;
+        }
+    }
+    return $terms;
 }
 
 /**

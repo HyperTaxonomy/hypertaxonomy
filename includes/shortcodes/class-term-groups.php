@@ -15,6 +15,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 class HyperTaxonomy_Term_Groups extends HyperTaxonomy_Shortcode_Base {
+    /**
+     * All groups indexed by parent ID, loaded on first use.
+     *
+     * @var array|null
+     */
+    private $groups_by_parent = null;
+
 
     private $processed_terms = array();
     private $group_terms_cache = array();
@@ -137,27 +144,31 @@ class HyperTaxonomy_Term_Groups extends HyperTaxonomy_Shortcode_Base {
      * Get child groups for a parent group
      */
     private function get_child_groups( $parent_id ) {
-        $args = array(
-            'taxonomy' => 'group',
-            'parent' => $parent_id,
-            'hide_empty' => false,
-            'orderby' => 'name',
-            'order' => 'ASC',
-        );
+        if ( null === $this->groups_by_parent ) {
+            $args = array(
+                'taxonomy' => 'group',
+                'hide_empty' => false,
+                'orderby' => 'name',
+                'order' => 'ASC',
+            );
 
-        // Handle exclude_groups parameter
-        if ( ! empty( $this->htax_atts['exclude_groups'] ) ) {
-            $exclude_ids = htax_parse_term_ids( $this->htax_atts['exclude_groups'], 'group' );
-            $args['exclude'] = $exclude_ids;
+            // Handle exclude_groups parameter
+            if ( ! empty( $this->htax_atts['exclude_groups'] ) ) {
+                $exclude_ids = htax_parse_term_ids( $this->htax_atts['exclude_groups'], 'group' );
+                $args['exclude'] = $exclude_ids;
+            }
+
+            $groups = get_terms( $args );
+
+            $this->groups_by_parent = array();
+            if ( ! is_wp_error( $groups ) ) {
+                foreach ( $groups as $group ) {
+                    $this->groups_by_parent[ (int) $group->parent ][] = $group;
+                }
+            }
         }
 
-        $groups = get_terms( $args );
-
-        if ( is_wp_error( $groups ) ) {
-            return array();
-        }
-
-        return $groups;
+        return $this->groups_by_parent[ (int) $parent_id ] ?? array();
     }
 
     /**

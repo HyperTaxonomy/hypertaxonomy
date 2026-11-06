@@ -450,7 +450,6 @@ class HyperTaxonomy_Search_Widget {
             'show_icons'                 => '',
             'hierarchical'               => 'true',
             'max_depth'                  => -1,
-            'max_group_depth'            => -1,
             'max_rows'                   => 0,
         ) );
         $atts         = shortcode_atts( $defaults, $atts, 'ht_checklist_field' );

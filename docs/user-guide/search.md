@@ -4,10 +4,9 @@ parent: User Guide
 nav_order: 5
 ---
 
-## Search Features
+# Search & PowerSearch
 
-
-### Advanced Search Widget
+## Advanced Search Widget
 
 Build complex multi-field search forms with AJAX results, conditional logic, and taxonomy filtering. Composed of nested shortcodes inside `[ht_search_form]`.
 
@@ -16,7 +15,7 @@ Build complex multi-field search forms with AJAX results, conditional logic, and
 - **Controllers** (`[ht_search_controller]`) — present a set of options (radio buttons, checkboxes, a dropdown, etc.). Each option can carry one or more actions that fire when it is selected or deselected.
 - **Controller actions** (`[ht_option_action]`) — each action targets a single field or field group and changes its state: selected terms, option pool, visibility, or enabled/disabled state. Multiple actions in one option all fire together.
 
-#### [ht_search_form]
+### [ht_search_form]
 
 Container for all search widget shortcodes.
 
@@ -32,9 +31,9 @@ Container for all search widget shortcodes.
 | `min_score` | Minimum overall relevance (0–1) | auto |
 | `class` | Additional CSS classes | — |
 
-`relevance` orders by taxonomy match count (weighted by relationship type and configured per-taxonomy weights). When field groups are present, scoring is computed in PHP; otherwise it is computed in SQL.
+`relevance` orders by taxonomy match count (weighted by relationship type and configured per-taxonomy weights).
 
-#### Field shortcodes
+### Field shortcodes
 
 **`[ht_text_field]`** — Full-text keyword search. At most one per form; must be placed at the top level of `[ht_search_form]`, not inside `[ht_field_group]`. The text field filters the entire result set independently — it is not part of the AND/OR taxonomy group logic. Supports boolean operators: `+required`, `-excluded`, `"exact phrase"`. When As the Crow Flies is active it also accepts the PowerSearch proximity operators (`near:`, `-near:`) — see **Proximity operators** under [PowerSearch](#ht_power_search--powersearch-form); a text field holding only `near:` operators lists results nearest first under the default sort order.
 
@@ -52,7 +51,7 @@ All states cap at 10 suggestions and exclude already-selected terms. The option 
 
 The three filter fields narrow `[ht_text_field]` results when a text field is present, or filter all site content when it is not.
 
-All field shortcodes require a `name` parameter. The visible field shortcodes (`[ht_text_field]`, `[ht_pills_field]`, `[ht_checklist_field]`) additionally share:
+All field shortcodes require a `name` parameter and accept an optional `id` for the field's HTML element (auto-generated if not specified). The visible field shortcodes (`[ht_text_field]`, `[ht_pills_field]`, `[ht_checklist_field]`) additionally share:
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
@@ -113,7 +112,7 @@ All three field types follow the same `taxonomy_type` rules.
 | Selected values | Post taxonomy term IDs | Group/term IDs, expanded server-side at query time |
 | Group references expand to | Member terms | The group IDs themselves |
 | Descendant references expand to | Member terms of all descendant groups | Descendant group IDs |
-| `filterby` | Not used | Comma-separated post taxonomies to expand into; omit for all public taxonomies |
+| `filterby` | Not used | Comma-separated post taxonomies to expand into; omit for every HyperTaxonomy-enabled taxonomy attached to a post type |
 
 **Group-descendant mode** — an advanced pattern that applies to all three filter fields. Set `taxonomy="group"` and `include_descendant_options` to a root group ID; each descendant group becomes a selectable option. At query time, each selected group is expanded to its member post-taxonomy terms. Use `filterby` to control which post taxonomy receives the expansion.
 
@@ -126,7 +125,7 @@ All three field types follow the same `taxonomy_type` rules.
 ```
 
 - `include_descendant_options="3"` — show all descendants of group 3 as options; group 3 itself is excluded.
-- `filterby="post_tag"` — expand each selected group into its `post_tag` member terms at query time. Multiple: `filterby="post_tag,category"`. Omit to expand across all public taxonomies.
+- `filterby="post_tag"` — expand each selected group into its `post_tag` member terms at query time. Multiple: `filterby="post_tag,category"`. Omit to expand across every HyperTaxonomy-enabled taxonomy attached to a post type.
 - When a group is selected, posts must have at least one of its member terms. Deselecting everything disables the filter.
 
 **Parameters common to `[ht_pills_field]` and `[ht_checklist_field]`:**
@@ -153,9 +152,8 @@ All three field types follow the same `taxonomy_type` rules.
 |-----------|-------------|---------|
 | `hierarchical` | Display in a nested tree (hierarchical taxonomies only) | `true` |
 | `max_depth` | Maximum depth for hierarchical display (`-1` = unlimited, `0` = top level only) | `-1` |
-| `max_group_depth` | How deep to expand child groups when resolving `include_group_options` (`-1` = global setting) | `-1` |
 
-#### [ht_field_group]
+### [ht_field_group]
 
 Groups filter fields, controllers, and other `[ht_field_group]`s under a single AND/OR logic container.
 
@@ -190,7 +188,7 @@ Groups filter fields, controllers, and other `[ht_field_group]`s under a single 
 [/ht_search_form]
 ```
 
-#### [ht_search_submit]
+### [ht_search_submit]
 
 Submit button for the search form.
 
@@ -204,7 +202,7 @@ Submit button for the search form.
 [ht_search_submit text="Find Posts" class="my-button"]
 ```
 
-#### [ht_search_toggle]
+### [ht_search_toggle]
 
 Toggles the form between collapsed and expanded states. Fields with `show_when="expanded"` are hidden when the form is collapsed and shown when expanded; fields with `show_when="collapsed"` do the opposite. The button label swaps automatically between the two states.
 
@@ -218,7 +216,7 @@ Toggles the form between collapsed and expanded states. Fields with `show_when="
 [ht_search_toggle text_collapsed="Show filters" text_expanded="Hide filters"]
 ```
 
-#### [ht_distance_field] — Location-Based Distance Filter
+### [ht_distance_field] — Location-Based Distance Filter
 
 Adds a distance filter to a search widget form that lets visitors narrow results by proximity (postal code or geolocation). Requires the [As the Crow Flies](https://wordpress.org/plugins/as-the-crow-flies/) (ATCF) plugin to be active. If ATCF is not active, site administrators see an admin notice in place of the field; the shortcode renders nothing for other users.
 
@@ -254,7 +252,7 @@ The `no_location="exclude"` setting means only retailer terms that have a physic
 
 **Expansion and term relationships:**
 
-By default (`expand="all"`), when the distance filter resolves a set of in-range terms, HyperTaxonomy still follows the normal relationship graph — inclusions, hierarchy, and redirects — just as it would for a regular taxonomy field. For example, if *Dollar General* includes *Dollar General Express*, a search within 5 miles of the user will surface posts tagged with either term as long as *Dollar General* has a location in range.
+By default (`expand="all"`), when the distance filter resolves a set of in-range terms, HyperTaxonomy still follows the normal relationship graph — inclusions, hierarchy, and redirects — just as it would for a regular taxonomy field. For example, if *Main Street Bakery* includes *Main Street Bakery Express*, a search within 5 miles of the user will surface posts tagged with either term as long as *Main Street Bakery* has a location in range.
 
 Use `expand="none"` to restrict results to posts directly tagged with the in-range terms only, ignoring inclusions and hierarchy. Use a comma-separated list to allow only specific relationship types:
 
@@ -270,7 +268,7 @@ When `input` includes `geolocation`, a crosshair icon appears inside the right e
 
 When `input="geolocation"` only (no postal input), a standalone "Find nearby" button triggers an immediate search using coordinates.
 
-#### Controllers — Dynamic Field Population
+### Controllers — Dynamic Field Population
 
 Controllers let users change what appears in other fields by making a selection. Useful for "show me tags relevant to this category" patterns.
 
@@ -292,6 +290,7 @@ Controllers let users change what appears in other fields by making a selection.
 | Parameter | Description | Default |
 |-----------|-------------|---------|
 | `type` | UI type: `radio`, `checkbox`, `toggle`, `dropdown`, `link`, `button` | `radio` |
+| `id` | HTML element ID (auto-generated if not specified) | — |
 | `name` | Unique field name (used by `[ht_option_action]` `target`) | — |
 | `label` | Label shown above the controller | — |
 | `required` | Show a `*` indicator (radio and dropdown only; for checkbox/toggle use `min_items` instead) | `false` |
@@ -299,7 +298,7 @@ Controllers let users change what appears in other fields by making a selection.
 | `max_items` | Maximum selections allowed (checkbox/toggle only; 0 = unlimited) | 0 |
 | `min_items_message` | Message shown when fewer than `min_items` options are selected (checkbox/toggle only) | — |
 | `max_items_message` | Message shown when `max_items` is reached (checkbox/toggle only) | — |
-| `show_when` | Show only when another field has a value | — |
+| `show_when` | `always`, `expanded`, `collapsed`, or `never` | `always` |
 | `enabled` | Whether the controller is initially enabled (`true`/`false`) | `true` |
 | `inline` | Render options inline (`true`/`false`) | `false` |
 | `class` | Additional CSS classes | — |
@@ -332,14 +331,14 @@ Controllers let users change what appears in other fields by making a selection.
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
-| `type` | Action type (see below) | — |
+| `type` | Action type (see above) | — |
 | `target` | Name of the field to act upon | — |
 | `terms` | Comma-separated term IDs (for term-based actions) | — |
 | `groups` | Comma-separated group IDs (for group-based actions) | — |
 | `value` | Value to set (for `set_min_items`, `set_max_items`, `set_show_when`) | — |
 | `not_found_message` | Message shown on this controller when an action adds nothing for some of its terms: `add_groups` / `add_descendants` terms outside the target field's option pool, or `add_terms` terms that were deleted, excluded by the field, or are hidden from this visitor. Cleared automatically when the action reverses. | — |
 
-#### Complete Example
+### Complete Example
 
 ```
 [ht_search_form state="collapsed" ajax="search-results" orderby="relevance:desc,date:desc"]
@@ -357,7 +356,7 @@ Controllers let users change what appears in other fields by making a selection.
 
 ---
 
-### [ht_power_search] — PowerSearch Form
+## [ht_power_search] — PowerSearch Form
 
 Standalone text search with relevance scoring and field operators. Uses a shared search index that respects term inclusion relationships, redirect targets, and hidden term settings.
 
@@ -369,7 +368,7 @@ Standalone text search with relevance scoring and field operators. Uses a shared
 | `placeholder` | Input placeholder text | `"Search..."` |
 | `button_text` | Submit button text (empty = no button; Enter submits) | — |
 | `min_length` | Minimum query length | 3 |
-| `match` | `any` (OR logic) or `all` (AND logic) | `any` |
+| `match` | `any` (OR logic) or `all` (AND logic) | **Default Match Mode** setting (Search tab) |
 | `orderby` | Sort order — see below | `relevance:desc,date:desc` |
 | `posts_per_page` | Results per page. Defaults to the WordPress **Blog pages show at most** setting (Settings → Reading). | WP setting |
 | `max_results` | Hard cap on total results across all pages (0 = no cap). | `0` |
@@ -389,7 +388,7 @@ Display attributes (thumbnail, format, columns, prepend/append, etc.) are config
 
 **How scoring works:** A plain search term (no field operator) contributes simultaneously to the title, content, excerpt, and taxonomy scores. Each taxonomy match counts once: in that taxonomy's own field when the search has one (tags and categories when the search also uses `tags:`, `categories:`, or `terms:`; a custom taxonomy when the search uses its operator, e.g. `colors:`), otherwise in the terms score. A term reached through several relationships (for example, directly and through a group) counts once, at its strongest. `min_terms_score` compares the total across all taxonomies. Multiple matching terms in the same field are additive — two title matches score higher than one. Scores are floating-point values in the 0–1+ range and can exceed 1.0 when many terms match. When multiple `min_*_score` thresholds are set, all non-zero thresholds must be met (AND logic): a post must satisfy every threshold to appear in results.
 
-**Exact term name matching:** When a taxonomy field operator is used (`tags:target`, `categories:news`) or a general term is quoted (`"target"`), PowerSearch checks whether the search string exactly matches any term name — if so, that term receives the *Explicit Selection* weight (the same weight as clicking a term in the Search Widget), which is higher than a partial FULLTEXT match. A tag named "Target" therefore scores higher for `tags:target` than a tag named "Target Gift Cards", even though both contain the word. An unquoted general term (`target`) does not trigger this bonus — it could be searching post content, not a term label.
+**Exact term name matching:** When a taxonomy field operator is used (`tags:python`, `categories:news`) or a general term is quoted (`"python"`), PowerSearch checks whether the search string exactly matches any term name — if so, that term receives the *Explicit Selection* weight (the same weight as clicking a term in the Search Widget), which is higher than a partial FULLTEXT match. A tag named "Python" therefore scores higher for `tags:python` than a tag named "Python Tutorials", even though both contain the word. An unquoted general term (`python`) does not trigger this bonus — it could be searching post content, not a term label.
 
 **Sort order:** Comma-separated `field:direction` pairs. Available fields: `relevance`, `date`, `modified`, `title`, `author`, `comment_count`, `last_comment`, `last_activity`, `ID`. Direction defaults to `desc` if omitted. Example: `relevance:desc,date:desc,title:asc`.
 
@@ -410,10 +409,10 @@ Display attributes (thumbnail, format, columns, prepend/append, etc.) are config
 | `ProductCategories:word` | `product_categories:blue` | Custom taxonomy **plural** label (spaces → underscores, lowercase) — FULLTEXT in term names/descriptions |
 | `ProductCategory:slug` | `product_category:blue-widgets` | Custom taxonomy **singular** label or slug — exact slug match |
 | `+word` | `+wordpress` | Required — must appear somewhere in results |
-| `+field:word` | `+tags:amazon` | Required in that specific field — posts without a matching term are excluded even if the text matches. Multiple required terms in the same field (`+tags:A +tags:B`) find posts carrying all of them. |
+| `+field:word` | `+tags:react` | Required in that specific field — posts without a matching term are excluded even if the text matches. Multiple required terms in the same field (`+tags:A +tags:B`) find posts carrying all of them. |
 | `-word` | `-stock` | Excluded — posts where the word appears in any text field (title, content, excerpt) or in any taxonomy term name/description are removed from results |
 | `-field:word` | `-tags:stock` | Excluded in that specific field — posts with a matching term in that taxonomy are removed; post text is not checked |
-| `"phrase"` | `"getting started"` | Match exact phrase in post text or taxonomy term names/descriptions. Also triggers exact name matching: if the quoted string exactly equals a term name, that term receives the higher *Explicit Selection* weight. A single quoted word (`"target"`) works the same way for term name matching. Combine with `+` to make it required: `+"air canada"` |
+| `"phrase"` | `"getting started"` | Match exact phrase in post text or taxonomy term names/descriptions. Also triggers exact name matching: if the quoted string exactly equals a term name, that term receives the higher *Explicit Selection* weight. A single quoted word (`"python"`) works the same way for term name matching. Combine with `+` to make it required: `+"getting started"` |
 
 **Proximity operators** — require the [As the Crow Flies](https://wordpress.org/plugins/as-the-crow-flies/) plugin active, with locations attached in ATCF to the terms you reference:
 
@@ -466,7 +465,7 @@ When none of these is available, `near:me` is ignored and the visitor is told th
 
 For AJAX mode, pair with `[ht_search_results id="…"]` — see the **[[ht_search_results]](#ht_search_results--shared-ajax-results-container)** section below.
 
-### [ht_search_results] — Shared AJAX Results Container
+## [ht_search_results] — Shared AJAX Results Container
 
 Used by both `[ht_search_form]` and `[ht_power_search]` in AJAX mode. Pagination, result count, and query scope are controlled by the form shortcode; this container controls display only.
 
@@ -487,12 +486,12 @@ Place it anywhere on the page. Set `ajax="container-id"` on the form shortcode a
 | `no_results_message` | HTML shown when no results are found | — |
 | `sort_order_options` | Comma-separated field slugs for a sort order picker. Changing the sort re-runs the search. Empty = no picker. | — |
 | `sort_order_align` | Alignment of the sort picker: `left`, `right`, or `center`. | — |
-| `filters` | Inline filter panel keywords (see §10). | — |
-| `filter_options` | Per-position options aligned to `filters` (see §10). | — |
+| `filters` | Inline filter panel keywords (see [Archive & Results Controls](archive-controls.html)). | — |
+| `filter_options` | Per-position options aligned to `filters` (see [Archive & Results Controls](archive-controls.html)). | — |
 | `filters_align` | Alignment of the filter panel: `left`, `right`, or `center`. | — |
 | `class` | Additional CSS classes | — |
 
-### HT PowerSearch Block
+## HT PowerSearch Block
 
 The **HT PowerSearch** block is the block-editor equivalent of `[ht_power_search]`. Find it in the inserter under **HyperTaxonomy → HT PowerSearch**, or search for "hypertaxonomy".
 
@@ -505,7 +504,7 @@ The block renders a live preview of the search form in the editor via server-sid
 
 ---
 
-### POST mode results pages
+## POST mode results pages
 
 A search widget or PowerSearch form without an `ajax` container submits the search to the page (POST mode) and shows the results with the theme's search template. The submission is answered with a redirect to a results URL carrying a short token — `…/?htax_q=…` — that holds the search. Because the results page is an ordinary link:
 
@@ -515,7 +514,7 @@ A search widget or PowerSearch form without an `ajax` container submits the sear
 
 Most searches fit in the token itself, so their links keep working indefinitely. Very large searches (many selected terms) are stored on the server instead and their links expire after 30 days. A `near:me` search keeps the location it was run with, so a shared link shows results near the person who shared it. The search text appears wherever the theme shows the search query (e.g. "Search Results for …"). WordPress's own search box is prefilled with it when **Site Search Integration** is on (that box then runs the same engine); otherwise it is left empty, since submitting it would run WordPress's own, different search.
 
-### Native WordPress Search Override
+## Native WordPress Search Override
 
 HyperTaxonomy can replace WordPress's built-in search (`?s=…`) with the **PowerSearch** engine, which applies relevance scoring, term relationship expansion, and field operators to all site searches.
 
@@ -536,7 +535,7 @@ Results are paged the usual way (`/page/2/?s=…`): each page fetches just its o
 
 ---
 
-### Search Method Comparison
+## Search Method Comparison
 
 | Feature | Native WP | Text Field | Post List `search=` | PowerSearch |
 |---------|-----------|------------|---------------------|---------------------|
@@ -548,6 +547,3 @@ Results are paged the usual way (`/page/2/?s=…`): each page fetches just its o
 | Filters out non-matching posts | Yes | Yes | No (boost only) | Yes |
 | Field groups | N/A | Supported | N/A | N/A |
 | Best for | Basic search | Faceted filter forms | Term-browsing lists with relevance boost | Standalone advanced search |
-
----
-

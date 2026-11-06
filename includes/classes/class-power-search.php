@@ -131,11 +131,6 @@ class HyperTaxonomy_Power_Search {
             'posts_per_page' => (string) htax_get_search_results_per_page(),
             'max_results' => '0',
             'near_country' => 'US', // ISO country code used to validate near:postal_code tokens
-            'show_thumbnail' => 'true',
-            'show_excerpt' => 'true',
-            'show_meta' => 'true',
-            'image_size' => 'medium',
-            'columns'    => '1',
             'ajax' => '', // Empty = POST submission, container-id = AJAX mode
             'class' => '',
         );
@@ -206,10 +201,6 @@ class HyperTaxonomy_Power_Search {
             if ( floatval( $atts['min_terms_score'] ) > 0 ) {
                 $output .= '<input type="hidden" name="htax_min_terms_score" value="' . esc_attr( $atts['min_terms_score'] ) . '" />';
             }
-            $output .= '<input type="hidden" name="htax_show_thumbnail" value="' . esc_attr( $atts['show_thumbnail'] ) . '" />';
-            $output .= '<input type="hidden" name="htax_show_excerpt" value="' . esc_attr( $atts['show_excerpt'] ) . '" />';
-            $output .= '<input type="hidden" name="htax_show_meta" value="' . esc_attr( $atts['show_meta'] ) . '" />';
-            $output .= '<input type="hidden" name="htax_image_size" value="' . esc_attr( sanitize_key( $atts['image_size'] ) ) . '" />';
         }
 
         // Preserve query value after POST submission

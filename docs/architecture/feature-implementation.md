@@ -156,9 +156,7 @@ For hierarchical taxonomies like categories, the `max_depth` parameter controls 
 - Convention: `-1` for unlimited, `0` for top-level only, `1-99` for limited depth
 - **Only supported by:** `[ht_checklist_field]` and `[ht_term_list]`
 
-**Group Depth Control:**
-- `max_group_depth` parameter on `[ht_checklist_field]` (default: `-1`), controlling how far `include_group_options` expands into child groups
-- `-1` = all descendant groups; `0` = only the listed groups; `1–99` = that many levels of child groups
+**Group expansion:** `include_group_options` always expands to every descendant group (`htax_get_terms_in_groups()`), with no depth limit, because a member of a child group counts as a member of its parents throughout HyperTaxonomy.
 
 **Examples:**
 - `[ht_checklist_field taxonomy="category"]` - uses global setting (unlimited by default)
@@ -166,7 +164,6 @@ For hierarchical taxonomies like categories, the `max_depth` parameter controls 
 - `[ht_checklist_field taxonomy="category" max_depth="2"]` - show only 2 levels
 - `[ht_term_list taxonomy="category" max_depth="3"]` - limit to 3 levels deep
 - `[ht_term_list taxonomy="category" max_depth="-1"]` - use the global setting
-- `[ht_checklist_field include_group_options="5" max_group_depth="2"]` - expand 2 levels of child groups
 
 **Implementation:**
 - Hierarchical rendering stops at specified depth

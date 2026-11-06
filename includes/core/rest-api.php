@@ -28,7 +28,7 @@
  *   htax_term_strengths     object  Opt-in via _fields. Map of the post's directly-
  *                                   assigned term IDs => association strength (0–1).
  *
- * Query params accepted on posts: htax_includes, htax_match, htax_weights.
+ * Query params accepted on posts: htax_includes, htax_match, htax_term_weights, htax_expand.
  *
  * X-HyperTaxonomy version header is added to all REST responses for peer-site
  * capability detection.
@@ -482,9 +482,8 @@ function htax_filter_rest_prepare_term( $response, $term, $request = null ) {
     // editor reads all HT data from htaxTermMeta, not from the REST response).
     //
     // Exception: collection requests from HT/TC peer sites (identified by the
-    // X-HyperTaxonomy request header) receive a lightweight peer payload containing
-    // htax_redirect and htax_includes — needed for identity delegation and relationship
-    // sync. The full enrichment (icons, synonyms) is still skipped for performance.
+    // X-HyperTaxonomy request header) receive whichever fields they ask for in _fields,
+    // for identity delegation and relationship sync.
     $is_collection = $request && ! preg_match( '/\/\d+$/', $request->get_route() );
     $is_gutenberg  = ! $is_collection && $request && 'user' === $request->get_param( '_locale' );
     $is_peer       = $is_collection && $request && '' !== (string) $request->get_header( 'x-hypertaxonomy' );
@@ -773,7 +772,7 @@ function htax_rest_register_post_extensions(): void {
 }
 
 /**
- * Register htax_includes, htax_match, and htax_weights as accepted query params
+ * Register htax_includes, htax_match, htax_term_weights, and htax_expand as accepted query params
  * on the posts collection endpoint.
  *
  * @since 1.0.0

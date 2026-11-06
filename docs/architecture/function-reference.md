@@ -446,8 +446,8 @@ The integration touches **no ATCF database tables directly** — all location da
 
 The `[ht_distance_field]` shortcode is registered unconditionally (so the tag is always recognized in content). When ATCF is inactive at render time, the shortcode outputs a notice for admins and nothing for other users.
 
-**JavaScript event fired by `[ht_distance_field]`:**
-- `atcf:termFilterInserted` — dispatched on `document` after the distance filter element is rendered into the form. `e.detail.fieldName` is the field's `name` attribute; `e.detail.formId` is the enclosing `[ht_search_form]` id.
+**JavaScript event:**
+- `atcf:termFilterInserted` — jQuery event fired by ATCF's admin term list script with the filter's container. `admin/js/htax-tables.js` listens for it to move the filter into HyperTaxonomy's filter row.
 
 **`htax_search_proximity_where` filter (PowerSearch + search widget):**
 
@@ -494,8 +494,8 @@ Reference locations are resolved via `ATCF_Locations::get_aggregated()`, which e
 **Posts endpoint extensions:**
 - `htax_rest_add_version_header( WP_REST_Response $result )` - Adds `X-HyperTaxonomy: {version}` header to every REST response; used by peer sites for HyperTaxonomy detection. Conditionally registered in `hooks/filters.php` based on the **HyperTaxonomy Presence Header** Advanced setting (default on)
 - `htax_rest_register_post_extensions()` - Registers `htax_*` collection params, the scoring query filter, and the `htax_score`/`htax_matched_term_slugs` REST fields on the `post` type; hooked on `rest_api_init`
-- `htax_rest_register_post_htax_params( array $params, string $post_type )` - `rest_post_collection_params` filter: registers `htax_includes`, `htax_match`, `htax_weights` as accepted params on `/wp-json/wp/v2/posts`
-- `htax_rest_apply_htax_post_query( array $args, WP_REST_Request $request )` - `rest_wp_post_query` filter: when `htax_includes` is present, reads primary and included term IDs, queries the search index (`relationship_type='direct'` only), scores posts, restricts the WP_Query via `post__in`, and stores normalized scores in `$_htax_rest_post_scores` for the field callbacks. The standard `?tags=`/`?categories=` params remain in effect and AND with `post__in`.
+- `htax_rest_register_post_htax_params( array $params, string $post_type )` - `rest_post_collection_params` filter: registers `htax_includes`, `htax_match`, `htax_term_weights`, `htax_expand` as accepted params on `/wp-json/wp/v2/posts`
+- `htax_rest_apply_htax_post_query( array $args, WP_REST_Request $request )` - `rest_wp_post_query` filter: when `htax_includes` is present, reads primary and included term IDs, queries the search index (`relationship_type='direct'` only, or all relationship types with `htax_expand`), scores posts, restricts the WP_Query via `post__in`, and stores normalized scores in `$_htax_rest_post_scores` for the field callbacks. The standard `?tags=`/`?categories=` params remain in effect and AND with `post__in`.
 - `htax_rest_get_post_score( array $post )` - REST field callback for `htax_score`; returns 0–1 float or null
 - `htax_rest_get_post_matched_slugs( array $post )` - REST field callback for `htax_matched_term_slugs`; returns string[] (remote term slugs derived from matched term IDs) or null
 - `htax_term_peers` field — registered by TermConnect (when active) on post REST responses. Returns peer connection data for all terms on returned posts. See TermConnect documentation.
@@ -514,13 +514,13 @@ Reference locations are resolved via `ATCF_Locations::get_aggregated()`, which e
 
 **`_fields` awareness.** All HT-added fields are gated by `htax_rest_field_requested( ?WP_REST_Request $request, string $field ): bool`. Returns `false` if: (a) the field is globally disabled by the Term Inclusion Relationships setting (`htax_includes`, `htax_synonyms`), OR (b) a `_fields` parameter was supplied and does not include this field. Returns `true` when `_fields` is absent. Callers should specify `_fields` to avoid unused computation; TermConnect does this in all outbound requests.
 
-**All term fields are available on peer collection responses.** Every field listed in the build-helpers above is available on both individual and peer collection responses when requested in `_fields`. Relationship-specific fields (`htax_includes`, `htax_relationships`) are additionally gated by the Custom Term Relationships and Relationship Types Advanced setting. `htax_synonyms` and `htax_includes` are gated by the Term Inclusion Relationships setting. `htax_locations` is gated by the share_locations feature flag.
+**All term fields are available on peer collection responses.** Every field listed in the build-helpers above is available on both individual and peer collection responses when requested in `_fields`. `htax_synonyms` and `htax_includes` are gated by the Term Inclusion Relationships setting. `htax_relationships` is off when either that setting or Custom Term Relationships and Relationship Types is off. `htax_locations` is gated by the share_locations feature flag.
 
 **`htax_relationships` is also available on individual term responses** (not just peer collection), gated by `_fields`.
 
 **`htax_relationship_types_admin_footer` action.** Fires at the bottom of the relationship types admin page. TC hooks here to inject the "Discover from peer site" UI.
 
-**Scoring:** Score = `sum(weight per matched term) / (n_primary_terms × weight_direct)`, clamped to 1.0. Primary term IDs (keys of `htax_includes`) use `weight_direct` (default 1.0); included term IDs (values of `htax_includes`) use `weight_included_direct` (default 0.7). Hidden-term rows excluded via `is_hidden = 0`. AND mode (`htax_match=all`) removes posts missing a match in any primary term group before normalization.
+**Scoring:** for each post, take the best matched weight per requested term, with non-direct primary matches discounted when `htax_expand` is on, sum those, and divide by the sum of the primary-term weights, clamped to 1.0. Weights come from `htax_term_weights` (default 1.0). Hidden-term rows are excluded via `is_hidden = 0`. AND mode (`htax_match=all`) removes posts missing a match in any primary term group before normalization.
 
 
 ### Native Block Extensions (includes/core/native-blocks.php)

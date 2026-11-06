@@ -4,11 +4,11 @@ parent: Developer Reference
 nav_order: 1
 ---
 
-## Custom Taxonomy Integration
+# Custom Taxonomy Integration
 
-### Registering a Custom Taxonomy for HyperTaxonomy
+## Registering a Custom Taxonomy for HyperTaxonomy
 
-Register your taxonomy normally with `register_taxonomy()`, then enable HyperTaxonomy features for it via Settings > HyperTaxonomy > General. HyperTaxonomy detects all registered public taxonomies automatically.
+Register your taxonomy normally with `register_taxonomy()`, then enable HyperTaxonomy features for it via Settings > HyperTaxonomy > Features. HyperTaxonomy detects all registered public taxonomies automatically.
 
 Features can also be enabled programmatically via the `htax_settings` option:
 
@@ -29,7 +29,9 @@ add_action( 'init', function() {
 }, 5 ); // Priority 5 to run before HyperTaxonomy reads settings
 ```
 
-### Querying with Inclusions
+This must run on `init` or earlier. The settings sanitizer is registered at `admin_init` and only accepts values from the settings form, so the same code on an activation hook or a later admin hook has no effect.
+
+## Querying with Inclusions
 
 When you want a custom query to respect HyperTaxonomy inclusion relationships, use `htax_get_expanded_term_ids()` to get the full flat list (term itself, WordPress descendants, and all HyperTaxonomy-contributed terms) and build the tax_query from it:
 
@@ -52,11 +54,11 @@ HyperTaxonomy handles this automatically on native term archives when inclusions
 
 For secondary queries in third-party plugins that should automatically expand alongside archive queries, see `htax_expand_secondary_query` in the [Integration API](php-api.html#integration-api) section.
 
-### Category Hierarchy in Searches
+## Hierarchy in Included Terms
 
-When a parent category is included (directly or via groups), all its subcategories are automatically included. This is handled inside `htax_get_included_terms()` — no extra code needed.
+When a parent category is included (directly or via groups), its archive expansion also covers all its subcategories. `htax_get_included_term_ids()` handles this, so no extra code is needed.
 
-### Custom Relationship Types
+## Custom Relationship Types
 
 HyperTaxonomy includes a Relationship Type Registry (`includes/core/relationship-types.php`) that manages both built-in types (`includes`, `member_of`, `redirect`, `excludes`) and user-defined types. There are two distinct kinds of user-defined type:
 
@@ -88,7 +90,7 @@ add_action( 'htax_relationship_types', function () {
 } );
 ```
 
-The `symmetric` key is valid only for non-inclusion-based types (`core_type => null`). When `true`, the forward label is stored as the inverse label and the label-must-differ validation is bypassed. The `symmetric` flag is persisted on the type record and readable via `htax_get_registered_relationship_types()`.
+The `symmetric` key is valid only for non-inclusion-based types (`core_type => null`). `htax_set_custom_relationship_type()` stores the forward label as the inverse label for a symmetric type and skips the label-must-differ check; `htax_register_relationship_type()` stores its arguments as given. Either way, the `symmetric` flag is readable via `htax_get_registered_relationship_types()`.
 
 **Mapping to `includes` for archive behavior** — a type mapped to `'includes'` causes posts tagged with the *target* term to appear in the *source* term's archive, identical to a direct inclusion. The target may be an ordinary term or a group:
 
@@ -101,7 +103,7 @@ htax_register_relationship_type( 'wrote', array(
 ) );
 ```
 
-**Saving and deleting rows** — use the provided helpers rather than raw `$wpdb->insert()`. They validate taxonomy constraints, handle `INSERT IGNORE` idempotency, and fire the `htax_relationship_saved` / `htax_relationship_deleted` actions (which trigger search index rebuilds for both terms):
+**Saving and deleting rows** — use the provided helpers rather than raw `$wpdb->insert()`. They validate taxonomy constraints, handle `INSERT IGNORE` idempotency, and fire the `htax_relationship_saved` / `htax_relationship_deleted` actions (which, for types mapped to `includes`, trigger search index rebuilds for both terms):
 
 ```php
 // Save a relationship row
@@ -132,7 +134,7 @@ $terms = htax_get_related_terms( $term_id, 'co_occurrence' );
 $terms = htax_get_reverse_related_terms( $term_id, 'co_occurrence' );
 ```
 
-Both functions are for non-core custom types only — passing a built-in slug (`includes`, `container`, `member_of`, `redirect`, `excludes`) returns an empty array immediately. Those types each have a dedicated function with proper caching, group expansion, and `never_include` logic. Group targets/sources for non-core types are resolved to their member `WP_Term` objects. Both return an empty array when the **Term Relationships** feature is disabled for the term's taxonomy, matching the built-in relationship getters. `htax_get_related_terms()` also returns an empty array for redirect terms (outgoing relationships are inactive); `htax_get_reverse_related_terms()` is unaffected by redirects.
+Both functions are for non-core custom types only — passing a built-in slug (`includes`, `member_of`, `redirect`, `excludes`) returns an empty array immediately. Those types each have a dedicated function with proper caching, group expansion, and `never_include` logic. Group targets/sources for non-core types are resolved to their member `WP_Term` objects. Both return an empty array when the **Term Relationships** feature is disabled for the term's taxonomy, matching the built-in relationship getters. `htax_get_related_terms()` also returns an empty array for redirect terms (outgoing relationships are inactive); `htax_get_reverse_related_terms()` is unaffected by redirects.
 
 `htax_get_related_terms()` accepts two optional boolean flags:
 - `$include_redirect_data` (third arg, default `false`) — pass `true` to bypass the redirect check.
@@ -140,7 +142,7 @@ Both functions are for non-core custom types only — passing a built-in slug (`
 
 **Cleanup on term deletion.** `htax_cleanup_deleted_term()` already deletes all rows in `wp_htax_term_relationships` where the term appears as source or target — this covers custom relationship rows automatically. No separate `delete_term` hook is needed.
 
-**Registering via the admin UI.** **Terms → Term Relationships** lists three sections:
+**Registering via the admin UI.** **Terms → Term Relationship Types** lists three sections:
 
 - **Built-in types** — read-only.
 - **Remote types** — types synced from peer sites via TermConnect (`source_site` field non-empty); read-only while delegated. **Make local** detaches a type from its source: `source_site` is cleared, the type becomes fully editable, and its namespace in REST responses changes to this site's URL. This action is irreversible and requires confirmation.
@@ -165,9 +167,9 @@ Types created there are stored in `wp_options` under `htax_custom_relationship_t
 
 **Label uniqueness.** All type labels and inverse labels — including those of the four built-in types — must be unique across the registry, checked case-insensitively. `htax_set_custom_relationship_type()` returns `WP_Error('duplicate_label')` or `WP_Error('duplicate_inverse_label')` if either clashes with any existing type's label or inverse label. For non-symmetric types a type's label and inverse label must also differ from each other (`WP_Error('label_equals_inverse')`); for symmetric types this check is skipped because equality is intentional. The built-in types and their labels are: Includes / Is included into, Excludes / Is excluded from, Redirects to / Target of redirect from, Member of / Contains member.
 
-**Relationship rows and term taxonomy conversion.** When a term is converted to a different taxonomy via `wp_update_term()`, HyperTaxonomy silently updates its relationship rows to the new taxonomy and deletes any rows that are no longer valid (cross-taxonomy includes rows, rows that violate source/target constraints under the new taxonomy). There is no pre-conversion warning — the cleanup happens automatically at the `edited_term` hook.
+**Relationship rows and term taxonomy conversion.** A conversion with a redirect keeps the term's relationship rows on the redirect stub in the old taxonomy. A conversion without a redirect removes them along with the deleted term. In both cases the new term starts with no relationships.
 
-**Extending the relationship types admin page.** The `htax_relationship_types_admin_footer` action fires at the bottom of the **Terms → Term Relationships** admin page, after all three table sections (built-in, remote, local) have rendered. Hook here to append additional UI — for example, a "discover types from a peer site" panel.
+**Extending the relationship types admin page.** The `htax_relationship_types_admin_footer` action fires at the bottom of the **Terms → Term Relationship Types** admin page, after all three table sections (built-in, remote, local) have rendered. Hook here to append additional UI — for example, a "discover types from a peer site" panel.
 
 ```php
 add_action( 'htax_relationship_types_admin_footer', function () {
@@ -176,6 +178,3 @@ add_action( 'htax_relationship_types_admin_footer', function () {
     echo '</div>';
 } );
 ```
-
----
-

@@ -464,12 +464,14 @@ function htax_get_current_taxonomy() {
 }
 
 /**
- * Block new post_tag term creation when the "prevent tag creation" setting is on.
+ * Block new post_tag term creation from the block editor when the "prevent tag creation"
+ * setting is on.
  *
- * Fires on pre_insert_term, which is called by wp_insert_term() regardless of
- * whether the caller is the block editor REST API or the classic editor AJAX handler.
- * Registered here (not in settings.php) because settings.php only loads inside
- * is_admin(), but REST API requests are not admin.
+ * The block editor creates a tag through a REST request before saving the post. The Tags
+ * screen, imports, and other plugins' sync jobs aren't post editing, so they keep working.
+ * Tags sent by name with a post save are handled by htax_remove_new_tags_from_post_request().
+ * Registered here (not in settings.php) because settings.php only loads inside is_admin(),
+ * but REST API requests are not admin.
  *
  * @param string $term     The term name being inserted.
  * @param string $taxonomy The taxonomy.
@@ -485,17 +487,11 @@ function htax_maybe_prevent_tag_creation( $term, $taxonomy ) {
         return $term;
     }
 
-    $is_rest = defined( 'REST_REQUEST' ) && REST_REQUEST;
-    $is_ajax = defined( 'DOING_AJAX' ) && DOING_AJAX;
-
-    if ( $is_rest || $is_ajax ) {
-        // HyperTaxonomy's own import runs as AJAX but must be allowed to create terms.
-        if ( $is_ajax && isset( $_REQUEST['action'] ) && 'htax_import' === sanitize_key( $_REQUEST['action'] ) ) {
-            return $term;
-        }
+    if ( defined( 'REST_REQUEST' ) && REST_REQUEST ) {
         return new WP_Error(
             'tag_creation_disabled',
-            __( 'Creating new tags is disabled. Please select from existing tags.', 'hypertaxonomy' )
+            __( 'Creating new tags is disabled. Please select from existing tags.', 'hypertaxonomy' ),
+            array( 'status' => 403 )
         );
     }
 

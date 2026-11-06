@@ -274,6 +274,7 @@ PowerSearch query execution, scoring, thresholds, and index management are descr
 **Note:** Relationship data lives in database tables; the following transients are used for performance optimization:
 
 - `htax_inc_{term_id}` / `htax_cont_{term_id}` / `htax_excl_{term_id}` - A term's included terms, container terms, and excluded term IDs
+- `htax_tags_not_created_{user_id}` - Tags left off a user's last post save while the "prevent tag creation" setting is on, until the notice shows them (5 minutes). Not a performance cache.
 - `htax_redir_{term_id}` / `htax_redirect_terms` - A term's redirect target, and all term IDs that have a redirect
 - `htax_groups_{term_id}` - The groups a term belongs to
 - `htax_syno_{term_id}` - A term's synonyms

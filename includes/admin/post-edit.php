@@ -599,3 +599,88 @@ function htax_ajax_dismiss_prefs_callout() {
 // ============================================================================
 
 // REST field registration is in includes/core/rest-api.php (loaded unconditionally)
+
+/**
+ * Remove tags that don't exist yet from a post save when the "prevent tag creation"
+ * setting is on.
+ *
+ * Covers the Classic Editor, Quick Edit, and Bulk Edit, which send tags by name with the
+ * post. WordPress stops assigning a post's tags at the first one it can't create, so
+ * blocking the new tag at insertion would discard the whole tag change. Removing it from
+ * the request keeps the rest. The removed names are kept for htax_show_tags_not_created_notice().
+ *
+ * @since 1.0.0
+ */
+function htax_remove_new_tags_from_post_request() {
+    global $pagenow;
+
+    $options = get_option( 'htax_settings', array() );
+    if ( empty( $options['prevent_tag_creation'] ) || ! isset( $_REQUEST['tax_input']['post_tag'] ) ) {
+        return;
+    }
+
+    $action       = isset( $_REQUEST['action'] ) ? sanitize_key( wp_unslash( $_REQUEST['action'] ) ) : '';
+    $is_post_save = ( 'post.php' === $pagenow && 'editpost' === $action )
+        || ( 'edit.php' === $pagenow && isset( $_REQUEST['bulk_edit'] ) )
+        || ( wp_doing_ajax() && 'inline-save' === $action );
+    if ( ! $is_post_save ) {
+        return;
+    }
+
+    $tags = wp_unslash( $_REQUEST['tax_input']['post_tag'] );
+    if ( ! is_array( $tags ) ) {
+        $delimiter = translate_with_gettext_context( ',', 'tag delimiter', 'default' );
+        $tags      = explode( ',', str_replace( $delimiter, ',', (string) $tags ) );
+    }
+
+    $kept    = array();
+    $removed = array();
+    foreach ( $tags as $tag ) {
+        $tag = trim( (string) $tag );
+        if ( '' === $tag ) {
+            continue;
+        }
+        if ( term_exists( $tag, 'post_tag' ) ) {
+            $kept[] = $tag;
+        } else {
+            $removed[] = $tag;
+        }
+    }
+
+    if ( ! $removed ) {
+        return;
+    }
+
+    $kept_value                        = wp_slash( implode( ',', $kept ) );
+    $_REQUEST['tax_input']['post_tag'] = $kept_value;
+    if ( isset( $_POST['tax_input']['post_tag'] ) ) {
+        $_POST['tax_input']['post_tag'] = $kept_value;
+    }
+
+    set_transient( 'htax_tags_not_created_' . get_current_user_id(), $removed, 5 * MINUTE_IN_SECONDS );
+}
+add_action( 'admin_init', 'htax_remove_new_tags_from_post_request' );
+
+/**
+ * Tell the editor which tags were left off their last post save.
+ *
+ * Without this the tags would disappear with no explanation, since the save still succeeds.
+ *
+ * @since 1.0.0
+ */
+function htax_show_tags_not_created_notice() {
+    $key     = 'htax_tags_not_created_' . get_current_user_id();
+    $removed = get_transient( $key );
+    if ( empty( $removed ) || ! is_array( $removed ) ) {
+        return;
+    }
+    delete_transient( $key );
+
+    $message = sprintf(
+        /* translators: %s: comma-separated tag names. */
+        __( 'Not added because creating new tags is disabled: %s', 'hypertaxonomy' ),
+        implode( ', ', $removed )
+    );
+    echo '<div class="notice notice-warning is-dismissible"><p>' . esc_html( $message ) . '</p></div>';
+}
+add_action( 'admin_notices', 'htax_show_tags_not_created_notice' );

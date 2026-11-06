@@ -53,7 +53,7 @@ Registered by section, in file order:
 10. **Native Block Extensions** — `query_loop_block_query_vars`, `pre_render_block`
 11. **REST API** — `rest_api_init`, `get_terms_args`, `rest_post_dispatch`
 12. **Sitemaps** — `wp_sitemaps_taxonomies_query_args`
-13. **Tag Creation Gate** — `pre_insert_term` → `htax_maybe_prevent_tag_creation`, defined in `core/functions.php`
+13. **Tag Creation Gate** — `pre_insert_term` → `htax_maybe_prevent_tag_creation`, defined in `core/functions.php`; `admin_init` → `htax_remove_new_tags_from_post_request` and `admin_notices` → `htax_show_tags_not_created_notice`, defined in `admin/post-edit.php`
 14. **Conditional** — `query` and `query_results`, added by `htax_log_debug()` when `HTAX_QUERY_MONITOR` is defined
 
 ### Other Hook Notes

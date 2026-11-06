@@ -151,7 +151,7 @@ hypertaxonomy/
 │   │   ├── tag-groups-migrate-ui.php         # Export / Import tab: Migrate subtab (Tag Groups import)
 │   │   ├── tag-groups-sync-ui.php            # Export / Import tab: Sync subtab (integration mode, removal handling)
 │   │   ├── merge-terms.php                   # Merge Terms admin UI and handler
-│   │   ├── post-edit.php                     # Post editor: assets, sticky terms REST field, display preferences notice
+│   │   ├── post-edit.php                     # Post editor: assets, sticky terms REST field, display preferences notice, tag creation on post saves
 │   │   ├── relationship-types-admin.php      # Term Relationship Types admin page: view built-in types, manage user-defined types
 │   │   ├── settings.php                      # Settings page UI (HyperTaxonomy_Settings class)
 │   │   ├── tables.php                        # List tables: assets, columns, filters, row classes

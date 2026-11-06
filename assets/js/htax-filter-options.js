@@ -351,16 +351,25 @@
         }
     });
 
+    /**
+     * Find the search results a filter panel controls. A [ht_filter_options] panel sits
+     * beside the results; the filters= shorthand on [ht_search_results] sits in a controls
+     * bar inside .htax-search-results-block.
+     */
+    function findFilterResults($root) {
+        const $results = $root.siblings('.htax-search-results');
+        return $results.length ? $results : $root.closest('.htax-search-results-block').find('.htax-search-results').first();
+    }
+
     // =========================================================================
     // Search widget AJAX integration
     // =========================================================================
 
     $(document).on('htax:filter-change', '[data-htax-filter-root]', function (_e, newState) {
-        const $root    = $(this);
-        const $results = $root.siblings('.htax-search-results');
+        const $results = findFilterResults($(this));
         if (!$results.length) return;
         $results.data('htax-filter', newState || {});
-        const formId = $results.siblings('.htax-search-form').attr('id');
+        const formId = $('.htax-search-form[data-results="' + $results.attr('id') + '"]').attr('id');
         if (formId && typeof HTAXSearchWidget !== 'undefined' && HTAXSearchWidget.forms && HTAXSearchWidget.forms[formId]) {
             HTAXSearchWidget.forms[formId].performSearch(1);
         }
@@ -371,13 +380,7 @@
     // =========================================================================
 
     $(document).on('htax:filter-change', '[data-htax-filter-root]', function (_e, newState) {
-        const $root  = $(this);
-        // A [ht_filter_options] panel sits beside the results; the filters= shorthand on
-        // [ht_search_results] sits in a controls bar inside .htax-search-results-block.
-        let $results = $root.siblings('.htax-search-results');
-        if (!$results.length) {
-            $results = $root.closest('.htax-search-results-block').find('.htax-search-results').first();
-        }
+        const $results = findFilterResults($(this));
         if (!$results.length) return;
         $results.data('htax-filter', newState || {});
         const resultsId = $results.attr('id');

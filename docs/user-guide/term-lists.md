@@ -1,10 +1,10 @@
 ---
-title: Display Shortcodes
+title: Term Lists & Clouds
 parent: User Guide
-nav_order: 7
+nav_order: 8
 ---
 
-# Display Shortcodes
+# Term Lists & Clouds
 
 Four built-in shortcodes for displaying terms on any page or widget. No dependencies required.
 

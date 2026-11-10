@@ -1,30 +1,10 @@
 ---
 title: FAQ & Troubleshooting
 parent: User Guide
-nav_order: 10
+nav_order: 16
 ---
 
 # FAQ & Troubleshooting
-
-## Choosing Features
-
-Common decision points:
-
-**Inclusion vs synonym?** An inclusion is one-directional: A includes B means B's posts appear in A's archive, but A's posts don't appear in B's. A synonym is mutual: add A to B's included list AND B to A's included list. Both archives then show posts from either term. Use inclusions for broader/narrower relationships (Programming → JavaScript); use synonyms for terms that cover the same concept from different angles (JS → JavaScript).
-
-**Inclusion vs redirect?** Inclusion expands an archive — both terms remain visible and functional, each with its own URL and archive. A redirect replaces an archive — visitors to the old URL are sent to the target term's archive. The redirect term still appears in term lists, in italics by default, and links to wherever `redirect_link_behavior` sends it; `exclude_redirects` leaves it out. Use inclusions when both terms should remain first-class navigation items; use redirects when you are consolidating or renaming and want the old URL to become an alias.
-
-**Redirect vs merge?** Both consolidate terms. A redirect keeps both terms in the database and creates a permanent 301 forward — reversible, the original term still exists. A merge physically reassigns all post relationships and deletes the source term — irreversible. Use redirects for ongoing aliases; use merge for permanent cleanup of duplicate terms.
-
-**Group vs tag cloud?** A Term Group is a structural container — a named set of terms, used in inclusions, in post list shortcodes, and in the Query Loop block filter. A tag cloud (`[ht_term_cloud]`) is a display component — it renders terms with size proportional to post count. These serve entirely different purposes and are often used together.
-
-**Sticky post vs sort order override?** A sticky post pins one specific post to the top of one specific term archive — useful for editorial choices ("always show the glossary at the top of this tag"). A sort order override changes the ordering algorithm for all results on a term archive — useful for making comment activity or modification date the primary ranking signal. They can coexist: the sticky appears first, then the sort order applies to everything else.
-
-**PowerSearch vs Search Widget?** PowerSearch is text-driven: a user types a query with field operators and gets relevance-ranked results across post content and taxonomy names. The Search Widget is facet-driven: a user selects taxonomy terms from pills or checklists and narrows results by tag, category, or custom taxonomy. They can appear on the same page and complement each other.
-
-**Hidden term vs draft posts?** A hidden term controls taxonomy navigation visibility — unauthorized users don't see the term in archives, shortcodes, or search results, but the posts themselves remain publicly accessible through direct URLs. Draft posts hide the posts themselves. Use hidden terms for curator-only filing systems (internal categories, editorial flags) where the posts are public but the organizational structure isn't.
-
----
 
 ## FAQ
 

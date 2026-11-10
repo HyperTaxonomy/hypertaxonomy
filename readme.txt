@@ -224,7 +224,7 @@ The HyperTaxonomy search widget builds faceted search forms from nested shortcod
 [/ht_search_form]
 ```
 
-For AJAX mode, geo distance filtering, dynamic controllers, and the full parameter reference for every field, see [User Guide → Search & PowerSearch](https://hypertaxonomy.org/hypertaxonomy/user-guide/search.html#advanced-search-widget).
+For AJAX mode, geo distance filtering, dynamic controllers, and the full parameter reference for every field, see [User Guide → Search Widget](https://hypertaxonomy.org/hypertaxonomy/user-guide/search-widget.html#advanced-search-widget).
 
 == PowerSearch Shortcodes ==
 
@@ -235,7 +235,7 @@ For AJAX mode, geo distance filtering, dynamic controllers, and the full paramet
 [ht_power_search placeholder="Search posts..." button_text="Search" posts_per_page="20"]
 ```
 
-For the complete query syntax, all shortcode parameters, and proximity search examples, see [User Guide → Search & PowerSearch](https://hypertaxonomy.org/hypertaxonomy/user-guide/search.html#ht_power_search--powersearch-form).
+For the complete query syntax, all shortcode parameters, and proximity search examples, see [User Guide → PowerSearch](https://hypertaxonomy.org/hypertaxonomy/user-guide/powersearch.html#ht_power_search--powersearch-form).
 
 == Post List Shortcodes ==
 
@@ -248,7 +248,7 @@ For the complete query syntax, all shortcode parameters, and proximity search ex
 [ht_related_posts taxonomy="post_tag" posts_per_page="4" format="ul"]
 ```
 
-For all parameters and template placeholders, see [User Guide → Post List Shortcodes](https://hypertaxonomy.org/hypertaxonomy/user-guide/post-list-shortcodes.html).
+For all parameters and template placeholders, see [User Guide → Post Lists](https://hypertaxonomy.org/hypertaxonomy/user-guide/post-lists.html).
 
 == Display Shortcodes ==
 
@@ -259,7 +259,7 @@ Four shortcodes for displaying taxonomy terms, each with a corresponding Gutenbe
 [ht_term_list taxonomy="post_tag" collapsible="collapsed" header="Tags ({term_count})"]
 ```
 
-For all parameters and examples, see [User Guide → Display Shortcodes](https://hypertaxonomy.org/hypertaxonomy/user-guide/display-shortcodes.html).
+For all parameters and examples, see [User Guide → Term Lists & Clouds](https://hypertaxonomy.org/hypertaxonomy/user-guide/term-lists.html).
 
 == Sort Order Picker ==
 

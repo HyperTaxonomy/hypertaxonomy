@@ -1,41 +1,14 @@
 ---
-title: Installation & Configuration
+title: Settings Reference
 parent: User Guide
-nav_order: 2
+nav_order: 1
 ---
 
-# Installation & Configuration
-
-## Requirements & Installation
-
-| Requirement | Minimum Version |
-|-------------|----------------|
-| WordPress | 6.6 |
-| PHP | 7.4 |
-| MySQL | 5.7 (or MariaDB 10.3) |
-
-No additional plugins required. All features including Term Groups are built-in.
-
-### Automatic Installation
-
-1. Log into your WordPress admin
-2. Go to **Plugins > Add New**
-3. Search for "HyperTaxonomy"
-4. Click **Install Now**, then **Activate**
-
-### Manual Installation
-
-1. Upload the plugin folder to `/wp-content/plugins/hypertaxonomy/`
-2. Activate through the Plugins screen
-3. Go to **Settings > HyperTaxonomy** to configure
-
----
-
-## Configuration
+# Settings Reference
 
 All settings are at **Settings > HyperTaxonomy**, organized into tabs.
 
-### Features Tab
+## Features Tab
 
 The main configuration hub. A **General** subtab controls which taxonomies HyperTaxonomy manages; additional subtabs appear for each enabled taxonomy (Tags, Categories, Term Groups, and any custom taxonomies).
 
@@ -54,7 +27,7 @@ The main configuration hub. A **General** subtab controls which taxonomies Hyper
 | Archive Customization | Per-term archive description display, sticky posts, posts per page, and sort order. |
 | Share list of locations | When the [As the Crow Flies](https://wordpress.org/plugins/as-the-crow-flies/) (ATCF) plugin is active, HyperTaxonomy includes location data from ATCF in REST responses for this taxonomy (`htax_locations`) — used by TermConnect's peer site matching and proximity-enhanced search. This row only appears when ATCF is active. |
 
-### Display Tab
+## Display Tab
 
 - **Archive Titles** — Optionally show which terms are contributing to an archive's title (e.g. "JavaScript (including: React)")
 - **Archive Description** — Global gate for the per-term **Show Description** setting. When disabled, no term descriptions are output regardless of per-term preferences; saved per-term data is preserved.
@@ -63,7 +36,7 @@ The main configuration hub. A **General** subtab controls which taxonomies Hyper
 - **Max Term Hierarchy Depth** — Default maximum nesting depth for `[ht_term_list]`, the Term List block, and the search widget's hierarchical checklists (`-1` = unlimited, `0` = top level only). Each can override this with its own `max_depth` attribute/setting.
 - **Frontend Styles** — Disable the default frontend stylesheet (`assets/css/htax-shortcodes.css`), which applies to both shortcodes and blocks. Check this if providing your own CSS via a theme or custom stylesheet.
 
-### Icons Tab
+## Icons Tab
 
 The Icons tab has a **General** subtab plus one subtab per taxonomy that has the Icons feature enabled.
 
@@ -77,7 +50,7 @@ The Icons tab has a **General** subtab plus one subtab per taxonomy that has the
 - **Icon Display** — Controls whether placeholder color squares appear when a term has no icon: Always show placeholders / Only when icon exists (default) / Never show icons. The shortcode `show_icons="always"` overrides this per-instance.
 - **Delete All Icons** — Permanently deletes all uploaded icons for that taxonomy from the media library.
 
-### Search Tab
+## Search Tab
 
 The Search tab is only available when at least one taxonomy has Search Enhancement enabled in the Features tab. It has a **General** subtab plus one subtab per enabled taxonomy (and Custom Flat / Custom Hierarchical templates for custom taxonomies).
 
@@ -137,7 +110,7 @@ For custom taxonomies, Name Match and Description Match weights are configured i
 
 Description Match weights are configured independently from Name Match weights. A common pattern is to use lower description weights (the defaults are roughly 70% of the corresponding name weight) since term names are typically a more precise signal than descriptions.
 
-### Cache Tab
+## Cache Tab
 
 **Internal Caches**
 
@@ -149,14 +122,14 @@ Description Match weights are configured independently from Name Match weights. 
   - *Shortcode output cache* — `[ht_post_list]` and `[ht_related_posts]` rendered results (default 1 hour)
 - **Clear All Caches** — Purges every HyperTaxonomy transient at once.
 
-### Export / Import Tab
+## Export / Import Tab
 
 - **Export** — JSON-based backup of HyperTaxonomy data (relationships, redirects, group memberships) for selected taxonomies
 - **Import** — Restore from a previously exported JSON file
 - **Migrate** — Import from Tag Groups (PublishPress Tag Groups). See [Import & Migration](import-migration.html).
 - **Sync** — How HyperTaxonomy stays in step with Tag Groups after migrating
 
-### Advanced Tab
+## Advanced Tab
 
 - **Concurrent Edit Locking** — Enable/disable the simultaneous-edit warning overlay on term edit screens. Uses the WordPress heartbeat API. Disable if it conflicts with another plugin that also hooks into the heartbeat.
 - **Post Editor Term Loading** — Load a post's assigned tags from PHP, so the block editor shows them as soon as the Tags field appears and doesn't request each one over REST. Without this, typing in the field before the tags load replaces them. Disable if a plugin adds custom fields to terms in the block editor.
@@ -168,43 +141,3 @@ Description Match weights are configured independently from Name Match weights. 
 - **Custom Term Relationships and Relationship Types** — Expose custom relationship type definitions over REST, and include custom term relationships in REST term responses.
 - **Uninstall** — Option to delete all HyperTaxonomy data when the plugin is uninstalled.
 - **Health Check** — System status report: database table presence, search index state, and configuration validity.
-
----
-
-## Post Editor Features
-
-HyperTaxonomy can display contextual indicators directly in the Gutenberg and Classic post editors when you assign tags or categories to a post. Each indicator is controlled by a per-user toggle in the block editor's **··· menu** (More options) under the HyperTaxonomy group, and also requires the corresponding feature to be enabled on the taxonomy (Features → [Taxonomy]). Both the per-user toggle and the taxonomy feature must be on for an indicator to appear. Preferences persist per user and take effect immediately without saving. The toggles exist only in the block editor, so the Classic Editor always uses their defaults: Redirect Indicators and Hidden Terms on, the others off.
-
-On first visit to the block editor, a dismissible notice explains that these toggles exist and where to find them.
-
-### Tags Field
-
-In the block editor, WordPress checks each tag you type or paste with the server and only adds it to the post once all the replies are back. On a slow site, tags entered during that wait can be lost. HyperTaxonomy prevents this for tags: entered tags are added once they've been checked, and the post's other tags are kept. Save and Publish are briefly disabled during the check. This is always on and doesn't apply to other taxonomies.
-
-### Inclusion Badges and Container Badges
-
-When enabled, each term pill (flat taxonomies) or checklist entry (hierarchical taxonomies) can show:
-
-- **⇉ N** (light blue badge): This term's archive pulls in posts from N other terms. The tooltip lists their names. Appears when **Inclusion Badges** is on and the taxonomy has Term Relationships enabled.
-- **⇇ N** (light green badge): N other terms pull in this term's posts. The tooltip lists those terms. Appears when **Container Badges** is on and the taxonomy has Term Relationships enabled.
-
-These are informational — they help you understand the reach of a term before assigning it to a post.
-
-### Redirect Indicators
-
-When **Redirect Indicators** is on (default) and the taxonomy has Redirects enabled, redirect terms are displayed in italics with a ↪ symbol. Hovering the ↪ shows the redirect target name. This warns editors that assigning a redirect term points visitors away from that term's archive — the term's own archive does not serve posts.
-
-### Hidden Terms
-
-When **Hidden Terms** is on (default) and the taxonomy has Visibility enabled, terms marked as hidden are displayed at reduced opacity. This signals that the term is not publicly visible on the frontend.
-
-### Sticky Pushpins
-
-When **Sticky Pushpins** is enabled in the ··· menu and the taxonomy has Archive Customization enabled, a 📌 pushpin icon appears inline next to each term in the post editor's tag/category fields. Clicking the pushpin toggles the post's sticky status for that term's archive without leaving the editor.
-
-- A filled pushpin (📌) means the post is currently pinned to that term's archive.
-- A faded pushpin means the post is not pinned.
-- Redirect terms are excluded — their archives redirect away, so pinning has no visible effect.
-- If a term is removed from the post, it is automatically unpinned.
-- The pin is per-term: a post can be sticky for one term but not another.
-- The post must be published for sticky pinning to take effect on the frontend.

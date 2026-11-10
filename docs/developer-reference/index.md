@@ -8,12 +8,13 @@ has_children: true
 
 For theme developers and plugin authors who integrate with HyperTaxonomy via its PHP API, hooks, and REST endpoints.
 
-For guidance on building or extending HyperTaxonomy itself, see the [Contributing](../contributing.html). For internal plugin architecture and implementation details, see the [Architecture](../architecture/) section.
+For guidance on building or extending HyperTaxonomy itself, see the [Contributing](../architecture/contributing.html). For internal plugin architecture and implementation details, see the [Architecture](../architecture/) section.
+
+The custom capabilities are described for site owners in [Roles & Permissions](../user-guide/roles-permissions.html).
 
 This guide is split into the following pages:
 
 - **[Custom Taxonomy Integration](custom-taxonomy.html)** — registering taxonomies for HyperTaxonomy, querying with inclusions, and custom relationship types.
-- **[Capabilities](capabilities.html)** — the six custom capabilities and how to grant them.
 - **[PHP API](php-api.html)** — the integration API, term icons API, hidden terms, and low-level relationship data.
 - **[Sort & Filter Controls](sort-filter-controls.html)** — rendering the sort picker and filter panel from PHP, their HTML structures, and their JavaScript events.
 - **[Actions & Filters](actions-filters.html)** — every action HyperTaxonomy fires and every filter it exposes.

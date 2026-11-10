@@ -1,7 +1,7 @@
 ---
 title: Actions & Filters
 parent: Developer Reference
-nav_order: 5
+nav_order: 4
 ---
 
 # Actions & Filters

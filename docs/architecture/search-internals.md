@@ -106,7 +106,7 @@ Parsed via regex: `/([+\-]?)\b(title|content|body|excerpt|tags|categories|terms|
 
 ### Search Widget — Detailed Query Architecture
 
-For shortcode reference and configuration see the [User Guide § Advanced Search Widget](../user-guide/search.html#advanced-search-widget).
+For shortcode reference and configuration see the [User Guide § Advanced Search Widget](../user-guide/search-widget.html#advanced-search-widget).
 
 **Taxonomy Relevance Scoring:**
 - `match='any'` fields: score = SUM across terms of a per-term noisy-OR combination of `strength` (see "Relevance aggregation" in [Database Schema](database-schema.html)) — relationship-type weights baked into `strength` at index time; HAVING field_score > 0
@@ -504,3 +504,39 @@ Each result item: `{ id, value, label }`, plus `icon_url` when the term has an i
 5. **XSS Prevention:** esc_html(), esc_attr(), wp_kses()
 6. **CSRF Protection:** WordPress nonces
 7. **Data Sanitization:** sanitize_text_field(), wp_unslash()
+
+## Performance Considerations
+
+### Adding HyperTaxonomy to an existing stack does not multiply database queries
+
+A common concern when combining multiple plugins is query overhead. HyperTaxonomy is designed to minimize this.
+
+`[ht_post_list]`, Related Posts block, and search queries run against the pre-computed `wp_htax_search_terms` index, where term inclusions are computed into the index at write time. Term archives are standard WordPress queries with an expanded `tax_query`, using cached lookups of each term's included terms.
+
+Two caching layers sit above the database:
+
+1. **Per-request static cache** — relationship lookups and term data resolved during a single page load are held in static request-scope arrays. Most are unbounded for the duration of the request; `htax_get_valid_term()` specifically uses a bounded cache capped at 500 entries with FIFO eviction. If ACF, JetEngine, and HyperTaxonomy all reference the same term during the same request, only one database call is made.
+
+2. **WordPress transients** — `[ht_post_list]` and Related Posts block results are cached as transients (for 1 hour by default) with targeted invalidation. A cached post list result is invalidated when the term assignments, term relationships, or group memberships that affect it change, not on every post save.
+
+These layers keep the number of extra queries low on cached page loads. PowerSearch adds its own queries per search request.
+
+---
+
+### The search index is the performance foundation
+
+`[ht_post_list]` queries, search, and relevance scores run against the pre-computed `wp_htax_search_terms` index. Each row in the index carries a **strength score** — how centrally the post covers that term — which directly affects search ranking. Keeping this index healthy and up to date is the most important operational concern.
+
+The index is updated incrementally (via WP Cron) as posts are created, edited, or have their term assignments changed. For large bulk imports (hundreds or thousands of posts), use **Settings > HyperTaxonomy > Search > Rebuild Search Index** after the import completes if results look out of date.
+
+**Explicit relationship weights and strength.** The Explicit Selection weights in Settings → Search → Relevance Weights control how much of a direct term's strength propagates to indirect relationships (hierarchy, inclusions, redirects). These weights are baked into the strength score at index build time. When you save a change to them, HyperTaxonomy automatically queues every post in the affected taxonomy for reindexing in the background (via WP Cron), so taxonomy-filter searches pick up the new weights within a few minutes — no manual rebuild needed. Text Search (keyword) weights remain dynamic and apply immediately.
+
+### Avoid very large inclusion sets on high-traffic archives
+
+Each inclusion expands the term set for archive queries. An archive term that directly includes 50 other terms produces a `tax_query` spanning all 50, and very large sets produce large result pages. Use `posts_per_page` on the archive, or `max_results` on a post list, to bound result sizes.
+
+### Cache behavior
+
+`[ht_post_list]` and `[ht_related_posts]` cache their full query result (ordered post IDs + total count). The cache lasts 1 hour by default (**Shortcode output cache** in the Cache tab), and is invalidated earlier when the post–term assignments, term relationships, or group memberships that affect the result change — not globally. This means adding an inclusion to a term will invalidate caches for archives and shortcodes that include that term, which is the correct behavior.
+
+For very large sites with high write volume (many post updates per hour), monitor transient table size. The cache keys are hashed and scoped to affected term sets, so the number of distinct cache entries grows with the number of distinct term combinations — not with the number of posts.

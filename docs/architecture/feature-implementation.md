@@ -6,7 +6,7 @@ nav_order: 5
 
 # Feature Implementation
 
-> For implementation patterns (nonce handling, AJAX detection, etc.), error handling patterns, and coding standards, see the [Contributing](../contributing.html).
+> For implementation patterns (nonce handling, AJAX detection, etc.), error handling patterns, and coding standards, see the [Contributing](contributing.html).
 
 ## Feature Flag Enforcement for Archive Expansion
 

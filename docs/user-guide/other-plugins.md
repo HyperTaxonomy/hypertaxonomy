@@ -1,386 +1,14 @@
 ---
-title: Best Practices & Modeling
+title: Working with Other Plugins
 parent: User Guide
-nav_order: 12
+nav_order: 15
 ---
 
-# HyperTaxonomy Best Practices
-
-Modeling guide for site architects and developers. Covers how to think about content relationships in HyperTaxonomy, when it is the right tool, and how it fits alongside ACF, FacetWP, Relevanssi, Elementor, and custom solutions.
-
-For feature descriptions and shortcode references see the rest of the [User Guide](index.html). For the PHP API and integration hooks see the [Developer Reference](../developer-reference/). For a comparison with Tag Groups specifically see [Feature Comparison](../comparison.html).
-
----
-
-## The Core Abstraction
-
-The single most important concept: **HyperTaxonomy operates at the type level, not the instance level.**
-
-A WordPress term is a concept — a class of posts. "React" is not a post; it is a label that represents a set of posts. Every relationship you define in HyperTaxonomy is a relationship between two concepts, and therefore it applies automatically and uniformly to every post in both sets — now and in the future.
-
-```
-"JavaScript" INCLUDES "React"
-→ every React post appears in the JavaScript archive
-→ every future React post will also appear, with no further action
-```
-
-This is the scaling advantage: define a relationship once, and it governs the entire corpus. It is also the fundamental limitation: HyperTaxonomy cannot model relationships between individual posts, because individual posts are not the unit of organization.
-
-The practical test for any relationship you are considering:
-
-> **Is this relationship true for ALL posts with term X and ALL posts with term Y?**
->
-> If yes → use HyperTaxonomy.
-> If no, or if it depends on the specific post → use post-level metadata (ACF, custom fields, post-to-post plugins).
-
----
-
-## Transitive vs. Non-Transitive Inclusion
-
-Before choosing a modeling pattern, it helps to understand the fundamental choice HyperTaxonomy makes about how inclusions chain together.
-
-A relationship is **transitive** if A→B and B→C automatically implies A→C. WordPress's native category hierarchy is transitive: a post in a child category automatically appears in every ancestor category's archive, all the way up the tree.
-
-HyperTaxonomy inclusions are **non-transitive**: if A includes B, and B includes C, A does **not** automatically include C. Each link must be explicitly defined.
-
-```
-"React" INCLUDES "Component Architecture"
-"Component Architecture" INCLUDES "Design Patterns"
-
-Transitive:     React archive → React + Component Architecture + Design Patterns  (broad)
-Non-transitive: React archive → React + Component Architecture                    (focused)
-                Component Architecture archive → Component Architecture + Design Patterns
-```
-
-**Why non-transitive?** Transitive inclusion produces unbounded cascade — one connection deep in the graph can silently pull in large, unrelated portions of the corpus. Non-transitive inclusion keeps each archive focused: you decide exactly which content is relevant in each context, independent of what other relationships exist further along the chain.
-
-**When to use native hierarchy (transitive) instead:**
-If A is genuinely a broader category and B should always be subordinate — and you want every future sub-category of A to automatically include B — use WordPress's category parent/child relationship. Native hierarchy is the right tool for universally accepted, stable organizational trees (Country → State → City, Family → Genus → Species).
-
-**When to use HyperTaxonomy inclusions (non-transitive):**
-- Relationships that are selective or contextual ("React benefits from Component Architecture context, but not everything Component Architecture relates to")
-- Cross-branch connections that cut across the primary hierarchy
-- Connections where the transitivity of native hierarchy would produce results that are too broad
-
-The patterns below all use non-transitive inclusions unless noted otherwise.
-
----
-
-## Modeling Patterns
-
-
-### Pattern 1 — Broader / Narrower (Contextual Inclusion)
-
-**Use when:** Term A is contextually enriched by including content from Term B, but the reverse is not true or would dilute A's focus.
-
-```
-"React" INCLUDES "Component Architecture"   ← React posts + contextual posts about architecture
-"JavaScript" INCLUDES "React"               ← JavaScript posts + React posts
-                                            ← JavaScript does NOT include Component Architecture
-                                              (not defined; non-transitive by design)
-```
-
-Each inclusion is an editorial decision: you are saying "when someone reads about React, also showing them Component Architecture posts adds value." You are not saying "anything true of Component Architecture propagates to React."
-
-**Depth of chain:** Because inclusions are non-transitive, you control exactly which relationships exist. A three-level chain requires three explicit inclusions. This is intentional — it prevents one broad term from inadvertently sweeping in unrelated content through a long chain of intermediate terms.
-
-**When native hierarchy is better:** If A is genuinely a broader category and B is a narrower sub-category — and you want all future sub-categories of A to automatically include B — use WordPress's native category parent/child relationship instead. Native hierarchy is transitive and automatic. HyperTaxonomy inclusions are appropriate when the relationship is selective, contextual, or cross-branch.
-
----
-
-### Pattern 2 — Synonyms (Bidirectional Inclusion)
-
-**Use when:** Two terms name the same concept, or nearly the same concept, and content about one should always surface when browsing the other.
-
-A synonym is simply two inclusions pointing at each other. Each term retains its independent identity — its own position in the taxonomy hierarchy, its own archive URL, its own tagging — but each archive also shows the other term's posts.
-
-```
-"United States" INCLUDES "USA"
-"USA" INCLUDES "United States"
-```
-
-**Archives are not necessarily identical.** Mutual inclusion means each term's archive includes the other's posts, but each term may also have its own additional inclusions. If "United States" also includes "American Politics" but "USA" does not, the two archives will differ:
-
-```
-"United States" archive → posts tagged United States + USA + American Politics
-"USA" archive           → posts tagged USA + United States  (not American Politics)
-```
-
-This is often intentional — the canonical form of a term can have a richer inclusion set than its alias. If you want truly interchangeable archives, ensure both terms have identical inclusion sets.
-
-**Design note:** Synonyms do not need to be grammatically identical. They can be abbreviation ↔ full form, formal ↔ informal, British ↔ American spelling, or slightly overlapping concepts you want to treat as equivalent for browsing purposes.
-
-**When NOT to use synonyms:** If the two terms genuinely differ in scope — one is broader — use a one-directional inclusion (Pattern 1) instead. A visitor browsing the narrower term should not automatically see everything in the broader term.
-
----
-
-### Pattern 3 — Polyhierarchy (Multiple Perspectives)
-
-**Use when:** A term legitimately belongs to multiple branches of a hierarchy, but WordPress's tree structure only allows one parent.
-
-WordPress native categories allow only one parent. A post about React can be in `Frontend > React` but cannot simultaneously be in `JavaScript Ecosystem > React` without duplicating the category. HyperTaxonomy solves this at the term level rather than the post level.
-
-**Option A — Inclusions from multiple parents:**
-```
-"Frontend Development" INCLUDES "React"
-"JavaScript Ecosystem" INCLUDES "React"
-```
-React posts appear in both `Frontend Development` and `JavaScript Ecosystem` archives. React itself lives in one primary location in the tree. The relationship is maintained at the term level — no post needs to be double-tagged.
-
-**Option B — Term Groups:**
-Create a "JavaScript" group and a "Frontend" group. Add React to both. Use `[ht_post_list include_groups="..."]` or `[ht_term_list include_groups="..."]` when querying by group membership, and the native category tree for archive browsing.
-
-**Choosing between them:** Use inclusions when the overlap needs to affect archive queries (visiting `/category/javascript-ecosystem/` should show React posts). Use Term Groups when the overlap is for editorial organization or for powering shortcode displays, without modifying what archive pages show.
-
----
-
-### Pattern 4 — Dynamic Group Inclusion
-
-**Use when:** A term should include all the content from a managed, changing set of related terms.
-
-A direct inclusion names specific terms and is static — adding a new term to your vocabulary does not update it automatically. A group-based inclusion names a group instead: every current and future member of that group is included automatically.
-
-```
-Group: "Chest Pain Conditions" → [Angina, Myocardial Infarction, GERD, Costochondritis]
-
-"Emergency Cardiology" INCLUDES GROUP "Chest Pain Conditions"
-→ Emergency Cardiology archive shows posts from all four member terms
-```
-
-When "Pericarditis" is later added to the "Chest Pain Conditions" group, it immediately appears in the Emergency Cardiology archive — no inclusion needs to be touched. When a term is removed from the group, it stops appearing. The group is the authoritative source of the included set; the inclusion relationship just points to it.
-
-Groups are hierarchical: including a parent group automatically includes all its descendant subgroups and their members as well.
-
-This is the right pattern whenever the set of related terms is actively growing, curated by editorial staff, or shared across multiple including terms (several archives can each include the same group, all updating in sync).
-
----
-
-### Pattern 5 — Container Groups (Reverse Inclusion)
-
-**Use when:** A term's content is universally relevant to a defined group of terms, and that term should push its posts into each of those terms' archives rather than each one individually including it.
-
-This is the mirror image of Pattern 4. Instead of an archive term pulling in a group's members, a term lists certain groups in its **Container Groups** field. The system then pushes that term's posts into the archive of every term that belongs to those groups.
-
-```
-Group: "Pet Species" → [Dogs, Cats, Birds, Rabbits]
-
-"Vaccination Requirements" — Container Groups: [Pet Species]
-→ Vaccination Requirements posts appear in the Dogs archive
-→ Vaccination Requirements posts appear in the Cats archive
-→ Vaccination Requirements posts appear in the Birds archive
-→ Vaccination Requirements posts appear in the Rabbits archive
-```
-
-"Vaccination Requirements" does not include any of those terms — it is the other way around. Each pet species' archive automatically gains the vaccination content because of the container relationship. When a new species "Ferrets" is added to the "Pet Species" group, the Ferrets archive immediately gains the vaccination content too, with no changes to the container term itself.
-
-**When to use container vs. group inclusion:** The choice is directional and depends on where the editorial ownership sits.
-
-- Use group inclusion (Pattern 4) when you own the including term and want to pull in a dynamic set: "I manage Emergency Cardiology and want it to cover everything in Chest Pain Conditions."
-- Use container groups (Pattern 5) when you own the content term and want it to push into a set of archives: "I manage Vaccination Requirements and it belongs in every pet species archive — now and in the future."
-
-The two patterns run in opposite directions, so they don't produce the same result: Pattern 4 adds every member's posts to one term's archive, and Pattern 5 adds one term's posts to every member's archive. Choose by which archives should change.
-
----
-
-### Pattern 6 — Cross-Taxonomy Alignment (Redirects)
-
-**Use when:** The same concept exists under different taxonomy types (e.g., as both a category and a tag), and you want archives to converge.
-
-A 301 redirect is a statement that one term IS another term — the source term is now an alias for the target, and its archive URL permanently redirects to the target's archive. HyperTaxonomy collapses redirect chains to always point directly to the ultimate target.
-
-Typical use cases:
-- **Merging duplicates:** "javascript" (tag) and "JavaScript" (tag) both exist due to inconsistent entry; redirect the less-used one to the canonical form.
-- **Cross-taxonomy synonym:** A "Machine Learning" category and a "machine-learning" tag should point to the same archive.
-- **Renaming a term:** The old "Big Data" tag is being replaced by "Data Engineering". Redirect Big Data → Data Engineering so old archive URLs and search engine links are preserved.
-
-**Redirect vs. Inclusion:** A redirect completely replaces the source term's archive — there is no longer a separate browsable archive for the source. An inclusion keeps both archives alive. Use redirects when you want to consolidate; use inclusions when you want both terms to remain browsable.
-
----
-
-### Pattern 7 — Faceted Attributes (Multiple Taxonomies)
-
-**Use when:** Content has multiple independent dimensions that users browse independently.
-
-WordPress supports multiple taxonomies per post type. HyperTaxonomy enhances each taxonomy independently with its own inclusions, redirects, groups, and hidden terms. The faceted search widget can combine filters across taxonomies in a single query.
-
-```
-Post type: Product
-Taxonomies: product_category, product_brand, product_material, product_color
-
-HyperTaxonomy per-taxonomy:
-  product_category: inclusions (Summer → [Swimwear, Sunscreen, Sandals])
-  product_brand:    redirects (old brand name → current name after acquisition)
-  product_material: groups (Natural Fibers → [Cotton, Linen, Wool, Silk])
-  product_color:    hidden terms (internal color codes invisible to customers)
-```
-
-Each taxonomy dimension is independent. A visitor can filter by brand AND material AND category simultaneously; HyperTaxonomy's search widget handles the intersection.
-
----
-
-### Pattern 8 — Access-Gated Content (Hidden Terms)
-
-**Use when:** A term is meaningful to editors or administrators but should not be surfaced to general readers.
-
-A hidden term is invisible on all frontend output (archives, shortcodes, search results) to any role that does not have view permission. For authorized roles the term behaves exactly as a normal term — it appears in archives, shortcodes, and search results. The visibility check happens at query time, not by removing posts from the database.
-
-```
-Editorial taxonomy: editorial_status
-Terms: Needs Update (hidden — visible to users who can edit posts)
-       Awaiting Fact-Check (hidden)
-       Tied to Annual Event (hidden)
-```
-
-Editors can browse the "Tied to Annual Event" archive to pull up every post that needs revisiting before a recurring event — a conference, a product launch cycle, a legislative deadline. Readers never see these terms in tag clouds, search results, or anywhere else on the frontend. The posts themselves are fully public; only the editorial grouping label is hidden.
-
-Hidden terms are also useful for staging content under a provisional topic label before it goes live under a canonical term, or for tracking posts that need attention without that status leaking into the public taxonomy.
-
----
-
-## Taxonomy Design Principles
-
-### Design for concepts, not for posts
-
-A taxonomy term is a concept that a category of content belongs to. When you create a term, ask: "Would I be comfortable saying that every post assigned to this term is about this concept?" If the answer is "only sometimes" or "it depends," that is a signal that the term is too coarse, or that some posts should be re-tagged.
-
-Well-defined term semantics make inclusion relationships easy to reason about. Vague or mixed-purpose terms produce inclusions that feel wrong in some contexts.
-
-### Prefer richer, more specific terms over generic catch-alls
-
-Fewer, broader terms reduce the surface area for inclusion relationships and make archives too generic. More specific terms give HyperTaxonomy more to work with. A term like "Web Development" is so broad it includes almost everything; "React Server Components" is specific enough that an inclusion relationship from "React" has a clear meaning.
-
-That said, you do not need a term for every concept that could ever be a tag — only for concepts that recur across multiple posts and that you want to manage explicitly.
-
-### Plan inclusions before they grow large
-
-A few dozen carefully chosen inclusion relationships that reflect genuine semantic connections between your core topics are far more valuable than hundreds of speculative inclusions. Each inclusion adds posts to an archive; if an inclusion is too loose, visitors arriving at that archive will find the content mix confusing.
-
-Review inclusions periodically. As your content grows, some inclusions may become too broad. Removing an inclusion does not delete posts — it only changes which posts surface in which archives.
-
-### Keep taxonomy count manageable
-
-A site with 10 taxonomies per post type is hard to govern. Each new taxonomy adds potential conflicts in search and filter queries. Two to four taxonomies per post type is a practical limit for most sites. HyperTaxonomy's groups provide additional organizational structure without requiring a new taxonomy. Unlike flat metadata fields, groups are HyperTaxonomy's built-in taxonomy, with their own browsable archive pages — a group can serve as a named collection with a dedicated URL without adding to your taxonomy count.
-
-### Do not duplicate relationships
-
-If a term's native parent/child hierarchy already expresses a relationship, there is no need to also define an inclusion for it — HyperTaxonomy's search index already pre-computes hierarchical post sets. Define inclusions for cross-branch relationships, not for re-stating what hierarchy already handles. Inclusions stay within one taxonomy, so to connect terms in different taxonomies, use a redirect or a Term Group.
-
-### Terms can define their own browsing context
-
-WordPress's default archive ordering is date descending — the most recently published post appears first. This is appropriate for news and blogs, but many terms represent concepts where recency is not the right primary axis. HyperTaxonomy lets you set a default sort order and sticky posts per term, independently of every other term in the same taxonomy.
-
-A term like `advanced-algebra` can be configured with `title:asc` ordering, so its archive reads as a structured syllabus rather than a reverse-chronological stream. A course overview or prerequisite list, published as an ordinary post, can be pinned to the top of that archive as a sticky post — it appears first regardless of its publish date or any other sort criteria.
-
-```
-Tag: advanced-algebra
-  Default sort:  title:asc       (A–Z by post title — works as a reading list)
-  Sticky post:   "Course Overview and Prerequisites"  (always first)
-
-Tag: machine-learning (same taxonomy, different behavior)
-  Default sort:  date:desc       (latest research and tutorials first)
-  Sticky post:   none
-```
-
-The effect is that two tags in the same taxonomy can provide completely different browsing experiences, tuned to the nature of the content. Visitors can override the default sort at runtime if a sort control is present; the per-term default applies when they arrive without a sort preference.
-
-Sticky posts remain pinned regardless of sort order — whether the term's configured default or a visitor's runtime sort selection. They are fetched and prepended separately from the main query, so the sort criteria only applies to non-sticky posts below them. Sticky posts appear on page 1 only and are excluded from subsequent pages.
-
-This pattern also applies to categories and any custom taxonomy. A product category like `reference-manuals` sorted alphabetically serves differently from a `new-arrivals` category sorted by date. A `featured` tag with a sticky editorial intro post acts as a curated landing archive. The post type and taxonomy are unchanged; only the term's archive behavior differs.
-
----
-
-## Complex Modeling Scenarios
-
-### Knowledge Base / Technical Documentation
-
-A knowledge base typically has a main topic taxonomy and cross-cutting attribute taxonomies (difficulty, product version, content type).
-
-```
-Taxonomy: kb_topic
-  Topics: Installation, Configuration, Troubleshooting, API Reference, Performance
-
-Taxonomy: kb_product
-  Products: Community Edition, Enterprise Edition
-
-Taxonomy: kb_content_type (flat: Tutorial, How-To, Concept, Reference)
-```
-
-**HyperTaxonomy setup:**
-- "Troubleshooting" INCLUDES "Configuration" — config-related articles are contextually relevant when someone is troubleshooting
-- "Enterprise Edition" INCLUDES GROUP "Enterprise Add-ons" (other `kb_product` terms) — articles about each add-on automatically appear in the Enterprise Edition archive
-- "Deprecated API" redirects to "API Reference" — old API pages land in the current reference archive
-- Search widget with `kb_topic` + `kb_product` + `kb_content_type` facets lets users narrow to "Enterprise Edition → How-To" in two clicks
-
-**What HyperTaxonomy does NOT handle here:** tracking which specific article supersedes which other specific article, or modeling that a specific article applies to specific version numbers. Those are instance-level relationships — add ACF fields (`superseded_by`, `applies_to_versions`) for those.
-
----
-
-### Editorial / News Site
-
-```
-Taxonomy: topic (flat tags: Climate, Economy, Politics, Technology...)
-Taxonomy: region (hierarchical: World > Europe > Germany)
-Taxonomy: content_format (flat: Analysis, Breaking News, Feature, Opinion)
-```
-
-**HyperTaxonomy setup:**
-- "Climate" and "Economy" each INCLUDE "Climate Policy" — climate policy coverage surfaces in both archives
-- "Technology" and "Politics" each INCLUDE "AI Regulation" — genuine cross-topic coverage
-- "Eurozone" INCLUDES GROUP "Eurozone Members" (Germany, France, Italy, etc., all `region` terms) — as a new member state is added to the group, its coverage automatically surfaces in the Eurozone archive
-- "Covid" redirects to "Public Health" — legacy archive URLs preserved
-- Hidden term "Needs Legal Review" — an internal flag editors can browse. The posts stay public, so a hidden term can't hold content back: use drafts or scheduling for embargoed posts
-
-**What HyperTaxonomy does NOT handle here:** tracking that a specific journalist wrote a specific article (that is the WordPress `author` field or an ACF relationship), or that a specific article is a follow-up to a specific earlier article (ACF field `related_article`).
-
----
-
-### Academic Institution
-
-```
-Post types: course, faculty, department, research_project
-Taxonomies: subject_area, research_method, degree_level
-```
-
-This scenario illustrates the type-level / instance-level boundary most clearly.
-
-**Type-level relationships → HyperTaxonomy:**
-- "Statistics" INCLUDES "Machine Learning" — courses about ML should surface in Statistics archives; the relationship holds for every ML course
-- "Master's" INCLUDES "PhD" — doctoral-level content is also relevant to master's students
-- GROUP "Quantitative Methods" → [Statistics, Econometrics, Machine Learning] — query posts in this group for any "methods" listing page
-
-**Instance-level relationships → post-level metadata (ACF/CPT UI):**
-- Professor Smith teaches Course 101 ← an individual faculty post is related to a specific course post
-- Course 101 requires Course 050 as a prerequisite ← a specific course-to-course relationship
-- Research Project X is led by Professor Y ← specific post-to-post link
-
-The correct architecture is layered: HyperTaxonomy governs the semantic structure of subjects and methods across the curriculum, while ACF post-to-post relationships govern specific faculty/course/project connections. They operate on different dimensions of the same content and do not conflict.
-
-A course archive page can combine both: HyperTaxonomy-expanded `[ht_post_list]` for "courses in the same subject area," and a custom Elementor Loop block reading ACF's `related_courses` field for "courses that list this one as a prerequisite."
-
----
-
-### E-commerce Product Catalog
-
-```
-Post type: product (or WooCommerce product)
-Taxonomies: product_category, product_brand, product_material, product_color
-```
-
-**HyperTaxonomy setup:**
-- GROUP "Natural Fibers" → [Cotton, Linen, Wool, Silk, Hemp] — all natural-fiber products queryable as a group; new materials added to the group automatically appear
-- "Swimwear" INCLUDES GROUP "Summer Essentials" — swimwear archive also shows sunscreen, sandals, and hats without each needing to be cross-tagged
-- "Acme Corp" redirects to "Acme (acquired)" — brand archive preserved after acquisition/rename
-- Hidden material terms for internal codes not surfaced to customers
-
-**What HyperTaxonomy does NOT handle:** product variant relationships (Size M of this product is related to Size L), bundle relationships (Product A is sold together with Product B), or cross-sell/upsell links between specific products. Those require WooCommerce's own relationship system or ACF fields.
-
----
-
-## Working Alongside Other Plugins
+# Working with Other Plugins
 
 HyperTaxonomy operates at the vocabulary level — it defines what taxonomy terms mean in relation to each other. The plugins in this section operate at other levels: post structure, custom fields, page building, e-commerce, content automation, and search. Because they address different problems, they are genuinely complementary.
 
-### The Core Gap in Content-Modeling Frameworks
+## The Core Gap in Content-Modeling Frameworks
 
 CPT UI, ACF, Pods, and JetEngine are content-modeling frameworks: they define post types, custom fields, and post-to-post relationships. They all share the same limitation at the vocabulary level. They answer questions like:
 
@@ -398,7 +26,7 @@ These are questions about the *vocabulary* — the taxonomy terms themselves —
 
 ---
 
-### CPT UI
+## CPT UI
 
 **What it does:** Registers custom post types and taxonomies through an admin UI. No code required.
 
@@ -410,7 +38,7 @@ These are questions about the *vocabulary* — the taxonomy terms themselves —
 
 ---
 
-### ACF (Advanced Custom Fields)
+## ACF (Advanced Custom Fields)
 
 **What it does:** Defines custom fields for posts, taxonomy terms, and users. The Relationship field stores arrays of related post IDs and renders them as selectable lists on the post edit screen.
 
@@ -446,7 +74,7 @@ These are questions about the *vocabulary* — the taxonomy terms themselves —
 
 ---
 
-### Pods
+## Pods
 
 **What it does:** A full relational data modeling framework. Defines custom post types, taxonomies, and fields with a schema-like approach. Supports custom database tables. The Relationships feature creates typed, bidirectional connections between post types (e.g., `Faculty.teaches ↔ Course.taught_by`).
 
@@ -470,7 +98,7 @@ These are questions about the *vocabulary* — the taxonomy terms themselves —
 
 ---
 
-### JetEngine
+## JetEngine
 
 **What it does:** The most comprehensive content-modeling toolkit in the WordPress ecosystem. Custom post types, fields, query builder, Smart Filters (faceted filtering), Dynamic Listings (Elementor-based loop templates), and the Relations module — which creates fully managed many-to-many relationships between post types with editable metadata on each relationship instance ("Professor Smith teaches Course 101 as Lead Instructor, starting Fall 2023").
 
@@ -504,7 +132,7 @@ Avoid placing both on the same result block. Each can be used independently on d
 
 ---
 
-### Elementor
+## Elementor
 
 HyperTaxonomy's `pre_get_posts` expansion applies to the main WordPress query only. The standard taxonomy archive page therefore shows inclusion-expanded results automatically. Elementor Loop Builder widgets use secondary `WP_Query` instances and do not receive this expansion by default — an Elementor loop configured to show "posts in category: JavaScript" will show only directly tagged posts.
 
@@ -523,7 +151,7 @@ For post-to-post relationships managed by ACF, Elementor's Dynamic Tags read ACF
 
 ---
 
-### WooCommerce
+## WooCommerce
 
 HyperTaxonomy works with WooCommerce taxonomies (`product_cat`, `product_tag`, and any custom attribute taxonomy registered as a standard taxonomy). Term inclusions, redirects, and hidden terms apply to product archives exactly as they would to post archives.
 
@@ -533,7 +161,7 @@ HyperTaxonomy does not interact with WooCommerce's product variation or cross-se
 
 ---
 
-### Term Icons and Other Plugins That Attach Images to Terms
+## Term Icons and Other Plugins That Attach Images to Terms
 
 HyperTaxonomy stores term icons as media library attachments, referenced by `_htax_icon_id` term meta, and generates three responsive sizes per term. Several other plugins store similar data under different meta keys. The two systems do not interfere at the database level — they write to separate meta keys and neither reads the other's data. Conflicts are entirely **template-level**: they occur only if a theme or template file outputs both a HyperTaxonomy icon and another plugin's term image for the same term in the same location.
 
@@ -568,7 +196,7 @@ if ( $wc_thumbnail_id ) {
 
 ---
 
-### TaxoPress
+## TaxoPress
 
 **Note:** TaxoPress was rebranded "PublishPress Taxonomies" in September 2026 (same plugin, same company); this section uses "TaxoPress" throughout for brevity, matching its long-standing name.
 
@@ -598,7 +226,7 @@ See [Feature Comparison](../comparison.html) for a detailed side-by-side.
 
 ---
 
-### Relevanssi
+## Relevanssi
 
 Both plugins can optionally replace WordPress's native keyword search. Enable only one for that role.
 
@@ -608,7 +236,7 @@ This gives you linguistically rich keyword search (Relevanssi) plus relationship
 
 ---
 
-### FacetWP
+## FacetWP
 
 FacetWP excels at faceted filtering over custom post meta fields (prices, dates, ACF relationship facets, numeric fields). HyperTaxonomy excels at semantic enrichment of the base taxonomy result set.
 
@@ -620,7 +248,7 @@ FacetWP excels at faceted filtering over custom post meta fields (prices, dates,
 
 ---
 
-### SearchWP
+## SearchWP
 
 SearchWP is a premium WordPress search plugin, commonly used alongside or instead of Relevanssi for more control over which content surfaces and how it is weighted. The conflict with HyperTaxonomy is the same as with Relevanssi: both can replace WordPress's native `?s=` search. Enable only one for that role — turn off HyperTaxonomy's **Site Search Integration** setting when SearchWP is active.
 
@@ -628,13 +256,13 @@ Unlike Relevanssi (pure keyword TF-IDF), SearchWP can also index custom fields, 
 
 ---
 
-### WP Grid Builder
+## WP Grid Builder
 
 WP Grid Builder is a Gutenberg-native grid and faceted filtering plugin. Its taxonomy facets issue `WP_Query` calls that fire `pre_get_posts`. The interaction with HyperTaxonomy is identical to FacetWP: enable **Settings → Search → Third-Party Query Expansion** to have single-term taxonomy clauses automatically expanded to include HyperTaxonomy inclusions, and to have facet counts reflect the expanded post set. Multi-term selections are not expanded (same reasoning as FacetWP — those are explicit user filter choices, not archive expansions).
 
 ---
 
-### Yoast SEO and Rank Math
+## Yoast SEO and Rank Math
 
 Both SEO plugins can mark empty or thin term archives as `noindex` or redirect them away. Neither conflicts with HyperTaxonomy in practice:
 
@@ -642,7 +270,7 @@ Both SEO plugins can mark empty or thin term archives as `noindex` or redirect t
 - **`noindex` for thin archives** is a meta tag output during rendering, which redirect terms never reach. For other terms, HyperTaxonomy's expansion can add posts to an archive, which may change whether an SEO plugin treats it as thin.
 - **Manual redirect rules** in Yoast SEO Premium's redirect manager or Rank Math's redirect module are stored separately. If one covers a URL that HyperTaxonomy also redirects, whichever runs first wins. Remove the duplicate to avoid confusion.
 
-#### Yoast / Rank Math and term conversion
+### Yoast / Rank Math and term conversion
 
 Yoast SEO indexes term archives in `wp_yoast_indexable`, keyed by `object_type = 'term'`, `object_sub_type = taxonomy_slug`, and `object_id = term_id`. When a term moves to a different taxonomy, this record needs to be considered. Rank Math isn't covered here; check how it stores term data.
 
@@ -680,9 +308,9 @@ add_action( 'htax_term_converted', function(
 
 ---
 
-### WPML and Polylang
+## WPML and Polylang
 
-#### WPML
+### WPML
 
 WPML stores translation relationships in `wp_icl_translations` keyed by `element_type = 'tax_{taxonomy}'` and `element_id = term_taxonomy_id` (the row in `wp_term_taxonomy`, not the `term_id`). When a term moves to a different taxonomy:
 
@@ -692,7 +320,7 @@ WPML stores translation relationships in `wp_icl_translations` keyed by `element
 
 The practical recommendation: **keep redirect stubs enabled when WPML is active**. The stub retains the original taxonomy and the same `term_taxonomy_id`, so all WPML translation links survive intact. The new term needs its translations set up in WPML, because one translation group can't hold terms from two taxonomies. WPML's `wpml_set_element_language_details` action sets a term's language and translation group from code. These notes haven't been tested with WPML, so try conversions on a staging site first.
 
-#### Polylang
+### Polylang
 
 Polylang stores each term's language and its translation links with the term itself. These notes haven't been tested with Polylang. When a term converts:
 
@@ -701,35 +329,19 @@ Polylang stores each term's language and its translation links with the term its
 
 **Practical recommendation**: use redirect stubs when Polylang is active. If a no-redirect conversion is necessary, set the new term's language in the Polylang term editor afterward.
 
-#### wp\_terms.term\_group
+### wp\_terms.term\_group
 
 The `term_group` column in `wp_terms` is a legacy WordPress mechanism that some older multilingual systems use to group synonymous terms (e.g., link "Science" in English to "Wissenschaft" in German by giving both the same `term_group` value). HyperTaxonomy checks for `term_group` collisions before allowing a conversion: if the target taxonomy already contains a different term with the same non-zero `term_group` value, the conversion is blocked with an error. This prevents silently creating duplicate `term_group` pairings within a taxonomy that would confuse those multilingual systems.
 
 ---
 
-### YARPP and Jetpack Related Posts
+## YARPP and Jetpack Related Posts
 
 Both use content-based algorithms to suggest related posts — YARPP via co-occurrence and text similarity, Jetpack via its cloud API. HyperTaxonomy's Related Posts block uses taxonomy relationship similarity (shared terms, inclusions, and relevance weighting from the search index). The approaches are complementary rather than conflicting: YARPP and Jetpack surface textually or semantically proximate content; HT Related Posts surfaces content that belongs to the same or related taxonomy vocabulary.
 
 A third option is the TermConnect plugin's `[tc_peer_posts]`, which extends the same taxonomy vocabulary across to peer WordPress sites and RSS/Atom feeds. Where the Related Posts block finds content on the same site by shared terms, `[tc_peer_posts]` finds content on configured peer sites by mapped terms — posts authored by practitioners with a shared vocabulary but a different readership. The three can coexist: HT Related Posts for same-site taxonomy-driven content, YARPP or Jetpack for content-driven discovery, and TermConnect for network-sourced related reading.
 
 A common pattern: HT Related Posts for "more on this topic" (taxonomy-driven, this site), and YARPP or Jetpack for "you might also like" (content-driven) — two distinct discovery paths on one page.
-
----
-
-## Integrating from a Plugin or Theme
-
-For plugin and theme authors building their own HyperTaxonomy-aware code, HyperTaxonomy exposes three main extension points:
-
-**Expansion-aware queries.** `htax_get_expanded_term_ids( $term_id )` returns the flat list of term IDs whose posts appear in a term's archive. Use it to build a `tax_query` clause that respects HyperTaxonomy inclusions in any custom `WP_Query`. Set the `htax_expand_terms` query variable to `true` or `false` on individual `WP_Query` instances to force or suppress automatic expansion per-query, overriding the global setting.
-
-**Cache invalidation.** `htax_term_archive_changed` fires after every relationship save, relationship delete, redirect save, or redirect delete. Hook it to invalidate derived caches in your plugin without tracking each fine-grained action individually.
-
-**Custom relationship types.** The Relationship Type Registry (`includes/core/relationship-types.php`) lets plugin authors define two kinds of user-defined type. **Inclusion-based** types (`core_type = 'includes'`) automatically participate in archive expansion, post list queries, and the search index — all query sites use `htax_relationship_type_sql_in('includes')` rather than a hard-coded equality check. **Custom** types (`core_type = null`) store the relationship only; behavior is implemented by the registering plugin. Use `htax_register_relationship_type()` (hook into `htax_relationship_types`) for code registration, or the **Terms → Term Relationship Types** admin page (two creation buttons: Inclusion-based / Custom). Use `htax_add_term_relationship()` / `htax_remove_term_relationship()` rather than raw `$wpdb` calls. Cleanup on term deletion is handled automatically — no `delete_term` hook needed. See [Custom Relationship Types](../developer-reference/custom-taxonomy.html#custom-relationship-types) for the full API.
-
-See the [Developer Reference](../developer-reference/) for full function references, action and filter documentation, REST endpoints, and the capabilities API.
-
----
 
 ## No-Code Quick Reference
 
@@ -753,41 +365,3 @@ One of the advantages of HyperTaxonomy's Gutenberg block integration is that the
 | Display JetEngine Relations | JetEngine Dynamic Listings |
 
 The Post List and Related Posts blocks in particular bridge the gap between HyperTaxonomy's relationship data and editorial teams who build pages in the block editor. All query and display parameters — taxonomy, terms, sort order, filters, display options — are configurable in the inspector panel with a live server-side preview. No shortcode syntax or developer involvement is needed to create a content hub that reflects the full semantic structure of your taxonomy vocabulary.
-
----
-
-## Performance Considerations
-
-### Adding HyperTaxonomy to an existing stack does not multiply database queries
-
-A common concern when combining multiple plugins is query overhead. HyperTaxonomy is designed to minimize this.
-
-`[ht_post_list]`, Related Posts block, and search queries run against the pre-computed `wp_htax_search_terms` index, where term inclusions are computed into the index at write time. Term archives are standard WordPress queries with an expanded `tax_query`, using cached lookups of each term's included terms.
-
-Two caching layers sit above the database:
-
-1. **Per-request static cache** — relationship lookups and term data resolved during a single page load are held in static request-scope arrays. Most are unbounded for the duration of the request; `htax_get_valid_term()` specifically uses a bounded cache capped at 500 entries with FIFO eviction. If ACF, JetEngine, and HyperTaxonomy all reference the same term during the same request, only one database call is made.
-
-2. **WordPress transients** — `[ht_post_list]` and Related Posts block results are cached as transients (for 1 hour by default) with targeted invalidation. A cached post list result is invalidated when the term assignments, term relationships, or group memberships that affect it change, not on every post save.
-
-These layers keep the number of extra queries low on cached page loads. PowerSearch adds its own queries per search request.
-
----
-
-### The search index is the performance foundation
-
-`[ht_post_list]` queries, search, and relevance scores run against the pre-computed `wp_htax_search_terms` index. Each row in the index carries a **strength score** — how centrally the post covers that term — which directly affects search ranking. Keeping this index healthy and up to date is the most important operational concern.
-
-The index is updated incrementally (via WP Cron) as posts are created, edited, or have their term assignments changed. For large bulk imports (hundreds or thousands of posts), use **Settings > HyperTaxonomy > Search > Rebuild Search Index** after the import completes if results look out of date.
-
-**Explicit relationship weights and strength.** The Explicit Selection weights in Settings → Search → Relevance Weights control how much of a direct term's strength propagates to indirect relationships (hierarchy, inclusions, redirects). These weights are baked into the strength score at index build time. When you save a change to them, HyperTaxonomy automatically queues every post in the affected taxonomy for reindexing in the background (via WP Cron), so taxonomy-filter searches pick up the new weights within a few minutes — no manual rebuild needed. Text Search (keyword) weights remain dynamic and apply immediately.
-
-### Avoid very large inclusion sets on high-traffic archives
-
-Each inclusion expands the term set for archive queries. An archive term that directly includes 50 other terms produces a `tax_query` spanning all 50, and very large sets produce large result pages. Use `posts_per_page` on the archive, or `max_results` on a post list, to bound result sizes.
-
-### Cache behavior
-
-`[ht_post_list]` and `[ht_related_posts]` cache their full query result (ordered post IDs + total count). The cache lasts 1 hour by default (**Shortcode output cache** in the Cache tab), and is invalidated earlier when the post–term assignments, term relationships, or group memberships that affect the result change — not globally. This means adding an inclusion to a term will invalidate caches for archives and shortcodes that include that term, which is the correct behavior.
-
-For very large sites with high write volume (many post updates per hour), monitor transient table size. The cache keys are hashed and scoped to affected term sets, so the number of distinct cache entries grows with the number of distinct term combinations — not with the number of posts.

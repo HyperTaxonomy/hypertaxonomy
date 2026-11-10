@@ -1,13 +1,14 @@
 ---
 title: Contributing
-nav_order: 6
+nav_order: 7
+parent: Architecture
 ---
 
 # Contributing to HyperTaxonomy
 
 For developers contributing to HyperTaxonomy.
 
-For integrating HyperTaxonomy in your theme or plugin, see the [Developer Reference](developer-reference/). For internal plugin architecture and implementation details, see the [Architecture](architecture/) section.
+For integrating HyperTaxonomy in your theme or plugin, see the [Developer Reference](../developer-reference/). For internal plugin architecture and implementation details, see the [Architecture](./) section.
 
 ---
 
@@ -180,7 +181,7 @@ For types mapped to `includes`, both actions (`htax_relationship_saved`, `htax_r
 
 ### Transients
 
-Use `htax_get_transient()`, `htax_set_transient()`, and `htax_delete_transient()` for every HyperTaxonomy transient — never the core `get_transient()` family directly. The wrappers make bulk invalidation work under persistent external object caches, where the `DELETE … LIKE` clears in `includes/core/cache.php` can't reach cached entries. Give new transients an `htax_` prefix; if a new prefix needs its own bulk clear, add it to `htax_transient_family()` and end the clear with `htax_bump_cache_family()`. See [Database Schema → caching](architecture/database-schema.html).
+Use `htax_get_transient()`, `htax_set_transient()`, and `htax_delete_transient()` for every HyperTaxonomy transient — never the core `get_transient()` family directly. The wrappers make bulk invalidation work under persistent external object caches, where the `DELETE … LIKE` clears in `includes/core/cache.php` can't reach cached entries. Give new transients an `htax_` prefix; if a new prefix needs its own bulk clear, add it to `htax_transient_family()` and end the clear with `htax_bump_cache_family()`. See [Database Schema → caching](database-schema.html).
 
 ### Walker Tree Type and Max Depth
 
@@ -241,7 +242,7 @@ npm start
 npm run lint:js
 ```
 
-For how each block renders and how the shared editor components fit together, see [Block Build Pipeline](architecture/file-structure.html#block-build-pipeline).
+For how each block renders and how the shared editor components fit together, see [Block Build Pipeline](file-structure.html#block-build-pipeline).
 
 ### When to rebuild
 

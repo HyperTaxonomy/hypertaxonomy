@@ -81,11 +81,10 @@ hypertaxonomy/
 ├── docs/                                     # Technical documentation (Just-the-Docs / Jekyll site) (not in the zip)
 │   ├── _config.yml                           # Jekyll / Just-the-Docs configuration
 │   ├── index.md                              # Docs home / landing page
-│   ├── features.md                           # Feature overview
+│   ├── getting-started.md                    # Requirements, installation, first steps, deactivation and uninstall
 │   ├── user-guide/                           # User Guide section (parent + child pages)
-│   ├── developer-reference/                  # Developer Reference section (PHP API, hooks, REST, capabilities)
-│   ├── architecture/                         # Architecture section (this reference, split into child pages)
-│   ├── contributing.md                       # Guide for HyperTaxonomy contributors (Design Principles, Patterns, Blocks, Error Handling, Debug)
+│   ├── developer-reference/                  # Developer Reference section (PHP API, hooks, REST)
+│   ├── architecture/                         # Architecture section (this reference and the contributing guide)
 │   └── comparison.md                         # Feature comparison
 │
 ├── includes/                                 # All PHP functionality

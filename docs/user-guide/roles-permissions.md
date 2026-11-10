@@ -1,10 +1,10 @@
 ---
-title: Capabilities
-parent: Developer Reference
+title: Roles & Permissions
+parent: User Guide
 nav_order: 2
 ---
 
-# Capabilities & User Roles
+# Roles & Permissions
 
 HyperTaxonomy defines six custom capabilities. Activation adds them to the Administrator and Editor roles, and deactivation removes them. Check them with `current_user_can()` rather than hard-coding role checks.
 

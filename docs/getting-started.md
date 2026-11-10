@@ -1,12 +1,44 @@
 ---
-title: Deactivation & Uninstall
-parent: User Guide
-nav_order: 11
+title: Getting Started
+nav_order: 2
 ---
 
-# Deactivation & Uninstall
+# Getting Started
 
-## What Happens When You Deactivate
+## Requirements & Installation
+
+| Requirement | Minimum Version |
+|-------------|----------------|
+| WordPress | 6.6 |
+| PHP | 7.4 |
+| MySQL | 5.7 (or MariaDB 10.3) |
+
+No additional plugins required. All features including Term Groups are built-in.
+
+### Automatic Installation
+
+1. Log into your WordPress admin
+2. Go to **Plugins > Add New**
+3. Search for "HyperTaxonomy"
+4. Click **Install Now**, then **Activate**
+
+### Manual Installation
+
+1. Upload the plugin folder to `/wp-content/plugins/hypertaxonomy/`
+2. Activate through the Plugins screen
+3. Go to **Settings > HyperTaxonomy** to configure
+
+## First steps
+
+1. Go to **Settings > HyperTaxonomy > Features**. On the **General** subtab, enable the taxonomies HyperTaxonomy should manage, such as Tags. On each taxonomy's own subtab, check the features you want, such as **Term Relationships**.
+2. Edit a tag and, in its HyperTaxonomy section, add another tag in the **Included Tags** field. Save.
+3. Open the first tag's archive. Posts tagged with the included tag now appear there too, with no re-tagging.
+
+To learn what else relationships can do, read [Concepts](user-guide/concepts.html) and [Term Relationships](user-guide/term-relationships.html). Every option is described in the [Settings Reference](user-guide/settings-reference.html).
+
+## Deactivation & Uninstall
+
+### What Happens When You Deactivate
 
 Deactivating HyperTaxonomy (without uninstalling) leaves all your data intact — relationships, group memberships, redirects, icons, and settings are all preserved and will be available immediately when you reactivate. The plugin simply stops running its hooks. Here is what changes while it is deactivated:
 
@@ -46,7 +78,7 @@ HyperTaxonomy-specific capabilities (`manage_term_visibility`, `manage_term_icon
 
 The `wp_htax_search_terms` and `wp_htax_post_text` tables remain in place. Native WordPress search continues to work normally, but HyperTaxonomy's PowerSearch and search widget shortcodes are not available.
 
-## Reactivation
+### Reactivation
 
 On reactivation, HyperTaxonomy:
 
@@ -59,7 +91,7 @@ On reactivation, HyperTaxonomy:
 
 All previously configured relationships, redirects, group memberships, and settings resume immediately with no manual intervention.
 
-## Uninstall
+### Uninstall
 
 Uninstalling HyperTaxonomy (Plugins screen → Delete) always removes:
 

@@ -1,7 +1,7 @@
 ---
 title: As the Crow Flies Integration
 parent: Developer Reference
-nav_order: 7
+nav_order: 6
 ---
 
 # As the Crow Flies Integration
@@ -29,7 +29,7 @@ The `_atcf_lat` / `_atcf_lng` fields are read by `near:me` PowerSearch queries, 
 
 `htax_allowed_field_types` is also hooked to add `'distance'` to the accepted field type list.
 
-Full attribute reference: see [[ht_distance_field]](../user-guide/search.html#ht_distance_field--location-based-distance-filter) in the User Guide.
+Full attribute reference: see [[ht_distance_field]](../user-guide/search-widget.html#ht_distance_field--location-based-distance-filter) in the User Guide.
 
 The `expand` attribute (`all` / `none` / comma-separated `container,hierarchy,redirect`) is available on all search widget field types — `[ht_pills_field]`, `[ht_checklist_field]`, `[ht_hidden_field]`, and `[ht_distance_field]`. It controls which `relationship_type` values are included in the `wp_htax_search_terms` lookup for that field. Normalization is handled by `HyperTaxonomy_Search_Widget::normalize_expand_types()` at query time; `[ht_distance_field]` passes the raw value through unchanged when resolving term IDs.
 

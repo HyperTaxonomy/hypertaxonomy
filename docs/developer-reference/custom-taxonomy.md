@@ -178,3 +178,15 @@ add_action( 'htax_relationship_types_admin_footer', function () {
     echo '</div>';
 } );
 ```
+
+## Integrating from a Plugin or Theme
+
+For plugin and theme authors building their own HyperTaxonomy-aware code, HyperTaxonomy exposes three main extension points:
+
+**Expansion-aware queries.** `htax_get_expanded_term_ids( $term_id )` returns the flat list of term IDs whose posts appear in a term's archive. Use it to build a `tax_query` clause that respects HyperTaxonomy inclusions in any custom `WP_Query`. Set the `htax_expand_terms` query variable to `true` or `false` on individual `WP_Query` instances to force or suppress automatic expansion per-query, overriding the global setting.
+
+**Cache invalidation.** `htax_term_archive_changed` fires after every relationship save, relationship delete, redirect save, or redirect delete. Hook it to invalidate derived caches in your plugin without tracking each fine-grained action individually.
+
+**Custom relationship types.** The Relationship Type Registry (`includes/core/relationship-types.php`) lets plugin authors define two kinds of user-defined type. **Inclusion-based** types (`core_type = 'includes'`) automatically participate in archive expansion, post list queries, and the search index — all query sites use `htax_relationship_type_sql_in('includes')` rather than a hard-coded equality check. **Custom** types (`core_type = null`) store the relationship only; behavior is implemented by the registering plugin. Use `htax_register_relationship_type()` (hook into `htax_relationship_types`) for code registration, or the **Terms → Term Relationship Types** admin page (two creation buttons: Inclusion-based / Custom). Use `htax_add_term_relationship()` / `htax_remove_term_relationship()` rather than raw `$wpdb` calls. Cleanup on term deletion is handled automatically — no `delete_term` hook needed. See [Custom Relationship Types](#custom-relationship-types) for the full API.
+
+See the [Developer Reference](./) for full function references, action and filter documentation, REST endpoints, and the capabilities API.

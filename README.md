@@ -43,8 +43,9 @@ For cross-site content — fetching related posts from peer WordPress sites, RSS
 
 The full documentation is published as a [Just-the-Docs](https://just-the-docs.com/) site (source under [`docs/`](docs/)):
 
-- [User Guide](docs/user-guide/) — Features, configuration, shortcodes, search, import/migration, and a best-practices modeling guide
-- [Developer Reference](docs/developer-reference/) — PHP API, actions/filters, capabilities, REST API for theme/plugin developers
+- [Getting Started](docs/getting-started.md) — Requirements, installation, first steps, and deactivation and uninstall
+- [User Guide](docs/user-guide/) — Settings, roles, import/migration, concepts, relationships, display and search shortcodes, the post editor, and modeling guidance
+- [Developer Reference](docs/developer-reference/) — PHP API, actions/filters, REST API, and sort and filter controls for theme/plugin developers
 - [Architecture Reference](docs/architecture/) — Internal architecture, database schema, query design, hook execution, performance
 - [Contributing](docs/architecture/contributing.md) — Design principles, coding standards, implementation patterns, block builds, error handling, and debug tools for HyperTaxonomy contributors
 

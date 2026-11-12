@@ -21,7 +21,7 @@ nav_order: 6
 
 ### Search Widget — Query Pattern
 
-**Scoring fields** (`match='any'` or `match='all'`): one subquery per field sums strength across all matching terms. Rows sharing a `(post_id, term_id)` combine via noisy-OR — `1 − Π(1 − strength)` — regardless of which `source_term_id` or `relationship_type` produced them, so a term reached by several distinct source terms scores higher (monotonically) without the combined value ever reaching 1.0, the ceiling a single direct row can hit. This includes a term's own `direct` row when it has one — it combines into the same group as any indirect rows for that term rather than being tracked separately (see "Relevance aggregation" in [Database Schema](database-schema.html) for a worked example). A term reached by only one path is unaffected:
+**Scoring fields** (`match='any'` or `match='all'`): one subquery per field sums strength across all matching terms. Rows sharing a `(post_id, term_id)` combine via noisy-OR — `1 − Π(1 − strength)` — regardless of which `source_term_id` or `relationship_type` produced them, so a term reached by several distinct source terms scores higher (monotonically) without the combined value ever reaching 1.0, the ceiling a single direct row can hit. This includes a term's own `direct` row when it has one — it combines into the same group as any indirect rows for that term rather than being tracked separately (see "Relevance aggregation" in [Data Storage](data-storage.html) for a worked example). A term reached by only one path is unaffected:
 ```sql
 SELECT post_id, SUM(term_score) AS field_score
 FROM (
@@ -34,7 +34,7 @@ FROM (
 ) t
 GROUP BY post_id
 ```
-Relationship-type weights are baked into `strength` at index build time — no dynamic weight multiplication at query time. Strength-reading subqueries restrict to one strength model (see `model` in [Database Schema](database-schema.html)); the exclusion and required-all subqueries below only test which posts reach a term, so they don't. The main query LEFT JOINs all field subqueries and applies a HAVING threshold on the sum.
+Relationship-type weights are baked into `strength` at index build time — no dynamic weight multiplication at query time. Strength-reading subqueries restrict to one strength model (see `model` in [Data Storage](data-storage.html)); the exclusion and required-all subqueries below only test which posts reach a term, so they don't. The main query LEFT JOINs all field subqueries and applies a HAVING threshold on the sum.
 
 **Exclusion fields** (`match='none'`): enforced via `WHERE NOT IN` before LIMIT — not via scoring. `flatten_field_structure_for_scoring()` leaves them out of the scoring set, so the exclusion/required-all loop flattens the structure separately with `$include_exclusions = true`; the conditions apply at every nesting level and are ANDed. A query of exclusion fields alone still runs (every indexed post except the excluded ones):
 ```sql
@@ -109,7 +109,7 @@ Parsed via regex: `/([+\-]?)\b(title|content|body|excerpt|tags|categories|terms|
 For shortcode reference and configuration see the [User Guide § Advanced Search Widget](../user-guide/search-widget.html#advanced-search-widget).
 
 **Taxonomy Relevance Scoring:**
-- `match='any'` fields: score = SUM across terms of a per-term noisy-OR combination of `strength` (see "Relevance aggregation" in [Database Schema](database-schema.html)) — relationship-type weights baked into `strength` at index time; HAVING field_score > 0
+- `match='any'` fields: score = SUM across terms of a per-term noisy-OR combination of `strength` (see "Relevance aggregation" in [Data Storage](data-storage.html)) — relationship-type weights baked into `strength` at index time; HAVING field_score > 0
 - `match='all'` fields: scored the same way, AND enforced via `WHERE IN … HAVING COUNT >= N` before LIMIT
 - `match='none'` fields: no scoring subquery, no HAVING condition; enforced via `WHERE NOT IN` before LIMIT — excluded terms never reach the result set regardless of page position
 - Field scores are summed in both relations; AND relations require each scoring field score > 0 in HAVING, and OR relations require at least one
@@ -300,7 +300,7 @@ Post text fields (title, content, excerpt) use **NATURAL LANGUAGE MODE** so that
 - **excerpt_score**: `MATCH(pt.excerpt) AGAINST(nl_query IN NATURAL LANGUAGE MODE) * excerpt_weight`
   - All three fields come from `wp_htax_post_text` (`pt`), processed by `htax_extract_post_body()` — link URLs are appended as `[URL]`, img alt text and abbr expansions are preserved, then all remaining HTML is stripped. All public queries filter `pt.post_status = 'publish'`.
   - `nl_query` = query terms with `+`/`-` operators stripped and excluded terms removed; produced by `htax_build_natural_language_query_string()` (in search.php). NL MODE does not support phrase syntax, so multi-word phrases contribute their individual words to the score; phrase presence is enforced separately via a WHERE guard (see below).
-- **tags_score / categories_score / terms_score / custom taxonomy scores**: up to three branches per relationship type. `hst.strength` encodes the per-row relevance contribution (TF-based for direct rows; `source_tf × explicit_weight` for indirect rows — see the [`wp_htax_search_terms` schema](database-schema.html#custom-database-tables)):
+- **tags_score / categories_score / terms_score / custom taxonomy scores**: up to three branches per relationship type. `hst.strength` encodes the per-row relevance contribution (TF-based for direct rows; `source_tf × explicit_weight` for indirect rows — see the [`wp_htax_search_terms` schema](data-storage.html#custom-database-tables)):
   - The branches and the `MAX` / `SUM` aggregation are described in step 10 above. Description weight defaults to about 70% of name weight.
   - Relationship types: direct, hierarchy (hierarchical taxonomies), container, redirect_target — all gated by feature flags at query time
 

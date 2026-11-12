@@ -1,10 +1,10 @@
 ---
-title: Database Schema
+title: Data Storage
 parent: Architecture
 nav_order: 4
 ---
 
-# Database Schema
+# Data Storage
 
 ## Term Meta Keys
 

@@ -20,7 +20,7 @@ The flag is checked by `htax_taxonomy_has_feature()` at runtime, so enabling or 
 
 Container Groups allow a term to be automatically included in all archives of terms belonging to specified Term Groups. This is useful for bulk relationships.
 
-Relationships are stored as intent and expanded at query time. See [Custom Database Tables](database-schema.html#custom-database-tables) for the row formats.
+Relationships are stored as intent and expanded at query time. See [Custom Database Tables](data-storage.html#custom-database-tables) for the row formats.
 
 **Query Expansion:**
 When fetching included terms for Term A:

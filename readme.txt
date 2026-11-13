@@ -279,7 +279,7 @@ The `sort_order_options` attribute on `[ht_post_list]` and search result shortco
 
 = What are Term Groups? =
 
-Term Groups is a built-in hierarchical taxonomy for organizing terms into named groups. Include an entire group in a term's archive and all current and future group members are included automatically — no maintenance as the group grows.
+Term Groups is a built-in hierarchical taxonomy for organizing terms into named groups. Include an entire group in a term's archive and all current and future group members are included automatically — no maintenance as the group grows. See [User Guide → Term Groups](https://hypertaxonomy.org/hypertaxonomy/user-guide/term-groups.html).
 
 = Do I need additional plugins? =
 

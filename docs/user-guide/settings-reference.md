@@ -1,7 +1,7 @@
 ---
 title: Settings Reference
 parent: User Guide
-nav_order: 1
+nav_order: 13
 ---
 
 # Settings Reference

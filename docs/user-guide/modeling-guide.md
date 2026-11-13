@@ -1,7 +1,7 @@
 ---
 title: Modeling Guide
 parent: User Guide
-nav_order: 14
+nav_order: 2
 ---
 
 # Modeling Guide

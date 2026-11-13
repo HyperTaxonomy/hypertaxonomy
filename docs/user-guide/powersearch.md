@@ -1,7 +1,7 @@
 ---
 title: PowerSearch
 parent: User Guide
-nav_order: 12
+nav_order: 11
 ---
 
 # PowerSearch

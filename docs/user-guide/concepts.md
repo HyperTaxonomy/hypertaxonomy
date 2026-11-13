@@ -1,7 +1,7 @@
 ---
 title: Concepts
 parent: User Guide
-nav_order: 4
+nav_order: 1
 ---
 
 # Concepts
@@ -78,6 +78,8 @@ Term Groups (alternative perspectives):
 ```
 
 "Fishing" is a child of "Sporting Goods" (department view) and a member of "Summer Products" (seasonal view). Both perspectives coexist independently. The `/category/sporting-goods/` archive shows department content; `/group/summer-products/` shows seasonal content.
+
+To create groups and assign terms to them, see [Term Groups](term-groups.html).
 
 ## Choosing Features
 

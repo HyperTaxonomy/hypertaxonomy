@@ -19,7 +19,7 @@ nav_order: 11
 
 Build complex multi-field search forms with AJAX results, conditional logic, and taxonomy filtering. Composed of nested shortcodes inside `[ht_search_form]`.
 
-![A search form with a text field, a species pill field with icons, Habitat and Field of study checklists in nested AND/OR groups, and a result below](../assets/images/screenshots/search-widget.png)
+[![A search form with a text field, a species pill field with icons, Habitat and Field of study checklists in nested AND/OR groups, and a result below](../assets/images/screenshots/search-widget.png){: .screenshot-small}](../assets/images/screenshots/search-widget.png)
 
 - **Fields** — collect user input. `[ht_text_field]` captures a keyword; `[ht_pills_field]`, `[ht_checklist_field]`, and `[ht_hidden_field]` let users select taxonomy terms.
 - **Field group** (`[ht_field_group]`) — groups fields, controllers, and other field groups under a single AND or OR logic container. Can be targeted by controller actions to show, hide, enable, or disable all its contents at once.

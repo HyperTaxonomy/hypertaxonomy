@@ -38,8 +38,6 @@ The XML sitemap lists a group only when its archive shows published posts, count
 
 ## Managing group members from the group side
 
-![Editing the Canids group: its parent group, visibility option, and member tags](../assets/images/screenshots/term-group-edit.png)
-
 The Term Groups admin screen (**Terms > Term Groups**, then click a group to edit) shows the following fields:
 
 - **Group Members** — terms directly assigned to this group, organized by taxonomy (Tags, Categories, custom taxonomies). Add or remove members here without editing each term individually.
@@ -48,6 +46,8 @@ The Term Groups admin screen (**Terms > Term Groups**, then click a group to edi
 - **Term Icon** — upload a custom icon for the group, used in group archive headings and shortcodes (requires *Enable Term Group icons* in **Settings > HyperTaxonomy > Features > Term Groups**).
 - **Visibility** — check **Hide this term from public view** to hide this group (requires *Enable Term Group visibility options* in **Settings > HyperTaxonomy > Features > Term Groups**). See [Group visibility](#group-visibility) below.
 - **Show Description** — checkbox to show the group's description below the archive heading.
+
+![Editing the Canids group: its parent group, visibility option, and member tags](../assets/images/screenshots/term-group-edit.png)
 
 When you follow a group link from a term pill tooltip, the group edit page highlights the relevant pill and, for indirect associations, shows a context panel just above the **Group Members** section. If the association is direct (the term is an immediate member, or directly included/including), a blue border is drawn around the relevant pill in the **Group Members**, **Container For**, or **Included By** field — no extra notice is needed since the relationship is already visible there. If the association is indirect (the term is in a subgroup, a parent group, or a related ancestor group), the context panel names each intermediate group as a clickable link so you can navigate directly to where the relationship is defined.
 

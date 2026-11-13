@@ -143,7 +143,7 @@ The **Term Source** panel configures the taxonomy, hide-empty, include/exclude g
 
 Alphabetical index with A–Z navigation. Terms are always sorted alphabetically.
 
-![An A–Z index of tags with letter navigation; a redirecting tag is shown in italics](../assets/images/screenshots/term-index.png)
+[![An A–Z index of tags with letter navigation; a redirecting tag is shown in italics](../assets/images/screenshots/term-index.png){: .screenshot-small}](../assets/images/screenshots/term-index.png)
 
 **Additional parameters:**
 

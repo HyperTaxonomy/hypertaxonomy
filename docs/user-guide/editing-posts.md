@@ -18,12 +18,12 @@ In the block editor, WordPress checks each tag you type or paste with the server
 
 ## Inclusion Badges and Container Badges
 
-![A post's tags in the block editor with inclusion and container badges, a pinned tag, a redirecting tag in italics, and a faded hidden tag](../assets/images/screenshots/editor-badges.png)
-
 When enabled, each term pill (flat taxonomies) or checklist entry (hierarchical taxonomies) can show:
 
 - **⇉ N** (light blue badge): This term's archive pulls in posts from N other terms. The tooltip lists their names. Appears when **Inclusion Badges** is on and the taxonomy has Term Relationships enabled.
 - **⇇ N** (light green badge): N other terms pull in this term's posts. The tooltip lists those terms. Appears when **Container Badges** is on and the taxonomy has Term Relationships enabled.
+
+![A post's tags in the block editor with inclusion and container badges, a pinned tag, a redirecting tag in italics, and a faded hidden tag](../assets/images/screenshots/editor-badges.png)
 
 These are informational — they help you understand the reach of a term before assigning it to a post.
 

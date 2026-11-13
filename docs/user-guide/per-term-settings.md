@@ -114,7 +114,7 @@ Upload a custom icon image for any term to display alongside it in shortcodes, s
 
 Enable **Show Description** on any term to display its description as formatted HTML below the archive title. This allows rich, styled introductory text on term archive pages.
 
-![A tag archive whose heading lists the tags it includes, with the tag's icon, its description, and a pinned post](../assets/images/screenshots/term-archive.png)
+[![A tag archive whose heading lists the tags it includes, with the tag's icon, its description, and a pinned post](../assets/images/screenshots/term-archive.png){: .screenshot-small}](../assets/images/screenshots/term-archive.png)
 
 To enable: Edit a term, expand **More options**, and check **Show Description**. The term's description field (standard WordPress) is then rendered as HTML on the archive page — above any sticky posts, if present. Requires **Archive Customization** enabled for the taxonomy (Settings > HyperTaxonomy > Features) and **Archive Description** enabled on the Display tab.
 

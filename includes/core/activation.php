@@ -93,6 +93,7 @@ function htax_activate_single_site() {
     htax_repair_orphaned_term_relationships();
     htax_repair_orphaned_sticky_meta();
     htax_repair_hierarchy_conflicts();
+    htax_repair_group_counts();
 
     // Schedule search index build after repairs are complete.
     HyperTaxonomy_Activator::schedule_index_rebuild();

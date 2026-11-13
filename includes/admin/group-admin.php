@@ -575,6 +575,8 @@ function htax_fire_group_changes_per_term( string $hook, int $group_id, array $a
     $added   = array_map( 'intval', $added );
     $removed = array_map( 'intval', $removed );
 
+    // Listeners recount group counts per term; defer so each group is recounted once.
+    wp_defer_term_counting( true );
     foreach ( htax_get_taxonomy_map_for_terms( array_merge( $added, $removed ) ) as $changed_term => $taxonomy ) {
         $changed_term = (int) $changed_term;
         $new_groups   = array_map( 'intval', $get_group_ids( $changed_term ) );
@@ -583,6 +585,7 @@ function htax_fire_group_changes_per_term( string $hook, int $group_id, array $a
             : array_values( array_unique( array_merge( $new_groups, array( $group_id ) ) ) );
         do_action( $hook, $changed_term, $taxonomy, $new_groups, $old_groups );
     }
+    wp_defer_term_counting( false );
 }
 
 /**

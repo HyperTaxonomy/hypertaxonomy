@@ -231,6 +231,7 @@ add_action( 'deleted_term_meta', 'htax_clear_hidden_terms_cache_on_meta', 10, 3 
 
 // Surgical cache updates for group membership changes
 add_action( 'htax_term_groups_changed', 'htax_update_group_membership_caches', 10, 4 );
+add_action( 'htax_term_groups_changed', 'htax_update_group_counts_on_membership_change', 10, 4 );
 
 // Async cron handler: propagate group-membership change to all connected terms
 add_action( 'htax_async_group_propagate', 'htax_invalidate_group_relationship_caches' );

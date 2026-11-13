@@ -32,6 +32,8 @@ Term Groups collect terms from any enabled taxonomy into named, hierarchical set
 
 Each group has an archive page at its own URL, showing posts from all member terms across all enabled taxonomies.
 
+A group's count, as WordPress stores it, is the number of terms directly in the group. WordPress uses it to leave out empty terms, for example from XML sitemaps: groups with members, or with subgroups that have members, are listed there. Counts update whenever terms join or leave a group, and are recounted when the plugin is activated.
+
 ## Managing group members from the group side
 
 The Term Groups admin screen (**Terms > Term Groups**, then click a group to edit) shows the following fields:

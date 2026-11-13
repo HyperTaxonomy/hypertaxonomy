@@ -410,3 +410,58 @@ function htax_get_all_term_groups() {
     return $group_map;
 }
 
+/**
+ * Recount the stored member counts of some groups.
+ *
+ * A group's count is its number of direct member terms (htax_update_group_term_count(),
+ * the taxonomy's update_count_callback). WordPress reads it wherever empty terms are
+ * hidden, such as XML sitemaps and get_terms() with hide_empty, so it must change
+ * whenever membership does. Honors wp_defer_term_counting().
+ *
+ * @since 1.0.0
+ * @param int[] $group_ids Group term IDs.
+ */
+function htax_update_group_counts( array $group_ids ): void {
+    $tt_ids = array();
+    foreach ( array_unique( array_map( 'intval', $group_ids ) ) as $group_id ) {
+        $group = get_term( $group_id, 'group' );
+        if ( $group instanceof WP_Term ) {
+            $tt_ids[] = (int) $group->term_taxonomy_id;
+        }
+    }
+    if ( $tt_ids ) {
+        wp_update_term_count( $tt_ids, 'group' );
+    }
+}
+
+/**
+ * Keep group counts current when a term joins or leaves groups.
+ *
+ * @since 1.0.0
+ * @param int    $term_id    Term whose memberships changed.
+ * @param string $taxonomy   Its taxonomy.
+ * @param int[]  $new_groups Groups it belongs to now.
+ * @param int[]  $old_groups Groups it belonged to before.
+ */
+function htax_update_group_counts_on_membership_change( $term_id, $taxonomy, $new_groups, $old_groups ): void {
+    htax_update_group_counts( array_merge( (array) $new_groups, (array) $old_groups ) );
+}
+
+/**
+ * Recount every group's member count.
+ *
+ * Runs on activation: memberships change without a recount while the plugin is
+ * inactive, for example when a member term is deleted.
+ *
+ * @since 1.0.0
+ */
+function htax_repair_group_counts(): void {
+    $tt_ids = get_terms( array(
+        'taxonomy'   => 'group',
+        'hide_empty' => false,
+        'fields'     => 'tt_ids',
+    ) );
+    if ( ! is_wp_error( $tt_ids ) && $tt_ids ) {
+        wp_update_term_count_now( array_map( 'intval', $tt_ids ), 'group' );
+    }
+}

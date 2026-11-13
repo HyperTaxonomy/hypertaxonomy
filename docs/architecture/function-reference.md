@@ -86,6 +86,8 @@ Membership CRUD + group taxonomy queries. Handles assigning terms to groups and 
 - `htax_get_term_group_ids( int $term_id ): int[]` - Get IDs of groups a term belongs to; shares the `htax_groups_{term_id}` transient cache with `htax_get_term_groups()`
 - `htax_get_group_hierarchy()` - Expand parent groups to include all descendants; uses `_get_term_hierarchy('group')` (WP object cache) for BFS — no extra DB query after first call per request
 - `htax_set_term_groups()` - Replace all group assignments for a term
+- `htax_update_group_counts( array $group_ids ): void` - Recount groups' stored counts (direct member terms) through `wp_update_term_count()`, so it honors `wp_defer_term_counting()`. Called on `htax_term_groups_changed` and when a member term is deleted
+- `htax_repair_group_counts(): void` - Recount every group; runs on activation
 
 **Groups-as-inclusion-sources (includes/core/term-groups.php)**
 

@@ -2499,12 +2499,22 @@ function htax_cleanup_deleted_term( $term_id, $tt_id ) {
         htax_clear_redirect_term_ids_cache();
     }
 
+    // Groups this term belonged to lose a member; recount them after the delete.
+    $member_of_groups = $wpdb->get_col( $wpdb->prepare(
+        "SELECT target_term_id FROM {$table_name} WHERE source_term_id = %d AND relationship_type = 'member_of'",
+        $term_id
+    ) );
+
     // Delete all relationships where this term is the source
     $wpdb->delete(
         $table_name,
         array( 'source_term_id' => $term_id ),
         array( '%d' )
     );
+
+    if ( $member_of_groups ) {
+        htax_update_group_counts( $member_of_groups );
+    }
 
     // Delete all relationships where this term is the target
     $wpdb->delete(

@@ -75,7 +75,7 @@ Registered by section, in file order:
 
 ## WordPress Core Hooks HyperTaxonomy Fires
 
-`htax_update_group_term_count()`, the `update_count_callback` of the `group` taxonomy, fires `edit_term_taxonomy` and `edited_term_taxonomy` around each count update, as WordPress's own count callbacks do. Code that listens for term count changes therefore sees group counts change too. WordPress runs this callback only when something recounts the `group` taxonomy; in HyperTaxonomy that is a merge of groups (`htax_merge_terms()` recounts the merged terms).
+`htax_update_group_term_count()`, the `update_count_callback` of the `group` taxonomy, fires `edit_term_taxonomy` and `edited_term_taxonomy` around each count update, as WordPress's own count callbacks do. Code that listens for term count changes therefore sees group counts change too. Groups are recounted on every `htax_term_groups_changed` (`htax_update_group_counts_on_membership_change`, priority 10), when a member term is deleted, when groups are merged, and on activation (`htax_repair_group_counts()`).
 
 ## Hook Execution Order
 

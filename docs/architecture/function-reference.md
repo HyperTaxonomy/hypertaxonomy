@@ -464,6 +464,8 @@ Read-only `get_term_meta()` keys computed from existing caches; nothing stored. 
 
 ### REST API (includes/core/rest-api.php)
 
+- `htax_rest_field_requested( ?WP_REST_Request $request, string $field ): bool` - Whether a REST response should include a field: true when `_fields` names it or is absent, so expensive extra fields are computed only when asked for
+
 **Field builders:**
 - `htax_rest_build_icon_data( WP_Term $term )` - Build `htax_icon` REST field value (null when no icon set)
 - `ATCF_REST_API::format_term_locations( int $term_id )` - **Owned by ATCF.** Returns `htax_locations` REST field value for a term: Schema.org Place array, or null when no locations. Caches per term_id for request lifetime. HT calls this with a `method_exists` guard; it uses `ATCF_Locations::get_by_term_id()` internally so no taxonomy parameter is needed.
@@ -700,6 +702,7 @@ Loaded unconditionally (outside `is_admin()`) so the REST field is available dur
 ### Group Taxonomy (includes/core/taxonomies.php)
 
 - `htax_register_group_taxonomy()` - Register the `group` taxonomy
+- `htax_update_group_term_count( $terms, $taxonomy )` - The group taxonomy's `update_count_callback`: a group's count is its number of direct member terms, not posts
 
 ### Search Index (includes/classes/class-search-index.php)
 

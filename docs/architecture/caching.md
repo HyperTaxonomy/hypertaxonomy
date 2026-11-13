@@ -45,6 +45,7 @@ The [computed term meta](../developer-reference/term-meta.html) reads the relati
 - `htax_reverse_rel_grp_{slug}_{term_id}` - Raw G→T rows for a relationship type, group sources only. Works for any slug including core `'includes'`. No TTL. Invalidated by `htax_delete_custom_rel_caches_for_term`.
 - `htax_ac_*` / `htax_ac_grp_*` - Autocomplete caches for admin UI (term and group autocomplete, respectively)
 - `htax_pl_*` - Post list shortcode query results; see [Post list cache](#post-list-cache-htax_pl_) below
+- `htax_sitemap_empty_groups` - IDs of groups whose archives show no posts, left out of the XML sitemap. 15 minutes, no other invalidation: a group gaining or losing its last post shows in the sitemap within that time
 
 ## What clears the relationship caches
 

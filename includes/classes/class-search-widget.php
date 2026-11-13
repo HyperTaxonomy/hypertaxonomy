@@ -1002,43 +1002,20 @@ class HyperTaxonomy_Search_Widget {
         $output .= 'data-show-when="' . esc_attr( $atts['show_when'] ) . '" ';
         
         // Add option pool configuration
-        if ( ! empty( $atts['include_term_options'] ) ) {
-            $output .= 'data-include-term-options="' . esc_attr( $atts['include_term_options'] ) . '" ';
-        }
-        if ( ! empty( $atts['include_group_options'] ) ) {
-            $output .= 'data-include-group-options="' . esc_attr( $atts['include_group_options'] ) . '" ';
-        }
-        if ( ! empty( $atts['include_descendant_options'] ) ) {
-            $output .= 'data-include-descendant-options="' . esc_attr( $atts['include_descendant_options'] ) . '" ';
-        }
-        if ( ! empty( $atts['exclude_term_options'] ) ) {
-            $output .= 'data-exclude-term-options="' . esc_attr( $atts['exclude_term_options'] ) . '" ';
-        }
-        if ( ! empty( $atts['exclude_group_options'] ) ) {
-            $output .= 'data-exclude-group-options="' . esc_attr( $atts['exclude_group_options'] ) . '" ';
-        }
-        if ( ! empty( $atts['exclude_descendant_options'] ) ) {
-            $output .= 'data-exclude-descendant-options="' . esc_attr( $atts['exclude_descendant_options'] ) . '" ';
-        }
-        if ( ! empty( $atts['filterby'] ) ) {
-            $output .= 'data-filterby="' . esc_attr( $atts['filterby'] ) . '" ';
+        foreach ( array( 'include_term_options', 'include_group_options', 'include_descendant_options', 'exclude_term_options', 'exclude_group_options', 'exclude_descendant_options', 'filterby' ) as $key ) {
+            if ( ! empty( $atts[ $key ] ) ) {
+                $output .= 'data-' . str_replace( '_', '-', $key ) . '="' . esc_attr( $atts[ $key ] ) . '" ';
+            }
         }
         if ( 'term' === $atts['taxonomy_type'] ) {
             $output .= 'data-taxonomy-type="term" ';
         }
 
         // Add initial selection configuration
-        if ( ! empty( $atts['add_terms'] ) ) {
-            $output .= 'data-add-terms="' . esc_attr( $atts['add_terms'] ) . '" ';
-        }
-        if ( ! empty( $atts['add_descendants'] ) ) {
-            $output .= 'data-add-descendants="' . esc_attr( $atts['add_descendants'] ) . '" ';
-        }
-        if ( ! empty( $atts['remove_terms'] ) ) {
-            $output .= 'data-remove-terms="' . esc_attr( $atts['remove_terms'] ) . '" ';
-        }
-        if ( ! empty( $atts['remove_descendants'] ) ) {
-            $output .= 'data-remove-descendants="' . esc_attr( $atts['remove_descendants'] ) . '" ';
+        foreach ( array( 'add_terms', 'add_descendants', 'remove_terms', 'remove_descendants' ) as $key ) {
+            if ( ! empty( $atts[ $key ] ) ) {
+                $output .= 'data-' . str_replace( '_', '-', $key ) . '="' . esc_attr( $atts[ $key ] ) . '" ';
+            }
         }
         
         // Add constraints

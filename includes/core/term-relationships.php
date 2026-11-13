@@ -812,23 +812,7 @@ function htax_load_synonym_terms( $term, bool $include_redirect_data ) {
  * @return int[] Array of directly targeted term IDs.
  */
 function htax_get_direct_rel_term_ids( int $term_id, string $slug ): array {
-    if ( 'member_of' === $slug || 'redirect' === $slug ) {
-        _doing_it_wrong( __FUNCTION__, "Use the dedicated API for '{$slug}' relationships.", '1.0.0' );
-        return array();
-    }
-    $cached = htax_get_transient( 'htax_direct_rel_' . $slug . '_' . $term_id );
-    if ( false !== $cached ) {
-        return $cached;
-    }
-    $result = htax_get_term_relationship_ids(
-        $term_id,
-        'target_term_id',
-        'source_term_id',
-        $slug,
-        array( 'target_taxonomy' => HTAX_NOT_GROUP )
-    );
-    htax_set_transient( 'htax_direct_rel_' . $slug . '_' . $term_id, $result, htax_get_cache_duration( 'relationship' ) );
-    return $result;
+    return htax_get_cached_rel_ids( $term_id, $slug, false, false, __FUNCTION__ );
 }
 
 /**
@@ -846,23 +830,7 @@ function htax_get_direct_rel_term_ids( int $term_id, string $slug ): array {
  * @return int[] Array of terms that have a direct relationship of this type pointing to this term.
  */
 function htax_get_reverse_rel_term_ids( int $term_id, string $slug ): array {
-    if ( 'member_of' === $slug || 'redirect' === $slug ) {
-        _doing_it_wrong( __FUNCTION__, "Use the dedicated API for '{$slug}' relationships.", '1.0.0' );
-        return array();
-    }
-    $cached = htax_get_transient( 'htax_reverse_rel_' . $slug . '_' . $term_id );
-    if ( false !== $cached ) {
-        return $cached;
-    }
-    $result = htax_get_term_relationship_ids(
-        $term_id,
-        'source_term_id',
-        'target_term_id',
-        $slug,
-        array( 'source_taxonomy' => HTAX_NOT_GROUP )
-    );
-    htax_set_transient( 'htax_reverse_rel_' . $slug . '_' . $term_id, $result, htax_get_cache_duration( 'relationship' ) );
-    return $result;
+    return htax_get_cached_rel_ids( $term_id, $slug, true, false, __FUNCTION__ );
 }
 
 /**
@@ -880,23 +848,7 @@ function htax_get_reverse_rel_term_ids( int $term_id, string $slug ): array {
  * @return int[] Array of directly targeted group IDs.
  */
 function htax_get_direct_rel_group_ids( int $term_id, string $slug ): array {
-    if ( 'member_of' === $slug || 'redirect' === $slug ) {
-        _doing_it_wrong( __FUNCTION__, "Use the dedicated API for '{$slug}' relationships.", '1.0.0' );
-        return array();
-    }
-    $cached = htax_get_transient( 'htax_direct_rel_grp_' . $slug . '_' . $term_id );
-    if ( false !== $cached ) {
-        return $cached;
-    }
-    $result = htax_get_term_relationship_ids(
-        $term_id,
-        'target_term_id',
-        'source_term_id',
-        $slug,
-        array( 'target_taxonomy' => 'group' )
-    );
-    htax_set_transient( 'htax_direct_rel_grp_' . $slug . '_' . $term_id, $result, htax_get_cache_duration( 'relationship' ) );
-    return $result;
+    return htax_get_cached_rel_ids( $term_id, $slug, false, true, __FUNCTION__ );
 }
 
 /**
@@ -914,22 +866,44 @@ function htax_get_direct_rel_group_ids( int $term_id, string $slug ): array {
  * @return int[] Array of group IDs that have a direct relationship of this type pointing to this term.
  */
 function htax_get_reverse_rel_group_ids( int $term_id, string $slug ): array {
+    return htax_get_cached_rel_ids( $term_id, $slug, true, true, __FUNCTION__ );
+}
+
+
+/**
+ * Shared body of the four direct/reverse, term/group relationship lookups.
+ *
+ * Forward lookups return targets of rows whose source is the term; reverse lookups
+ * return sources of rows whose target is the term. Group lookups keep only group
+ * terms on the other side, term lookups only non-group terms. Each combination has
+ * its own transient: `htax_{direct|reverse}_rel_[grp_]{slug}_{term_id}`.
+ *
+ * @since 1.0.0
+ * @param int    $term_id Term ID.
+ * @param string $slug    Relationship type slug. Not 'member_of' or 'redirect'.
+ * @param bool   $reverse True for rows pointing at the term, false for rows from it.
+ * @param bool   $groups  True for group terms on the other side, false for other terms.
+ * @param string $caller  Public function name, for the _doing_it_wrong() notice.
+ * @return int[]
+ */
+function htax_get_cached_rel_ids( int $term_id, string $slug, bool $reverse, bool $groups, string $caller ): array {
     if ( 'member_of' === $slug || 'redirect' === $slug ) {
-        _doing_it_wrong( __FUNCTION__, "Use the dedicated API for '{$slug}' relationships.", '1.0.0' );
+        _doing_it_wrong( $caller, "Use the dedicated API for '{$slug}' relationships.", '1.0.0' );
         return array();
     }
-    $cached = htax_get_transient( 'htax_reverse_rel_grp_' . $slug . '_' . $term_id );
+    $key    = 'htax_' . ( $reverse ? 'reverse' : 'direct' ) . '_rel_' . ( $groups ? 'grp_' : '' ) . $slug . '_' . $term_id;
+    $cached = htax_get_transient( $key );
     if ( false !== $cached ) {
         return $cached;
     }
     $result = htax_get_term_relationship_ids(
         $term_id,
-        'source_term_id',
-        'target_term_id',
+        $reverse ? 'source_term_id' : 'target_term_id',
+        $reverse ? 'target_term_id' : 'source_term_id',
         $slug,
-        array( 'source_taxonomy' => 'group' )
+        array( ( $reverse ? 'source_taxonomy' : 'target_taxonomy' ) => $groups ? 'group' : HTAX_NOT_GROUP )
     );
-    htax_set_transient( 'htax_reverse_rel_grp_' . $slug . '_' . $term_id, $result, htax_get_cache_duration( 'relationship' ) );
+    htax_set_transient( $key, $result, htax_get_cache_duration( 'relationship' ) );
     return $result;
 }
 

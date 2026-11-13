@@ -41,61 +41,19 @@ class HyperTaxonomy_Blocks {
      * Hooked to init so block.json metadata and script handles resolve correctly.
      */
     public static function register() {
-        register_block_type(
-            HTAX_PLUGIN_DIR . 'blocks/ht-post-list',
-            array(
-                'render_callback' => array( __CLASS__, 'render_post_list' ),
-            )
+        $blocks = array(
+            'ht-post-list'          => 'render_post_list',
+            'ht-related-posts'      => 'render_related_posts',
+            'ht-term-list'          => 'render_term_list',
+            'ht-term-cloud'         => 'render_term_cloud',
+            'ht-term-index'         => 'render_term_index',
+            'ht-term-groups'        => 'render_term_groups',
+            'ht-sort-order-options' => 'render_sort_order_options',
+            'ht-power-search'       => 'render_power_search',
         );
-
-        register_block_type(
-            HTAX_PLUGIN_DIR . 'blocks/ht-related-posts',
-            array(
-                'render_callback' => array( __CLASS__, 'render_related_posts' ),
-            )
-        );
-
-        register_block_type(
-            HTAX_PLUGIN_DIR . 'blocks/ht-term-list',
-            array(
-                'render_callback' => array( __CLASS__, 'render_term_list' ),
-            )
-        );
-
-        register_block_type(
-            HTAX_PLUGIN_DIR . 'blocks/ht-term-cloud',
-            array(
-                'render_callback' => array( __CLASS__, 'render_term_cloud' ),
-            )
-        );
-
-        register_block_type(
-            HTAX_PLUGIN_DIR . 'blocks/ht-term-index',
-            array(
-                'render_callback' => array( __CLASS__, 'render_term_index' ),
-            )
-        );
-
-        register_block_type(
-            HTAX_PLUGIN_DIR . 'blocks/ht-term-groups',
-            array(
-                'render_callback' => array( __CLASS__, 'render_term_groups' ),
-            )
-        );
-
-        register_block_type(
-            HTAX_PLUGIN_DIR . 'blocks/ht-sort-order-options',
-            array(
-                'render_callback' => array( __CLASS__, 'render_sort_order_options' ),
-            )
-        );
-
-        register_block_type(
-            HTAX_PLUGIN_DIR . 'blocks/ht-power-search',
-            array(
-                'render_callback' => array( __CLASS__, 'render_power_search' ),
-            )
-        );
+        foreach ( $blocks as $dir => $callback ) {
+            register_block_type( HTAX_PLUGIN_DIR . 'blocks/' . $dir, array( 'render_callback' => array( __CLASS__, $callback ) ) );
+        }
 
         // Not a standalone block — extends core/query via block editor filters.
         // Registered solely to auto-enqueue the editorScript declared in block.json.

@@ -61,7 +61,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * Return true if the given field is among the requested _fields, or if _fields
- * is absent (no restriction — all fields computed for backward compatibility).
+ * is absent (no restriction, so every field is computed, as in WordPress core).
  *
  * @since 1.0.0
  * @param WP_REST_Request|null $request REST request, or null outside a request context.
@@ -1121,7 +1121,8 @@ function htax_rest_get_post_matched_slugs( array $post ): ?array {
 /**
  * Adjust which term archives XML sitemaps list.
  *
- * Lists a group only when its archive shows published posts (htax_group_archive_has_posts()).
+ * Lists a group only when its archive shows published posts (htax_group_archive_has_posts()),
+ * a check cached for 15 minutes in the `htax_sitemap_empty_groups` transient.
  * Sitemaps are always public, so hidden terms are left out unless the global visibility
  * setting is 'all'.
  *
@@ -1134,17 +1135,23 @@ function htax_filter_sitemap_terms_query( $args, $taxonomy ) {
     // List a group only when its archive shows posts: a group's count is its direct
     // members, not posts, so WordPress's count check would list groups whose members have
     // no posts and leave out groups whose members are all in subgroups.
+    // Checking every group runs one query per group, and sitemaps are public, so the
+    // result is kept for 15 minutes.
     if ( 'group' === $taxonomy ) {
-        $all   = get_terms( array(
-            'taxonomy'   => 'group',
-            'hide_empty' => false,
-            'fields'     => 'ids',
-        ) );
-        $empty = array();
-        foreach ( is_wp_error( $all ) ? array() : $all as $group_id ) {
-            if ( ! htax_group_archive_has_posts( (int) $group_id ) ) {
-                $empty[] = (int) $group_id;
+        $empty = htax_get_transient( 'htax_sitemap_empty_groups' );
+        if ( ! is_array( $empty ) ) {
+            $all   = get_terms( array(
+                'taxonomy'   => 'group',
+                'hide_empty' => false,
+                'fields'     => 'ids',
+            ) );
+            $empty = array();
+            foreach ( is_wp_error( $all ) ? array() : $all as $group_id ) {
+                if ( ! htax_group_archive_has_posts( (int) $group_id ) ) {
+                    $empty[] = (int) $group_id;
+                }
             }
+            htax_set_transient( 'htax_sitemap_empty_groups', $empty, 15 * MINUTE_IN_SECONDS );
         }
 
         $args['hide_empty'] = false;

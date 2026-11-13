@@ -1,7 +1,7 @@
 ---
 title: Search Internals
 parent: Architecture
-nav_order: 6
+nav_order: 7
 ---
 
 # Search Internals
@@ -423,17 +423,7 @@ Hooks skip unnecessary work before doing any computation:
 
 ### Cache Layers
 
-These clearing functions have distinct purposes and can't be consolidated:
-
-| Priority | Handler | Scope |
-|----------|---------|-------|
-| 10 on `edited_term` | `htax_reload_term_caches_on_edit` | Relationship caches: `htax_inc_*`, `htax_cont_*`, `htax_excl_*`, `htax_redir_*`, `htax_groups_*`, `htax_direct_rel_*`, `htax_direct_rel_grp_*`, `htax_crel_*`, `htax_crel_rev_*` for all registered slugs |
-| 15 on `edited_term` | `htax_clear_ajax_caches` | Autocomplete caches (broad clearing for admin UI freshness) |
-| 30 on `edited_{tax}` | `htax_clear_count_cache_on_save` | Count caches (`htax_total_*`) based on final saved state |
-| `added/updated/deleted_term_meta` | `htax_clear_hidden_terms_cache_on_meta` | `htax_hidden_terms` — only when `_htax_is_hidden` meta changes |
-| `delete_term` | `htax_invalidate_term_caches_on_delete` | All above + `htax_sticky_{term_id}` + `htax_hidden_terms` (term may have been hidden) |
-| REST UPDATE (`htax_rest_update_sticky_terms`) | `htax_rest_update_sticky_terms` | `_htax_sticky_{term_id}` per-term assignment keys written/deleted; `htax_sticky_{term_id}` transient cleared for each changed term |
-| `delete_post` | `htax_cleanup_sticky_on_delete` | All `_htax_sticky_{term_id}` keys for the post |
+Which handler clears which cache, and when, is on the [Caching](caching.html#what-clears-the-relationship-caches) page.
 
 ### Bottlenecks to Monitor
 
@@ -550,6 +540,4 @@ Each inclusion expands the term set for archive queries. An archive term that di
 
 ### Cache behavior
 
-`[ht_post_list]` and `[ht_related_posts]` cache their full query result (ordered post IDs + total count). The cache lasts 1 hour by default (**Shortcode output cache** in the Cache tab), and is invalidated earlier when the post–term assignments, term relationships, or group memberships that affect the result change — not globally. This means adding an inclusion to a term will invalidate caches for archives and shortcodes that include that term, which is the correct behavior.
-
-For very large sites with high write volume (many post updates per hour), monitor transient table size. The cache keys are hashed and scoped to affected term sets, so the number of distinct cache entries grows with the number of distinct term combinations — not with the number of posts.
+`[ht_post_list]` and `[ht_related_posts]` cache their results for an hour by default (**Shortcode output cache** in the Cache tab), and clear them early only for the terms a change affects, not globally. See [Caching → Post list cache](caching.html#post-list-cache-htax_pl_) for what clears them and how much space they take.

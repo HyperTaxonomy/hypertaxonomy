@@ -7,6 +7,8 @@ nav_order: 10
 # Archive & Results Controls
 {: .no_toc }
 
+Sort and filter controls for archives, post lists and search results, and the HyperTaxonomy filter added to the Query Loop and Latest Posts blocks. For theme code that renders these controls from PHP or listens to their JavaScript events, see [Sort & Filter Controls](../developer-reference/sort-filter-controls.html).
+
 ## Table of contents
 {: .no_toc .text-delta }
 

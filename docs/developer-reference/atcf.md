@@ -163,93 +163,16 @@ $ref = [[45.52, -122.68]]; // Portland OR
 $term_ids = HyperTaxonomy_ATCF_Integration::get_in_range_term_ids( $ref, 16.09, 'post_tag' ); // ~10 miles
 ```
 
-## Visitor location from IP (ATCF)
+## As the Crow Flies functions HyperTaxonomy uses
 
-`atcf_get_ip_location()`
+The integration calls these ATCF functions, which are documented with the rest of ATCF's API in its [PHP API](https://hypertaxonomy.org/as-the-crow-flies/developer-reference/php-api.html):
 
-Returns the visitor's approximate location: from CDN location headers when present (`atcf_get_cdn_location()` — Cloudflare's `CF-IPLatitude` / `CF-IPLongitude`, or the `atcf_cdn_location` filter), otherwise from the configured IP geolocation provider (cached in a transient per IP). Returns `null` when neither is available — IP geolocation disabled, a private IP, or a failed API call. `atcf_get_visitor_location()` adds the ATCF fallback location as a last resort and reports the `source`.
-
-```php
-$loc = atcf_get_ip_location();
-// Returns ['lat' => float, 'lng' => float, 'country' => string, 'postal_code' => string] or null
-```
-
-## Postal code centroid (ATCF)
-
-`atcf_get_postal_centroid( $postal_code, $country = 'US' )`
-
-Returns the centroid coordinates for a postal code. Result is cached per request via `wp_cache_get/set`.
-
-```php
-$centroid = atcf_get_postal_centroid( 'H3H2A9', 'CA' );
-// Returns ['lat' => float, 'lng' => float] or null
-```
-
-## Terms with locations (ATCF)
-
-`atcf_get_term_ids_with_locations( $taxonomy )`
-
-Returns all term IDs in a taxonomy that have at least one ATCF location row. Useful for pre-filtering eligible terms before expensive distance queries. Cached per request.
-
-```php
-$term_ids = atcf_get_term_ids_with_locations( 'post_tag' );
-// Returns int[]
-```
-
-## Postal code format (ATCF)
-
-`atcf_get_postal_code_format( $country )`
-
-Returns a PCRE regex pattern (anchored with `^` and `$`) that validates postal codes for the given country, or `null` for countries without a known format. Match is performed against the **uppercase** form of the input.
-
-```php
-$pattern = atcf_get_postal_code_format( 'CA' ); // '/^[A-Z]\d[A-Z]\s?\d[A-Z]\d$/'
-if ( $pattern && preg_match( $pattern, strtoupper( $input ) ) ) {
-    // valid Canadian postal code
-}
-```
-
-## Locations for a term and its archive scope (ATCF)
-
-`ATCF_Locations::get_aggregated( $term_id, $taxonomy, $exclude_ids, $additional_ids )`
-
-Returns all ATCF location objects for a term and its full descendant/inclusion scope in one query. Accepts optional exclusion and addition lists so callers can inject contextual knowledge (e.g. hidden terms, HT inclusions) without ATCF needing to know about either concept.
-
-```php
-$locations = ATCF_Locations::get_aggregated(
-    $term->term_id,
-    $taxonomy,
-    htax_get_all_hidden_term_ids(),   // excluded from scope
-    htax_get_included_term_ids( $term ) // added to scope
-);
-// Returns object[] — same row shape as ATCF_Locations::get_for_term()
-```
-
-Internally: expands to `[$term_id, ...get_term_children($term_id, $taxonomy)]`, subtracts `$exclude_ids`, merges `$additional_ids`, deduplicates, then queries `wp_atcf_locations` once for all IDs.
-
-## Locations by term ID (ATCF)
-
-`ATCF_Locations::get_by_term_id( $term_id )`
-
-Returns all ATCF location objects for a single term by ID, without requiring a taxonomy. WordPress term IDs are globally unique across all taxonomies, so taxonomy is not needed for single-term lookups.
-
-```php
-$locations = ATCF_Locations::get_by_term_id( $term->term_id );
-// Returns object[] — same row shape as get_for_term(); ordered by location ID
-```
-
-## Term locations as Schema.org places (ATCF)
-
-`ATCF_REST_API::format_term_locations( $term_id )`
-
-Returns location data for a term formatted as Schema.org Place objects for the `htax_locations` REST field. Results are cached per term ID for the request lifetime (static cache). Returns `null` when the term has no locations.
-
-```php
-$places = ATCF_REST_API::format_term_locations( $term->term_id );
-// Returns array[]|null — Schema.org Place array, or null when no locations
-```
-
-This is the canonical formatter for `htax_locations`. HyperTaxonomy calls it with a `method_exists` guard; it should not be called directly unless ATCF is known to be active.
+- `atcf_get_term_ids_within_radius()` and `atcf_get_locations_within_radius()` — the distance searches behind `near:` and the distance field.
+- `atcf_get_visitor_location()` — the visitor's location for `near:me`.
+- `atcf_get_postal_centroid()` and `atcf_get_postal_code_format()` — resolving and validating postal codes in `near:` tokens.
+- `ATCF_Locations::get_by_term_id()` — a term's locations for the `htax_term_locations` filter, mapped to that filter's keys.
+- `ATCF_Locations::get_aggregated()` — a term's locations across its archive scope, with HyperTaxonomy's hidden terms excluded and its inclusions added.
+- `ATCF_REST_API::format_term_locations()` — the `htax_locations` REST field. HyperTaxonomy calls it behind a `method_exists()` check, since ATCF may be inactive.
 
 ## Canonical-Address URIs for Cross-Site Term Matching
 

@@ -1,6 +1,6 @@
 ---
 title: Contributing
-nav_order: 7
+nav_order: 8
 parent: Architecture
 ---
 
@@ -190,7 +190,7 @@ For types mapped to `includes`, both actions (`htax_relationship_saved`, `htax_r
 
 ### Transients
 
-Use `htax_get_transient()`, `htax_set_transient()`, and `htax_delete_transient()` for every HyperTaxonomy transient — never the core `get_transient()` family directly. The wrappers make bulk invalidation work under persistent external object caches, where the `DELETE … LIKE` clears in `includes/core/cache.php` can't reach cached entries. Give new transients an `htax_` prefix; if a new prefix needs its own bulk clear, add it to `htax_transient_family()` and end the clear with `htax_bump_cache_family()`. See [Data Storage → Transients](data-storage.html#transients-with-safe-key-generation).
+Use `htax_get_transient()`, `htax_set_transient()`, and `htax_delete_transient()` for every HyperTaxonomy transient — never the core `get_transient()` family directly. The wrappers make bulk invalidation work under persistent external object caches, where the `DELETE … LIKE` clears in `includes/core/cache.php` can't reach cached entries. Give new transients an `htax_` prefix; if a new prefix needs its own bulk clear, add it to `htax_transient_family()` and end the clear with `htax_bump_cache_family()`. See [Caching → How transients are stored](caching.html#how-transients-are-stored).
 
 ### Walker Tree Type and Max Depth
 

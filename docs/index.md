@@ -49,7 +49,7 @@ Switching away from Tag Groups and keeping it alongside HyperTaxonomy are both s
 - **[Getting Started](getting-started.html)** — requirements, installation, and first steps.
 - **[User Guide](user-guide/)** — for site admins: settings, roles, import and migration, concepts, relationships, per-term settings, display and search shortcodes, the post editor, and modeling guidance.
 - **[Developer Reference](developer-reference/)** — for theme and plugin developers: custom taxonomy integration, the PHP API, sort and filter controls, actions, filters, REST endpoints, and the As the Crow Flies integration.
-- **[Architecture](architecture/)** — for contributors: file structure, functions, hooks, data storage, feature implementation, search internals, and contributing guidelines.
+- **[Architecture](architecture/)** — for contributors: file structure, functions, hooks, data storage, caching, feature implementation, search internals, and contributing guidelines.
 - **[Feature Comparison](comparison.html)** — a feature-by-feature comparison of HyperTaxonomy with the PublishPress Tag Groups plugin.
 
 ## License

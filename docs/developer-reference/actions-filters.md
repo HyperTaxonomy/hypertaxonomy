@@ -21,7 +21,9 @@ These actions fire when relationship data changes. Hook into them to react to ch
 
 **Important:** Cache is reloaded before these actions fire, so reading relationship data within a callback returns the **new** state. The `*_changed` relationship actions pass old and new values when the term edit screen saves. `htax_includes_changed`, `htax_containers_changed`, and `htax_excludes_changed` pass `null` for both when the change comes from `htax_add_term_relationship()`, `htax_remove_term_relationship()`, a merge, or hierarchy cleanup, so a callback that uses those arrays must handle `null`.
 
-#### `htax_includes_changed`
+#### Inclusions changed
+
+`htax_includes_changed`
 
 Fires when a term's included terms change.
 
@@ -34,7 +36,9 @@ add_action( 'htax_includes_changed', function( $term_id, $taxonomy, $new_include
 }, 10, 4 );
 ```
 
-#### `htax_containers_changed`
+#### Terms including this term changed
+
+`htax_containers_changed`
 
 Fires when the set of terms that contain this term changes — i.e. when another term starts or stops including this term's posts in its archive.
 
@@ -47,7 +51,9 @@ add_action( 'htax_containers_changed', function( $term_id, $taxonomy, $new_conta
 }, 10, 4 );
 ```
 
-#### `htax_excludes_changed`
+#### Exclusions changed
+
+`htax_excludes_changed`
 
 Fires when the set of terms explicitly excluded from a term's archive changes. Excluded terms are suppressed even when they would otherwise be pulled in by inclusions or group memberships.
 
@@ -60,7 +66,9 @@ add_action( 'htax_excludes_changed', function( $term_id, $taxonomy, $new_exclude
 }, 10, 4 );
 ```
 
-#### `htax_included_groups_changed`
+#### Included groups changed
+
+`htax_included_groups_changed`
 
 Fires when the Term Groups a term includes change.
 
@@ -70,7 +78,9 @@ add_action( 'htax_included_groups_changed', function( $term_id, $taxonomy, $new_
 }, 10, 4 );
 ```
 
-#### `htax_custom_inclusions_changed`
+#### Custom inclusion types changed
+
+`htax_custom_inclusions_changed`
 
 Fires after a term save changes rows of an inclusion-based custom relationship type (one registered with `core_type => 'includes'`). These rows feed the same inclusion and container sets as built-in inclusions, so `$affected_term_ids` lists the terms whose container sets changed — the included side of every changed row (for group rows, the group's member terms). HyperTaxonomy's search index reindexes posts with those terms.
 
@@ -81,7 +91,9 @@ add_action( 'htax_custom_inclusions_changed', function( $term_id, $taxonomy, $af
 }, 10, 3 );
 ```
 
-#### `htax_container_groups_changed`
+#### Container groups changed
+
+`htax_container_groups_changed`
 
 Fires when a term's container groups change. A term's posts appear in the archives of the members of its container groups.
 
@@ -94,7 +106,9 @@ add_action( 'htax_container_groups_changed', function( $term_id, $taxonomy, $new
 }, 10, 4 );
 ```
 
-#### `htax_term_groups_changed`
+#### Group memberships changed
+
+`htax_term_groups_changed`
 
 Fires when a term's own group memberships change — i.e. the groups the term belongs to as a member, which determines which terms' archives include it via group-based inclusion.
 
@@ -107,7 +121,9 @@ add_action( 'htax_term_groups_changed', function( $term_id, $taxonomy, $new_grou
 }, 10, 4 );
 ```
 
-#### `htax_redirect_changed`
+#### Redirect set or changed
+
+`htax_redirect_changed`
 
 Fires when a term's redirect target is set or changed. `$old_target` is `null` the first time a redirect is set; on subsequent target changes it is the previous `WP_Term` object.
 
@@ -117,7 +133,9 @@ add_action( 'htax_redirect_changed', function( $term_id, $taxonomy, $new_target_
 }, 10, 5 );
 ```
 
-#### `htax_redirect_removed`
+#### Redirect removed
+
+`htax_redirect_removed`
 
 Fires when a term's redirect is removed and its archive is restored.
 
@@ -130,7 +148,9 @@ add_action( 'htax_redirect_removed', function( $term_id, $taxonomy, $old_target_
 }, 10, 4 );
 ```
 
-#### `htax_term_visibility_changed`
+#### Visibility changed
+
+`htax_term_visibility_changed`
 
 Fires when a term's hidden/visible status changes. During a cascade (hiding or revealing a term with descendants), this action fires **once per affected descendant** — not once for the whole operation. If your callback does expensive work, guard against repeated calls for the same term within a single request.
 
@@ -140,7 +160,9 @@ add_action( 'htax_term_visibility_changed', function( $term_id, $taxonomy ) {
 }, 10, 2 );
 ```
 
-#### `htax_before_merge_terms`
+#### Before a merge
+
+`htax_before_merge_terms`
 
 Fires immediately before HyperTaxonomy begins merging source terms into a target term — before post reassignment, relationship transfer, and deletion. This hook fires **before** HT's database transaction starts.
 
@@ -155,7 +177,9 @@ add_action( 'htax_before_merge_terms', function( $source_ids, $target_id, $taxon
 }, 10, 4 );
 ```
 
-#### `htax_after_merge_terms`
+#### After a merge
+
+`htax_after_merge_terms`
 
 Fires after a successful merge. Post reassignments, HyperTaxonomy relationship transfers, source term deletions, redirect stubs, search index requeue, and cache invalidation are all complete at this point.
 
@@ -177,7 +201,9 @@ add_action( 'htax_after_merge_terms', function( $source_ids, $target_id, $taxono
 
 **Typical pattern for companion plugins:** snapshot source data in `htax_before_merge_terms`, then apply it to the target in `htax_after_merge_terms`. Register a `deleted_term` handler for all term deletes — source terms deleted during a merge fire `deleted_term` the same as a standalone delete, so no suppression is needed. Also register a `delete_term_taxonomy` handler at an earlier priority for bulk taxonomy operations, where `deleted_term` does not fire.
 
-#### `htax_term_converted`
+#### Term converted to another taxonomy
+
+`htax_term_converted`
 
 Fires when a term finishes converting to another taxonomy, or when a converted term is restored. `$old_term_id` is the redirect stub or the deleted term, which may no longer exist. Use it to update records keyed by taxonomy.
 
@@ -190,7 +216,9 @@ add_action( 'htax_term_converted', function( $new_term_id, $old_taxonomy, $new_t
 }, 10, 4 );
 ```
 
-#### `htax_relationship_saved` / `htax_relationship_deleted`
+#### Relationship row added or removed
+
+`htax_relationship_saved` / `htax_relationship_deleted`
 
 Fire after `htax_add_term_relationship()` adds a row or `htax_remove_term_relationship()` removes one. For types mapped to `includes`, HyperTaxonomy queues a search index update for both terms. See [Custom Relationship Types](custom-taxonomy.html#custom-relationship-types).
 
@@ -200,15 +228,21 @@ add_action( 'htax_relationship_saved', function( $source_term_id, $target_term_i
 }, 10, 3 );
 ```
 
-#### `htax_relationship_types`
+#### Register relationship types
+
+`htax_relationship_types`
 
 Fires on `init` at priority 0, after the built-in relationship types are registered. Call `htax_register_relationship_type()` here. See [Custom Relationship Types](custom-taxonomy.html#custom-relationship-types).
 
-#### `htax_relationship_types_admin_footer`
+#### Relationship Types page footer
+
+`htax_relationship_types_admin_footer`
 
 Fires at the bottom of the **Terms → Term Relationship Types** admin page. Use it to add your own UI.
 
-#### `htax_term_archive_changed`
+#### Archive contents changed
+
+`htax_term_archive_changed`
 
 Fires whenever a term's archive composition changes. Use it to invalidate any derived data that depends on a term's archive.
 
@@ -229,7 +263,9 @@ add_action( 'htax_term_archive_changed', function( $term_id, $taxonomy ) {
 
 HyperTaxonomy uses this action internally to invalidate the `htax_contrib_` paginated archive cache.
 
-#### `htax_term_strength_missing`
+#### Strengths missing for a post
+
+`htax_term_strength_missing`
 
 Fires when a post is (re)indexed and a registered external strength model has no strength for some of the post's directly assigned terms — a newly published post, a newly assigned term, or a model registered after the post was last scored. A model's provider hooks this to score the terms and submit them with `htax_set_term_strengths()`. See [Strength Models](php-api.html#strength-models).
 
@@ -249,7 +285,9 @@ add_action( 'htax_term_strength_missing', function( $post_id, $term_ids, $model 
 - `$term_ids` (`int[]`) — directly assigned term IDs without a strength from `$model`
 - `$model` (`string`) — the registered model key
 
-#### `htax_term_strengths_updated`
+#### Strengths stored or removed
+
+`htax_term_strengths_updated`
 
 Fires after an external model's strengths are stored with `htax_set_term_strengths()` or removed with `htax_remove_term_strengths()` (including Settings → Search → Clear Scores). Use it to invalidate anything that caches strength-based results.
 
@@ -260,13 +298,17 @@ add_action( 'htax_term_strengths_updated', function( $post_id, $model, $term_ids
 }, 10, 3 );
 ```
 
-#### `htax_term_uris_changed` / `htax_term_locations_changed`
+#### External URIs or locations changed
+
+`htax_term_uris_changed` / `htax_term_locations_changed`
 
 Fire with `int $term_id` when a term's external URIs or locations change. HyperTaxonomy re-fires these from TermConnect's `tc_term_uris_changed` and As the Crow Flies' `atcf_term_location_changed`, so a plugin that reads `htax_get_term_uris()` or `htax_get_term_locations()` can clear its caches without depending on either plugin.
 
 ## Available Filters
 
-#### `htax_show_hidden_terms`
+#### Show hidden terms
+
+`htax_show_hidden_terms`
 
 Override whether hidden terms appear in a post's displayed terms and term links (`get_the_terms` and the term link filters). Return true to show them, false to hide them, or the passed `$can_see` value to defer to the default logic. It doesn't change search, archives, or the REST API, which use `htax_can_see_hidden_terms()` directly.
 
@@ -277,7 +319,9 @@ add_filter( 'htax_show_hidden_terms', function( $can_see, $taxonomy ) {
 }, 10, 2 );
 ```
 
-#### `htax_remove_hidden_terms_from_list`
+#### Hidden terms in a post's term list
+
+`htax_remove_hidden_terms_from_list`
 
 Whether a hidden term is removed from a post's term list (`get_the_terms`) for a viewer who can't see it. Defaults to `true`. Return `false` to keep the term in the list; it still carries an `is_htax_hidden` property.
 
@@ -287,7 +331,9 @@ add_filter( 'htax_remove_hidden_terms_from_list', function( $remove, $term, $tax
 }, 10, 3 );
 ```
 
-#### `htax_archive_description_append`
+#### Append to the archive description
+
+`htax_archive_description_append`
 
 Filters HTML appended inside HyperTaxonomy's archive description block (`.htax-archive-description`), after the term description. Applies when HyperTaxonomy renders the description itself (the taxonomy has **Archive Customization** enabled and the term has **Show Description** checked); TermConnect uses it for its "See also" links and the link-suggestion form. The value is output as-is — like `the_content` filter output, escape everything you add.
 
@@ -297,7 +343,9 @@ add_filter( 'htax_archive_description_append', function( $append, $term ) {
 }, 10, 2 );
 ```
 
-#### `htax_expanded_term_ids`
+#### Expanded term IDs
+
+`htax_expanded_term_ids`
 
 Filter the expanded term ID list returned by `htax_get_expanded_term_ids()`. See [Integration API](php-api.html#integration-api) for full documentation.
 
@@ -307,7 +355,9 @@ add_filter( 'htax_expanded_term_ids', function( $ids, $term_id, $taxonomy ) {
 }, 10, 3 );
 ```
 
-#### `htax_term_post_count`
+#### Expansion-aware post count
+
+`htax_term_post_count`
 
 Filter the expansion-aware post count for a single term, fired by the `get_terms` filter when `expand_secondary_queries` is enabled. See [Integration API](php-api.html#integration-api) for full documentation.
 
@@ -317,7 +367,9 @@ add_filter( 'htax_term_post_count', function( $count, $term_id, $taxonomy, $quer
 }, 10, 4 );
 ```
 
-#### `htax_strength_field_weights`
+#### Built-in strength weights
+
+`htax_strength_field_weights`
 
 Override the TF formula coefficients used by `htax_calculate_direct_term_strength()` for the built-in strength model (`htax_tf`). To supply strengths from another source, register a separate model instead — see [Strength Models](php-api.html#strength-models). Coefficients must sum to ≤ 1.0 so the maximum achievable strength equals 1.0.
 
@@ -334,7 +386,9 @@ add_filter( 'htax_strength_field_weights', function( $weights ) {
 
 **Default values:** `['floor' => 0.20, 'body' => 0.40, 'excerpt' => 0.20, 'title' => 0.20]`
 
-#### `htax_disable_frontend_styles`
+#### Turn off front-end styles
+
+`htax_disable_frontend_styles`
 
 Return `true` to stop HyperTaxonomy printing its inline front-end styles, for a theme that styles those elements itself.
 
@@ -342,7 +396,9 @@ Return `true` to stop HyperTaxonomy printing its inline front-end styles, for a 
 add_filter( 'htax_disable_frontend_styles', '__return_true' );
 ```
 
-#### `htax_frontend_styles`
+#### Front-end styles
+
+`htax_frontend_styles`
 
 Filters the inline CSS HyperTaxonomy prints on the front end. HTML tags are stripped from the result.
 
@@ -352,7 +408,9 @@ add_filter( 'htax_frontend_styles', function( $css ) {
 } );
 ```
 
-#### `htax_allowed_description_html`
+#### HTML allowed in term descriptions
+
+`htax_allowed_description_html`
 
 Filters the HTML tags and attributes allowed in term descriptions (the `wp_kses` allowed-tags array).
 
@@ -363,23 +421,33 @@ add_filter( 'htax_allowed_description_html', function( $allowed_tags ) {
 } );
 ```
 
-#### `htax_sync_remote_relationship_types`
+#### Sync a remote relationship type
+
+`htax_sync_remote_relationship_types`
 
 Handles the **Sync** action for a remote relationship type on the Term Relationship Types admin page, so the fetch can live in another plugin (TermConnect hooks it). Receives a result array and the source site URL; return `[ 'success' => bool, 'message' => string ]`.
 
-#### `htax_term_uris`, `htax_term_locations`, `htax_term_external_posts`, `htax_peer_sites`
+#### Provider filters
+
+`htax_term_uris`, `htax_term_locations`, `htax_term_external_posts`, `htax_peer_sites`
 
 Filters that let a provider plugin supply external URIs, locations, external posts, and peer sites to other plugins on the same site. See [Provider Filters](php-api.html#provider-filters).
 
-#### `htax_search_proximity_where`
+#### Proximity search condition
 
-SQL condition for `near:` tokens, added to the WHERE clause of PowerSearch and search widget queries before ORDER BY / LIMIT. The As the Crow Flies integration builds the location condition through it. Signature `( string $where, array $proximity, string $post_column ): string` — see [As the Crow Flies integration](atcf.html#htax_search_proximity_where-filter).
+`htax_search_proximity_where`
 
-#### `htax_search_proximity_relevance`
+SQL condition for `near:` tokens, added to the WHERE clause of PowerSearch and search widget queries before ORDER BY / LIMIT. The As the Crow Flies integration builds the location condition through it. Signature `( string $where, array $proximity, string $post_column ): string` — see [As the Crow Flies integration](atcf.html#proximity-search-condition).
 
-SQL expression scoring a post for a search made only of `near:` tokens (nearest first). The As the Crow Flies integration supplies distance scores. Signature `( string $sql, array $proximity, string $post_column ): string` — see [As the Crow Flies integration](atcf.html#htax_search_proximity_relevance-filter).
+#### Proximity search scoring
 
-#### `htax_pre_search_fields`
+`htax_search_proximity_relevance`
+
+SQL expression scoring a post for a search made only of `near:` tokens (nearest first). The As the Crow Flies integration supplies distance scores. Signature `( string $sql, array $proximity, string $post_column ): string` — see [As the Crow Flies integration](atcf.html#proximity-search-scoring).
+
+#### Search fields before the query runs
+
+`htax_pre_search_fields`
 
 Filters the search query spec before `get_posts_by_custom_sql()` runs in the AJAX search handler. Use this to resolve or transform custom field data — for example, converting a distance field into a set of term IDs before the SQL query is built.
 
@@ -432,7 +500,9 @@ add_filter( 'htax_pre_search_fields', function( array $query ): array {
 **Parameters:** `array $query` — the search query spec.
 **Returns:** `array` — the modified query spec.
 
-#### `htax_allowed_field_types`
+#### Allowed search field types
+
+`htax_allowed_field_types`
 
 Filters the list of allowed field type slugs in the search widget AJAX handler. The handler rejects any submitted field whose type is not in this list. Use this filter to register custom field types so the AJAX handler accepts them.
 

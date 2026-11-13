@@ -19,7 +19,9 @@ nav_order: 2
 
 `includes/core/integration-api.php` provides a stable public surface for third-party plugins that need to work with HyperTaxonomy's archive expansion logic. Internal cache-invalidation infrastructure (`htax_fire_term_archive_changed`, `htax_fire_archive_changed_on_hierarchy`) lives in `cache.php`.
 
-### `htax_get_expanded_term_ids( int $term_id, bool $include_redirect_sources = false ): array`
+### Get a term's expanded term IDs
+
+`htax_get_expanded_term_ids( int $term_id, bool $include_redirect_sources = false ): array`
 
 Returns the complete flat list of term IDs whose posts appear in a term's archive: the term itself, WordPress descendants (for hierarchical taxonomies), and all HyperTaxonomy-contributed terms (inclusions, group memberships, container groups). Returns an empty array if the term does not exist. When the `term_relationships` feature is disabled for its taxonomy, only the term itself and its visible WordPress descendants are returned (no HyperTaxonomy contributions). WordPress term IDs are globally unique, so no taxonomy parameter is needed.
 
@@ -44,13 +46,17 @@ if ( ! empty( $ids ) ) {
 
 Setting `include_children => false` is important: the list already contains all descendant IDs, so letting WordPress re-expand would double-count them.
 
-### `htax_build_expanded_tax_query( int $term_id, string $taxonomy, ?WP_Term $term_obj = null ): ?array`
+### Build a term's expanded tax_query
+
+`htax_build_expanded_tax_query( int $term_id, string $taxonomy, ?WP_Term $term_obj = null ): ?array`
 
 Builds the OR `tax_query` array for a term's archive expansion. Returns `null` if HyperTaxonomy has no contributions to add (i.e. the expansion result equals native WordPress behavior alone), or if the `term_relationships` feature is not enabled for the taxonomy. Pass a `WP_Term` object as the third argument to avoid a redundant database lookup.
 
 This is the lower-level function used internally by both `htax_modify_archive_query` (main archive) and `htax_expand_secondary_query` (secondary queries). Use `htax_get_expanded_term_ids()` for most integration needs; use this function when you need direct access to the tax_query array structure.
 
-### Expanding secondary queries: `htax_expand_secondary_query`
+### Expanding secondary queries
+
+`htax_expand_secondary_query`
 
 A `pre_get_posts` handler (priority 10) that expands single-term tax_query clauses for enabled taxonomies in secondary and third-party queries. It skips the main archive query, which is already handled by `htax_modify_archive_query`.
 
@@ -68,7 +74,9 @@ $query->set( 'htax_expand_terms', true );
 
 Only single-term clauses are expanded. Multi-term clauses are treated as facet filters chosen by the user, not archive expansions.
 
-### `htax_adjust_term_counts`
+### Expansion-aware term counts
+
+`htax_adjust_term_counts`
 
 A `get_terms` filter that replaces native WordPress term counts with expansion-aware counts. Active on the frontend only, and only when `expand_secondary_queries` is enabled. This ensures that term counts shown in facet navigation (WooCommerce layered nav, custom filter panels) reflect the expanded post set rather than direct assignments alone.
 
@@ -76,7 +84,9 @@ It doesn't apply to a post's own terms (`wp_get_object_terms()`, `get_the_terms(
 
 Per-term counts can be further customized via the `htax_term_post_count` filter.
 
-### `htax_term_archive_changed` action
+### Reacting to archive changes
+
+`htax_term_archive_changed` (action)
 
 Fires whenever a term's archive composition changes — relationships, redirects, hierarchy, or post assignments. Use it to invalidate derived data (custom caches, pre-computed counts, external indexes):
 
@@ -156,8 +166,10 @@ No dimension validation is applied on the PHP side; that is a UI-only guard.
 
 ### Archive Header Icon
 
-#### `htax_the_archive_icon( string $size = 'large', array $attr = [] ): void`
-#### `htax_get_the_archive_icon( string $size = 'large', array $attr = [] ): string`
+#### Show the archive's term icon
+
+`htax_the_archive_icon( string $size = 'large', array $attr = [] ): void`  
+`htax_get_the_archive_icon( string $size = 'large', array $attr = [] ): string`
 
 Outputs (or returns) a responsive `<img>` for the icon of the current taxonomy term archive. Resolves the queried term automatically — no need to call `get_queried_object()` in the template.
 
@@ -209,7 +221,9 @@ if ( $icon ) {
 
 ### Getting Icon URLs and HTML
 
-#### `htax_get_term_icon_url( WP_Term|int $term, string $size = 'htax-icon-small' ): string`
+#### Term icon URL
+
+`htax_get_term_icon_url( WP_Term|int $term, string $size = 'htax-icon-small' ): string`
 
 Returns the URL of the term's icon at the given size, or an empty string if no icon is set.
 
@@ -219,7 +233,9 @@ $url = htax_get_term_icon_url( $term, 'small' );
 // Full names: 'htax-icon-small-post_tag', 'htax-icon-medium-post_tag', etc.
 ```
 
-#### `htax_get_term_icon_html( WP_Term|int $term, string $size = 'htax-icon-small', array $attr = [] ): string`
+#### Term icon image tag
+
+`htax_get_term_icon_html( WP_Term|int $term, string $size = 'htax-icon-small', array $attr = [] ): string`
 
 Returns an `<img>` tag for the term's icon, or an empty string if no icon is set. Works on both admin and frontend.
 
@@ -228,7 +244,9 @@ $img = htax_get_term_icon_html( $term, 'small', [ 'class' => 'term-icon' ] );
 echo $img;
 ```
 
-#### `HyperTaxonomy_Term_Icons::get_color_for_slug( string $slug ): string`
+#### Placeholder color for a term
+
+`HyperTaxonomy_Term_Icons::get_color_for_slug( string $slug ): string`
 
 Returns the deterministic hex placeholder color for a given term slug (e.g. `'#1e88e5'`). Uses `crc32` hash mapped to a fixed 20-color palette — same slug always yields the same color, independent of term ID or taxonomy. Useful when building custom icon-list UIs that need to match the placeholder color used by HyperTaxonomy shortcodes.
 
@@ -241,7 +259,9 @@ echo '<span style="background:' . esc_attr( $color ) . '"></span>';
 
 Pills are styled `<a>` or `<span>` elements that combine the term name with its icon (or a colored placeholder when no icon is set). Border-radius is inherited from the taxonomy's icon settings.
 
-#### `htax_get_term_pill( WP_Term $term, array $args = [] ): string`
+#### One term pill
+
+`htax_get_term_pill( WP_Term $term, array $args = [] ): string`
 
 Returns HTML for a single term pill.
 
@@ -255,7 +275,9 @@ $pill = htax_get_term_pill( $term, [
 echo $pill;
 ```
 
-#### `htax_the_term_pills( int $post_id, string $taxonomy, array $args = [] ): void`
+#### All term pills for a post
+
+`htax_the_term_pills( int $post_id, string $taxonomy, array $args = [] ): void`
 
 Outputs all term pills for a post's terms in the given taxonomy. Useful for displaying tags or categories with icons in theme templates.
 
@@ -272,7 +294,9 @@ if ( function_exists( 'htax_the_term_pills' ) ) {
 }
 ```
 
-#### `htax_add_icon_to_term_link( string $term_link, WP_Term $term, string $show_icons = 'when_available', bool $is_hidden = false ): string`
+#### Add an icon to a term link
+
+`htax_add_icon_to_term_link( string $term_link, WP_Term $term, string $show_icons = 'when_available', bool $is_hidden = false ): string`
 
 Wraps an existing `<a>` tag with icon HTML. Useful for filtering WordPress's native term link output.
 
@@ -427,7 +451,7 @@ if ( function_exists( 'htax_remove_term_strengths' ) ) {
 
 **`htax_strength_model_sql( string $alias = '', string $purpose = 'search' ): string`** — returns ` AND {alias}.model = '…'` for that model, safe to interpolate.
 
-See also the actions [`htax_term_strength_missing`](actions-filters.html#htax_term_strength_missing) and [`htax_term_strengths_updated`](actions-filters.html#htax_term_strengths_updated).
+See also the actions [`htax_term_strength_missing`](actions-filters.html#strengths-missing-for-a-post) and [`htax_term_strengths_updated`](actions-filters.html#strengths-stored-or-removed).
 
 ### Querying strength directly
 
@@ -454,7 +478,9 @@ All public functions are prefixed `htax_`. Check `function_exists()` before call
 
 ### Term Relationships
 
-#### `htax_get_included_terms( int|WP_Term $term, bool $include_redirect_data = false, bool $include_disabled = false ): array`
+#### Included terms
+
+`htax_get_included_terms( int|WP_Term $term, bool $include_redirect_data = false, bool $include_disabled = false ): array`
 
 Returns the terms whose posts contribute to the given term's archive via HyperTaxonomy inclusions, after applying exclusions. The result is restricted to **cross-branch** relationships: for hierarchical taxonomies, ancestors and descendants are excluded even if explicit inclusion rows exist for them. Ancestors are excluded to prevent semantic loops; descendants are excluded because they are already in the archive via WP's native `include_children` and their presence in the HyperTaxonomy inclusion set would be redundant. Archive expansion (`htax_get_expanded_term_ids`) reunites HyperTaxonomy inclusions and WP descendants at query time; this function returns only the HyperTaxonomy-managed portion.
 
@@ -471,7 +497,9 @@ Returns an empty array if the **Term Relationships** feature (`term_relationship
 
 Ancestor/descendant exclusion is enforced at four levels: the term edit save handler strips them before writing; `htax_cleanup_hierarchy_conflicts()` removes conflicts when a term is reparented; `htax_merge_terms()` removes conflicts after a merge; and `htax_repair_hierarchy_conflicts()` sweeps on plugin activation. This function's read-time filtering is a final safety net for rows written directly to the database.
 
-#### `htax_get_container_terms( int|WP_Term $term, bool $include_disabled = false ): array`
+#### Terms that include a term
+
+`htax_get_container_terms( int|WP_Term $term, bool $include_disabled = false ): array`
 
 Returns all terms that include this term's posts in their archives — the inverse view of inclusions. For hierarchical taxonomies, both descendants and ancestors are excluded: descendants cannot be containers (they cannot include their own ancestors), and ancestors are excluded for symmetry — a term's posts are already visible in ancestor archives via `include_children`, so an ancestor as a container would be redundant. Results are restricted to cross-branch relationships, indexed by term ID.
 
@@ -482,7 +510,9 @@ $containers = htax_get_container_terms( $term_id );
 
 Returns an empty array when the **Term Relationships** feature is disabled for the term's taxonomy; `$include_disabled = true` bypasses that (search index only).
 
-#### `htax_get_synonym_terms( int|WP_Term $term, bool $include_redirect_data = false ): array`
+#### Synonyms
+
+`htax_get_synonym_terms( int|WP_Term $term, bool $include_redirect_data = false ): array`
 
 Returns all terms that have a bidirectional `includes` relationship with the given term — i.e. terms where both `(A → includes → B)` and `(B → includes → A)` exist. These terms are effectively synonyms: each contributes the other's posts to its archive.
 
@@ -499,7 +529,9 @@ Returns an empty array when the **Term Relationships** feature is disabled for t
 
 Results are cached in a two-tier cache: a static per-request array and a persistent `htax_syno_{term_id}` transient (TTL=0). The transient is invalidated by `htax_delete_term_transients()`, queued for rebuilding at shutdown, and re-warmed by the `htax_async_rebuild_term_caches` cron event.
 
-#### `htax_is_redirect( int $term_id ): bool`
+#### Whether a term redirects
+
+`htax_is_redirect( int $term_id ): bool`
 
 Returns true if the term has a 301 redirect configured.
 
@@ -509,7 +541,9 @@ if ( htax_is_redirect( $term_id ) ) {
 }
 ```
 
-#### `htax_get_redirect_target( int $term_id ): WP_Term|false`
+#### Redirect target
+
+`htax_get_redirect_target( int $term_id ): WP_Term|false`
 
 Returns the redirect target as a `WP_Term` object, or false if the term has no redirect.
 
@@ -520,7 +554,9 @@ if ( $target ) {
 }
 ```
 
-#### `htax_get_redirect_sources( int $target_term_id ): int[]`
+#### Terms that redirect to a term
+
+`htax_get_redirect_sources( int $target_term_id ): int[]`
 
 The reverse of `htax_get_redirect_target()`: returns every term ID that redirects to the given target, following redirect chains (`A → B → Y`) with a cycle guard. Posts assigned a redirecting term belong to the target for discovery, so this backs the `$include_redirect_sources` option of `htax_get_expanded_term_ids()`. Returns an empty array when nothing redirects to the term.
 
@@ -528,7 +564,9 @@ The reverse of `htax_get_redirect_target()`: returns every term ID that redirect
 $sources = htax_get_redirect_sources( $target_term_id ); // e.g. [ 1001 ]
 ```
 
-#### `htax_get_all_redirect_term_ids(): int[]`
+#### All redirecting terms
+
+`htax_get_all_redirect_term_ids(): int[]`
 
 Returns all term IDs that have a redirect row in the database, across all taxonomies. The result is cached in a transient and invalidated automatically when any redirect is added or removed.
 
@@ -542,7 +580,9 @@ Returns raw database state — does not filter by taxonomy feature flag. If you 
 
 ### Term Groups
 
-#### `htax_get_term_groups( int $term_id ): WP_Term[]`
+#### A term's groups
+
+`htax_get_term_groups( int $term_id ): WP_Term[]`
 
 Returns the groups a term is assigned to, ordered by name. Returns an empty array if the `group_assignment` feature is not enabled for the term's taxonomy, or if the term doesn't exist.
 
@@ -555,7 +595,9 @@ foreach ( $groups as $group ) {
 
 Results are cached in a transient (`htax_groups_{term_id}`).
 
-#### `htax_get_terms_in_groups( array $group_ids, string $taxonomy = 'post_tag' ): WP_Term[]`
+#### Terms in groups
+
+`htax_get_terms_in_groups( array $group_ids, string $taxonomy = 'post_tag' ): WP_Term[]`
 
 On front-end, REST and AJAX read requests, terms hidden from the current viewer are left out for callers in other plugins and themes.
 
@@ -570,7 +612,9 @@ $terms = htax_get_terms_in_groups( array( 5, 12 ), 'post_tag' );
 
 Each group is cached separately (`htax_grp_{group_id}_{taxonomy}`), so invalidating one group's membership doesn't require rebuilding the others.
 
-#### `htax_set_term_groups( int $term_id, int[] $group_ids ): bool|WP_Error`
+#### Set a term's groups
+
+`htax_set_term_groups( int $term_id, int[] $group_ids ): bool|WP_Error`
 
 Replaces all group assignments for a term with the given set of group IDs. The taxonomy is derived from the term. Returns `true` on success, or a `WP_Error` if the term doesn't exist, the `group_assignment` feature is disabled for its taxonomy, or the term is itself a group (groups cannot be assigned to other groups via group membership — use the native WordPress parent field for group hierarchy instead).
 
@@ -594,7 +638,9 @@ Search widget and PowerSearch AJAX responses include them as `notices` (rendered
 
 ### Sticky Posts
 
-#### `htax_get_sticky_posts_for_term( int $term_id, bool $include_redirect_data = false ): WP_Post[]`
+#### A term's sticky posts
+
+`htax_get_sticky_posts_for_term( int $term_id, bool $include_redirect_data = false ): WP_Post[]`
 
 Returns the posts pinned to the top of a term's archive. Returns an empty array if the term is a redirect and the `redirects` feature is enabled for the taxonomy (a redirect term has no archive of its own to pin posts to), unless `$include_redirect_data` is `true`.
 

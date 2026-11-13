@@ -91,7 +91,9 @@ Multiple positive `near:` clauses are unioned regardless of the search's AND/OR 
 
 **`near:`-only searches** — a PowerSearch query or search-widget text field holding only `near:` tokens returns every indexed, published post with a location in range (a `near:` whose location is unknown is ignored, as in any search, leaving every post). Relevance is the distance score from the `htax_search_proximity_relevance` filter, so the default order (`relevance:desc,date:desc`) is nearest first, then newest first among equal distances. A configured `orderby` (shortcode/block attribute, form setting, or `htax_orderby`) replaces that default as for any search. Text score thresholds (`min_score` etc.) don't apply.
 
-## `htax_search_proximity_relevance` Filter
+## Proximity search scoring
+
+`htax_search_proximity_relevance` (filter)
 
 ```php
 add_filter( 'htax_search_proximity_relevance', function( string $sql, array $proximity, string $post_column ): string {
@@ -102,7 +104,9 @@ add_filter( 'htax_search_proximity_relevance', function( string $sql, array $pro
 
 The ATCF integration returns `1 / (1 + d)` per post, `d` being the distance in km from the nearest reference point to the nearest location among the post's in-range terms (a correlated `MAX(CASE term_taxonomy_id …)` subquery over `term_relationships`). Same SQL rules as `htax_search_proximity_where`: no `%` characters.
 
-## `htax_search_proximity_where` Filter
+## Proximity search condition
+
+`htax_search_proximity_where` (filter)
 
 Fired by both PowerSearch (`perform_indexed_text_search()`) and the search widget (`get_posts_by_custom_sql()`) when the query contains `near:` tokens. The returned SQL condition is added to the query's WHERE clause, before ORDER BY / LIMIT, so pagination and result totals reflect it. The ATCF integration builds the location condition through this filter; other callbacks can add conditions of their own.
 
@@ -133,7 +137,9 @@ Each `$proximity` element:
 
 **Note on `postal_code` / slug disambiguation:** `location_type='postal_code'` is set whenever the value has no colon and is not `me`. The actual resolution (postal format check → centroid vs. slug lookup) happens in `resolve_reference_points()`, not at parse time, so the raw value is preserved as-is.
 
-## `HyperTaxonomy_ATCF_Integration::get_user_location()`
+## Current visitor's location
+
+`HyperTaxonomy_ATCF_Integration::get_user_location()`
 
 Public static helper that resolves the current user's location for use in `near:me` queries or custom filters:
 
@@ -146,7 +152,9 @@ It returns ATCF's `atcf_get_visitor_location()` — the single location chain sh
 
 When a `near:` clause can't be resolved, or `near:me` falls back to the fallback location, the integration records a visitor-facing message with `htax_add_search_notice()` (see [PHP API → Search notices](php-api.html#search-notices)).
 
-## `HyperTaxonomy_ATCF_Integration::get_in_range_term_ids( $ref_points, $radius_km, $taxonomy )`
+## Terms within range of points
+
+`HyperTaxonomy_ATCF_Integration::get_in_range_term_ids( $ref_points, $radius_km, $taxonomy )`
 
 Public static helper that returns term IDs in `$taxonomy` whose ATCF locations are within `$radius_km` of any of the given `[[lat, lng], ...]` reference points. Useful for building custom pre-query distance filters:
 
@@ -155,7 +163,9 @@ $ref = [[45.52, -122.68]]; // Portland OR
 $term_ids = HyperTaxonomy_ATCF_Integration::get_in_range_term_ids( $ref, 16.09, 'post_tag' ); // ~10 miles
 ```
 
-## `atcf_get_ip_location()` (ATCF public function)
+## Visitor location from IP (ATCF)
+
+`atcf_get_ip_location()`
 
 Returns the visitor's approximate location: from CDN location headers when present (`atcf_get_cdn_location()` — Cloudflare's `CF-IPLatitude` / `CF-IPLongitude`, or the `atcf_cdn_location` filter), otherwise from the configured IP geolocation provider (cached in a transient per IP). Returns `null` when neither is available — IP geolocation disabled, a private IP, or a failed API call. `atcf_get_visitor_location()` adds the ATCF fallback location as a last resort and reports the `source`.
 
@@ -164,7 +174,9 @@ $loc = atcf_get_ip_location();
 // Returns ['lat' => float, 'lng' => float, 'country' => string, 'postal_code' => string] or null
 ```
 
-## `atcf_get_postal_centroid( $postal_code, $country = 'US' )` (ATCF public function)
+## Postal code centroid (ATCF)
+
+`atcf_get_postal_centroid( $postal_code, $country = 'US' )`
 
 Returns the centroid coordinates for a postal code. Result is cached per request via `wp_cache_get/set`.
 
@@ -173,7 +185,9 @@ $centroid = atcf_get_postal_centroid( 'H3H2A9', 'CA' );
 // Returns ['lat' => float, 'lng' => float] or null
 ```
 
-## `atcf_get_term_ids_with_locations( $taxonomy )` (ATCF public function)
+## Terms with locations (ATCF)
+
+`atcf_get_term_ids_with_locations( $taxonomy )`
 
 Returns all term IDs in a taxonomy that have at least one ATCF location row. Useful for pre-filtering eligible terms before expensive distance queries. Cached per request.
 
@@ -182,7 +196,9 @@ $term_ids = atcf_get_term_ids_with_locations( 'post_tag' );
 // Returns int[]
 ```
 
-## `atcf_get_postal_code_format( $country )` (ATCF public function)
+## Postal code format (ATCF)
+
+`atcf_get_postal_code_format( $country )`
 
 Returns a PCRE regex pattern (anchored with `^` and `$`) that validates postal codes for the given country, or `null` for countries without a known format. Match is performed against the **uppercase** form of the input.
 
@@ -193,7 +209,9 @@ if ( $pattern && preg_match( $pattern, strtoupper( $input ) ) ) {
 }
 ```
 
-## `ATCF_Locations::get_aggregated( $term_id, $taxonomy, $exclude_ids, $additional_ids )` (ATCF)
+## Locations for a term and its archive scope (ATCF)
+
+`ATCF_Locations::get_aggregated( $term_id, $taxonomy, $exclude_ids, $additional_ids )`
 
 Returns all ATCF location objects for a term and its full descendant/inclusion scope in one query. Accepts optional exclusion and addition lists so callers can inject contextual knowledge (e.g. hidden terms, HT inclusions) without ATCF needing to know about either concept.
 
@@ -209,7 +227,9 @@ $locations = ATCF_Locations::get_aggregated(
 
 Internally: expands to `[$term_id, ...get_term_children($term_id, $taxonomy)]`, subtracts `$exclude_ids`, merges `$additional_ids`, deduplicates, then queries `wp_atcf_locations` once for all IDs.
 
-## `ATCF_Locations::get_by_term_id( $term_id )` (ATCF)
+## Locations by term ID (ATCF)
+
+`ATCF_Locations::get_by_term_id( $term_id )`
 
 Returns all ATCF location objects for a single term by ID, without requiring a taxonomy. WordPress term IDs are globally unique across all taxonomies, so taxonomy is not needed for single-term lookups.
 
@@ -218,7 +238,9 @@ $locations = ATCF_Locations::get_by_term_id( $term->term_id );
 // Returns object[] — same row shape as get_for_term(); ordered by location ID
 ```
 
-## `ATCF_REST_API::format_term_locations( $term_id )` (ATCF)
+## Term locations as Schema.org places (ATCF)
+
+`ATCF_REST_API::format_term_locations( $term_id )`
 
 Returns location data for a term formatted as Schema.org Place objects for the `htax_locations` REST field. Results are cached per term ID for the request lifetime (static cache). Returns `null` when the term has no locations.
 

@@ -48,6 +48,8 @@
             filter_out_terms:  $wrapper.data('filter-out-terms')  || '',
             filter_out_groups: $wrapper.data('filter-out-groups') || '',
             search:         $wrapper.data('search')         || '',
+            prepend:        $wrapper.data('prepend')        || '',
+            append:         $wrapper.data('append')         || '',
             modified_after:   $wrapper.data('modified-after')   || '',
             modified_before:  $wrapper.data('modified-before')  || '',
             show_thumbnail: $wrapper.data('show-thumbnail') || 'true',

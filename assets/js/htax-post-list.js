@@ -49,7 +49,7 @@
             filter_out_groups: $wrapper.data('filter-out-groups') || '',
             search:         $wrapper.data('search')         || '',
             modified_after:   $wrapper.data('modified-after')   || '',
-            published_before: $wrapper.data('published-before') || '',
+            modified_before:  $wrapper.data('modified-before')  || '',
             show_thumbnail: $wrapper.data('show-thumbnail') || 'true',
             show_excerpt:   $wrapper.data('show-excerpt')   || 'true',
             meta:           $wrapper.data('meta')           !== undefined ? $wrapper.data('meta') : '{date} by {author}',

@@ -260,7 +260,7 @@ export function createEdit( blockName, opts = {} ) {
 									<TextControl
 										label={ __( 'Days after this post', 'hypertaxonomy' ) }
 										help={ __(
-											'Leave out posts published more than this many days after this post. Empty: no limit.',
+											'Leave out posts published or updated more than this many days after this post. Empty: no limit.',
 											'hypertaxonomy'
 										) }
 										type="number"

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: hypertaxonomy 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-13 13:06-0500\n"
+"POT-Creation-Date: 2026-11-13 13:16-0500\n"
 "PO-Revision-Date: 2026-11-13 10:00-0500\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -4356,7 +4356,7 @@ msgstr "Следующая"
 
 #: includes/classes/class-power-search.php:107
 #: includes/classes/class-search-widget.php:3727
-#: includes/shortcodes/class-post-list.php:964
+#: includes/shortcodes/class-post-list.php:960
 #, php-format
 msgid "Page %1$d of %2$d"
 msgstr "Страница %1$d из %2$d"
@@ -5209,19 +5209,19 @@ msgstr "–"
 msgid "To"
 msgstr "До"
 
-#: includes/shortcodes/class-post-list.php:953
+#: includes/shortcodes/class-post-list.php:949
 msgid "Post list navigation"
 msgstr "Навигация по списку записей"
 
-#: includes/shortcodes/class-post-list.php:957
+#: includes/shortcodes/class-post-list.php:953
 msgid "« Previous"
 msgstr "« Предыдущая"
 
-#: includes/shortcodes/class-post-list.php:972
+#: includes/shortcodes/class-post-list.php:968
 msgid "Next »"
 msgstr "Следующая »"
 
-#: includes/shortcodes/class-post-list.php:1003
+#: includes/shortcodes/class-post-list.php:999
 msgid "No term IDs."
 msgstr "Не указаны ID терминов."
 
@@ -5735,8 +5735,8 @@ msgid ""
 "Leave out posts last published or updated more than this many days before "
 "this post. Empty: no limit."
 msgstr ""
-"Исключить записи, опубликованные или в последний раз обновлённые раньше чем "
-"за указанное число дней до этой записи. Пустое поле — без ограничения."
+"Исключить записи, опубликованные либо обновлённые в последний раз раньше, "
+"чем за указанное число дней до этой записи. Пустое поле — без ограничения."
 
 #: blocks/shared/post-list-edit.js:261
 msgid "Days after this post"
@@ -5744,11 +5744,11 @@ msgstr "Дней после этой записи"
 
 #: blocks/shared/post-list-edit.js:263
 msgid ""
-"Leave out posts published more than this many days after this post. Empty: "
-"no limit."
+"Leave out posts published or updated more than this many days after this "
+"post. Empty: no limit."
 msgstr ""
-"Исключить записи, опубликованные позже чем через указанное число дней после "
-"этой записи. Пустое поле — без ограничения."
+"Исключить записи, опубликованные либо обновлённые в последний раз позже, чем "
+"через указанное число дней после этой записи. Пустое поле — без ограничения."
 
 #: blocks/shared/post-list-edit.js:281
 msgid "Filters"

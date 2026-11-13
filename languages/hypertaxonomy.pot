@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-13 13:06-0500\n"
+"POT-Creation-Date: 2026-11-13 13:16-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -3802,7 +3802,7 @@ msgstr ""
 
 #: includes/classes/class-power-search.php:107
 #: includes/classes/class-search-widget.php:3727
-#: includes/shortcodes/class-post-list.php:964
+#: includes/shortcodes/class-post-list.php:960
 #, php-format
 msgid "Page %1$d of %2$d"
 msgstr ""
@@ -4565,19 +4565,19 @@ msgstr ""
 msgid "To"
 msgstr ""
 
-#: includes/shortcodes/class-post-list.php:953
+#: includes/shortcodes/class-post-list.php:949
 msgid "Post list navigation"
 msgstr ""
 
-#: includes/shortcodes/class-post-list.php:957
+#: includes/shortcodes/class-post-list.php:953
 msgid "« Previous"
 msgstr ""
 
-#: includes/shortcodes/class-post-list.php:972
+#: includes/shortcodes/class-post-list.php:968
 msgid "Next »"
 msgstr ""
 
-#: includes/shortcodes/class-post-list.php:1003
+#: includes/shortcodes/class-post-list.php:999
 msgid "No term IDs."
 msgstr ""
 
@@ -5071,8 +5071,8 @@ msgstr ""
 
 #: blocks/shared/post-list-edit.js:263
 msgid ""
-"Leave out posts published more than this many days after this post. Empty: "
-"no limit."
+"Leave out posts published or updated more than this many days after this "
+"post. Empty: no limit."
 msgstr ""
 
 #: blocks/shared/post-list-edit.js:281

@@ -367,7 +367,7 @@ Controllers let users change what appears in other fields by making a selection.
 
 Used by both `[ht_search_form]` and `[ht_power_search]` in AJAX mode. Pagination, result count, and query scope are controlled by the form shortcode; this container controls display only.
 
-Place it anywhere on the page. Set `ajax="container-id"` on the form shortcode and `id="container-id"` here to link them.
+Place it anywhere on the page. Set `ajax="container-id"` on the form shortcode and `id="container-id"` here to link them. Display parameters such as `format`, `show_thumbnail` and `image_size` mean the same as in [Post Lists → Common Parameters](post-lists.html#common-parameters).
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|

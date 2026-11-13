@@ -158,7 +158,7 @@ On front-end, REST and AJAX read requests, terms hidden from the current viewer 
 - **Local types** — locally created or promoted types. Two creation forms are available:
   - **New Inclusion-based** — single shared taxonomy, `core_type = 'includes'`.
   - **New Custom** — `core_type = null`, independent source/target constraints.
-  - Both forms include a **Private** checkbox — when checked, `is_private = true` and the type is excluded from peer-sharing REST endpoints.
+  - Both forms include a **Private** checkbox — when checked, `is_private = true` and the type is excluded from peer-sharing REST endpoints (see [REST API → Relationship type endpoints](rest-api.html#relationship-type-endpoints-htaxv1)).
 
 Types created there are stored in `wp_options` under `htax_custom_relationship_types` and loaded into the registry on `init` priority 5. The `'group'` taxonomy is always excluded from `source_taxonomies` / `target_taxonomies` when saving via the admin UI — group terms are implicitly allowed through the group exemption in `htax_add_term_relationship()` and do not need to be listed.
 

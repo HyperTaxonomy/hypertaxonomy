@@ -19,6 +19,8 @@ nav_order: 6
 
 ### Two Systems
 
+How the two are built. For what each search method offers site owners, see the [Search Method Comparison](../user-guide/powersearch.html#search-method-comparison).
+
 | Aspect | Search Widget | PowerSearch |
 |--------|--------------|-----------------|
 | **Input** | Selected term IDs (pills, checkboxes) | Search text string |
@@ -105,11 +107,9 @@ Score thresholds on taxonomy fields don't change the path. `min_terms_score` com
 
 ### Field Operators (PowerSearch)
 
-Parsed via regex: `/([+\-]?)\b(title|content|body|excerpt|tags|categories|terms|...):(...)/i`
+The operators visitors type are listed in [PowerSearch → Query syntax](../user-guide/powersearch.html#query-syntax). `htax_parse_search_query()` (`includes/core/search.php`) splits the query into per-field arrays with this regex:
 
-- `+term` required, `-term` excluded, no prefix = optional in OR mode / required in AND mode
-- `title:word` — title field only; `tags:word` — tag taxonomy; `terms:word` — all enabled taxonomies
-- Custom taxonomy operators: the taxonomy slug (e.g. `product_category:blue`) or the plural display label with spaces replaced by underscores (e.g. `product_categories:blue`); case-insensitive
+`/([+\-]?)\b(title|content|body|excerpt|tags|categories|terms|...):(...)/i`
 
 ---
 
@@ -366,6 +366,8 @@ Post text fields (title, content, excerpt) use **NATURAL LANGUAGE MODE** so that
 
 ### Strength Models (includes/core/strength-models.php)
 
+The public API is documented in [PHP API → Strength Models](../developer-reference/php-api.html#strength-models).
+
 - Registry (in memory, per request): `htax_register_strength_model( $key, $args )`, `htax_unregister_strength_model( $key )`, `htax_get_strength_models()`, `htax_validate_strength_model_key( $key )`. `htax_tf` and every other `htax_`-prefixed key are reserved: registering or unregistering them returns false.
 - Selection: `htax_get_strength_model( $purpose )` returns `htax_settings['strength_model']` when that model is registered, otherwise `htax_tf`. `htax_strength_model_sql( $alias, $purpose )` builds the ` AND {alias}.model = '…'` condition. The Settings sanitizer only accepts a new selection with full coverage; code writing `htax_settings` directly bypasses that check.
 - Writes: `htax_set_term_strengths( $model, $post_id, $strengths )` (validates every score and term first, then writes direct + derived rows in one `INSERT … ON DUPLICATE KEY UPDATE`; returns `true|WP_Error`), `htax_remove_term_strengths( $model, $post_id = 0, $term_ids = [] )` (returns rows removed or `WP_Error`). Both refuse `htax_tf` and fire `htax_term_strengths_updated`.
@@ -444,6 +446,8 @@ These clearing functions have distinct purposes and can't be consolidated:
 ---
 
 ## Native Block Group Filter
+
+For how editors use it, see [Archive & Results Controls → Query Loop and Latest Posts](../user-guide/archive-controls.html#query-loop-and-latest-posts--ht-term-group-filter).
 
 The HT Term Group Filter extends the native WordPress `core/query` (Query Loop) and `core/latest-posts` (Latest Posts) blocks. It requires no template changes — the filter is added through each block's inspector.
 

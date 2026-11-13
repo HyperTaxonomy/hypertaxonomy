@@ -17,7 +17,7 @@ nav_order: 2
 
 ## Integration API
 
-`includes/core/integration-api.php` provides a stable public surface for third-party plugins that need to work with HyperTaxonomy's archive expansion logic. Internal cache-invalidation infrastructure (`htax_fire_term_archive_changed`, `htax_fire_archive_changed_on_hierarchy`) lives in `cache.php`.
+`includes/core/integration-api.php` provides a stable public surface for third-party plugins that need to work with HyperTaxonomy's archive expansion logic. Internal cache-invalidation infrastructure (`htax_fire_term_archive_changed`, `htax_fire_archive_changed_on_hierarchy`) lives in `cache.php`. For how expansion is built and which feature flags gate it, see [Feature Implementation](../architecture/feature-implementation.html#feature-flag-enforcement-for-archive-expansion).
 
 ### Get a term's expanded term IDs
 
@@ -392,6 +392,8 @@ Hidden terms are excluded from REST API responses for users who cannot see them 
 ## Strength Models
 
 Every post–term relationship in the search index carries a **strength**: how central the term is to the post, from 0 to 1. Strength ranks term-based search results and related posts. HyperTaxonomy's built-in model, `htax_tf`, derives it from how prominently the term name appears in the post's title, excerpt, and body. Another plugin — for example one that computes semantic similarity with embeddings — can register its own model and supply scores; a site owner then selects it in **Settings → Search → Strength Model**.
+
+For how models are stored, selected and queried, see [Search Internals → Strength Models](../architecture/search-internals.html#strength-models-includescorestrength-modelsphp).
 
 **How a provider integrates:**
 

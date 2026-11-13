@@ -49,7 +49,7 @@ The main configuration hub. A **General** subtab controls which taxonomies Hyper
 
 The Icons tab has a **General** subtab plus one subtab per taxonomy that has the Icons feature enabled.
 
-**General subtab** — Theme integration reference: PHP code examples for displaying term pills with icons in single.php or archive.php, and a list of available template functions (`htax_the_term_pills`, `htax_the_archive_icon`, `htax_get_term_icon_html`, etc.).
+**General subtab** — Theme integration reference: PHP code examples for displaying term pills with icons in single.php or archive.php, and a list of available template functions, documented in [PHP API → Term Icons API](../developer-reference/php-api.html#term-icons-api) (`htax_the_term_pills`, `htax_the_archive_icon`, `htax_get_term_icon_html`, etc.).
 
 **Per-taxonomy subtabs:**
 

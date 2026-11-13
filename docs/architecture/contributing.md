@@ -152,6 +152,8 @@ var columnFilterMap = {
 
 Queries for inclusions use `htax_relationship_type_sql_in( 'includes' )` rather than a hard-coded equality check. This ensures that user-defined types mapped to `includes` automatically participate in archive expansion, index queries, and admin display. Types with no user-defined mappings, such as `member_of` and `redirect`, use plain equality.
 
+The full API, with every field and example, is in [Custom Relationship Types](../developer-reference/custom-taxonomy.html#custom-relationship-types).
+
 **Registering a type in PHP** (hook into `htax_relationship_types`, which fires at init priority 0 after all built-in types are registered):
 
 ```php

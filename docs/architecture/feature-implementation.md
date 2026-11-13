@@ -19,6 +19,8 @@ nav_order: 5
 
 ## Feature Flag Enforcement for Archive Expansion
 
+The public functions for archive expansion are in the [PHP API → Integration API](../developer-reference/php-api.html#integration-api).
+
 One feature flag controls the entire archive expansion pipeline:
 
 - **`term_relationships`** — gates all expansion. When not enabled for a taxonomy, `htax_build_expanded_tax_query()` returns `null` immediately and no expansion of any kind occurs. This flag covers direct inclusion/container relationships, group-based relationships (Included Groups & Container Groups), and custom relationship types. Corresponds to "Enable relationships for {taxonomy}" in the per-taxonomy Features settings.
@@ -259,7 +261,7 @@ Hidden status is propagated to descendants at write time, not derived at runtime
 
 ### Visibility Change Propagation
 
-When `htax_term_visibility_changed` fires, a single SQL UPDATE recalculates `is_hidden` for all affected rows — no reindexing needed:
+When [`htax_term_visibility_changed`](../developer-reference/actions-filters.html#visibility-changed) fires, a single SQL UPDATE recalculates `is_hidden` for all affected rows — no reindexing needed:
 ```sql
 UPDATE wp_htax_search_terms
 SET is_hidden = (source_is_hidden OR term_is_hidden)

@@ -51,7 +51,7 @@ Display attributes (thumbnail, format, columns, prepend/append, etc.) are config
 
 **Sort order:** Comma-separated `field:direction` pairs. Available fields: `relevance`, `date`, `modified`, `title`, `author`, `comment_count`, `last_comment`, `last_activity`, `ID`. Direction defaults to `desc` if omitted. Example: `relevance:desc,date:desc,title:asc`.
 
-**Query syntax:**
+### Query syntax
 
 | Syntax | Example | Meaning |
 |--------|---------|---------|
@@ -166,3 +166,5 @@ Results are paged the usual way (`/page/2/?s=…`): each page fetches just its o
 | Filters out non-matching posts | Yes | Yes | No (boost only) | Yes |
 | Field groups | N/A | Supported | N/A | N/A |
 | Best for | Basic search | Faceted filter forms | Term-browsing lists with relevance boost | Standalone advanced search |
+
+For how the Search Widget and PowerSearch build their queries and score results, see [Search Internals](../architecture/search-internals.html).

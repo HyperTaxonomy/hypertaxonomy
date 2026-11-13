@@ -42,7 +42,7 @@ Icon display hooks do not run. Icons are not shown in archives or shortcode outp
 
 **Capabilities**
 
-HyperTaxonomy-specific capabilities (`manage_term_visibility`, `manage_term_icons`, `manage_term_redirects`, etc.) are removed from all roles on deactivation.
+HyperTaxonomy-specific capabilities (`manage_term_visibility`, `manage_term_icons`, `manage_term_redirects`, etc.) are removed from all roles on deactivation. See [Roles & Permissions](roles-permissions.html) for the full list.
 
 **Search**
 

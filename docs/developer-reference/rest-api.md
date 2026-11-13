@@ -75,7 +75,7 @@ HyperTaxonomy extends the standard WordPress post collection endpoint with term-
 | `htax_score` | float \| null | Relevance score 0–1, or null if this post was not scored. |
 | `htax_matched_term_slugs` | string[] \| null | Remote slugs of the primary terms that contributed to this post's score, or null if not scored. These are the slugs as they appear on the remote (peer) site. |
 | `htax_term_peers` | object \| null | Registered by TermConnect (when active). Per-term peer connection data for all terms on the returned posts; used by TC for FOAF peer discovery without a separate term lookup round-trip. See [TermConnect's REST API](https://hypertaxonomy.org/termconnect/developer-reference/rest-api.html#post-endpoints). |
-| `htax_term_strengths` | object \| null | **Opt-in — request explicitly via `_fields`.** Map of the post's directly-assigned term IDs → association strength (0–1, how central each term is to the post, from the strength model selected in Settings → Search; terms that model hasn't scored are omitted). Keyed by the term IDs the post already lists natively, so it adds the strength without duplicating term data. Visibility-filtered. `null` unless requested (the per-post index lookup runs only when the field is named in `_fields`). |
+| `htax_term_strengths` | object \| null | **Opt-in — request explicitly via `_fields`.** Map of the post's directly-assigned term IDs → association strength (0–1, how central each term is to the post, from the strength model selected in Settings → Search; terms that model hasn't scored are omitted). Keyed by the term IDs the post already lists natively, so it adds the strength without duplicating term data. Hidden terms are left out for everyone. `null` unless requested (the per-post index lookup runs only when the field is named in `_fields`). |
 
 **Example request** (two primary terms, any-match, per-term weights, peer expansion on):
 
@@ -139,7 +139,9 @@ Both endpoints can be disabled entirely under **Settings → HyperTaxonomy → A
 
 ## Hidden terms and REST
 
-Hidden terms are fully protected:
+A hidden term's own record follows the viewer's permissions:
 - **Collection** (`GET /wp/v2/{taxonomy}`): excluded via the `exclude` parameter; unauthorized users never see them in lists.
 - **Individual** (`GET /wp/v2/{taxonomy}/{id}`): returns `404 Term not found` for unauthorized users.
 - Authorized users (determined by `htax_can_see_hidden_terms()`) see hidden terms normally and receive an `htax_is_hidden: true` field.
+
+Relationship data leaves hidden terms out **for everyone**, editors included: `htax_includes`, `htax_synonyms`, `htax_relationships`, `htax_redirect` (a redirect to a hidden term shows no target), `htax_term_strengths`, and the related terms returned by `GET htax/v1/term/{id}/relationships`. These fields describe the public vocabulary, so every viewer gets the same answer and responses can be cached and shared. Editors see hidden relationships in wp-admin.

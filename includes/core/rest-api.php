@@ -95,20 +95,6 @@ function htax_rest_field_requested( ?WP_REST_Request $request, string $field ): 
 }
 
 /**
- * Check whether the current viewer may see a term in a REST response.
- *
- * Relationship lists come from caches shared between viewers and hold hidden terms, so each
- * response has to check them.
- *
- * @since 1.0.0
- * @param WP_Term $term Term.
- * @return bool
- */
-function htax_rest_is_term_visible( WP_Term $term ): bool {
-    return ! htax_is_term_hidden( $term->term_id ) || htax_can_see_hidden_terms( $term->taxonomy );
-}
-
-/**
  * Build a minimal term object for use inside htax_includes / htax_redirect fields.
  *
  * Contains only the fields needed to render a link without a follow-up request.
@@ -214,8 +200,8 @@ function htax_rest_build_redirect_data( WP_Term $term ): ?array {
     }
 
     $target = htax_get_redirect_target( $term->term_id );
-    if ( ! $target ) {
-        return null;
+    if ( ! $target || ! htax_remove_hidden_term_ids( array( $target->term_id ) ) ) {
+        return null; // No redirect, or it points to a hidden term (left out for everyone).
     }
 
     return htax_rest_term_stub( $target );
@@ -226,9 +212,9 @@ function htax_rest_build_redirect_data( WP_Term $term ): ?array {
  *
  * For any hierarchical taxonomy, includes all WP descendant terms (mirroring
  * the include_children behavior of WP_Query). For HT-enabled taxonomies,
- * also includes directly configured term inclusions. Hidden terms are filtered
- * out for users who cannot see them. Returns an empty array when there is
- * nothing to include.
+ * also includes directly configured term inclusions. Hidden terms are left out for
+ * every viewer (see htax_remove_hidden_term_ids()). Returns an empty array when there
+ * is nothing to include.
  *
  * Each entry is a term stub (id, name, slug, taxonomy, link) carrying a `strength`
  * — the explicit relationship weight by which it relates to this term (hierarchy
@@ -243,8 +229,6 @@ function htax_rest_build_includes_data( WP_Term $term ): array {
     $taxonomy       = $term->taxonomy;
     $term_id        = $term->term_id;
     $items          = array();
-    $can_see_hidden = htax_can_see_hidden_terms( $taxonomy );
-    $hidden_set     = null; // Lazy-loaded on first visibility check.
 
     // Explicit relationship weights for this taxonomy, exposed per entry as the
     // strength by which each included term relates (the same weights baked into the
@@ -257,16 +241,7 @@ function htax_rest_build_includes_data( WP_Term $term ): array {
     if ( is_taxonomy_hierarchical( $taxonomy ) ) {
         $children = get_term_children( $term_id, $taxonomy );
         if ( ! is_wp_error( $children ) && ! empty( $children ) ) {
-            if ( ! $can_see_hidden ) {
-                $hidden_set = array_flip( htax_get_all_hidden_term_ids() );
-                $children   = array_values( array_filter(
-                    $children,
-                    function ( $id ) use ( $hidden_set ) {
-                        return ! isset( $hidden_set[ $id ] );
-                    }
-                ) );
-            }
-            foreach ( $children as $child_id ) {
+            foreach ( htax_remove_hidden_term_ids( $children ) as $child_id ) {
                 $child = get_term( $child_id );
                 if ( ! $child || is_wp_error( $child ) ) {
                     continue;
@@ -284,15 +259,9 @@ function htax_rest_build_includes_data( WP_Term $term ): array {
         // htax_get_synonym_terms() is statically cached — no extra SQL after the first call.
         $synonym_ids = array_keys( htax_get_synonym_terms( $term ) );
 
-        foreach ( htax_get_included_terms( $term ) as $included_id => $included_term ) {
-            if ( ! $can_see_hidden ) {
-                if ( null === $hidden_set ) {
-                    $hidden_set = array_flip( htax_get_all_hidden_term_ids() );
-                }
-                if ( isset( $hidden_set[ $included_id ] ) ) {
-                    continue;
-                }
-            }
+        $included = htax_get_included_terms( $term );
+        foreach ( htax_remove_hidden_term_ids( array_keys( $included ) ) as $included_id ) {
+            $included_term    = $included[ $included_id ];
             $stub             = htax_rest_term_stub( $included_term );
             $stub['strength'] = $w_container;
             if ( in_array( $included_id, $synonym_ids, true ) ) {
@@ -327,7 +296,7 @@ function htax_rest_build_term_entry( WP_Term $term ): array {
  * Returns an array of term entries for all synonym terms (mutual inclusions).
  * Each entry has the same shape as htax_term_data entries: id, slug, name,
  * taxonomy, and htax_links when external identifiers are set. Hidden synonym
- * terms are filtered out for users who cannot see them.
+ * terms are left out for every viewer.
  *
  * Returns null when the term has no synonyms or is not HT-enabled.
  *
@@ -345,15 +314,9 @@ function htax_rest_build_synonyms_data( WP_Term $term ): ?array {
         return null;
     }
 
-    $can_see_hidden = htax_can_see_hidden_terms( $term->taxonomy );
-    $hidden_set     = $can_see_hidden ? array() : array_flip( htax_get_all_hidden_term_ids() );
-
     $result = array();
-    foreach ( $synonym_terms as $syn_id => $syn_term ) {
-        if ( ! $can_see_hidden && isset( $hidden_set[ $syn_id ] ) ) {
-            continue;
-        }
-        $result[] = htax_rest_build_term_entry( $syn_term );
+    foreach ( htax_remove_hidden_term_ids( array_keys( $synonym_terms ) ) as $syn_id ) {
+        $result[] = htax_rest_build_term_entry( $synonym_terms[ $syn_id ] );
     }
 
     return empty( $result ) ? null : $result;
@@ -365,7 +328,8 @@ function htax_rest_build_synonyms_data( WP_Term $term ): ?array {
  * for all storage-only custom types (core_type = null, non-private).
  *
  * Inclusion-based custom types (core_type = 'includes') are excluded — they are
- * delivered via htax_includes as plain term stubs.
+ * delivered via htax_includes as plain term stubs. Hidden related terms are left out
+ * for every viewer.
  *
  * @since 1.0.0
  * @param WP_Term $term Source term.
@@ -381,12 +345,13 @@ function htax_rest_build_relationships_data( WP_Term $term ): array {
         if ( null !== ( $def['core_type'] ?? null ) ) {
             continue; // Inclusion-based — travels via htax_includes.
         }
-        $related = htax_get_related_terms( $term->term_id, $slug );
-        foreach ( $related as $related_term ) {
-            if ( ! htax_rest_is_term_visible( $related_term ) ) {
-                continue;
-            }
-            $result[] = array(
+        $related = array();
+        foreach ( htax_get_related_terms( $term->term_id, $slug ) as $related_term ) {
+            $related[ $related_term->term_id ] = $related_term;
+        }
+        foreach ( htax_remove_hidden_term_ids( array_keys( $related ) ) as $related_id ) {
+            $related_term = $related[ $related_id ];
+            $result[]     = array(
                 'relationship_type' => $slug,
                 'target_slug'       => $related_term->slug,
                 'target_taxonomy'   => $related_term->taxonomy,
@@ -714,14 +679,10 @@ function htax_rest_get_post_term_strengths( $post_arr, $field = '', $request = n
         return (object) array();
     }
 
-    $can_see = array();
-    $out     = array();
+    // Hidden terms are left out for every viewer, like the other relationship fields.
+    $out = array();
     foreach ( $rows as $r ) {
-        $tax = (string) $r->taxonomy;
-        if ( ! isset( $can_see[ $tax ] ) ) {
-            $can_see[ $tax ] = htax_can_see_hidden_terms( $tax );
-        }
-        if ( (int) $r->is_hidden && ! $can_see[ $tax ] ) {
+        if ( (int) $r->is_hidden ) {
             continue;
         }
         $out[ (int) $r->term_id ] = round( (float) $r->strength, 4 );

@@ -246,6 +246,7 @@ Hidden term logic: permission checks, write-time cascade, and frontend query fil
 
 **Read / permission checks:**
 - `htax_is_term_hidden( $term_id )` - Returns true if the term has `_htax_is_hidden` meta set
+- `htax_remove_hidden_term_ids( array $term_ids ): array` - Leaves hidden terms out of a list of term IDs for every viewer; used for relationship data (REST relationship fields), which describes the public vocabulary
 - `htax_get_term_ids_hidden_from_caller(): array` - Term IDs to hide from the code asking for terms; empty for HyperTaxonomy's own code, for core callers that need real terms, and outside front-end, REST and AJAX read requests
 - `htax_is_requested_term( WP_Term $term, $asked ): bool` - Whether a term is the one `get_term_link()` was asked for, rather than an ancestor it is resolving
 - `htax_note_visible_term_ancestors( $ancestors, $object_id )` - `get_ancestors` filter: records hidden ancestors of a visible term for the request, for `get_term_parents_list()`
@@ -299,7 +300,6 @@ Public integration API for third-party plugins.
 - `htax_get_term_uris( int $term_id ): array` - External URIs for a term, from the `htax_term_uris` filter
 - `htax_relay_term_uris_changed( $term_id ): void` - Re-fires `tc_term_uris_changed` as `htax_term_uris_changed`
 - `htax_remove_terms_hidden_from_caller( array $terms ): array` - Applies hidden-term visibility to a shared-cache list for callers outside HyperTaxonomy
-- `htax_rest_is_term_visible( WP_Term $term ): bool` - Whether the current viewer may see a term in a REST response
 - `htax_get_terms_by_ids( array $term_ids, string $taxonomy ): array` - Term objects for a list of IDs, loading any not in memory in one query
 - `htax_resolve_filter_term_ids( array $raw, string $taxonomy, string $include_groups, string $exclude_groups, string $include_terms, string $exclude_terms ): array` - Resolves a filter field's option pool or initial selection
 - `htax_load_terms_in_groups()`, `htax_load_related_terms()`, `htax_load_reverse_related_terms()`, `htax_load_included_terms()`, `htax_load_container_terms()`, `htax_load_synonym_terms()` - Read those lists, including hidden terms, from caches shared between viewers. Their public `htax_get_*` wrappers apply visibility

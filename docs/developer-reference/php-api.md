@@ -387,7 +387,7 @@ $results = $wpdb->get_results( $wpdb->prepare(
 
 ### Hidden Terms and REST API
 
-Hidden terms are excluded from REST API responses for users who cannot see them (based on the global visibility setting). This means REST API consumers will not receive hidden terms unless the requesting user has the required capability.
+A hidden term's own REST record is excluded for users who cannot see it (based on the global visibility setting), and shown to those who can. HyperTaxonomy's relationship fields (`htax_includes`, `htax_synonyms`, `htax_relationships`, `htax_redirect`, `htax_term_strengths`) leave hidden terms out for everyone. See [REST API → Hidden terms and REST](rest-api.html#hidden-terms-and-rest).
 
 ## Strength Models
 

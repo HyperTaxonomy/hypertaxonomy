@@ -141,7 +141,9 @@ function htax_rest_get_term_relationships( WP_REST_Request $request ) {
     $term_id = (int) $request['id'];
     $term    = get_term( $term_id );
 
-    if ( ! $term || is_wp_error( $term ) || ! htax_rest_is_term_visible( $term ) ) {
+    // The term's own record follows the viewer's permissions; its related terms below are
+    // left out for everyone when hidden.
+    if ( ! $term || is_wp_error( $term ) || ( htax_is_term_hidden( $term_id ) && ! htax_can_see_hidden_terms( $term->taxonomy ) ) ) {
         return new WP_Error( 'htax_not_found', __( 'Term not found.', 'hypertaxonomy' ), array( 'status' => 404 ) );
     }
 
@@ -168,10 +170,12 @@ function htax_rest_get_term_relationships( WP_REST_Request $request ) {
             continue;
         }
 
+        $by_id = array();
         foreach ( $related_terms as $related ) {
-            if ( ! htax_rest_is_term_visible( $related ) ) {
-                continue;
-            }
+            $by_id[ $related->term_id ] = $related;
+        }
+        foreach ( htax_remove_hidden_term_ids( array_keys( $by_id ) ) as $related_id ) {
+            $related         = $by_id[ $related_id ];
             $response_data[] = array(
                 'relationship_type' => $type_slug,
                 'target_term_id'    => $related->term_id,

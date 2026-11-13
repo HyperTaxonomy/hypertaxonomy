@@ -23,6 +23,35 @@ function htax_is_term_hidden( $term_id ) {
 }
 
 /**
+ * Leave hidden terms out of a list of term IDs, for every viewer.
+ *
+ * Used for relationship data (included terms, synonyms, related terms, redirect targets),
+ * which describes the public vocabulary: a hidden term is left out for everyone, editors
+ * included. Results are then the same for all viewers, so they can be cached and shared, and
+ * they don't depend on the request method. A hidden term's own record follows the viewer's
+ * permissions instead; see htax_filter_rest_prepare_term().
+ *
+ * @since 1.0.0
+ * @param int[] $term_ids Term IDs.
+ * @return int[] The IDs that aren't hidden, in their original order.
+ */
+function htax_remove_hidden_term_ids( array $term_ids ): array {
+    $hidden = htax_get_all_hidden_term_ids();
+    if ( empty( $hidden ) || empty( $term_ids ) ) {
+        return array_values( array_map( 'intval', $term_ids ) );
+    }
+    $hidden_set = array_flip( $hidden );
+    $out        = array();
+    foreach ( $term_ids as $id ) {
+        $id = (int) $id;
+        if ( ! isset( $hidden_set[ $id ] ) ) {
+            $out[] = $id;
+        }
+    }
+    return $out;
+}
+
+/**
  * Check whether the current request comes from wp-admin rather than the front end.
  *
  * AJAX and REST requests serve both, so they're judged by the page that sent them. One with

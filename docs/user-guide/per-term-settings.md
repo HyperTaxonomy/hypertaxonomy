@@ -26,6 +26,7 @@ Mark individual terms as **hidden** to use them for internal organization withou
 - Their archive URLs return 404 to unauthorized users (prevents term discovery)
 - Excluded from term list and term index display shortcodes for **all users** (these are public navigation surfaces)
 - Excluded from search widget option lists (pills, checkboxes) and filter panels for **all users**
+- Left out of the related terms HyperTaxonomy shares with other tools for **all users**: the relationship fields in the REST API (included terms, synonyms, relationships, redirect targets) and the [term meta](../developer-reference/term-meta.html) that GraphQL plugins and page builders read. WP-SKOS, when active, leaves them out of its vocabularies the same way
 - Don't match in PowerSearch or post list results for unauthorized users (a search for the hidden term finds nothing, while posts carrying it are still found through their other terms); privileged users can search by hidden terms
 - For unauthorized users, treated as if the term did not exist in Query Loop blocks, Latest Posts blocks, the REST API, and all other frontend post queries: filtering by a hidden term finds nothing, but posts that carry a hidden term still appear through their other terms (and in lists that don't filter by term)
 - Excluded from REST API and XML sitemaps for unauthorized users (exception: under "Visible to all users", sitemaps include hidden terms because sitemaps are not per-user)
@@ -43,7 +44,7 @@ Editing a post doesn't remove hidden terms the user can't see, which can happen 
 | Visible to all users | Everyone (useful for testing only) |
 | Hidden from all users | No one on the front end, not even Administrators |
 
-This setting controls the front end. In wp-admin, including the post editor, users with the `manage_term_visibility` capability (Editors and Administrators by default) can always see hidden terms, whichever option is selected.
+This setting controls the front end, except in the places marked **all users** above, which hide hidden terms from everyone whatever it says. In wp-admin, including the post editor, users with the `manage_term_visibility` capability (Editors and Administrators by default) can always see hidden terms, whichever option is selected.
 
 **Hierarchy cascade:** When a term is hidden, HyperTaxonomy automatically marks all its WP descendants as hidden too. This keeps visibility explicit — no runtime ancestor traversal is needed and the hidden state is reliable across archives, search, post lists, and REST API responses.
 

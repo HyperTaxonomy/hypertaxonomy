@@ -209,6 +209,8 @@ Mark individual terms as hidden for internal organization without public display
 
 **Unauthorized users:** archives return 404, and hidden terms are treated as if they did not exist — excluded from shortcodes, search, the REST API, and post queries, so they can't be used to find posts. Posts that carry a hidden term stay discoverable through their other terms. Hidden terms are always visible in the WordPress admin.
 
+**Hidden from everyone, whatever the setting:** term lists and clouds, search option lists and filter panels, and the related terms HyperTaxonomy shares with other tools (REST relationship fields, and term meta for GraphQL plugins and page builders).
+
 For full behavior details, cascade rules, and known limitations with native category hierarchy, see [User Guide → Per-Term Settings](https://hypertaxonomy.org/hypertaxonomy/user-guide/per-term-settings.html).
 
 == Search Widget Configuration ==

@@ -67,6 +67,7 @@ Registered by section, in file order:
 
 ### Other Hook Notes
 
+- Computed term meta (`core/term-meta-computed.php`, registered in that file): `get_term_metadata` answers the computed keys; `add_term_metadata`, `update_term_metadata` and `delete_term_metadata` refuse writes to them; `init` priority 20 registers them for each enabled taxonomy
 - `htax_expanded_term_ids` — filter fired by `htax_get_expanded_term_ids()`
 - `htax_term_post_count` — filter fired by `htax_adjust_term_counts()` for each expansion-aware count
 - `htax_remove_hidden_terms_from_list` — filter that controls hidden term removal in term lists

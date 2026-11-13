@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: hypertaxonomy 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-06 12:52-0500\n"
-"PO-Revision-Date: 2026-11-06 14:30-0500\n"
+"POT-Creation-Date: 2026-11-12 21:51-0500\n"
+"PO-Revision-Date: 2026-11-12 22:30-0500\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: ru\n"
@@ -54,7 +54,9 @@ msgstr "Проверка безопасности не пройдена."
 #: includes/classes/class-power-search.php:292
 #: includes/classes/class-search-widget.php:3668
 msgid "Rate limit exceeded. Please wait a moment and try again."
-msgstr "Превышено ограничение на количество запросов. Подождите немного и повторите попытку."
+msgstr ""
+"Превышено ограничение на количество запросов. Подождите немного и повторите "
+"попытку."
 
 #: includes/admin/ajax.php:161 includes/admin/ajax.php:370
 #: includes/admin/term-edit.php:1996
@@ -4500,7 +4502,7 @@ msgstr ""
 msgid "Post not found."
 msgstr "Запись не найдена."
 
-#: includes/core/relationship-types-rest.php:145 includes/core/rest-api.php:487
+#: includes/core/relationship-types-rest.php:147 includes/core/rest-api.php:452
 #: includes/core/term-conversion.php:129
 msgid "Term not found."
 msgstr "Термин не найден."
@@ -4897,6 +4899,56 @@ msgstr "Не удалось определить term_taxonomy_id целевог
 #: includes/core/term-merge.php:313
 msgid "Database error during term merge; all changes rolled back."
 msgstr "Ошибка базы данных во время слияния терминов; все изменения отменены."
+
+#: includes/core/term-meta-computed.php:165
+msgid ""
+"IDs of the terms whose posts this term's archive includes (HyperTaxonomy "
+"inclusions, group and container-group inclusions, after exclusions). Read-"
+"only."
+msgstr ""
+"ID терминов, записи которых включаются в архив этого термина (включения "
+"HyperTaxonomy, включения групп и контейнерных групп, за вычетом исключений). "
+"Только для чтения."
+
+#: includes/core/term-meta-computed.php:166
+msgid "IDs of the terms whose archives include this term's posts. Read-only."
+msgstr ""
+"ID терминов, в архивы которых включаются записи этого термина. Только для "
+"чтения."
+
+#: includes/core/term-meta-computed.php:167
+msgid "IDs of this term's synonyms. Read-only."
+msgstr "ID синонимов этого термина. Только для чтения."
+
+#: includes/core/term-meta-computed.php:168
+msgid "IDs of the Term Groups this term is assigned to. Read-only."
+msgstr "ID групп терминов, в которые внесён этот термин. Только для чтения."
+
+#: includes/core/term-meta-computed.php:169
+msgid ""
+"IDs of every term whose posts this term's archive shows, including the term "
+"and its child terms. Read-only."
+msgstr ""
+"ID всех терминов, записи которых показываются в архиве этого термина, "
+"включая сам термин и его дочерние термины. Только для чтения."
+
+#: includes/core/term-meta-computed.php:170
+msgid "ID of the term this term redirects to, or 0. Read-only."
+msgstr ""
+"ID термина, на который перенаправляет этот термин, или 0. Только для чтения."
+
+#: includes/core/term-meta-computed.php:171
+#: includes/core/term-meta-computed.php:174
+msgid "URL of this term's icon at the large size. Read-only."
+msgstr "URL-адрес значка этого термина в большом размере. Только для чтения."
+
+#: includes/core/term-meta-computed.php:172
+msgid "URL of this term's icon at the small size. Read-only."
+msgstr "URL-адрес значка этого термина в малом размере. Только для чтения."
+
+#: includes/core/term-meta-computed.php:173
+msgid "URL of this term's icon at the medium size. Read-only."
+msgstr "URL-адрес значка этого термина в среднем размере. Только для чтения."
 
 #: includes/core/term-relationships.php:1392
 msgid "Security verification failed. Please refresh the page and try again."

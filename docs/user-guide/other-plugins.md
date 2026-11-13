@@ -352,6 +352,12 @@ A third option is the TermConnect plugin's `[tc_peer_posts]`, which extends the 
 
 A common pattern: HT Related Posts for "more on this topic" (taxonomy-driven, this site), and YARPP or Jetpack for "you might also like" (content-driven) — two distinct discovery paths on one page.
 
+## GraphQL Plugins (WPGraphQL, Gato GraphQL)
+
+GraphQL plugins build their own schema and don't read HyperTaxonomy's REST fields. They can read term meta, so HyperTaxonomy offers each term's relationships, groups, archive term set, redirect and icon URLs as read-only term meta keys, with hidden terms left out for everyone. Gato GraphQL reads them once the keys are allowed in its settings; WPGraphQL needs a short snippet to add them as fields. See [Term Meta for Other Tools](../developer-reference/term-meta.html).
+
+Page builders with dynamic term fields can read the same keys.
+
 ## No-Code Quick Reference
 
 One of the advantages of HyperTaxonomy's Gutenberg block integration is that the relationship layer it adds does not require coding to use on frontend pages.

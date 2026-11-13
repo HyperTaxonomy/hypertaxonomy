@@ -25,6 +25,8 @@ HyperTaxonomy keeps its relationships, index and settings in the database (see [
 
 ## Cached data
 
+The [computed term meta](../developer-reference/term-meta.html) reads the relationship caches below through the same loaders and keeps no cache of its own, so clearing them updates it too.
+
 - `htax_inc_{term_id}` / `htax_cont_{term_id}` / `htax_excl_{term_id}` - A term's included terms, container terms, and excluded term IDs
 - `htax_redir_{term_id}` / `htax_redirect_terms` - A term's redirect target, and all term IDs that have a redirect
 - `htax_groups_{term_id}` - The groups a term belongs to

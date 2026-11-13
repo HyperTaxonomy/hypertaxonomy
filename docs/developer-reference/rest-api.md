@@ -29,15 +29,17 @@ The following fields are available. All can be requested via `_fields`; availabi
 
 | Field | Individual | Peer collection | Notes |
 |-------|-----------|-----------------|-------|
-| `htax_is_hidden` | ✓ | ✓ | |
+| `htax_is_hidden` | ✓ | ✓ | Only for viewers allowed to see hidden terms |
 | `htax_icon` | ✓ | ✓ | Icons feature must be enabled |
-| `htax_redirect` | ✓ | ✓ | |
-| `htax_includes` | ✓ | ✓ | Gated by Term Inclusion Relationships setting |
-| `htax_synonyms` | ✓ | ✓ | Gated by Term Inclusion Relationships setting |
+| `htax_redirect` | ✓ | ✓ | Absent when the target is hidden |
+| `htax_includes` | ✓ | ✓ | Gated by Term Inclusion Relationships setting; hidden terms left out for everyone |
+| `htax_synonyms` | ✓ | ✓ | Gated by Term Inclusion Relationships setting; hidden terms left out for everyone |
 | `htax_locations` | ✓ | ✓ | Requires ATCF active + share_locations feature enabled |
-| `htax_relationships` | ✓ | ✓ | Storage-only custom types only; disabled if either Term Inclusion Relationships or Custom Term Relationships and Relationship Types setting is off |
+| `htax_relationships` | ✓ | ✓ | Storage-only custom types only; disabled if either Term Inclusion Relationships or Custom Term Relationships and Relationship Types setting is off; hidden terms left out for everyone |
 
 Collection endpoints (`GET /wp/v2/{taxonomy}?slug=…`) without the `X-HyperTaxonomy` header receive no HT enrichment.
+
+These fields are also how TermConnect reads relationships from peer sites, matching terms by slug and using each included term's `strength` and `synonym` flag. Tools that read term meta rather than REST (GraphQL plugins, page builders) get the same relationships as term IDs from the [computed term meta keys](term-meta.html).
 
 ## Peer collection requests (`X-HyperTaxonomy` request header)
 
@@ -144,4 +146,4 @@ A hidden term's own record follows the viewer's permissions:
 - **Individual** (`GET /wp/v2/{taxonomy}/{id}`): returns `404 Term not found` for unauthorized users.
 - Authorized users (determined by `htax_can_see_hidden_terms()`) see hidden terms normally and receive an `htax_is_hidden: true` field.
 
-Relationship data leaves hidden terms out **for everyone**, editors included: `htax_includes`, `htax_synonyms`, `htax_relationships`, `htax_redirect` (a redirect to a hidden term shows no target), `htax_term_strengths`, and the related terms returned by `GET htax/v1/term/{id}/relationships`. These fields describe the public vocabulary, so every viewer gets the same answer and responses can be cached and shared. Editors see hidden relationships in wp-admin.
+Relationship data leaves hidden terms out **for everyone**, editors included: `htax_includes`, `htax_synonyms`, `htax_relationships`, `htax_redirect` (a redirect to a hidden term shows no target), `htax_term_strengths`, and the related terms returned by `GET htax/v1/term/{id}/relationships`. These fields describe the public vocabulary, so every viewer gets the same answer and responses can be cached and shared. Editors see hidden relationships in wp-admin. The [computed term meta keys](term-meta.html) follow the same rule.

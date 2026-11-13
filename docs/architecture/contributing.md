@@ -19,17 +19,6 @@ For integrating HyperTaxonomy in your theme or plugin, see the [Developer Refere
 
 ---
 
-## Table of Contents
-
-1. [Design Principles](#design-principles)
-2. [Coding Standards](#coding-standards)
-3. [Implementation Patterns](#implementation-patterns)
-4. [Building Block Assets](#building-block-assets)
-5. [Error Handling](#error-handling)
-6. [Debug & Diagnostics](#debug--diagnostics)
-
----
-
 ## Design Principles
 
 - **Separation of Concerns** — Core logic in `includes/core/`, admin UI in `includes/admin/`, shortcodes in `includes/shortcodes/`, frontend PHP in `includes/core/frontend.php`, frontend CSS and JS in `assets/`. Admin files load only in admin context, with two exceptions loaded unconditionally: `admin/post-edit.php` (the Gutenberg sidebar panel runs through the REST API, which executes outside `is_admin()`) and `admin/term-icons.php` (term icons are also rendered on the frontend).
@@ -37,6 +26,7 @@ For integrating HyperTaxonomy in your theme or plugin, see the [Developer Refere
 - **Caching Strategy** — Three layers: static request-scope cache (unbounded per-request arrays; `htax_get_valid_term()` uses a bounded variant capped at 500 entries with FIFO eviction), transients (database-backed, survive page loads), object cache (Redis/Memcached when available). Selective invalidation — narrow keys are cleared on specific events rather than broad cache flushes.
 - **Graceful Degradation** — Term Groups is built-in; no external plugin dependency. Features gate themselves via `htax_taxonomy_has_feature()` so disabling a feature at the settings level has immediate effect without code changes.
 - **Security** — ABSPATH checks on every file, nonce verification on AJAX and form saves, `current_user_can()` checks with HyperTaxonomy's capabilities before writes, `$wpdb->prepare()` for SQL that includes variable values, and `wp_unslash()` before sanitizing `$_POST` strings.
+- **Hidden Terms in Relationship Data** — Relationship data exposed outside wp-admin (the REST relationship fields, the computed term meta) leaves hidden terms out for every viewer: filter with `htax_remove_hidden_term_ids()`, never by the viewer's permissions. Every viewer then gets the same answer, safe to cache, whatever the request method. A hidden term's own record (REST term endpoints, `htax_is_hidden`) follows the viewer's permissions instead, because the block editor needs it. See [Feature Implementation → Hidden Terms Architecture](feature-implementation.html#hidden-terms-architecture).
 - **Atomicity** — Functions that replace related rows do their writes inside a MySQL transaction and check for a database error after each write. If any write fails, the transaction rolls back. See [Transactions](#transactions).
 
 ---

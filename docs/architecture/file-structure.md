@@ -148,6 +148,7 @@ hypertaxonomy/
 │   │   ├── relationship-types.php            # Relationship Type Registry: registration API, SQL helpers, persistence
 │   │   ├── relationship-types-rest.php       # REST endpoints: GET htax/v1/relationship-types, GET htax/v1/term/{id}/relationships
 │   │   ├── post-editor-rest.php              # REST endpoints: GET htax/v1/suggested-tags, GET htax/v1/term-meta (editor UI)
+│   │   ├── term-meta-computed.php            # get_term_meta() keys for relationships, groups and icons (computed, not stored)
 │   │   ├── rest-api.php                      # REST field extensions on term/post objects + X-HyperTaxonomy header + sitemap filter
 │   │   ├── search.php                        # All search functions (query handling, post text sync, AJAX formatting, utilities)
 │   │   ├── search-state.php                  # Search State API: POST/Redirect/GET token encode/decode for large searches
@@ -249,6 +250,7 @@ Load order (dependencies verified):
    - core/term-archives.php
    - core/integration-api.php
    - core/rest-api.php
+   - core/term-meta-computed.php
    - core/frontend.php
    - core/native-blocks.php  (Query Loop + Latest Posts group filter extension)
    - core/activation.php

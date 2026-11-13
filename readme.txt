@@ -87,7 +87,7 @@ Post list, display, PowerSearch, and sort-order shortcodes each have a correspon
 * **Tabbed Settings** — Control cache expiration, permitted AJAX request frequency, frontend styles, and more
 
 **Developer Tools**
-* **PHP API, hooks & REST extensions** — Helper functions, actions/filters, an integration API for expansion-aware queries, and HyperTaxonomy-specific fields on the WordPress REST API. Full reference in the [Developer Reference](https://hypertaxonomy.org/hypertaxonomy/developer-reference/).
+* **PHP API, hooks & REST extensions** — Helper functions, actions/filters, an integration API for expansion-aware queries, and HyperTaxonomy-specific fields on the WordPress REST API. Relationships, groups and icons are also readable as term meta, for GraphQL plugins and page builders. Full reference in the [Developer Reference](https://hypertaxonomy.org/hypertaxonomy/developer-reference/).
 * **Debug Mode** — Add ?htax_debug=1 to any archive URL (admin only). Additional internal diagnostics in the output require `WP_DEBUG` to be enabled.
 
 = Key Benefits =

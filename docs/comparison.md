@@ -192,6 +192,7 @@ HyperTaxonomy's JSON format covers groups, memberships, inclusions, exclusions, 
 | PHP API for relationships, groups, and visibility | ✓ | ~ |
 | Automatic expansion of third-party WP_Query instances | ✓ | ✗ |
 | Term relationship and visibility data in standard WordPress REST responses | ✓ | ✗ |
+| Relationships and groups readable as term meta (GraphQL plugins, page builders) | ✓ | ~ |
 | Custom relationship types via shared table | ✓ | ✗ |
 | Actions and filters for relationship changes | ✓ | ~ |
 
@@ -202,6 +203,8 @@ HyperTaxonomy's JSON format covers groups, memberships, inclusions, exclusions, 
 **Automatic expansion of third-party queries.** When enabled, HyperTaxonomy automatically applies term relationship expansion to queries from third-party plugins — faceted navigation, page builder loops, and similar — so they reflect the same semantic relationships as native archives. Tag Groups' query modifications are limited to the main WordPress archive query.
 
 **PHP API for relationships.** Functions give plugin authors read access to the full relationship graph — included terms, group memberships, sticky posts, visibility state. Group assignments and visibility can also be written programmatically. See the [Developer Reference](https://hypertaxonomy.org/hypertaxonomy/developer-reference/) for the full reference.
+
+**Term meta for GraphQL plugins and page builders.** HyperTaxonomy answers `get_term_meta()` for each term's included terms, containers, synonyms, groups, archive term set, redirect and icon URLs, computed from its own data and read-only, so tools that read term meta but not REST fields can use them, with hidden terms left out for everyone. Tag Groups stores group memberships as term meta too (`_cm_term_group_array`), which such tools can read once allowed, though some skip underscore-prefixed keys by default; it has no term relationships to expose. See [Term Meta for Other Tools](developer-reference/term-meta.html).
 
 **Custom relationship types.** Third-party plugins can register additional relationship types without modifying HyperTaxonomy. Inclusion-based types automatically inherit archive expansion and search behavior; custom types store the association only, leaving behavior to the registering plugin. Types can be registered in code or through the admin screen. See [Custom Relationship Types](https://hypertaxonomy.org/hypertaxonomy/developer-reference/custom-taxonomy.html#custom-relationship-types) in the Developer Reference.
 

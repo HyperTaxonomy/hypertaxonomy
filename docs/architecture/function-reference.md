@@ -495,6 +495,16 @@ Default radius: 10, in the ATCF distance unit (`atcf_distance_units`). Country c
 
 Reference locations are resolved via `ATCF_Locations::get_aggregated()`, which expands the scope to include WP taxonomy descendants (`get_term_children()`) and HT inclusion terms (`htax_get_included_term_ids()`), and excludes HT hidden terms (`htax_get_all_hidden_term_ids()`). This means `near:geo:europe` finds locations across all European child terms, not just direct ATCF locations on the "europe" term itself.
 
+### Computed Term Meta (includes/core/term-meta-computed.php)
+
+Read-only `get_term_meta()` keys computed from existing caches; nothing stored. Hidden terms are left out for every viewer. See [Term Meta for Other Tools](../developer-reference/term-meta.html).
+
+- `htax_computed_term_meta_keys(): array` - The keys, each mapped to whether its value is a list of term IDs
+- `htax_compute_term_meta( WP_Term $term, string $key )` - One key's value: term IDs, a term ID (0 for none), or a URL ('' for none)
+- `htax_filter_computed_term_meta( $value, $term_id, $meta_key, $single )` - `get_term_metadata` filter answering the keys in `get_metadata()`'s format; reads of all meta fall through
+- `htax_refuse_computed_term_meta_write( $check, $term_id, $meta_key )` - `add_term_metadata` / `update_term_metadata` / `delete_term_metadata` filter refusing writes to the keys
+- `htax_register_computed_term_meta(): void` - `init` priority 20: registers the keys for each enabled taxonomy (not in REST)
+
 ### REST API (includes/core/rest-api.php)
 
 **Field builders:**

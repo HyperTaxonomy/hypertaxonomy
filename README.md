@@ -36,7 +36,7 @@ For cross-site content — fetching related posts from peer WordPress sites, RSS
 - **Post List Shortcodes & Blocks** — Display filtered post lists and related posts using shortcodes or Gutenberg blocks
 - **Native Block Extensions** — A Term Group filter on the core Query Loop and Latest Posts blocks
 - **External Posts** — Fetch related posts from peer WordPress sites and RSS/Atom feeds via **TermConnect** (`[tc_peer_posts]`)
-- **Integration API** — Automatic inclusion expansion for third-party queries, plus REST endpoints and extra term fields in standard REST responses
+- **Integration API** — Automatic inclusion expansion for third-party queries, REST endpoints and extra term fields in standard REST responses, and relationships, groups and icons readable as term meta for GraphQL plugins and page builders
 - **Import / Export** — JSON-based data migration; Tag Groups migrator included
 
 ## Documentation
@@ -46,7 +46,7 @@ The full documentation is published as a [Just-the-Docs](https://just-the-docs.c
 - [Why HyperTaxonomy](docs/why-hypertaxonomy.md) — The problem with tags and category trees, and how one term can belong to many structures
 - [Getting Started](docs/getting-started.md) — Requirements, installation, and first steps
 - [User Guide](docs/user-guide/) — Settings, roles, import/migration, concepts, relationships, display and search shortcodes, the post editor, and modeling guidance
-- [Developer Reference](docs/developer-reference/) — PHP API, actions/filters, REST API, and sort and filter controls for theme/plugin developers
+- [Developer Reference](docs/developer-reference/) — PHP API, actions/filters, REST API, term meta for GraphQL plugins and page builders, and sort and filter controls for theme/plugin developers
 - [Architecture Reference](docs/architecture/) — Internal architecture, data storage, caching, query design, hook execution, performance
 - [Contributing](docs/architecture/contributing.md) — Design principles, coding standards, implementation patterns, block builds, error handling, and debug tools for HyperTaxonomy contributors
 

@@ -27,7 +27,7 @@ Returns the complete flat list of term IDs whose posts appear in a term's archiv
 
 Pass `$include_redirect_sources = true` to also fold in terms that redirect (directly or transitively) to this term — so a query on a redirect *target* also matches posts tagged with the *redirecting* terms, matching the relevance index used by search and `[ht_related_posts]`. This is the default-off behavior because archive expansion proper does not follow redirects (a redirect 301s the archive request); discovery surfaces such as `[tc_peer_posts]`/`[tc_peer_browse]` and the WP-SKOS document endpoint pass `true`. The redirect inclusion is gated by the taxonomy's Redirects feature and filtered for term visibility.
 
-Applies the `htax_expanded_term_ids` filter before returning.
+Applies the `htax_expanded_term_ids` filter before returning. The same list, without hidden terms, is readable as the `htax_archive_term_ids` [term meta key](term-meta.html).
 
 **Consumer pattern — build a tax_query from the expanded list:**
 
@@ -139,7 +139,7 @@ Badge rendering is handled by `admin/js/htax-post-edit.js` and `admin/css/htax-p
 
 ## Term Icons API
 
-HyperTaxonomy provides a complete PHP API for displaying terms as styled pills with icons. All icon functions accept either a WP_Term object or a term ID.
+HyperTaxonomy provides a complete PHP API for displaying terms as styled pills with icons. All icon functions accept either a WP_Term object or a term ID. Icon URLs are also readable as [term meta](term-meta.html) (`htax_icon_url` and one key per size).
 
 ### Upload rules
 
@@ -387,7 +387,7 @@ $results = $wpdb->get_results( $wpdb->prepare(
 
 ### Hidden Terms and REST API
 
-A hidden term's own REST record is excluded for users who cannot see it (based on the global visibility setting), and shown to those who can. HyperTaxonomy's relationship fields (`htax_includes`, `htax_synonyms`, `htax_relationships`, `htax_redirect`, `htax_term_strengths`) leave hidden terms out for everyone. See [REST API → Hidden terms and REST](rest-api.html#hidden-terms-and-rest).
+A hidden term's own REST record is excluded for users who cannot see it (based on the global visibility setting), and shown to those who can. HyperTaxonomy's relationship fields (`htax_includes`, `htax_synonyms`, `htax_relationships`, `htax_redirect`, `htax_term_strengths`) leave hidden terms out for everyone, and so do the [computed term meta keys](term-meta.html). See [REST API → Hidden terms and REST](rest-api.html#hidden-terms-and-rest).
 
 ## Strength Models
 

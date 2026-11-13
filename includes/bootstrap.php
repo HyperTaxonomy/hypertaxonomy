@@ -93,6 +93,7 @@ if ( file_exists( HTAX_PLUGIN_DIR . 'includes/classes/class-power-search.php' ) 
 require_once HTAX_PLUGIN_DIR . 'includes/core/term-archives.php';
 require_once HTAX_PLUGIN_DIR . 'includes/core/integration-api.php';
 require_once HTAX_PLUGIN_DIR . 'includes/core/rest-api.php';
+require_once HTAX_PLUGIN_DIR . 'includes/core/term-meta-computed.php';  // get_term_meta() keys for GraphQL and other tools
 require_once HTAX_PLUGIN_DIR . 'includes/core/frontend.php';
 require_once HTAX_PLUGIN_DIR . 'includes/core/native-blocks.php';
 require_once HTAX_PLUGIN_DIR . 'includes/core/activation.php';

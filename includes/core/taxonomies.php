@@ -86,13 +86,14 @@ add_action( 'init', 'htax_register_group_taxonomy', 0 );
 /**
  * Custom term count callback for group taxonomy
  *
- * Counts terms assigned to each group rather than posts.
- * WordPress default counts posts, but groups organize terms via term meta.
+ * Counts terms assigned to each group rather than posts: WordPress's default
+ * counts posts, but group members are stored as member_of rows in the
+ * htax_term_relationships table.
  *
  * @since 1.0
  *
  * @param int[]  $terms    Array of term taxonomy IDs.
- * @param object $taxonomy Taxonomy object. Required by WordPress callback signature but not used.
+ * @param object $taxonomy Taxonomy object, passed to the term_taxonomy edit hooks.
  */
 function htax_update_group_term_count( $terms, $taxonomy ) {
     global $wpdb;

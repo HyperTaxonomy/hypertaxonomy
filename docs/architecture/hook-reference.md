@@ -7,7 +7,7 @@ nav_order: 3
 # Hook Reference
 {: .no_toc }
 
-Where HyperTaxonomy registers its hooks, and the order they run in. For functions by module, see the [Function Reference](function-reference.html). For the hooks available to other plugins, see [Actions & Filters](../developer-reference/actions-filters.html).
+Where HyperTaxonomy registers its hooks, and the order they run in where that matters: events with several callbacks, priorities chosen to run before or after other code, and hooks registered per taxonomy. Single routine registrations (a menu page, a script, an AJAX or REST handler) are left out; search the code for `add_action( 'hook_name'` to find any of them. The hooks HyperTaxonomy fires for other code are documented in [Actions & Filters](../developer-reference/actions-filters.html). For functions by module, see the [Function Reference](function-reference.html).
 
 ## Table of contents
 {: .no_toc .text-delta }
@@ -26,8 +26,8 @@ Registered by section, in file order:
 1. **Initialization and Setup** — `plugins_loaded`, `admin_init`, `init`
 2. **Admin Enqueue Scripts** — `admin_enqueue_scripts`
 3. **Admin Notices** — `admin_notices`, plus `deactivated_plugin` to reset the Tag Groups notice dismissal
-4. **Term Edit Form Fields** (dynamic on `init`) — `{$taxonomy}_add_form_fields` and `{$taxonomy}_edit_form_fields`: field handlers at priorities 8–18, plus collapsible open and close at priorities 9 and 19. The `group` taxonomy gets only the field handlers that have their own group guards, and no collapsible. The External Links field is registered by TermConnect when active.
-5. **Term Save Hooks** (dynamic on `init`) — `create_{$taxonomy}` priority 5, `edited_{$taxonomy}` priorities 20 and 30
+4. **Term Edit Form Fields** (registered per enabled taxonomy on `init` at priority 999) — `{$taxonomy}_add_form_fields` and `{$taxonomy}_edit_form_fields`: field handlers at priorities 8–17, plus collapsible open and close at priorities 9 and 19. Because this runs late, companion plugins that add fields at priority 9 earlier (TermConnect, on `init` at priority 15) appear after Term Groups and before the collapsible. The `group` taxonomy gets only the field handlers that have their own group guards, and no collapsible. The External Links field is registered by TermConnect when active.
+5. **Term Save Hooks** (same `init` callback) — `create_{$taxonomy}` priority 5, `edited_{$taxonomy}` priorities 20 and 30
 6. **Cache Management** — `edited_term`, `delete_term`, term meta changes, `htax_term_groups_changed`, `htax_async_group_propagate`, post assignment and status changes, comment counts, `htax_term_visibility_changed`, and site-level events such as `switch_theme`
 7. **Term Taxonomy Conversion** — `edit_term` priority 5, `created_term` priority 1, `pre_delete_term` priority 5, `delete_term` priority 5
 8. **Custom Relationship Hooks** — `htax_relationship_saved` and `htax_relationship_deleted`, for search index requeue
@@ -72,6 +72,10 @@ Registered by section, in file order:
 - `htax_term_post_count` — filter fired by `htax_adjust_term_counts()` for each expansion-aware count
 - `htax_remove_hidden_terms_from_list` — filter that controls hidden term removal in term lists
 - `rest_api_init` handlers in `filters.php` enrich term responses with `htax_*` fields, enforce hidden-term visibility, and normalize HTML entity encoding in term name searches. The entity normalization filter hooks `get_terms_args` for the lifetime of the REST request: WP stores term names HTML-encoded in `wp_terms.name` (e.g. `H&amp;M`), but REST clients (Gutenberg tag autocomplete) send raw text; without normalization, searching `h&m` never matches `H&amp;M`. The filter applies `html_entity_decode` → `htmlspecialchars` to `args['search']` using the same round-trip as `htax_run_term_autocomplete_search()`.
+
+## WordPress Core Hooks HyperTaxonomy Fires
+
+`htax_update_group_term_count()`, the `update_count_callback` of the `group` taxonomy, fires `edit_term_taxonomy` and `edited_term_taxonomy` around each count update, as WordPress's own count callbacks do. Code that listens for term count changes therefore sees group counts change too. WordPress runs this callback only when something recounts the `group` taxonomy; in HyperTaxonomy that is a merge of groups (`htax_merge_terms()` recounts the merged terms).
 
 ## Hook Execution Order
 

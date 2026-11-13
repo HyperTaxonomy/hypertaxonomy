@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 715 345" width="715" height="345" role="img" aria-labelledby="t d">
   <title id="t">Three category trees that each need a Dog</title>
-  <desc id="d">By descent: Mammals has Canines (Dog, Wolf), Felines (Cat), Equines (Miniature pony) and Rodents (Guinea pig). By role: Service animals has Dog and Miniature pony. For sale: Pets for sale has Dog, Cat and Guinea pig. Every animal in the second and third trees is a duplicate term, because a category can have only one parent.</desc>
+  <desc id="d">By descent: Mammals has Canines (Dog, Wolf), Felines (Cat), Equines (Miniature pony) and Mustelids (Ferret). By role: Service animals has Dog and Miniature pony. By care: Pets requiring vaccination has Dog, Cat and Ferret. Every animal in the second and third trees is a duplicate term, because a category can have only one parent.</desc>
   <style>
     text { font-family: Inter, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; font-size: 12px; fill: #14222e; text-anchor: middle; }
     .title { font-size: 13px; font-weight: 600; fill: #0a7fb8; }
@@ -23,12 +23,12 @@
   <rect class="node" x="38" y="120" width="66" height="30" rx="6"/><text x="71" y="139">Canines</text>
   <rect class="node" x="142" y="120" width="66" height="30" rx="6"/><text x="175" y="139">Felines</text>
   <rect class="node" x="217" y="120" width="66" height="30" rx="6"/><text x="250" y="139">Equines</text>
-  <rect class="node" x="297" y="120" width="66" height="30" rx="6"/><text x="330" y="139">Rodents</text>
+  <rect class="node" x="297" y="120" width="66" height="30" rx="6"/><text x="330" y="139">Mustelids</text>
   <rect class="node" x="3" y="200" width="66" height="30" rx="6"/><text x="36" y="219">Dog</text>
   <rect class="node" x="73" y="200" width="66" height="30" rx="6"/><text x="106" y="219">Wolf</text>
   <rect class="node" x="142" y="200" width="66" height="30" rx="6"/><text x="175" y="219">Cat</text>
   <rect class="node" x="214" y="200" width="72" height="30" rx="6"/><text x="250" y="219">Mini pony</text>
-  <rect class="node" x="294" y="200" width="72" height="30" rx="6"/><text x="330" y="219">Guinea pig</text>
+  <rect class="node" x="294" y="200" width="72" height="30" rx="6"/><text x="330" y="219">Ferret</text>
 
   <line class="sep" x1="390" y1="10" x2="390" y2="285"/>
 
@@ -42,14 +42,14 @@
 
   <line class="sep" x1="405" y1="150" x2="705" y2="150"/>
 
-  <!-- Panel 3: for sale -->
-  <text class="title" x="555" y="175">For sale</text>
+  <!-- Panel 3: care -->
+  <text class="title" x="555" y="175">By care</text>
   <path class="edge" d="M555 223 V238 H478 V253 M555 238 V253 M555 238 H633 V253"/>
-  <rect class="node root" x="495" y="193" width="120" height="30" rx="6"/>
-  <text class="rootText" x="555" y="212">Pets for sale</text>
+  <rect class="node root" x="452" y="193" width="206" height="30" rx="6"/>
+  <text class="rootText" x="555" y="212">Pets requiring vaccination</text>
   <rect class="dup" x="445" y="253" width="66" height="30" rx="6"/><text class="dupText" x="478" y="272">Dog</text>
   <rect class="dup" x="522" y="253" width="66" height="30" rx="6"/><text class="dupText" x="555" y="272">Cat</text>
-  <rect class="dup" x="597" y="253" width="72" height="30" rx="6"/><text class="dupText" x="633" y="272">Guinea pig</text>
+  <rect class="dup" x="597" y="253" width="72" height="30" rx="6"/><text class="dupText" x="633" y="272">Ferret</text>
 
   <!-- Legend -->
   <rect class="node" x="10" y="306" width="22" height="16" rx="4"/>

@@ -7,7 +7,7 @@ has_toc: false
 
 # HyperTaxonomy User Guide
 
-For WordPress site owners and content editors who configure and use the plugin. To install it and see a first result, start with [Getting Started](../getting-started.html).
+For WordPress site owners and content editors who configure and use the plugin. To install it and see a first result, start with [Getting started](../#getting-started).
 
 This guide is split into the following pages:
 

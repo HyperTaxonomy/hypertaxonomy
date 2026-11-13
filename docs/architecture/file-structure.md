@@ -89,9 +89,8 @@ hypertaxonomy/
 │
 ├── docs/                                     # Technical documentation (Just-the-Docs / Jekyll site) (not in the zip)
 │   ├── _config.yml                           # Jekyll / Just-the-Docs configuration
-│   ├── index.md                              # Docs home / landing page
+│   ├── index.md                              # Docs home: features, documentation map, getting started
 │   ├── why-hypertaxonomy.md                  # The problem HyperTaxonomy solves, with diagrams
-│   ├── getting-started.md                    # Requirements, installation, first steps
 │   ├── user-guide/                           # User Guide section (parent + child pages)
 │   ├── developer-reference/                  # Developer Reference section (PHP API, hooks, REST)
 │   ├── architecture/                         # Architecture section (this reference and the contributing guide)

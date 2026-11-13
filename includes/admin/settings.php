@@ -1783,7 +1783,7 @@ if ( function_exists( 'htax_the_archive_icon' ) ) {
                                min="10" max="100" style="width: 60px;" />
                     </label>
                     <p class="description">
-                        <?php esc_html_e( 'Limit AJAX search requests per user (10-100).', 'hypertaxonomy' ); ?>
+                        <?php esc_html_e( 'Limit PowerSearch and search widget requests per minute, for each logged-in user and each visitor IP address (10–100).', 'hypertaxonomy' ); ?>
                     </p>
                 </td>
             </tr>

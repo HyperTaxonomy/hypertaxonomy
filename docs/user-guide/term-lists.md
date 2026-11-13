@@ -1,7 +1,7 @@
 ---
 title: Term Lists & Clouds
 parent: User Guide
-nav_order: 8
+nav_order: 7
 ---
 
 # Term Lists & Clouds

@@ -1,7 +1,7 @@
 ---
 title: Roles & Permissions
 parent: User Guide
-nav_order: 14
+nav_order: 13
 ---
 
 # Roles & Permissions

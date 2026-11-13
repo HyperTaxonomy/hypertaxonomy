@@ -1,7 +1,7 @@
 ---
 title: Post Lists
 parent: User Guide
-nav_order: 9
+nav_order: 8
 ---
 
 # Post Lists

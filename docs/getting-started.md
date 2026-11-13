@@ -34,6 +34,6 @@ No additional plugins required. All features including Term Groups are built-in.
 2. Edit a tag and, in its HyperTaxonomy section, add another tag in the **Included Tags** field. Save.
 3. Open the first tag's archive. Posts tagged with the included tag now appear there too, with no re-tagging.
 
-To learn what else relationships can do, read [Concepts](user-guide/concepts.html), [Term Relationships](user-guide/term-relationships.html) and [Term Groups](user-guide/term-groups.html). Every option is described in the [Settings Reference](user-guide/settings-reference.html).
+To learn what else relationships can do, read [Concepts](user-guide/concepts.html), [Term Groups](user-guide/term-groups.html) and [Term Relationships](user-guide/term-relationships.html). Every option is described in the [Settings Reference](user-guide/settings-reference.html).
 
 To turn the plugin off or remove it, see [Deactivation & Uninstall](user-guide/deactivation-uninstall.html): what stops working while it is off, what reactivation restores, and what uninstalling deletes.

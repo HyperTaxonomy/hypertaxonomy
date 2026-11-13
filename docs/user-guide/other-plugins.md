@@ -1,7 +1,7 @@
 ---
 title: Working with Other Plugins
 parent: User Guide
-nav_order: 16
+nav_order: 17
 ---
 
 # Working with Other Plugins

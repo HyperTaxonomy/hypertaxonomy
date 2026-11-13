@@ -1,7 +1,7 @@
 ---
 title: Deactivation & Uninstall
 parent: User Guide
-nav_order: 17
+nav_order: 15
 ---
 
 # Deactivation & Uninstall

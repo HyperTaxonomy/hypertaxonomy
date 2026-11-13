@@ -41,7 +41,7 @@ HyperTaxonomy adds term organization, relationships, and relevance-scored search
 
 Tag Groups (rebranded "PublishPress Tag Groups" in October 2026) is a popular plugin for taxonomy term organization. For a side-by-side breakdown of how HyperTaxonomy compares — including what it adds beyond grouping — see **[Comparing to Tag Groups](comparison.html)**.
 
-Switching away from Tag Groups and keeping it alongside HyperTaxonomy are both supported: the importer can migrate your group structure once, or sync it continuously while Tag Groups stays your group-management tool. See [Import & Migration](user-guide/import-migration.html).
+Switching away from Tag Groups and keeping it alongside HyperTaxonomy are both supported: the importer can migrate your group structure once, or sync it continuously while Tag Groups stays your group-management tool. See [Import & Migration](user-guide/export-import-migration.html).
 
 ## Documentation map
 

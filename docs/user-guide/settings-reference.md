@@ -135,7 +135,7 @@ Description Match weights are configured independently from Name Match weights. 
 
 - **Export** — JSON-based backup of HyperTaxonomy data (relationships, redirects, group memberships) for selected taxonomies
 - **Import** — Restore from a previously exported JSON file
-- **Migrate** — Import from Tag Groups (PublishPress Tag Groups). See [Import & Migration](import-migration.html).
+- **Migrate** — Import from Tag Groups (PublishPress Tag Groups). See [Export, Import & Migration](export-import-migration.html).
 - **Sync** — How HyperTaxonomy stays in step with Tag Groups after migrating
 
 ## Advanced Tab

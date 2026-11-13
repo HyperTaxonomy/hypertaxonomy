@@ -24,7 +24,7 @@ This guide is split into the following pages:
 - **[Search Widget](search-widget.html)** — the advanced search widget, its fields and controllers, the shared results container, and POST mode results pages.
 - **[Editing Posts](editing-posts.html)** — the Tags field, inclusion and container badges, redirect indicators, hidden terms, and sticky pins in the post editor.
 - **[Roles & Permissions](roles-permissions.html)** — the six custom capabilities and which roles get them.
-- **[Import & Migration](import-migration.html)** — JSON export/import and migrating from Tag Groups (now PublishPress Tag Groups).
+- **[Export, Import & Migration](export-import-migration.html)** — JSON export/import and migrating from Tag Groups (now PublishPress Tag Groups).
 - **[Deactivation & Uninstall](deactivation-uninstall.html)** — what stops working while the plugin is deactivated, what reactivation restores, and what uninstalling deletes.
 - **[Modeling Guide](modeling-guide.html)** — how to structure content with HyperTaxonomy: patterns, design principles, and example scenarios.
 - **[Working with Other Plugins](other-plugins.html)** — how HyperTaxonomy fits alongside ACF, Pods, TaxoPress, FacetWP, SEO and translation plugins, and others.

@@ -147,7 +147,7 @@ HyperTaxonomy can replace WordPress's built-in search (`?s=…`) with the **Powe
 - WordPress search results pages use PowerSearch's MySQL FULLTEXT engine (content processed by HyperTaxonomy's richer text extraction — link URLs preserved as `[URL]`, image alt text and abbreviation expansions included, no false positives from HTML attributes) instead of the default SQL `LIKE` query
 - Results are ranked by relevance score (configurable field weights) with date as a tiebreaker
 - Term inclusion relationships are applied: posts tagged with an included term appear alongside posts tagged with the searched term
-- Hidden terms are excluded for unauthorized users
+- Hidden terms are excluded for unauthorized users; users who can see hidden terms (editors, by default) can search by them
 - Sort order can be controlled via `?htax_orderby=` — the `[ht_sort_order_options action="navigate"]` block works on the search results page
 
 **What stays the same:** The URL structure (`?s=query`) and the template hierarchy (`search.php`). Existing search templates work without modification.

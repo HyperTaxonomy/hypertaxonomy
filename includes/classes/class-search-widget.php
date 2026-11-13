@@ -2386,8 +2386,8 @@ class HyperTaxonomy_Search_Widget {
 
         $terms = get_terms( $args );
 
-        // Always filter out hidden terms from frontend widget term option lists
-        if ( ! is_wp_error( $terms ) && is_array( $terms ) ) {
+        // Hidden terms are options only for viewers who may see them (editors, by default).
+        if ( ! is_wp_error( $terms ) && is_array( $terms ) && ! htax_can_see_hidden_terms( $atts['taxonomy'] ) ) {
             $terms = array_filter( $terms, function( $term ) {
                 return ! htax_is_term_hidden( $term->term_id );
             });
@@ -3268,10 +3268,8 @@ class HyperTaxonomy_Search_Widget {
             }
             $all_term_ids = array_unique( $all_term_ids );
 
-            // Remove hidden terms and propagate removal into groups_map.
-            $all_term_ids = array_values( array_filter( $all_term_ids, function( $id ) {
-                return ! htax_is_term_hidden( $id );
-            } ) );
+            // Remove terms hidden from this viewer and propagate removal into groups_map.
+            $all_term_ids = $this->filter_visible_term_ids( $all_term_ids, $taxonomy );
             $visible_set = array_flip( $all_term_ids );
             foreach ( $groups_map as &$member_ids ) {
                 $member_ids = array_values( array_filter( $member_ids, function( $id ) use ( $visible_set ) {

@@ -25,9 +25,11 @@ Mark individual terms as **hidden** to use them for internal organization withou
 
 - Their archive URLs return 404 to unauthorized users (prevents term discovery)
 - Excluded from term list and term index display shortcodes for **all users** (these are public navigation surfaces)
-- Excluded from search widget option lists (pills, checkboxes) and filter panels for **all users**
+- Excluded from archive filter panels for **all users**
+- In the search widget, offered as options (pills, checkboxes, autocomplete suggestions) only to users who can see hidden terms, so editors can search with them while visitors never see them
 - Left out of the related terms HyperTaxonomy shares with other tools for **all users**: the relationship fields in the REST API (included terms, synonyms, relationships, redirect targets) and the [term meta](../developer-reference/term-meta.html) that GraphQL plugins and page builders read. WP-SKOS, when active, leaves them out of its vocabularies the same way
-- Don't match in PowerSearch or post list results for unauthorized users (a search for the hidden term finds nothing, while posts carrying it are still found through their other terms); privileged users can search by hidden terms
+- Don't match in PowerSearch, search widget or post list results for unauthorized users (a search for the hidden term finds nothing, while posts carrying it are still found through their other terms); users who can see hidden terms can search by them
+- Stay in the search index like any other term, kept up to date on the same events: each index row records whether a hidden term is involved, and hiding or unhiding a term only updates that flag, so searches switch over immediately without a reindex
 - For unauthorized users, treated as if the term did not exist in Query Loop blocks, Latest Posts blocks, the REST API, and all other frontend post queries: filtering by a hidden term finds nothing, but posts that carry a hidden term still appear through their other terms (and in lists that don't filter by term)
 - Excluded from REST API and XML sitemaps for unauthorized users (exception: under "Visible to all users", sitemaps include hidden terms because sitemaps are not per-user)
 - HyperTaxonomy inclusion relationships do not surface posts from hidden terms in other terms' archives for unauthorized users

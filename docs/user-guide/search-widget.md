@@ -58,6 +58,8 @@ All states cap at 10 suggestions and exclude already-selected terms. The option 
 
 **`[ht_hidden_field]`** — Submits a set of term IDs without any visible UI. There are no interactive elements; the selection can only be set via shortcode attributes or changed by controllers at runtime.
 
+**Hidden terms.** Pills, checklist options and autocomplete suggestions include [hidden terms](per-term-settings.html) only for users who can see them (by default, users who can edit posts), and so do the results. Editors can search with hidden terms; visitors never see them as options and never match by them.
+
 The three filter fields narrow `[ht_text_field]` results when a text field is present, or filter all site content when it is not. A filter panel works the same way with an AJAX search form: if nothing has been entered, changing a filter lists every post that matches it, newest first, and clearing the last filter empties the results area.
 
 All field shortcodes require a `name` parameter and accept an optional `id` for the field's HTML element (auto-generated if not specified). The visible field shortcodes (`[ht_text_field]`, `[ht_pills_field]`, `[ht_checklist_field]`) additionally share:

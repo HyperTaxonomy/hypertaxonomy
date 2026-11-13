@@ -369,13 +369,13 @@ if ( htax_is_term_hidden( $term_id ) && ! htax_can_see_hidden_terms() ) {
 
 ### Hidden Terms in the Search Index
 
-The search index (`wp_htax_search_terms`) tracks an `is_hidden` flag per row. The PowerSearch and search widget shortcodes apply `AND is_hidden = 0` to all queries for unauthorized users automatically.
+Hidden terms are indexed like any other term and kept current on the same events. The search index (`wp_htax_search_terms`) records an `is_hidden` flag per row: set when the row's term or the term it came from is hidden. Hiding or unhiding a term updates the flags without a reindex. PowerSearch and the search widget add `AND is_hidden = 0` to their queries for viewers who can't see hidden terms, so editors can still search by them.
 
-If you query the search index directly in a plugin, apply the same filter:
+If you query the search index directly in a plugin, apply the same filter with `htax_get_hidden_term_filter_clause()`, which returns `' AND is_hidden = 0'` or an empty string for the current viewer:
 
 ```php
 global $wpdb;
-$hidden_clause = htax_can_see_hidden_terms() ? '' : ' AND is_hidden = 0';
+$hidden_clause = htax_get_hidden_term_filter_clause();
 
 $results = $wpdb->get_results( $wpdb->prepare(
     "SELECT post_id FROM {$wpdb->prefix}htax_search_terms

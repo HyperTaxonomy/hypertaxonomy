@@ -465,3 +465,46 @@ function htax_repair_group_counts(): void {
         wp_update_term_count_now( array_map( 'intval', $tt_ids ), 'group' );
     }
 }
+
+/**
+ * Whether a group's archive shows any published post.
+ *
+ * Runs the archive's own query (htax_build_group_tax_query(): the members of the
+ * group and its subgroups, hidden terms removed for viewers who can't see them)
+ * for one post. Post types are chosen the way WordPress chooses them for a
+ * taxonomy archive: every searchable type that uses one of the queried taxonomies.
+ *
+ * @since 1.0.0
+ * @param int $group_id Group term ID.
+ * @return bool
+ */
+function htax_group_archive_has_posts( int $group_id ): bool {
+    $tax_query = htax_build_group_tax_query( array( $group_id ) );
+    if ( count( $tax_query ) < 2 ) {
+        return false;
+    }
+
+    $taxonomies = wp_list_pluck( array_filter( $tax_query, 'is_array' ), 'taxonomy' );
+    $post_types = array();
+    foreach ( get_post_types( array( 'exclude_from_search' => false ) ) as $post_type ) {
+        if ( array_intersect( $taxonomies, get_object_taxonomies( $post_type ) ) ) {
+            $post_types[] = $post_type;
+        }
+    }
+    if ( ! $post_types ) {
+        return false;
+    }
+
+    $query = new WP_Query( array(
+        'post_type'              => $post_types,
+        'post_status'            => 'publish',
+        'tax_query'              => $tax_query,
+        'posts_per_page'         => 1,
+        'fields'                 => 'ids',
+        'no_found_rows'          => true,
+        'ignore_sticky_posts'    => true,
+        'update_post_meta_cache' => false,
+        'update_post_term_cache' => false,
+    ) );
+    return ! empty( $query->posts );
+}

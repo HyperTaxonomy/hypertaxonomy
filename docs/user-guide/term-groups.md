@@ -34,7 +34,7 @@ Each group has an archive page at its own URL, showing posts from all member ter
 
 A group's count, as WordPress stores it, is the number of terms directly in the group, not counting its subgroups' members, the same way a category's count leaves out its subcategories' posts. Counts update whenever terms join or leave a group, and are recounted when the plugin is activated.
 
-The XML sitemap lists every group with members in itself or in any subgroup, since its archive shows them all; a group whose whole subtree is empty is left out.
+The XML sitemap lists a group only when its archive shows published posts, counting its subgroups' members as the archive does. A group whose members have no posts yet is left out until they do.
 
 ## Managing group members from the group side
 

@@ -639,7 +639,7 @@ if ( is_wp_error( $result ) ) {
 
 #### Group counts
 
-A group's stored `count` (on its `WP_Term` and in the REST response) is the number of terms directly in the group, kept current as memberships change. Like a category's post count, it leaves out subgroups: a group whose members are all in subgroups has a count of 0. So `get_terms()` with `hide_empty` and `hierarchical => false`, and `GET /wp/v2/group?hide_empty=true`, leave such a group out, exactly as WordPress does for a parent category with posts only in subcategories. With the default `hierarchical => true`, `get_terms()` keeps it. To decide whether a group's archive has content, check its subtree with `htax_get_terms_in_groups()`, which includes subgroups. XML sitemaps already list every group with members anywhere in its subtree.
+A group's stored `count` (on its `WP_Term` and in the REST response) is the number of terms directly in the group, kept current as memberships change. Like a category's post count, it leaves out subgroups: a group whose members are all in subgroups has a count of 0. So `get_terms()` with `hide_empty` and `hierarchical => false`, and `GET /wp/v2/group?hide_empty=true`, leave such a group out, exactly as WordPress does for a parent category with posts only in subcategories. With the default `hierarchical => true`, `get_terms()` keeps it. To find out whether a group's archive has content, call `htax_group_archive_has_posts( int $group_id ): bool`, which runs the archive's own query for one published post. XML sitemaps list only groups for which it returns true.
 
 ### Search notices
 

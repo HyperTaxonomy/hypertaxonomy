@@ -88,6 +88,7 @@ Membership CRUD + group taxonomy queries. Handles assigning terms to groups and 
 - `htax_set_term_groups()` - Replace all group assignments for a term
 - `htax_update_group_counts( array $group_ids ): void` - Recount groups' stored counts (direct member terms) through `wp_update_term_count()`, so it honors `wp_defer_term_counting()`. Called on `htax_term_groups_changed` and when a member term is deleted
 - `htax_repair_group_counts(): void` - Recount every group; runs on activation
+- `htax_group_archive_has_posts( int $group_id ): bool` - Whether the group's archive shows a published post: runs `htax_build_group_tax_query()` for one post, with post types chosen the way WordPress chooses them for a taxonomy archive. Used by the sitemap filter to list only non-empty group archives
 
 **Groups-as-inclusion-sources (includes/core/term-groups.php)**
 

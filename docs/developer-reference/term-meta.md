@@ -21,6 +21,7 @@ Available for terms in every HyperTaxonomy-enabled taxonomy, except Term Groups 
 | `htax_archive_term_ids` | IDs of every term whose posts this term's archive shows: the term itself, its child terms and its inclusions. Use them in one tax query to get the archive's posts. |
 | `htax_term_uris` | The term's external identifier URIs, from [`htax_get_term_uris()`](php-api.html#provider-filters). TermConnect provides them: its knowledge-base and peer-site links, plus the As the Crow Flies address URIs and Social Hashtags & Mentions handles it indexes. Empty without TermConnect. |
 | `htax_locations` | The term's locations, when **Share list of locations** is on for the taxonomy: one row per location with `label`, `street_address`, `locality`, `region`, `postal_code`, `country`, `lat` and `lng`. Needs As the Crow Flies. |
+| `htax_sticky_post_ids` | IDs of the posts pinned to the top of the term's archive, newest first, so a headless archive can show them first. Published posts only, and only when **Customize Archives** is on for the taxonomy, as in the archive itself. |
 | `htax_redirect` | ID of the term this term redirects to, or `0`. |
 | `htax_icon_url` | URL of the term's icon at the large size, the taxonomy's configured icon size. `''` when there's no icon. |
 | `htax_icon_url_small`, `htax_icon_url_medium`, `htax_icon_url_large` | URL of the icon at each size the taxonomy's icon settings generate. |
@@ -59,7 +60,7 @@ Several keys overlap with HyperTaxonomy's [REST fields](rest-api.html#term-endpo
 | `htax_redirect` | `htax_redirect` | REST gives the target's ID, name, slug and link; meta gives its ID, or `0`. |
 | `htax_icon_url`, `htax_icon_url_small` / `_medium` / `_large` | `htax_icon` | REST gives each size's URL, width and height in one object; meta gives one URL per key. |
 | `htax_locations` | `htax_locations` | Same locations and the same sharing setting. REST gives Schema.org `Place` objects with a nested address and coordinates; meta gives flat rows. |
-| `htax_containers`, `htax_groups`, `htax_archive_term_ids`, `htax_term_uris` | — | Term meta only. TermConnect adds its own `tc_links` REST field with each link's URL, platform and label. |
+| `htax_containers`, `htax_groups`, `htax_archive_term_ids`, `htax_term_uris`, `htax_sticky_post_ids` | — | Term meta only. TermConnect adds its own `tc_links` REST field with each link's URL, platform and label. |
 | — | `htax_relationships`, `htax_is_hidden` | REST only. |
 
 Use the REST fields to get related terms' names and slugs in one request, as TermConnect does between peer sites. Use the meta keys from tools that can't read REST fields, or from PHP.
@@ -78,6 +79,7 @@ add_action( 'graphql_register_types', function () {
         'htaxSynonyms'       => 'htax_synonyms',
         'htaxGroups'         => 'htax_groups',
         'htaxArchiveTermIds' => 'htax_archive_term_ids',
+        'htaxStickyPostIds'  => 'htax_sticky_post_ids',
     );
     foreach ( $lists as $field => $key ) {
         register_graphql_field( 'TermNode', $field, array(

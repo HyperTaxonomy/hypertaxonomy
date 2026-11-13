@@ -500,7 +500,7 @@ Reference locations are resolved via `ATCF_Locations::get_aggregated()`, which e
 Read-only `get_term_meta()` keys computed from existing caches; nothing stored. Hidden terms are left out for every viewer. See [Term Meta](../developer-reference/term-meta.html).
 
 - `htax_computed_term_meta_keys(): array` - The keys, each mapped to whether its value is a list
-- `htax_compute_term_meta( WP_Term $term, string $key )` - One key's value: a list (term IDs; URI strings for `htax_term_uris`; location rows for `htax_locations`, gated by the `share_locations` feature like the REST field), a term ID (0 for none), or a URL ('' for none)
+- `htax_compute_term_meta( WP_Term $term, string $key )` - One key's value: a list (term IDs; URI strings for `htax_term_uris`; location rows for `htax_locations`, gated by the `share_locations` feature like the REST field; post IDs for `htax_sticky_post_ids`, gated by `customize_archives` like the archive), a term ID (0 for none), or a URL ('' for none)
 - `htax_filter_computed_term_meta( $value, $term_id, $meta_key, $single )` - `get_term_metadata` filter answering the keys in `get_metadata()`'s format; reads of all meta fall through
 - `htax_refuse_computed_term_meta_write( $check, $term_id, $meta_key )` - `add_term_metadata` / `update_term_metadata` / `delete_term_metadata` filter refusing writes to the keys
 - `htax_register_computed_term_meta(): void` - `init` priority 20: registers the keys for each enabled taxonomy (not in REST)

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-13 00:21-0500\n"
+"POT-Creation-Date: 2026-11-13 00:25-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -4307,55 +4307,61 @@ msgstr ""
 msgid "Database error during term merge; all changes rolled back."
 msgstr ""
 
-#: includes/core/term-meta-computed.php:184
+#: includes/core/term-meta-computed.php:195
 msgid ""
 "IDs of the terms whose posts this term's archive includes (HyperTaxonomy "
 "inclusions, group and container-group inclusions, after exclusions). Read-"
 "only."
 msgstr ""
 
-#: includes/core/term-meta-computed.php:185
+#: includes/core/term-meta-computed.php:196
 msgid "IDs of the terms whose archives include this term's posts. Read-only."
 msgstr ""
 
-#: includes/core/term-meta-computed.php:186
+#: includes/core/term-meta-computed.php:197
 msgid "IDs of this term's synonyms. Read-only."
 msgstr ""
 
-#: includes/core/term-meta-computed.php:187
+#: includes/core/term-meta-computed.php:198
 msgid "IDs of the Term Groups this term is assigned to. Read-only."
 msgstr ""
 
-#: includes/core/term-meta-computed.php:188
+#: includes/core/term-meta-computed.php:199
 msgid ""
 "IDs of every term whose posts this term's archive shows, including the term "
 "and its child terms. Read-only."
 msgstr ""
 
-#: includes/core/term-meta-computed.php:189
+#: includes/core/term-meta-computed.php:200
 msgid ""
 "External identifier URIs for this term, such as knowledge-base links. Read-"
 "only."
 msgstr ""
 
-#: includes/core/term-meta-computed.php:190
+#: includes/core/term-meta-computed.php:201
 msgid "Locations of this term, when the taxonomy shares them. Read-only."
 msgstr ""
 
-#: includes/core/term-meta-computed.php:191
+#: includes/core/term-meta-computed.php:202
+msgid ""
+"IDs of the posts pinned to the top of this term's archive, newest first. "
+"Read-only."
+msgstr ""
+
+#: includes/core/term-meta-computed.php:203
 msgid "ID of the term this term redirects to, or 0. Read-only."
 msgstr ""
 
-#: includes/core/term-meta-computed.php:192
-#: includes/core/term-meta-computed.php:195
+#: includes/core/term-meta-computed.php:204
+#: includes/core/term-meta-computed.php:207
 msgid "URL of this term's icon at the large size. Read-only."
 msgstr ""
 
-#: includes/core/term-meta-computed.php:193
+#: includes/core/term-meta-computed.php:205
 msgid "URL of this term's icon at the small size. Read-only."
 msgstr ""
 
-#: includes/core/term-meta-computed.php:194
+#: includes/core/term-meta-computed.php:206
 msgid "URL of this term's icon at the medium size. Read-only."
 msgstr ""
 

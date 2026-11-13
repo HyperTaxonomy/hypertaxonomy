@@ -37,6 +37,7 @@ function htax_computed_term_meta_keys(): array {
         'htax_archive_term_ids' => true,
         'htax_term_uris'        => true,
         'htax_locations'        => true,
+        'htax_sticky_post_ids'  => true,
         'htax_redirect'         => false,
         'htax_icon_url'         => false,
         'htax_icon_url_small'   => false,
@@ -52,7 +53,8 @@ function htax_computed_term_meta_keys(): array {
  * @param WP_Term $term Term.
  * @param string  $key  A key from htax_computed_term_meta_keys().
  * @return array|int|string A list for list keys (term IDs; URI strings for htax_term_uris;
- *                          location rows for htax_locations); a term ID (0 for none) for
+ *                          location rows for htax_locations; post IDs for htax_sticky_post_ids);
+ *                          a term ID (0 for none) for
  *                          htax_redirect; a URL ('' for none) for the icon keys.
  */
 function htax_compute_term_meta( WP_Term $term, string $key ) {
@@ -91,6 +93,15 @@ function htax_compute_term_meta( WP_Term $term, string $key ) {
                 return array();
             }
             return array_values( htax_get_term_locations( $term->term_id ) );
+
+        case 'htax_sticky_post_ids':
+            // Posts pinned to the top of the term's archive, newest first, as the archive
+            // shows them: published posts only, and only when the taxonomy's Customize
+            // Archives feature is on, the same gate as the archive itself.
+            if ( ! htax_taxonomy_has_feature( $term->taxonomy, 'customize_archives' ) ) {
+                return array();
+            }
+            return array_map( 'intval', wp_list_pluck( htax_get_sticky_posts_for_term( $term->term_id ), 'ID' ) );
 
         case 'htax_redirect':
             $target = htax_get_redirect_target( $term->term_id );
@@ -188,6 +199,7 @@ function htax_register_computed_term_meta(): void {
         'htax_archive_term_ids' => __( 'IDs of every term whose posts this term\'s archive shows, including the term and its child terms. Read-only.', 'hypertaxonomy' ),
         'htax_term_uris'        => __( 'External identifier URIs for this term, such as knowledge-base links. Read-only.', 'hypertaxonomy' ),
         'htax_locations'        => __( 'Locations of this term, when the taxonomy shares them. Read-only.', 'hypertaxonomy' ),
+        'htax_sticky_post_ids'  => __( 'IDs of the posts pinned to the top of this term\'s archive, newest first. Read-only.', 'hypertaxonomy' ),
         'htax_redirect'         => __( 'ID of the term this term redirects to, or 0. Read-only.', 'hypertaxonomy' ),
         'htax_icon_url'         => __( 'URL of this term\'s icon at the large size. Read-only.', 'hypertaxonomy' ),
         'htax_icon_url_small'   => __( 'URL of this term\'s icon at the small size. Read-only.', 'hypertaxonomy' ),

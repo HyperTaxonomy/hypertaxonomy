@@ -354,7 +354,7 @@ A common pattern: HT Related Posts for "more on this topic" (taxonomy-driven, th
 
 ## GraphQL Plugins (WPGraphQL, Gato GraphQL)
 
-GraphQL plugins build their own schema and don't read HyperTaxonomy's REST fields. They can read term meta, so HyperTaxonomy offers each term's relationships, groups, archive term set, external identifiers, shared locations, redirect and icon URLs as read-only term meta keys, with hidden terms left out for everyone. Gato GraphQL reads them once the keys are allowed in its settings; WPGraphQL needs a short snippet to add them as fields. See [Term Meta](../developer-reference/term-meta.html).
+GraphQL plugins build their own schema and don't read HyperTaxonomy's REST fields. They can read term meta, so HyperTaxonomy offers each term's relationships, groups, archive term set, pinned posts, external identifiers, shared locations, redirect and icon URLs as read-only term meta keys, with hidden terms left out for everyone. Gato GraphQL reads them once the keys are allowed in its settings; WPGraphQL needs a short snippet to add them as fields. See [Term Meta](../developer-reference/term-meta.html).
 
 Page builders with dynamic term fields can read the same keys.
 

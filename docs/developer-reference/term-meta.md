@@ -44,7 +44,22 @@ Writing to these keys with `add_term_meta()`, `update_term_meta()` or `delete_te
 
 Reading all of a term's meta at once (`get_term_meta( $term_id )`) returns stored meta only, so plugins that copy or export a term's meta don't pick these keys up.
 
-The keys are registered with `register_term_meta()` for each enabled taxonomy, so tools that list registered meta can find them. They aren't added to the REST API: HyperTaxonomy's [REST fields](rest-api.html) already carry the same relationships, with the slugs, strengths and synonym flags that TermConnect needs from peer sites.
+The keys are registered with `register_term_meta()` for each enabled taxonomy, so tools that list registered meta can find them. They aren't added to the REST API, which already carries the same relationships in its own fields (below).
+
+## How the keys compare with the REST fields
+
+Several keys overlap with HyperTaxonomy's [REST fields](rest-api.html#term-endpoint-enrichment), in a different shape. Both leave hidden terms out for everyone.
+
+| Term meta key | REST field | Difference |
+|---|---|---|
+| `htax_includes` | `htax_includes` | The REST field lists each term with its name, slug and link, plus its `strength` and a `synonym` flag, and for hierarchical taxonomies also the WordPress child terms. The meta key holds IDs of HyperTaxonomy's inclusions only; child terms are in `htax_archive_term_ids`. |
+| `htax_synonyms` | `htax_synonyms` | REST gives each synonym's ID, slug, name and taxonomy; meta gives IDs. |
+| `htax_redirect` | `htax_redirect` | REST gives the target's ID, name, slug and link; meta gives its ID, or `0`. |
+| `htax_icon_url`, `htax_icon_url_small` / `_medium` / `_large` | `htax_icon` | REST gives each size's URL, width and height in one object; meta gives one URL per key. |
+| `htax_containers`, `htax_groups`, `htax_archive_term_ids` | — | Term meta only. |
+| — | `htax_relationships`, `htax_locations`, `htax_is_hidden` | REST only. |
+
+Use the REST fields to get related terms' names and slugs in one request, as TermConnect does between peer sites. Use the meta keys from tools that can't read REST fields, or from PHP.
 
 ## Using them with GraphQL
 

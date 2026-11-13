@@ -39,7 +39,7 @@ The following fields are available. All can be requested via `_fields`; availabi
 
 Collection endpoints (`GET /wp/v2/{taxonomy}?slug=…`) without the `X-HyperTaxonomy` header receive no HT enrichment.
 
-These fields are also how TermConnect reads relationships from peer sites, matching terms by slug and using each included term's `strength` and `synonym` flag. Tools that read term meta rather than REST (GraphQL plugins, page builders) get the same relationships as term IDs from the [computed term meta keys](term-meta.html).
+These fields are also how TermConnect reads relationships from peer sites, matching terms by slug and using each included term's `strength` and `synonym` flag. Tools that read term meta rather than REST (GraphQL plugins, page builders) get largely the same relationships as term IDs from the [computed term meta keys](term-meta.html); see [how the two compare](term-meta.html#how-the-keys-compare-with-the-rest-fields).
 
 ## Peer collection requests (`X-HyperTaxonomy` request header)
 

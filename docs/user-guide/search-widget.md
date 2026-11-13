@@ -69,7 +69,7 @@ All field shortcodes require a `name` parameter and accept an optional `id` for 
 | `enabled` | `true` or `false` | `true` |
 | `class` | Additional CSS classes | — |
 
-Controllers share these same parameters — see the Controllers section below.
+Controllers share these same parameters — see [Controllers](#controllers--dynamic-field-population) below.
 
 **`[ht_text_field]` parameters:**
 

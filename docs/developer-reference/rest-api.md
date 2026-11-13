@@ -74,7 +74,7 @@ HyperTaxonomy extends the standard WordPress post collection endpoint with term-
 |-------|------|-------------|
 | `htax_score` | float \| null | Relevance score 0–1, or null if this post was not scored. |
 | `htax_matched_term_slugs` | string[] \| null | Remote slugs of the primary terms that contributed to this post's score, or null if not scored. These are the slugs as they appear on the remote (peer) site. |
-| `htax_term_peers` | object \| null | Registered by TermConnect (when active). Per-term peer connection data for all terms on the returned posts; used by TC for FOAF peer discovery without a separate term lookup round-trip. See TermConnect documentation. |
+| `htax_term_peers` | object \| null | Registered by TermConnect (when active). Per-term peer connection data for all terms on the returned posts; used by TC for FOAF peer discovery without a separate term lookup round-trip. See [TermConnect's REST API](https://hypertaxonomy.org/termconnect/developer-reference/rest-api.html#post-endpoints). |
 | `htax_term_strengths` | object \| null | **Opt-in — request explicitly via `_fields`.** Map of the post's directly-assigned term IDs → association strength (0–1, how central each term is to the post, from the strength model selected in Settings → Search; terms that model hasn't scored are omitted). Keyed by the term IDs the post already lists natively, so it adds the strength without duplicating term data. Visibility-filtered. `null` unless requested (the per-post index lookup runs only when the field is named in `_fields`). |
 
 **Example request** (two primary terms, any-match, per-term weights, peer expansion on):

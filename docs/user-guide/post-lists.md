@@ -7,7 +7,7 @@ nav_order: 9
 # Post Lists
 {: .no_toc }
 
-Two shortcodes for displaying posts from the local search index. For fetching posts from peer WordPress sites and RSS/Atom feeds, see the `[tc_peer_posts]` shortcode in the TermConnect documentation.
+Two shortcodes for displaying posts from the local search index. For fetching posts from peer WordPress sites and RSS/Atom feeds, see [Posts from peer sites and feeds](#posts-from-peer-sites-and-feeds) below.
 
 > **Term and group attributes accept slugs or IDs.** Every term/group attribute below (`include_terms`, `exclude_terms`, `filter_terms`, `filter_out_terms`, `include_groups`, `exclude_groups`, `filter_groups`, `filter_out_groups`) accepts a comma-separated list of either numeric IDs **or** slugs, and the two may be mixed (e.g. `include_terms="news,42,featured"`). Term slugs resolve within the shortcode's `taxonomy`; group slugs resolve within the `group` taxonomy. A purely numeric token is always treated as an ID.
 
@@ -203,6 +203,6 @@ The default sort order is `relevance:desc,date:desc`: posts that share more (or 
     prepend='<span class="htax-date">{date}</span> ']
 ```
 
-### Peer/feed content
+## Posts from peer sites and feeds
 
-`[ht_related_posts]` shows only local posts. To blend in related content from peer WordPress sites and RSS/Atom feeds — matched to the current post's terms, including shared-identifier and synonym matching, and grouped by source — use TermConnect's `[tc_peer_posts]` shortcode or **Peer Posts** block. See the TermConnect documentation for details.
+`[ht_post_list]` and `[ht_related_posts]` show only this site's posts. To show related posts from peer WordPress sites and RSS/Atom feeds — matched to the current post's terms, including shared identifiers and synonyms — use TermConnect's `[tc_peer_posts]` shortcode or **Peer Posts** block. With `scope="all"` it also blends in this site's own related posts, grouped by source. See [Displaying Peer Posts](https://hypertaxonomy.org/termconnect/user-guide/displaying-peer-posts.html) in the TermConnect documentation, and [Blending local and peer posts together](https://hypertaxonomy.org/termconnect/user-guide/displaying-peer-posts.html#blending-local-and-peer-posts-together) for the blended list.

@@ -462,7 +462,7 @@ Always loaded; its hooks register only when `function_exists( 'atcf_get_term_ids
 - `htax_allowed_field_types` — adds `'distance'` to the accepted field types so the AJAX handler does not reject distance fields
 - `htax_search_proximity_where` — `build_proximity_where()` turns `near:`/`-near:` tokens into a WHERE condition for PowerSearch and the search widget (see below)
 - `htax_search_proximity_relevance` — `build_proximity_relevance()` scores posts by distance for `near:`-only searches (PowerSearch `$near_only` path: `proximity_score` select column, HAVING `1 = 1`; widget text-only branch). Both builders share `resolve_proximity()`, memoized per request (proximity tokens + hidden-term visibility), which resolves references once, records unresolved-clause notices once, and returns in-range term distances (`get_in_range_term_distances()`, from ATCF's `distance_km`)
-- `htax_term_locations` — provides ATCF location rows to HT's filter, available through `htax_get_term_locations()`. REST responses get locations from `ATCF_REST_API::format_term_locations()` instead (see REST API below)
+- `htax_term_locations` — provides ATCF location rows to HT's filter, available through `htax_get_term_locations()`. REST responses get locations from `ATCF_REST_API::format_term_locations()` instead (see [REST API](#rest-api-includescorerest-apiphp) below)
 
 The integration touches **no ATCF database tables directly** — all location data is retrieved via ATCF's public API (`atcf_get_locations_within_radius()`, `atcf_get_term_ids_within_radius()`, `atcf_get_postal_centroid()`, `atcf_get_visitor_location()`, `ATCF_Locations::get_aggregated()`). The only direct DB queries HT performs are against WP's own `term_relationships` and `term_taxonomy` tables to map term IDs to post IDs.
 
@@ -520,7 +520,7 @@ Reference locations are resolved via `ATCF_Locations::get_aggregated()`, which e
 - `htax_rest_apply_htax_post_query( array $args, WP_REST_Request $request )` - `rest_wp_post_query` filter: when `htax_includes` is present, reads primary and included term IDs, queries the search index (`relationship_type='direct'` only, or all relationship types with `htax_expand`), scores posts, restricts the WP_Query via `post__in`, and stores normalized scores in `$_htax_rest_post_scores` for the field callbacks. The standard `?tags=`/`?categories=` params remain in effect and AND with `post__in`.
 - `htax_rest_get_post_score( array $post )` - REST field callback for `htax_score`; returns 0–1 float or null
 - `htax_rest_get_post_matched_slugs( array $post )` - REST field callback for `htax_matched_term_slugs`; returns string[] (remote term slugs derived from matched term IDs) or null
-- `htax_term_peers` field — registered by TermConnect (when active) on post REST responses. Returns peer connection data for all terms on returned posts. See TermConnect documentation.
+- `htax_term_peers` field — registered by TermConnect (when active) on post REST responses. Returns peer connection data for all terms on returned posts. See [TermConnect's REST API](https://hypertaxonomy.org/termconnect/developer-reference/rest-api.html#post-endpoints).
 - `htax_rest_get_post_term_strengths( $post_arr, $field = '', $request = null )` - REST field callback for `htax_term_strengths`
 
 **Post editor endpoints (includes/core/post-editor-rest.php):**
@@ -553,7 +553,7 @@ Reference locations are resolved via `ATCF_Locations::get_aggregated()`, which e
 ### Admin Pages
 
 - **Terms menu** (`includes/admin/admin-menu.php`) - `htax_register_admin_menu()` adds the top-level menu, which opens Term Groups; `htax_sort_terms_submenu()` keeps its submenus in order
-- **Term Groups** (`includes/admin/group-admin.php`) - The native term screens for the `group` taxonomy, extended with the fields listed under Group Admin below
+- **Term Groups** (`includes/admin/group-admin.php`) - The native term screens for the `group` taxonomy, extended with the fields listed under [Group Admin](#admin--group-admin-includesadmingroup-adminphp) below
 - **Term Relationship Types** (`includes/admin/relationship-types-admin.php`) - `htax_render_term_relationships_page()`
 - **Merge Terms** (`includes/admin/merge-terms.php`) - `htax_render_merge_terms_page()`, a form over `htax_merge_terms()`
 - **Convert Terms** (`includes/admin/convert-terms.php`) - `htax_render_convert_terms_page()`, a form over `htax_convert_terms_batch()`, with `htax_ajax_get_terms_for_conversion()` loading the term checklist
@@ -906,7 +906,7 @@ Shared internal utilities used throughout the plugin. Not part of the public API
   - `+term` sets `required=true`; `-term` sets `excluded=true`; `"term"` sets `quoted=true`
   - `slug_match=true` for **singular** operators (`tag:`, `category:`, `term:`, taxonomy slug, singular display label) — callers match against term slugs rather than FULLTEXT names. `slug_match=false` for **plural** operators (`tags:`, `categories:`, `terms:`, plural display label) — FULLTEXT matching.
   - `quoted=true` for field-specific terms if the value was wrapped in `"..."` in the input; for general terms, `quoted=true` only when the term appeared as `"word"` — used by exact-match scoring to distinguish intentional label lookups from content searches
-  - `proximity` key: array of parsed `near:` tokens (see ATCF Integration). Empty when ATCF is inactive or no proximity operators are present.
+  - `proximity` key: array of parsed `near:` tokens (see [As the Crow Flies Integration](../developer-reference/atcf.html)). Empty when ATCF is inactive or no proximity operators are present.
   - `$near_country`: ISO 3166-1 code passed down to proximity tokens for postal-code format validation and centroid lookup. Defaults to `'US'`.
   - Used by all three search systems: post list, advanced widget, PowerSearch
 - `htax_get_exact_match_term_ids( string $term_string, string $taxonomy = '' ): array` — B-tree equality lookup: returns term IDs where `LOWER(name) = LOWER($term_string)`, optionally filtered to one taxonomy. Used by PowerSearch to pre-fetch IDs for exact-match scoring.

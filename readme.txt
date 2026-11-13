@@ -19,7 +19,7 @@ In WordPress, a post reaches a tag archive only if it carries exactly the right 
 
 Build inclusions (any term can pull in another's posts), synonyms (bidirectional inclusions), term groups for bulk management, and 301-safe redirects. Enrich term archives with descriptions, sticky posts, and custom icons. Build faceted search interfaces with AJAX results, and publish term lists or post grids as shortcodes or Gutenberg blocks — all through the WordPress admin, no coding required.
 
-For cross-site post fetching, RSS/Atom feed aggregation, and external identifiers per term, see the companion plugin **TermConnect**.
+For cross-site post fetching, RSS/Atom feed aggregation, and external identifiers per term, see the companion plugin [TermConnect](https://hypertaxonomy.org/termconnect/).
 
 For a detailed walk-through of the concepts behind HyperTaxonomy — why WordPress taxonomies fall short, how the relationship model is designed, and when to use each feature — see the [User Guide](https://hypertaxonomy.org/hypertaxonomy/user-guide/).
 
@@ -239,7 +239,7 @@ For the complete query syntax, all shortcode parameters, and proximity search ex
 
 == Post List Shortcodes ==
 
-`[ht_post_list]` displays posts for specified terms or Term Groups, with AJAX pagination, filtering, and sorting. `[ht_related_posts]` displays posts related to the current post by shared taxonomy terms. Each has a corresponding Gutenberg block. For peer site post fetching, see the `[tc_peer_posts]` shortcode in the **TermConnect** plugin.
+`[ht_post_list]` displays posts for specified terms or Term Groups, with AJAX pagination, filtering, and sorting. `[ht_related_posts]` displays posts related to the current post by shared taxonomy terms. Each has a corresponding Gutenberg block. For posts from peer sites and feeds, see the `[tc_peer_posts]` shortcode in TermConnect: [Displaying Peer Posts](https://hypertaxonomy.org/termconnect/user-guide/displaying-peer-posts.html).
 
 **Examples:**
 ```

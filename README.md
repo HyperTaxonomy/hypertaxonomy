@@ -6,7 +6,7 @@ Semantic term relationships for WordPress: inclusions, synonyms, redirects, term
 
 Term inclusions and synonyms mean a post tagged "React" automatically surfaces in archives for "JSX", "hooks", and any other term that includes it — without re-tagging. A denormalized search index keeps archives and search fast. The same relationships govern archive queries, the related posts shortcode, the search widget, and the REST API.
 
-For cross-site content — fetching related posts from peer WordPress sites, RSS/Atom feeds, and external knowledge-base link types (Wikidata, GeoNames, etc.) — see the companion plugin **TermConnect**, which extends HyperTaxonomy's term vocabulary across the web.
+For cross-site content — fetching related posts from peer WordPress sites, RSS/Atom feeds, and external knowledge-base link types (Wikidata, GeoNames, etc.) — see the companion plugin [TermConnect](https://hypertaxonomy.org/termconnect/), which extends HyperTaxonomy's term vocabulary across the web.
 
 ## Requirements
 
@@ -53,7 +53,7 @@ The full documentation is published as a [Just-the-Docs](https://just-the-docs.c
 
 HyperTaxonomy is translation-ready and ships with a complete translation template: `languages/hypertaxonomy.pot`.
 
-To contribute a translation: copy the template to `languages/hypertaxonomy-<locale>.po`, translate it, and open a pull request — the build compiles it (and, for block-editor strings, generates the required JSON) automatically. See `utils/make-pot.sh` and `utils/make-json.py`.
+To contribute a translation: copy the template to `languages/hypertaxonomy-<locale>.po`, translate it, and open a pull request — the build compiles it (and, for block-editor strings, generates the required JSON) automatically. See [`utils/make-pot.sh`](utils/make-pot.sh) and [`utils/make-json.py`](utils/make-json.py).
 
 ## License
 

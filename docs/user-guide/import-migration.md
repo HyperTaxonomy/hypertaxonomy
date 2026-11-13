@@ -79,7 +79,7 @@ Enable Group Assignment for each taxonomy you want to import:
 5. Review final statistics
 6. Click **View Term Groups**
 
-Each run asks how removals are handled (see "Mirror vs. Keep" below). Ongoing sync behavior is set on the **Sync** subtab (see "Mapped Group Editing and Continuous Sync" below).
+Each run asks how removals are handled (see [Mirror vs. Keep](#mirror-vs-keep) below). Ongoing sync behavior is set on the **Sync** subtab (see [Mapped Group Editing and Continuous Sync](#mapped-group-editing-and-continuous-sync) below).
 
 ### Mirror vs. Keep
 

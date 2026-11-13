@@ -531,6 +531,16 @@ Returns an empty array when the **Term Relationships** feature is disabled for t
 
 Results are cached in a two-tier cache: a static per-request array and a persistent `htax_syno_{term_id}` transient (TTL=0). The transient is invalidated by `htax_delete_term_transients()`, queued for rebuilding at shutdown, and re-warmed by the `htax_async_rebuild_term_caches` cron event.
 
+#### Public related term IDs
+
+`htax_get_public_related_term_ids( WP_Term $term, string $kind ): int[]`
+
+The IDs of a term's related terms with hidden terms left out for everyone, the same answer for every viewer. `$kind` is `'includes'` (effective inclusions, after exclusions), `'containers'` (terms whose archives include this term's posts), `'synonyms'` or `'redirect'` (the redirect target as a one-item list). Use it for data you show or share publicly; it's what the [REST relationship fields](rest-api.html#hidden-terms-and-rest) and the [term meta keys](term-meta.html) use. The getters above follow the viewer's permissions instead.
+
+```php
+$public_includes = htax_get_public_related_term_ids( $term, 'includes' ); // [ 12, 34 ]
+```
+
 #### Whether a term redirects
 
 `htax_is_redirect( int $term_id ): bool`

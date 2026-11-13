@@ -206,8 +206,9 @@ function htax_rest_build_redirect_data( WP_Term $term ): ?array {
         return null;
     }
 
-    $target = htax_get_redirect_target( $term->term_id );
-    if ( ! $target || ! htax_remove_hidden_term_ids( array( $target->term_id ) ) ) {
+    $target_ids = htax_get_public_related_term_ids( $term, 'redirect' );
+    $target     = $target_ids ? get_term( $target_ids[0] ) : null;
+    if ( ! $target instanceof WP_Term ) {
         return null; // No redirect, or it points to a hidden term (left out for everyone).
     }
 
@@ -219,9 +220,10 @@ function htax_rest_build_redirect_data( WP_Term $term ): ?array {
  *
  * For any hierarchical taxonomy, includes all WP descendant terms (mirroring
  * the include_children behavior of WP_Query). For HT-enabled taxonomies,
- * also includes directly configured term inclusions. Hidden terms are left out for
- * every viewer (see htax_remove_hidden_term_ids()). Returns an empty array when there
- * is nothing to include.
+ * also includes directly configured term inclusions, from
+ * htax_get_public_related_term_ids() (the same source as the computed term meta). Hidden
+ * terms are left out for every viewer. Returns an empty array when there is nothing to
+ * include.
  *
  * Each entry is a term stub (id, name, slug, taxonomy, link) carrying a `strength`
  * — the explicit relationship weight by which it relates to this term (hierarchy
@@ -262,13 +264,14 @@ function htax_rest_build_includes_data( WP_Term $term ): array {
 
     // Direct HT inclusions for HT-enabled taxonomies.
     if ( htax_is_taxonomy_enabled( $taxonomy ) ) {
-        // Pre-load synonym IDs so mutual inclusions can be flagged.
-        // htax_get_synonym_terms() is statically cached — no extra SQL after the first call.
-        $synonym_ids = array_keys( htax_get_synonym_terms( $term ) );
+        // Synonym IDs, so mutual inclusions can be flagged. Read from cache.
+        $synonym_ids = htax_get_public_related_term_ids( $term, 'synonyms' );
 
-        $included = htax_get_included_terms( $term );
-        foreach ( htax_remove_hidden_term_ids( array_keys( $included ) ) as $included_id ) {
-            $included_term    = $included[ $included_id ];
+        foreach ( htax_get_public_related_term_ids( $term, 'includes' ) as $included_id ) {
+            $included_term = get_term( $included_id );
+            if ( ! $included_term instanceof WP_Term ) {
+                continue;
+            }
             $stub             = htax_rest_term_stub( $included_term );
             $stub['strength'] = $w_container;
             if ( in_array( $included_id, $synonym_ids, true ) ) {
@@ -302,8 +305,8 @@ function htax_rest_build_term_entry( WP_Term $term ): array {
  *
  * Returns an array of term entries for all synonym terms (mutual inclusions).
  * Each entry has the same shape as htax_term_data entries: id, slug, name,
- * taxonomy, and htax_links when external identifiers are set. Hidden synonym
- * terms are left out for every viewer.
+ * taxonomy. From htax_get_public_related_term_ids(), so hidden synonym terms are
+ * left out for every viewer.
  *
  * Returns null when the term has no synonyms or is not HT-enabled.
  *
@@ -316,14 +319,12 @@ function htax_rest_build_synonyms_data( WP_Term $term ): ?array {
         return null;
     }
 
-    $synonym_terms = htax_get_synonym_terms( $term );
-    if ( empty( $synonym_terms ) ) {
-        return null;
-    }
-
     $result = array();
-    foreach ( htax_remove_hidden_term_ids( array_keys( $synonym_terms ) ) as $syn_id ) {
-        $result[] = htax_rest_build_term_entry( $synonym_terms[ $syn_id ] );
+    foreach ( htax_get_public_related_term_ids( $term, 'synonyms' ) as $syn_id ) {
+        $syn_term = get_term( $syn_id );
+        if ( $syn_term instanceof WP_Term ) {
+            $result[] = htax_rest_build_term_entry( $syn_term );
+        }
     }
 
     return empty( $result ) ? null : $result;

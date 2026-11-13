@@ -60,13 +60,13 @@ function htax_computed_term_meta_keys(): array {
 function htax_compute_term_meta( WP_Term $term, string $key ) {
     switch ( $key ) {
         case 'htax_includes':
-            return htax_remove_hidden_term_ids( array_keys( htax_load_included_terms( $term, false, false ) ) );
+            return htax_get_public_related_term_ids( $term, 'includes' );
 
         case 'htax_containers':
-            return htax_remove_hidden_term_ids( array_keys( htax_load_container_terms( $term, false ) ) );
+            return htax_get_public_related_term_ids( $term, 'containers' );
 
         case 'htax_synonyms':
-            return htax_remove_hidden_term_ids( array_keys( htax_load_synonym_terms( $term, false ) ) );
+            return htax_get_public_related_term_ids( $term, 'synonyms' );
 
         case 'htax_groups':
             // Groups the term is explicitly assigned to; not the ancestors of those groups.
@@ -104,11 +104,7 @@ function htax_compute_term_meta( WP_Term $term, string $key ) {
             return array_map( 'intval', wp_list_pluck( htax_get_sticky_posts_for_term( $term->term_id ), 'ID' ) );
 
         case 'htax_redirect':
-            $target = htax_get_redirect_target( $term->term_id );
-            if ( ! $target ) {
-                return 0;
-            }
-            $ids = htax_remove_hidden_term_ids( array( $target->term_id ) );
+            $ids = htax_get_public_related_term_ids( $term, 'redirect' );
             return $ids ? $ids[0] : 0;
 
         default:

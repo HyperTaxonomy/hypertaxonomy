@@ -645,6 +645,43 @@ function htax_get_synonym_terms( $term, bool $include_redirect_data = false ) {
 }
 
 /**
+ * Get the IDs of a term's related terms that are public, for data shared outside wp-admin.
+ *
+ * The single source for HyperTaxonomy's REST relationship fields and its computed term meta,
+ * so the two always agree. Reads the same caches as htax_get_included_terms() and its siblings,
+ * then leaves hidden terms out for every viewer (htax_remove_hidden_term_ids()): the result is
+ * the same for everyone, whatever the request method. Feature flags and redirect handling are
+ * those of the underlying getters.
+ *
+ * @since 1.0.0
+ * @param WP_Term $term Term.
+ * @param string  $kind 'includes' (effective inclusions, after exclusions), 'containers' (terms
+ *                      whose archives include this term), 'synonyms', or 'redirect' (the
+ *                      redirect target, as a one-item list).
+ * @return int[] Term IDs; empty for an unknown kind.
+ */
+function htax_get_public_related_term_ids( WP_Term $term, string $kind ): array {
+    switch ( $kind ) {
+        case 'includes':
+            $ids = array_keys( htax_load_included_terms( $term, false, false ) );
+            break;
+        case 'containers':
+            $ids = array_keys( htax_load_container_terms( $term, false ) );
+            break;
+        case 'synonyms':
+            $ids = array_keys( htax_load_synonym_terms( $term, false ) );
+            break;
+        case 'redirect':
+            $target = htax_get_redirect_target( $term->term_id );
+            $ids    = $target ? array( (int) $target->term_id ) : array();
+            break;
+        default:
+            return array();
+    }
+    return htax_remove_hidden_term_ids( $ids );
+}
+
+/**
  * Read a term's synonym terms, including hidden terms, from the cache shared by viewers.
  *
  * @since 1.0.0

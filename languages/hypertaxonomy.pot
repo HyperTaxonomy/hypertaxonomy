@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-13 11:02-0500\n"
+"POT-Creation-Date: 2026-11-13 11:17-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2726,7 +2726,7 @@ msgid "Uninstall"
 msgstr ""
 
 #: includes/admin/settings.php:2915
-msgid "Delete all HyperTaxonomy data when plugin is uninstalled"
+msgid "Delete all HyperTaxonomy data when the plugin is deleted"
 msgstr ""
 
 #: includes/admin/settings.php:2920

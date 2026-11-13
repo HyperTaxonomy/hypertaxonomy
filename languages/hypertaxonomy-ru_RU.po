@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: hypertaxonomy 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-13 11:02-0500\n"
+"POT-Creation-Date: 2026-11-13 11:17-0500\n"
 "PO-Revision-Date: 2026-11-13 10:00-0500\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -2426,7 +2426,9 @@ msgstr "Запросов в минуту:"
 msgid ""
 "Limit PowerSearch and search widget requests per minute, for each logged-in "
 "user and each visitor IP address (10–100)."
-msgstr "Ограничивает число запросов PowerSearch и виджета поиска в минуту для каждого авторизованного пользователя и каждого IP-адреса посетителя (10–100)."
+msgstr ""
+"Ограничивает число запросов PowerSearch и виджета поиска в минуту для "
+"каждого авторизованного пользователя и каждого IP-адреса посетителя (10–100)."
 
 #: includes/admin/settings.php:1792
 msgid "Third-Party Query Expansion"
@@ -3119,7 +3121,7 @@ msgid "Uninstall"
 msgstr "Удаление"
 
 #: includes/admin/settings.php:2915
-msgid "Delete all HyperTaxonomy data when plugin is uninstalled"
+msgid "Delete all HyperTaxonomy data when the plugin is deleted"
 msgstr "Очистить все данные HyperTaxonomy при удалении плагина"
 
 #: includes/admin/settings.php:2920
@@ -6198,6 +6200,3 @@ msgstr ""
 msgctxt "block keyword"
 msgid "list"
 msgstr "list"
-
-#~ msgid "Limit AJAX search requests per user (10-100)."
-#~ msgstr "Ограничить число AJAX-запросов поиска на пользователя (10–100)."

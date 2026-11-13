@@ -2912,7 +2912,7 @@ if ( function_exists( 'htax_the_archive_icon' ) ) {
                                name="htax_settings[delete_on_uninstall]"
                                value="1"
                                <?php checked( ! empty( $options['delete_on_uninstall'] ) ); ?> />
-                        <?php esc_html_e( 'Delete all HyperTaxonomy data when plugin is uninstalled', 'hypertaxonomy' ); ?>
+                        <?php esc_html_e( 'Delete all HyperTaxonomy data when the plugin is deleted', 'hypertaxonomy' ); ?>
                     </label>
 
                     <p class="description" style="color: #d63638;">

@@ -69,7 +69,7 @@ Uninstalling HyperTaxonomy (Plugins screen → Delete) always removes:
 - Scheduled background tasks and cached data (transients, including stored search-results links)
 - Per-user state: dismissed admin notices, and HyperTaxonomy's post-editor display preferences and sidebar panel positions
 
-When **Settings > HyperTaxonomy > Advanced > Delete all HyperTaxonomy data when plugin is uninstalled** is checked, it also removes:
+When **Settings > HyperTaxonomy > Advanced > Delete all HyperTaxonomy data when the plugin is deleted** is checked, it also removes:
 
 - The `wp_htax_term_relationships` table (relationships, group memberships, redirects)
 - The `wp_htax_search_terms` table (search index)

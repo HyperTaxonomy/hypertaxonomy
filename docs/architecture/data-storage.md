@@ -17,7 +17,7 @@ nav_order: 4
 
 ## Term Meta Keys
 
-The keys `htax_includes`, `htax_containers`, `htax_synonyms`, `htax_groups`, `htax_archive_term_ids`, `htax_redirect` and `htax_icon_url*` that `get_term_meta()` returns are computed, not stored; see [Term Meta for Other Tools](../developer-reference/term-meta.html) and [Function Reference → Computed Term Meta](function-reference.html#computed-term-meta-includescoreterm-meta-computedphp).
+The keys `htax_includes`, `htax_containers`, `htax_synonyms`, `htax_groups`, `htax_archive_term_ids`, `htax_redirect` and `htax_icon_url*` that `get_term_meta()` returns are computed, not stored; see [Term Meta](../developer-reference/term-meta.html) and [Function Reference → Computed Term Meta](function-reference.html#computed-term-meta-includescoreterm-meta-computedphp).
 
 **Note:** All term relationships are stored in the `wp_htax_term_relationships` table, not in term meta:
 - Inclusion relationships (`relationship_type = 'includes'`)

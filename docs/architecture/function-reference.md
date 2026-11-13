@@ -497,7 +497,7 @@ Reference locations are resolved via `ATCF_Locations::get_aggregated()`, which e
 
 ### Computed Term Meta (includes/core/term-meta-computed.php)
 
-Read-only `get_term_meta()` keys computed from existing caches; nothing stored. Hidden terms are left out for every viewer. See [Term Meta for Other Tools](../developer-reference/term-meta.html).
+Read-only `get_term_meta()` keys computed from existing caches; nothing stored. Hidden terms are left out for every viewer. See [Term Meta](../developer-reference/term-meta.html).
 
 - `htax_computed_term_meta_keys(): array` - The keys, each mapped to whether its value is a list of term IDs
 - `htax_compute_term_meta( WP_Term $term, string $key )` - One key's value: term IDs, a term ID (0 for none), or a URL ('' for none)

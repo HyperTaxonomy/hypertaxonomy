@@ -23,10 +23,17 @@
  * Posts endpoint (/wp-json/wp/v2/posts):
  *   htax_score              number  Scored responses only. Normalized 0–1 relevance.
  *   htax_matched_term_slugs array   Scored responses only. Slugs of matched terms.
- *   htax_term_peers         object  Scored responses only. Keyed by term ID; each
- *                                   value: { peers: [{origin, slug}] }.
+ *   htax_term_peers         object  Registered by TermConnect. Scored responses only.
+ *                                   Keyed by term ID; each value: { peers: [{origin, slug}] }.
  *   htax_term_strengths     object  Opt-in via _fields. Map of the post's directly-
  *                                   assigned term IDs => association strength (0–1).
+ *
+ * Hidden terms: relationship data (htax_includes, htax_synonyms, htax_relationships,
+ * htax_redirect, htax_term_strengths, and the related terms of
+ * htax/v1/term/{id}/relationships) leaves hidden terms out for every viewer, via
+ * htax_remove_hidden_term_ids(), so responses are the same for everyone and safe to
+ * cache. A hidden term's own record (collection exclusion, the single-term 404,
+ * htax_is_hidden) follows the viewer's permissions, because the block editor needs it.
  *
  * Query params accepted on posts: htax_includes, htax_match, htax_term_weights, htax_expand.
  *
@@ -404,7 +411,8 @@ function htax_filter_rest_terms_query( $args, $request ) {
  *
  * Hooked to rest_prepare_{taxonomy} for all public show_in_rest taxonomies.
  *
- * Hidden terms always return a 404 for users who cannot see them.
+ * Hidden terms always return a 404 for users who cannot see them; this term-record check
+ * is viewer-aware, while the relationship fields below leave hidden terms out for everyone.
  *
  * The following sparse fields are added when data exists:
  *   htax_is_hidden  bool   true when the term is hidden (authorized users only).

@@ -1,10 +1,10 @@
 ---
-title: Term Meta for Other Tools
+title: Term Meta
 parent: Developer Reference
 nav_order: 6
 ---
 
-# Term Meta for Other Tools
+# Term Meta
 
 GraphQL plugins, page builders and themes can read term meta but not HyperTaxonomy's REST fields. So HyperTaxonomy answers `get_term_meta()` for the keys below with values computed from its own caches. Nothing is stored in the term meta table, and the values change as soon as a term's relationships do.
 

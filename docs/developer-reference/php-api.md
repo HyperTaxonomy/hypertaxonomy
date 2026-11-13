@@ -637,6 +637,10 @@ if ( is_wp_error( $result ) ) {
 }
 ```
 
+#### Group counts
+
+A group's stored `count` (on its `WP_Term` and in the REST response) is the number of terms directly in the group, kept current as memberships change. Like a category's post count, it leaves out subgroups: a group whose members are all in subgroups has a count of 0. So `get_terms()` with `hide_empty` and `hierarchical => false`, and `GET /wp/v2/group?hide_empty=true`, leave such a group out, exactly as WordPress does for a parent category with posts only in subcategories. With the default `hierarchical => true`, `get_terms()` keeps it. To decide whether a group's archive has content, check its subtree with `htax_get_terms_in_groups()`, which includes subgroups. XML sitemaps already list every group with members anywhere in its subtree.
+
 ### Search notices
 
 Messages for the visitor about how a search was run — e.g. that `near:me` was ignored because the visitor's location is unknown. Integrations that adjust a search in a way the visitor should know about can add their own.

@@ -1119,10 +1119,11 @@ function htax_rest_get_post_matched_slugs( array $post ): ?array {
 // ==============================================================================
 
 /**
- * Exclude hidden term archives from XML sitemaps.
+ * Adjust which term archives XML sitemaps list.
  *
- * Sitemaps are always public, so hidden terms are excluded unless the global
- * visibility setting is 'all'.
+ * Lists every group with members in itself or any subgroup, since a group's archive
+ * includes its subgroups' members. Sitemaps are always public, so hidden terms are
+ * left out unless the global visibility setting is 'all'.
  *
  * @since 1.0.0
  * @param array  $args     Query arguments for the sitemap term query.
@@ -1130,6 +1131,31 @@ function htax_rest_get_post_matched_slugs( array $post ): ?array {
  * @return array Modified query arguments.
  */
 function htax_filter_sitemap_terms_query( $args, $taxonomy ) {
+    // A group's count is its direct members only, like a category's direct posts, but its
+    // archive also shows its subgroups' members. WordPress builds sitemaps from terms with
+    // a count, which would leave out a group whose members are all in subgroups; list every
+    // group with members anywhere in its subtree instead.
+    if ( 'group' === $taxonomy ) {
+        $with_members = get_terms( array(
+            'taxonomy'     => 'group',
+            'hide_empty'   => true,
+            'hierarchical' => false,
+            'fields'       => 'ids',
+        ) );
+        $keep = is_wp_error( $with_members ) ? array() : array_map( 'intval', htax_get_group_ancestors( array_map( 'intval', $with_members ) ) );
+        $all  = get_terms( array(
+            'taxonomy'   => 'group',
+            'hide_empty' => false,
+            'fields'     => 'ids',
+        ) );
+        $empty = is_wp_error( $all ) ? array() : array_diff( array_map( 'intval', $all ), $keep );
+
+        $args['hide_empty'] = false;
+        if ( $empty ) {
+            $args['exclude'] = array_values( array_unique( array_merge( isset( $args['exclude'] ) ? (array) $args['exclude'] : array(), $empty ) ) );
+        }
+    }
+
     $options    = get_option( 'htax_settings', array() );
     $visibility = isset( $options['hidden_terms_visibility'] ) ? $options['hidden_terms_visibility'] : 'post_editors';
 

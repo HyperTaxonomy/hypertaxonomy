@@ -27,16 +27,16 @@
 	display: block;
 }
 
-/* Redirect column — truncates to "Redir…" when space is tight */
+/* Redirect column — wide enough for its header and sort arrows; longer translations truncate */
 .column-htax_redirect {
-	width: 80px;
-	max-width: 80px;
+	width: 92px;
+	max-width: 92px;
 }
 
-/* Visibility column — truncates to "Visib…" when space is tight */
+/* Visibility column — wide enough for its header and sort arrows; longer translations truncate */
 .column-htax_hidden {
-	width: 80px;
-	max-width: 80px;
+	width: 94px;
+	max-width: 94px;
 	text-align: center;
 }
 

@@ -310,11 +310,6 @@
     color: #135e96;
 }
 
-/* Redirect column in term list */
-.wp-list-table .column-htax_redirect {
-    width: 120px;
-}
-
 /* Hidden field styling */
 input[type="hidden"][name^="htax_"] {
     display: none;

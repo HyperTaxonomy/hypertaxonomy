@@ -45,6 +45,11 @@ Inclusion is the main tool, but HyperTaxonomy adds others for the same kind of p
 - **Synonyms:** two terms that include each other, like *USA* and *United States*, share all their posts.
 - **Term Groups:** a named set of terms that a term can include as a whole. If *Pets for sale* includes a *Small pets* group, every animal added to the group joins the shop's archive.
 - **Redirects:** an outdated term sends visitors to its replacement with a permanent redirect, keeping its search ranking.
+- **Your own relationship types:** name the relationships your subject needs, of two kinds.
+  - An **inclusion-based** type works like inclusion under a name of your choosing: the pet shop could say *Pets for sale* **stocks** *Dog*, and the *Pets for sale* archive and search results pick up dog posts exactly as with *includes*.
+  - A **custom** type only records the connection, for example *Dog* **can live with** *Cat*. HyperTaxonomy stores it, shows it in the term editor and returns it through its API, and your theme or plugin decides what it does, such as listing compatible pets on an animal's page.
+
+  To create them, see [Relationship Types and Term Fields](user-guide/term-relationships.html#relationship-types-and-term-fields); for the API, see [Custom Relationship Types](developer-reference/custom-taxonomy.html#custom-relationship-types).
 - **Relevance:** HyperTaxonomy records how central each term is to each post, so search results and related posts rank a dedicated dog-training guide above a post that mentions dogs in passing.
 
 ## Where to next

@@ -3659,35 +3659,12 @@ class HyperTaxonomy_Search_Widget {
             wp_send_json_error( array( 'message' => __( 'Security check failed.', 'hypertaxonomy' ) ), 403 );
             return false;
         }
-        if ( ! $this->check_rate_limit() ) {
+        $action = isset( $_REQUEST['action'] ) ? sanitize_key( wp_unslash( $_REQUEST['action'] ) ) : 'search_widget';
+        if ( ! htax_check_ajax_rate_limit( $action ) ) {
             wp_send_json_error( array( 'message' => __( 'Rate limit exceeded. Please wait a moment and try again.', 'hypertaxonomy' ) ), 429 );
             return false;
         }
         return true;
-    }
-
-    private function check_rate_limit() {
-        $options   = get_option( 'htax_settings', array() );
-        $limit     = isset( $options['rate_limit'] ) ? max( 10, intval( $options['rate_limit'] ) ) : 30;
-
-        $user_key  = is_user_logged_in() ? 'user_' . get_current_user_id() : 'ip_' . $this->get_client_ip();
-        $unique    = md5( $user_key . ( isset( $_REQUEST['action'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['action'] ) ) : '' ) );
-        $cache_key = 'htax_rate_' . $unique;
-
-        $count = wp_cache_incr( $cache_key, 1, 'htax_rate_limits' );
-        if ( false === $count ) {
-            wp_cache_set( $cache_key, 1, 'htax_rate_limits', MINUTE_IN_SECONDS );
-            $count = 1;
-        }
-
-        return $count <= $limit;
-    }
-    
-    private function get_client_ip() {
-        if ( isset( $_SERVER['REMOTE_ADDR'] ) && filter_var( $_SERVER['REMOTE_ADDR'], FILTER_VALIDATE_IP ) ) {
-            return $_SERVER['REMOTE_ADDR'];
-        }
-        return '0.0.0.0';
     }
 
     /**

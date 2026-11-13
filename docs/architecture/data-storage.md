@@ -284,4 +284,5 @@ Caches are transients too; their keys, contents and what clears them are on the 
 - `htax_rt_lock_{slug}` - Edit lock for a relationship type
 - `htax_admin_notices` - Admin notices queued for the next page load
 - `htax_icon_regen_pending` - Icon regeneration waiting to run after a settings change
+- `htax_rate_{hash}` - AJAX rate-limit count for one client (user or visitor IP) and action: `[ minute, count ]`, overwritten each minute, 2-minute expiry (`htax_check_ajax_rate_limit()`). Only used without a persistent object cache; with one, the counts live in the `htax_rate_limits` cache group instead.
 - `htax_ss_{hash}` - Search state of a POST-mode search too large for an inline results-page token (`htax_search_state_encode()`; the token is `k{hash}`, a 16-hex content hash). TTL 30 days (`HTAX_SEARCH_STATE_TTL`); an expired token makes the results URL render as if no search was submitted.

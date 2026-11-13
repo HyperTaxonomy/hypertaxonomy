@@ -607,36 +607,68 @@ function htax_get_sticky_assignment_key( int $term_id ): string {
 }
 
 /**
- * Check rate limit for AJAX requests
+ * Check and count one AJAX request against a per-minute rate limit.
  *
- * Prevents DoS attacks by limiting requests per user per minute
+ * Logged-in users are counted per user, visitors per IP address. Counts are kept
+ * in the object cache when the site has a persistent one, otherwise in one
+ * transient per client and action that is overwritten each minute, so the limit
+ * holds across requests either way.
  *
- * @param string $action The AJAX action name
- * @param int $limit Maximum requests per minute (default: 60)
- * @return bool True if within limit, false if rate exceeded
+ * @since 1.0.0
+ * @param string $action AJAX action name; each action has its own count.
+ * @param int    $limit  Maximum requests per minute. 0 uses the Requests per minute
+ *                       setting (Settings > HyperTaxonomy > Search), for public search requests.
+ * @return bool True if the request is within the limit, false if it's over.
  */
-function htax_check_ajax_rate_limit( $action, $limit = 60 ) {
+function htax_check_ajax_rate_limit( string $action, int $limit = 0 ): bool {
+    if ( $limit <= 0 ) {
+        $options = get_option( 'htax_settings', array() );
+        $limit   = isset( $options['rate_limit'] ) ? max( 10, (int) $options['rate_limit'] ) : 30;
+    }
+
     $user_id = get_current_user_id();
-    if ( ! $user_id ) {
-        return true; // Don't rate limit non-logged-in users (they're already blocked by capability checks)
+    if ( $user_id ) {
+        $client = 'u' . $user_id;
+    } else {
+        $ip = isset( $_SERVER['REMOTE_ADDR'] ) ? (string) filter_var( wp_unslash( $_SERVER['REMOTE_ADDR'] ), FILTER_VALIDATE_IP ) : '';
+        /**
+         * Filters the IP address visitors are rate-limited by.
+         *
+         * Behind a reverse proxy or CDN that doesn't pass the visitor's address on in
+         * REMOTE_ADDR, every visitor shares the proxy's address and therefore one limit.
+         * Return the visitor's address from the header your proxy sets, after checking
+         * that the request came from the proxy.
+         *
+         * @since 1.0.0
+         * @param string $ip     REMOTE_ADDR, or '' when it isn't a valid IP address.
+         * @param string $action AJAX action name.
+         */
+        $client = 'ip' . (string) apply_filters( 'htax_rate_limit_client_ip', $ip, $action );
     }
 
-    $cache_key = 'htax_rate_' . md5( $action . '_' . $user_id );
-    $count     = wp_cache_incr( $cache_key, 1, 'htax_rate_limits' );
-    if ( false === $count ) {
-        wp_cache_set( $cache_key, 1, 'htax_rate_limits', MINUTE_IN_SECONDS );
-        $count = 1;
+    $key    = 'htax_rate_' . md5( $action . '|' . $client );
+    $window = (int) floor( time() / MINUTE_IN_SECONDS );
+
+    if ( wp_using_ext_object_cache() ) {
+        $key .= '_' . $window;
+        wp_cache_add( $key, 0, 'htax_rate_limits', 2 * MINUTE_IN_SECONDS );
+        $count = (int) wp_cache_incr( $key, 1, 'htax_rate_limits' );
+    } else {
+        $state = get_transient( $key );
+        $count = ( is_array( $state ) && (int) ( $state[0] ?? 0 ) === $window ) ? (int) $state[1] + 1 : 1;
+        set_transient( $key, array( $window, $count ), 2 * MINUTE_IN_SECONDS );
     }
 
-    if ( $count > $limit ) {
+    if ( $count <= $limit ) {
+        return true;
+    }
+    if ( $count === $limit + 1 ) {
+        // Log once per client and minute, not on every rejected request.
         htax_log_error( 'AJAX rate limit exceeded', array(
-            'action'  => $action,
-            'user_id' => $user_id,
-            'count'   => $count,
-            'limit'   => $limit,
+            'action' => $action,
+            'client' => $user_id ? 'user ' . $user_id : 'visitor',
+            'limit'  => $limit,
         ) );
-        return false;
     }
-
-    return true;
+    return false;
 }

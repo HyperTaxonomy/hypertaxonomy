@@ -516,3 +516,23 @@ add_filter( 'htax_allowed_field_types', function( array $types ): array {
 **Parameters:** `string[] $types` — the current list of allowed type slugs.
 **Default types:** `['pills', 'checklist', 'text', 'hidden']`
 **Returns:** `string[]` — the modified list.
+
+#### Visitor IP for rate limiting
+
+`htax_rate_limit_client_ip`
+
+Filters the IP address that PowerSearch and search widget requests from visitors are rate-limited by (logged-in users are limited per user). By default it is `REMOTE_ADDR`. Behind a reverse proxy or CDN that doesn't pass the visitor's address in `REMOTE_ADDR`, every visitor shares the proxy's address and therefore one limit; return the address from the header your proxy sets, after checking that the request came from the proxy.
+
+```php
+add_filter( 'htax_rate_limit_client_ip', function( string $ip, string $action ): string {
+    $trusted_proxies = array( '203.0.113.10' );
+    if ( in_array( $ip, $trusted_proxies, true ) && ! empty( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ) {
+        $forwarded = trim( explode( ',', wp_unslash( $_SERVER['HTTP_X_FORWARDED_FOR'] ) )[0] );
+        return filter_var( $forwarded, FILTER_VALIDATE_IP ) ? $forwarded : $ip;
+    }
+    return $ip;
+}, 10, 2 );
+```
+
+**Parameters:** `string $ip` — `REMOTE_ADDR`, or `''` when it isn't a valid IP address; `string $action` — the AJAX action.
+**Returns:** `string` — the address to count requests against.

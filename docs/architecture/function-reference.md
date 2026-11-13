@@ -753,7 +753,7 @@ Shared internal utilities used throughout the plugin. Not part of the public API
 - `htax_display_queued_notices()` - Display notices queued from previous requests
 
 **Security:**
-- `htax_check_ajax_rate_limit( $action, $limit = 60 )` - Per-user, per-minute request limit for AJAX handlers (PowerSearch and the admin AJAX handlers); logged-out users aren't limited
+- `htax_check_ajax_rate_limit( string $action, int $limit = 0 ): bool` - Per-minute request limit for AJAX handlers, counted per logged-in user or per visitor IP (`htax_rate_limit_client_ip` filter); `$limit = 0` uses the Requests per minute setting (PowerSearch and the search widget), the admin handlers pass their own. Counts live in the object cache when persistent, else in one transient per client and action
 - `htax_verify_term_nonce()` - Verify WordPress term edit/add nonces; accepts three nonce sources: `_wpnonce` (action `update-tag_{id}`, full edit form), `_wpnonce_add-tag` (action `add-tag`, AJAX new-term form), and `_inline_edit` (action `taxinlineeditnonce`, WP Quick Edit). The `htax_save_term_data` early-return guard checks for the presence of any of these three fields before calling this function.
 
 **Logging & Error Handling:**

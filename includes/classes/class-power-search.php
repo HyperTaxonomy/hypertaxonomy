@@ -255,7 +255,7 @@ class HyperTaxonomy_Power_Search {
             return;
         }
 
-        if ( ! htax_check_ajax_rate_limit( 'power_search', 30 ) ) {
+        if ( ! htax_check_ajax_rate_limit( 'power_search' ) ) {
             wp_send_json_error( array( 'message' => __( 'Rate limit exceeded. Please wait a moment and try again.', 'hypertaxonomy' ) ), 429 );
             return;
         }

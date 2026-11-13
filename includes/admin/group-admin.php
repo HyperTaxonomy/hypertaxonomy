@@ -554,6 +554,38 @@ function htax_get_taxonomy_map_for_terms( $term_ids ) {
 }
 
 /**
+ * Fire a term-level group hook for each term a group-screen save changed.
+ *
+ * The group edit screen changes one group's rows for many terms at once, but the
+ * listeners (search index, relationship caches, archive change) work per term, so
+ * each changed term gets its own call: its group list after the save, and that list
+ * as it was before (with this group put back or taken out).
+ *
+ * Call after the term's caches were cleared, so `$get_group_ids` reads the saved rows.
+ *
+ * @since 1.0.0
+ *
+ * @param string   $hook          htax_term_groups_changed, htax_included_groups_changed or htax_container_groups_changed.
+ * @param int      $group_id      The group whose screen was saved.
+ * @param int[]    $added         Terms that gained a row to this group.
+ * @param int[]    $removed       Terms that lost their row to this group.
+ * @param callable $get_group_ids Returns a term's current group IDs for this kind of row.
+ */
+function htax_fire_group_changes_per_term( string $hook, int $group_id, array $added, array $removed, callable $get_group_ids ): void {
+    $added   = array_map( 'intval', $added );
+    $removed = array_map( 'intval', $removed );
+
+    foreach ( htax_get_taxonomy_map_for_terms( array_merge( $added, $removed ) ) as $changed_term => $taxonomy ) {
+        $changed_term = (int) $changed_term;
+        $new_groups   = array_map( 'intval', $get_group_ids( $changed_term ) );
+        $old_groups   = in_array( $changed_term, $added, true )
+            ? array_values( array_diff( $new_groups, array( $group_id ) ) )
+            : array_values( array_unique( array_merge( $new_groups, array( $group_id ) ) ) );
+        do_action( $hook, $changed_term, $taxonomy, $new_groups, $old_groups );
+    }
+}
+
+/**
  * Save term members for a group
  *
  * @since 1.0
@@ -691,8 +723,7 @@ function htax_save_terms_in_group( $term_id ) {
         // covering both inclusion and custom relationship type caches.
         htax_invalidate_group_relationship_caches( array( (int) $term_id ) );
 
-        // Fire for search-index and other listeners.
-        do_action( 'htax_term_groups_changed', $term_id, 'group', array(), array() );
+        htax_fire_group_changes_per_term( 'htax_term_groups_changed', (int) $term_id, $terms_to_add, $terms_to_remove, 'htax_get_term_group_ids' );
     }
 }
 add_action( 'edited_group', 'htax_save_terms_in_group' );
@@ -807,7 +838,13 @@ function htax_save_terms_with_container_group( $term_id ) {
         // downward, so ancestor-group members also reach this group's container rows).
         htax_clear_member_caches_for_groups( array( (int) $term_id ), 'inc' );
 
-        do_action( 'htax_term_groups_changed', $term_id, 'group', array(), array() );
+        htax_fire_group_changes_per_term(
+            'htax_container_groups_changed',
+            (int) $term_id,
+            $terms_to_add,
+            $terms_to_remove,
+            fn( int $tid ) => htax_get_reverse_rel_group_ids( $tid, 'includes' )
+        );
     }
 }
 add_action( 'edited_group', 'htax_save_terms_with_container_group' );
@@ -919,7 +956,13 @@ function htax_save_terms_with_included_group( $term_id ) {
         // and htax_get_terms_in_groups expands downward when computing included terms).
         htax_clear_member_caches_for_groups( array( (int) $term_id ), 'cont' );
 
-        do_action( 'htax_term_groups_changed', $term_id, 'group', array(), array() );
+        htax_fire_group_changes_per_term(
+            'htax_included_groups_changed',
+            (int) $term_id,
+            $terms_to_add,
+            $terms_to_remove,
+            fn( int $tid ) => htax_get_direct_rel_group_ids( $tid, 'includes' )
+        );
     }
 }
 add_action( 'edited_group', 'htax_save_terms_with_included_group' );

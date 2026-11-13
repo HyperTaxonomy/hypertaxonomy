@@ -297,11 +297,7 @@ function htax_set_term_groups( $term_id, $group_ids ) {
 
     $wpdb->query( 'COMMIT' );
 
-    // Update term count for affected groups
     $all_affected_groups = array_unique( array_merge( $group_ids, $old_groups ) );
-    foreach ( $all_affected_groups as $group_id ) {
-        htax_set_group_term_count( $group_id, $taxonomy );
-    }
 
     // Fire custom hook for group changes
     do_action( 'htax_term_groups_changed', $term_id, $taxonomy, $group_ids, $old_groups );
@@ -316,33 +312,6 @@ function htax_set_term_groups( $term_id, $group_ids ) {
 }
 
 
-/**
- * Update term count for a group
- *
- * Updates the count of how many terms from a specific taxonomy belong to a group.
- * Recounts on every call: during bulk operations membership changes between calls
- * for the same group, so a count taken earlier in the request would be stale.
- *
- * @since 1.0
- *
- * @param int    $group_id Group term ID.
- * @param string $taxonomy Taxonomy to count terms from.
- */
-function htax_set_group_term_count( $group_id, $taxonomy ) {
-    // Count direct members of this group for this taxonomy (no hierarchy expansion).
-    global $wpdb;
-    $table = $wpdb->prefix . 'htax_term_relationships';
-    $count = (int) $wpdb->get_var( $wpdb->prepare(
-        "SELECT COUNT(DISTINCT source_term_id) FROM {$table}
-         WHERE target_term_id = %d AND target_taxonomy = 'group'
-           AND source_taxonomy = %s AND relationship_type = 'member_of'",
-        $group_id,
-        $taxonomy
-    ) );
-
-    // Store in term meta for display purposes
-    update_term_meta( $group_id, "_htax_count_{$taxonomy}", $count );
-}
 /**
  * Build a tax_query array matching posts that belong to any of the given groups.
  *

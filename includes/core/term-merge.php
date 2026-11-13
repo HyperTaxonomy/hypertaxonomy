@@ -407,7 +407,6 @@ function htax_merge_terms( array $source_ids, int $target_id, string $taxonomy, 
         $affected_group_ids = htax_get_group_ancestors( $affected_group_ids );
 
         foreach ( $affected_group_ids as $group_id ) {
-            htax_set_group_term_count( $group_id, $taxonomy );
             htax_delete_transients_by_prefix( 'htax_grp_' . (int) $group_id . '_' );
             clean_term_cache( $group_id, 'group' );
         }

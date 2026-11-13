@@ -43,7 +43,6 @@ The following meta keys are for display and configuration only.
 
 **Internal State Keys**:
 - `_htax_edit_lock` - `{timestamp}:{user_id}` lock for concurrent term editing
-- `_htax_count_{taxonomy}` - On `group` terms: the group's direct member count for that taxonomy
 
 **Tag Groups Migration Key** (on `group` taxonomy terms only):
 - `_htax_tag_groups_source_id` - Site-scoped mapping key, `{site_token}:{tag_groups_group_id}`, linking an HT group term back to the Tag Groups group it was imported from. `site_token` is a random UUID generated once per site (see `htax_tag_groups_site_token` option below) and never carried by HT's own export/import feature, so an imported mapping from another site fails to match here by construction and falls through to name-matching instead — see `htax_get_tag_groups_site_token()` / `htax_resolve_or_create_tag_group()` in `includes/admin/import-tag-groups-handler.php`. Enables rename-safe and removal-safe re-imports (see Options below for the related run-state options). Stripped (not the term) when the corresponding Tag Groups group is deleted — the HT term itself is never auto-deleted.

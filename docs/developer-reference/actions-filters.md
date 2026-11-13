@@ -70,7 +70,7 @@ add_action( 'htax_excludes_changed', function( $term_id, $taxonomy, $new_exclude
 
 `htax_included_groups_changed`
 
-Fires when the Term Groups a term includes change.
+Fires when the Term Groups a term includes change. Saving a group's edit screen fires it once for each term whose inclusion of that group changed.
 
 ```php
 add_action( 'htax_included_groups_changed', function( $term_id, $taxonomy, $new_groups, $old_groups ) {
@@ -95,7 +95,7 @@ add_action( 'htax_custom_inclusions_changed', function( $term_id, $taxonomy, $af
 
 `htax_container_groups_changed`
 
-Fires when a term's container groups change. A term's posts appear in the archives of the members of its container groups.
+Fires when a term's container groups change. A term's posts appear in the archives of the members of its container groups. Saving a group's edit screen fires it once for each term added to or removed from that group's container rows.
 
 ```php
 add_action( 'htax_container_groups_changed', function( $term_id, $taxonomy, $new_groups, $old_groups ) {
@@ -110,7 +110,7 @@ add_action( 'htax_container_groups_changed', function( $term_id, $taxonomy, $new
 
 `htax_term_groups_changed`
 
-Fires when a term's own group memberships change — i.e. the groups the term belongs to as a member, which determines which terms' archives include it via group-based inclusion.
+Fires when a term's own group memberships change — i.e. the groups the term belongs to as a member, which determines which terms' archives include it via group-based inclusion. Saving a group's member list fires it once for each term that joined or left the group.
 
 ```php
 add_action( 'htax_term_groups_changed', function( $term_id, $taxonomy, $new_groups, $old_groups ) {

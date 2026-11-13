@@ -131,6 +131,14 @@
             "type": "string",
             "default": "1"
         },
+        "days_before": {
+            "type": "string",
+            "default": ""
+        },
+        "days_after": {
+            "type": "string",
+            "default": ""
+        },
         "title_boost": {
             "type": "boolean",
             "default": true

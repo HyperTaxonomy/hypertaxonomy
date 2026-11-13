@@ -91,6 +91,8 @@ export function createEdit( blockName, opts = {} ) {
 			filters_align,
 			search,
 			title_boost,
+			days_before,
+			days_after,
 			prepend,
 			append,
 			image_size,
@@ -226,6 +228,51 @@ export function createEdit( blockName, opts = {} ) {
 								checked={ false !== title_boost }
 								onChange={ ( val ) => setAttributes( { title_boost: val } ) }
 							/>
+						) }
+						{ ! showTermSourceFilters && (
+							<>
+							<ToggleControl
+								label={ __( 'Only posts near this post’s date', 'hypertaxonomy' ) }
+								help={ __(
+									'Measured from this post’s last update, or its publication date if it hasn’t been updated. Leave off to show posts of any age.',
+									'hypertaxonomy'
+								) }
+								checked={ '' !== days_before || '' !== days_after }
+								onChange={ ( on ) => setAttributes( on
+									? { days_before: '7', days_after: '' }
+									: { days_before: '', days_after: '' } ) }
+							/>
+							{ ( '' !== days_before || '' !== days_after ) && (
+								<>
+									<TextControl
+										label={ __( 'Days before this post', 'hypertaxonomy' ) }
+										help={ __(
+											'Leave out posts last published or updated more than this many days before this post. Empty: no limit.',
+											'hypertaxonomy'
+										) }
+										type="number"
+										min="0"
+										value={ days_before }
+										onChange={ ( val ) => setAttributes( {
+											days_before: '' === val ? '' : String( Math.max( 0, parseInt( val, 10 ) || 0 ) ),
+										} ) }
+									/>
+									<TextControl
+										label={ __( 'Days after this post', 'hypertaxonomy' ) }
+										help={ __(
+											'Leave out posts published more than this many days after this post. Empty: no limit.',
+											'hypertaxonomy'
+										) }
+										type="number"
+										min="0"
+										value={ days_after }
+										onChange={ ( val ) => setAttributes( {
+											days_after: '' === val ? '' : String( Math.max( 0, parseInt( val, 10 ) || 0 ) ),
+										} ) }
+									/>
+								</>
+							) }
+							</>
 						) }
 					</PanelBody>
 

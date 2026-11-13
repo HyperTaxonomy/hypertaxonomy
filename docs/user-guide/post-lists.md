@@ -164,7 +164,7 @@ The **HT Related Posts** Gutenberg block is the block-editor equivalent of `[ht_
 
 Find it in the block inserter under **HyperTaxonomy → HT Related Posts**, or search for "hypertaxonomy". To display related content from peer WordPress sites and RSS/Atom feeds alongside local posts, use TermConnect's **Peer Posts** block instead.
 
-The block has the same Query, Filters, and Display inspector panels as the Post List block, including the meta line template field. The Query panel has **Boost posts matching the current post's title** in place of Keyword search (on by default; see *Automatic title boosting* below). The **Term Source** panel shows only the taxonomy selector — include/exclude term and group controls are not present because the term set is derived automatically from the current post. The taxonomy selector offers an **— All taxonomies —** choice (the empty value) that pools the current post's terms across every taxonomy it belongs to; pick a single taxonomy to restrict matching to it. (For a fixed subset of taxonomies, use the shortcode with a comma-separated `taxonomy` list.)
+The block has the same Query, Filters, and Display inspector panels as the Post List block, including the meta line template field. The Query panel has **Boost posts matching the current post's title** in place of Keyword search (on by default; see *Automatic title boosting* below). The **Term Source** panel shows only the taxonomy selector — include/exclude term and group controls are not present because the term set is derived automatically from the current post. The taxonomy selector offers an **— All taxonomies —** choice (the empty value) that pools the current post's terms across every taxonomy it belongs to; pick a single taxonomy to restrict matching to it. (For a fixed subset of taxonomies, use the shortcode with a comma-separated `taxonomy` list.) The Query panel also has **Only posts near this post's date**, which shows **Days before this post** and **Days after this post** (see *Posts near the current post's date* below).
 
 The editor canvas shows a live server-side preview rendered for the post being edited.
 
@@ -182,6 +182,8 @@ Term IDs are derived automatically from the current post's direct taxonomy term 
 
 The default sort order is `relevance:desc,date:desc`: posts that share more (or higher-weighted) terms rank first, with date as a tiebreaker. Each of the current post's terms is also weighted by **how central it is to that post** (its TF-based association strength), so results sharing the post's main subjects rank above those sharing only an incidental tag.
 
+**Posts near the current post's date.** `days_before` and `days_after` limit the list to posts published or last updated around the current post, measured from the current post's last update (or its publication date if it was never updated). `days_before="7"` leaves out posts last published or updated more than a week before it; `days_after="30"` leaves out posts published more than 30 days after it. Use either alone or both together; leave them out or empty for no limit. They're conditions on the query, so paging, totals and sorting all work within the window. Plain `[ht_post_list]` has no current post, so it has no such option.
+
 **Automatic title boosting:** By default, the current post's title is injected as a `search` keyword to further boost posts whose content matches the title. To disable this, pass an explicit empty value, `search=""`, or turn off **Boost posts matching the current post's title** in the block.
 
 ```
@@ -196,6 +198,8 @@ The default sort order is `relevance:desc,date:desc`: posts that share more (or 
 [ht_related_posts taxonomy="post_tag" search="" orderby="relevance:desc,date:desc"]
 
 [ht_related_posts taxonomy="post_tag,category"]
+
+[ht_related_posts days_before="3" days_after="14"]
 
 [ht_related_posts taxonomy=""]
 

@@ -126,6 +126,7 @@ class HyperTaxonomy_Shortcode_Post_List extends HyperTaxonomy_Shortcode_Base {
         $taxonomy         = $this->sanitize_taxonomy_att( $this->htax_atts['taxonomy'] );
         $term_ids         = $this->get_query_term_ids( $this->htax_atts );
         $exclude_post_ids = $this->get_exclude_post_ids();
+        $this->htax_atts  = array_merge( $this->htax_atts, $this->get_date_window( $this->htax_atts ) );
 
         if ( empty( $term_ids ) ) {
             return $this->render_no_results();
@@ -184,6 +185,30 @@ class HyperTaxonomy_Shortcode_Post_List extends HyperTaxonomy_Shortcode_Base {
      */
     protected function get_source_post_id() {
         return 0;
+    }
+
+    /**
+     * Date window the listed posts must overlap, as SQL-ready GMT datetimes.
+     *
+     * [ht_post_list] has none. Related Posts overrides this to build one around the
+     * current post from days_before / days_after.
+     *
+     * @param array $atts Merged shortcode attributes.
+     * @return array 'modified_after' and 'published_before' ('Y-m-d H:i:s' GMT); '' = no limit.
+     */
+    protected function get_date_window( $atts ) {
+        return array( 'modified_after' => '', 'published_before' => '' );
+    }
+
+    /**
+     * A 'Y-m-d H:i:s' datetime, or '' for anything else.
+     *
+     * @param mixed $value Raw value.
+     * @return string
+     */
+    protected static function sanitize_gmt_datetime( $value ) {
+        $value = is_string( $value ) ? trim( $value ) : '';
+        return preg_match( '/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/', $value ) ? $value : '';
     }
 
     /**
@@ -443,6 +468,17 @@ class HyperTaxonomy_Shortcode_Post_List extends HyperTaxonomy_Shortcode_Base {
 
         $search_string = isset( $atts['search'] ) ? trim( $atts['search'] ) : '';
 
+        // Date window (related posts): a post qualifies when it was published or last
+        // updated inside it. Either bound is optional; with both, a post published before
+        // the window and last updated after it is left out.
+        $modified_after   = self::sanitize_gmt_datetime( $atts['modified_after'] ?? '' );
+        $published_before = self::sanitize_gmt_datetime( $atts['published_before'] ?? '' );
+        $date_clause      = ( '' !== $modified_after ? $wpdb->prepare( ' AND pt.post_modified_gmt > %s', $modified_after ) : '' )
+                          . ( '' !== $published_before ? $wpdb->prepare( ' AND pt.post_date_gmt <= %s', $published_before ) : '' )
+                          . ( '' !== $modified_after && '' !== $published_before
+                              ? $wpdb->prepare( ' AND ( pt.post_date_gmt > %s OR pt.post_modified_gmt <= %s )', $modified_after, $published_before )
+                              : '' );
+
         $cache_key = 'htax_pl_t' . implode( '_t', $sorted_term_ids )
                    . ( ! empty( $sorted_filter_term_ids ) ? '_f' . implode( '_f', $sorted_filter_term_ids ) : '' )
                    . ( ! empty( $sorted_filter_group_ids ) ? '_g' . implode( '_g', $sorted_filter_group_ids ) : '' )
@@ -455,6 +491,7 @@ class HyperTaxonomy_Shortcode_Post_List extends HyperTaxonomy_Shortcode_Base {
                    . '_y' . sanitize_key( $atts['post_type'] ?? 'post' )
                    . ( ! empty( $exclude_ids_int ) ? '_x' . implode( '-', $exclude_ids_int ) : '' )
                    . ( '' !== $search_string ? '_s' . substr( md5( $search_string ), 0, 8 ) : '' )
+                   . ( '' !== $date_clause ? '_w' . substr( md5( $modified_after . '|' . $published_before ), 0, 8 ) : '' )
                    . ( htax_can_see_hidden_terms() ? 'H' : '' );
 
         // Never cache results shaped by a user-driven inline filter panel (htax_filter /
@@ -584,6 +621,7 @@ class HyperTaxonomy_Shortcode_Post_List extends HyperTaxonomy_Shortcode_Base {
                $exclude_clause
                $model_clause
                $post_type_clause
+               $date_clause
                $filter_sql";
 
         $total = (int) $wpdb->get_var( $count_sql );
@@ -626,6 +664,7 @@ class HyperTaxonomy_Shortcode_Post_List extends HyperTaxonomy_Shortcode_Base {
              INNER JOIN {$ptt} pt ON pt.post_id = s.post_id AND pt.post_status = 'publish'
              WHERE 1=1
                $post_type_clause
+               $date_clause
                $filter_sql
              ORDER BY $order_by_sql
              LIMIT %d OFFSET %d",
@@ -691,7 +730,8 @@ class HyperTaxonomy_Shortcode_Post_List extends HyperTaxonomy_Shortcode_Base {
             . ' data-search="%s"'
             . ' data-prepend="%s" data-append="%s"'
             . ' data-no-results-message="%s"'
-            . ' data-image-size="%s" data-columns="%d" data-source-post-id="%d"',
+            . ' data-image-size="%s" data-columns="%d" data-source-post-id="%d"'
+            . ' data-modified-after="%s" data-published-before="%s"',
             esc_attr( implode( ',', array_map( 'intval', $term_ids ) ) ),
             esc_attr( implode( ',', array_map( 'intval', $exclude_post_ids ) ) ),
             esc_attr( $this->sanitize_taxonomy_att( $this->htax_atts['taxonomy'] ) ),
@@ -715,7 +755,9 @@ class HyperTaxonomy_Shortcode_Post_List extends HyperTaxonomy_Shortcode_Base {
             esc_attr( $this->htax_atts['no_results_message'] ),
             esc_attr( sanitize_key( $this->htax_atts['image_size'] ?? 'medium' ) ),
             max( 1, intval( $this->htax_atts['columns'] ?? 1 ) ),
-            max( 0, (int) $source_post_id )
+            max( 0, (int) $source_post_id ),
+            esc_attr( $this->htax_atts['modified_after'] ?? '' ),
+            esc_attr( $this->htax_atts['published_before'] ?? '' )
         );
 
         $posts_per_page = max( 1, intval( $this->htax_atts['posts_per_page'] ) );
@@ -997,6 +1039,8 @@ class HyperTaxonomy_Shortcode_Post_List extends HyperTaxonomy_Shortcode_Base {
             'append'          => wp_kses_post( wp_unslash( $_POST['append'] ?? '' ) ),
             'image_size'      => sanitize_key( wp_unslash( $_POST['image_size'] ?? 'medium' ) ),
             'columns'         => (string) max( 1, intval( wp_unslash( $_POST['columns'] ?? 1 ) ) ),
+            'modified_after'   => self::sanitize_gmt_datetime( wp_unslash( $_POST['modified_after'] ?? '' ) ),
+            'published_before' => self::sanitize_gmt_datetime( wp_unslash( $_POST['published_before'] ?? '' ) ),
             'user_filter_sql' => $user_filter_sql,
         );
 
@@ -1096,7 +1140,9 @@ class HyperTaxonomy_Shortcode_Related_Posts extends HyperTaxonomy_Shortcode_Post
     protected function get_default_atts() {
         // Default orderby for related posts puts most-relevant first, then newest
         return array_merge( parent::get_default_atts(), array(
-            'orderby' => 'relevance:desc,date:desc',
+            'orderby'     => 'relevance:desc,date:desc',
+            'days_before' => '',
+            'days_after'  => '',
         ) );
     }
 
@@ -1230,6 +1276,41 @@ class HyperTaxonomy_Shortcode_Related_Posts extends HyperTaxonomy_Shortcode_Post
     protected function get_exclude_post_ids() {
         $post_id = get_the_ID();
         return $post_id ? array( (int) $post_id ) : array();
+    }
+
+    /**
+     * Date window around the current post, from days_before / days_after.
+     *
+     * The reference date is the current post's last update, or its publication date
+     * when it hasn't been updated since. Listed posts were published or last updated
+     * between the reference minus days_before and the reference plus days_after. Each
+     * bound is optional; empty or non-numeric = no limit.
+     *
+     * @param array $atts Merged shortcode attributes.
+     * @return array 'modified_after' and 'published_before' ('Y-m-d H:i:s' GMT); '' = no limit.
+     */
+    protected function get_date_window( $atts ) {
+        $window = parent::get_date_window( $atts );
+        $before = trim( (string) ( $atts['days_before'] ?? '' ) );
+        $after  = trim( (string) ( $atts['days_after'] ?? '' ) );
+        $post   = get_post( get_the_ID() );
+        if ( ! $post || ( ! is_numeric( $before ) && ! is_numeric( $after ) ) ) {
+            return $window;
+        }
+        $ref = max(
+            (int) strtotime( $post->post_date_gmt . ' UTC' ),
+            (int) strtotime( $post->post_modified_gmt . ' UTC' )
+        );
+        if ( $ref <= 0 ) {
+            return $window;
+        }
+        if ( is_numeric( $before ) ) {
+            $window['modified_after'] = gmdate( 'Y-m-d H:i:s', $ref - max( 0, (int) $before ) * DAY_IN_SECONDS );
+        }
+        if ( is_numeric( $after ) ) {
+            $window['published_before'] = gmdate( 'Y-m-d H:i:s', $ref + max( 0, (int) $after ) * DAY_IN_SECONDS );
+        }
+        return $window;
     }
 
     /**

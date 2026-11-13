@@ -7,6 +7,8 @@ nav_order: 4
 # Concepts
 {: .no_toc }
 
+The ideas HyperTaxonomy is built on: what terms are, the relationships between them, and how to choose between features. For the problem it solves, with an example, see [Why HyperTaxonomy](../why-hypertaxonomy.html).
+
 ## Table of contents
 {: .no_toc .text-delta }
 
@@ -15,9 +17,7 @@ nav_order: 4
 
 ---
 
-## Introduction
-
-### Terms and Taxonomies
+## Terms and Taxonomies
 
 A **term** in WordPress is a label that represents a concept — an idea, topic, entity, or subject. Terms are grouped into **taxonomies**: a taxonomy is a named vocabulary of terms. WordPress ships with two built-in taxonomies — *tags* (flat, unordered) and *categories* (parent-child tree) — and allows site owners to define additional custom taxonomies for any content domain.
 
@@ -25,46 +25,7 @@ When a content editor assigns a term to a post, they declare that the post belon
 
 A term is best understood as a concept, not a post list. "React" does not mean "these particular posts"; it means the concept React, and every post tagged with it is a current member of that set. New posts join automatically; the concept's meaning does not change. This distinction matters for HyperTaxonomy: a relationship between two terms applies uniformly to all posts in both sets, now and in the future. The usefulness of that relationship depends directly on how consistently and precisely terms have been applied.
 
----
-
-### The Problem
-
-WordPress taxonomies are limited to two organizational models, each with fundamental constraints.
-
-**Flat taxonomies (tags):** Terms exist independently with no relationships. For example, posts tagged "React" won't appear in the "JavaScript" archive — even though React is a JavaScript framework. You must manually tag every React post with both terms, creating maintenance overhead and inconsistency.
-
-**Hierarchical taxonomies (categories):** Terms can only have one parent, forming a strict tree. The only relationship is parent-child, with child categories being narrower than their parents. A topic can legitimately belong to multiple organizational perspectives simultaneously — and a post may be in multiple categories — but you cannot express that posts in "React" category should automatically appear within both "Frontend Development" and "JavaScript Ecosystem".
-
-**Custom taxonomies** offer no escape: any custom taxonomy is also either flat or hierarchical — there are no additional relationship types.
-
-At a deeper level, the problem is semantic as much as structural: how posts get tagged is left to the content creator and carries no enforced meaning. Topics overlap, terms relate in multiple ways simultaneously, and rigid hierarchies force either duplicate tagging or a compromised information architecture.
-
-### The Solution
-
-HyperTaxonomy adds **explicit term-to-term relationships** that work alongside — never replacing — WordPress's existing taxonomies:
-
-- **Inclusion relationships** — Any term can include any other term. "JavaScript" can include "React"; "Frontend Development" can include both.
-- **Bidirectional inclusion (synonyms)** — "USA" and "United States" can share all content in either archive, becoming interchangeable.
-- **Term Groups** — Built-in group taxonomy for organizing terms across multiple hierarchies and managing bulk inclusions.
-- **Custom relationship types** — Define domain-specific named relationships between terms (e.g. "translated into", "supersedes", "component of").
-- **Redirects** — 301 redirects for outdated or redundant terms, preserving SEO value.
-- **Relationship strength** — Each term-to-post relationship in the search index carries a score reflecting how centrally the post covers that term. Posts where the term dominates the content rank above posts where it appears only in passing.
-- **Archive enhancements** — Term icons, sticky posts, rich descriptions, hidden terms.
-- **Search** — PowerSearch with relevance scoring and a modular faceted search widget.
-
-### Key Benefits
-
-- **Better content discovery** — Related content appears in multiple relevant archives without duplicate tagging
-- **Clean organization** — Multiple organizational perspectives coexist without breaking any hierarchy
-- **No coding required** — Term lists, tag clouds, related posts, sort controls, etc., are available both as Gutenberg blocks, as well as shortcodes
-- **Flexible search** — Build faceted search interfaces without coding
-- **Improved SEO** — 301 redirects preserve link equity when consolidating terms
-
----
-
-## Core Concepts
-
-### Relationship Types
+## Relationship Types
 
 **Inclusion** — Term A includes Term B: every post tagged with Term B automatically appears in Term A's archive. Defined from either direction — adding B to A's "included terms" is identical to adding A to B's "container terms." Inclusions are **non-transitive**: A including B and B including C does not make A include C. Each link is explicit and independent, so every archive stays focused on exactly the content you chose.
 
@@ -80,17 +41,17 @@ HyperTaxonomy adds **explicit term-to-term relationships** that work alongside �
 
 **Custom Relationship Types** — User-defined relationships beyond the built-in types. Inclusion-based custom types participate in archive expansion automatically (e.g. "Supersedes"). Other custom types store the relationship only and leave behavior to your theme or plugin (e.g. "Related"). Custom types can be **symmetric** (same label in both directions, single unified list in the term editor) or **asymmetric** (distinct forward and inverse labels, two separate panels).
 
-### Design Philosophy
+## Design Philosophy
 
 Inclusions are non-transitive by design: unlike WordPress's native category hierarchy (where a post in a child category automatically appears all the way up the tree), HyperTaxonomy keeps each archive focused on exactly the content you defined for it. Two terms that include each other mutually form synonyms, sharing content while remaining independent.
 
 HyperTaxonomy inclusion and container relationships are also restricted to **cross-branch** terms. For hierarchical taxonomies, a term's ancestors and descendants are excluded from its included and container sets — WordPress's native hierarchy already ensures those posts appear in the right archives, and duplicating that with HyperTaxonomy would be redundant. HyperTaxonomy relationships are for connecting terms that are not already related through the taxonomy tree.
 
-For a full discussion of when to use inclusions vs. native hierarchy, how to model common content structures, and how HyperTaxonomy fits alongside other plugins — see [Best Practices](modeling-guide.html).
+For a full discussion of when to use inclusions vs. native hierarchy, how to model common content structures, and how HyperTaxonomy fits alongside other plugins — see the [Modeling Guide](modeling-guide.html).
 
 ---
 
-### Term Groups
+## Term Groups
 
 Term Groups is a built-in hierarchical taxonomy for organizing terms into groups that span taxonomies and organizational perspectives. Unlike Tags and Categories — which are post taxonomies that live under **Posts** in the admin sidebar — Term Groups is a *term* taxonomy: it classifies and organizes terms, not posts directly. Accordingly, it lives under **Terms > Term Groups** rather than under Posts.
 

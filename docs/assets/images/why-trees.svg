@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 990 300" width="990" height="300" role="img" aria-labelledby="t d">
+  <title id="t">Three category trees that each need a Dog</title>
+  <desc id="d">By descent: Mammals has Canines (Dog, Wolf), Felines (Cat), Equines (Miniature pony) and Rodents (Guinea pig). By role: Service animals has Dog and Miniature pony. For sale: Pets for sale has Dog, Cat and Guinea pig. Every animal in the second and third trees is a duplicate term, because a category can have only one parent.</desc>
+  <style>
+    text { font-family: Inter, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; font-size: 12px; fill: #14222e; text-anchor: middle; }
+    .title { font-size: 13px; font-weight: 600; fill: #0a7fb8; }
+    .node { fill: #e8f2f8; stroke: #1c78a1; stroke-width: 1.5; }
+    .root { fill: #1c78a1; stroke: #1c78a1; }
+    .rootText { fill: #ffffff; font-weight: 600; }
+    .dup { fill: #ffffff; stroke: #c0392b; stroke-width: 1.5; stroke-dasharray: 5 3; }
+    .dupText { fill: #c0392b; }
+    .edge { stroke: #7a8c99; stroke-width: 1.2; fill: none; }
+    .sep { stroke: #d5dde3; stroke-width: 1; }
+    .legend { text-anchor: start; fill: #4a5a66; }
+  </style>
+
+  <!-- Panel titles -->
+  <text class="title" x="200" y="22">By descent (one category tree)</text>
+  <text class="title" x="540" y="22">By role</text>
+  <text class="title" x="845" y="22">For sale</text>
+  <line class="sep" x1="395" y1="10" x2="395" y2="250"/>
+  <line class="sep" x1="685" y1="10" x2="685" y2="250"/>
+
+  <!-- Panel 1: descent -->
+  <path class="edge" d="M200 70 V95 H71 V120 M200 95 H330 V120 M175 95 V120 M250 95 V120"/>
+  <path class="edge" d="M71 150 V175 H36 V200 M71 175 H106 V200 M175 150 V200 M250 150 V200 M330 150 V200"/>
+  <rect class="node root" x="150" y="40" width="100" height="30" rx="6"/>
+  <text class="rootText" x="200" y="59">Mammals</text>
+  <rect class="node" x="38" y="120" width="66" height="30" rx="6"/><text x="71" y="139">Canines</text>
+  <rect class="node" x="142" y="120" width="66" height="30" rx="6"/><text x="175" y="139">Felines</text>
+  <rect class="node" x="217" y="120" width="66" height="30" rx="6"/><text x="250" y="139">Equines</text>
+  <rect class="node" x="297" y="120" width="66" height="30" rx="6"/><text x="330" y="139">Rodents</text>
+  <rect class="node" x="3" y="200" width="66" height="30" rx="6"/><text x="36" y="219">Dog</text>
+  <rect class="node" x="73" y="200" width="66" height="30" rx="6"/><text x="106" y="219">Wolf</text>
+  <rect class="node" x="142" y="200" width="66" height="30" rx="6"/><text x="175" y="219">Cat</text>
+  <rect class="node" x="214" y="200" width="72" height="30" rx="6"/><text x="250" y="219">Mini pony</text>
+  <rect class="node" x="294" y="200" width="72" height="30" rx="6"/><text x="330" y="219">Guinea pig</text>
+
+  <!-- Panel 2: role -->
+  <path class="edge" d="M540 70 V95 H490 V120 M540 95 H590 V120"/>
+  <rect class="node root" x="475" y="40" width="130" height="30" rx="6"/>
+  <text class="rootText" x="540" y="59">Service animals</text>
+  <rect class="dup" x="457" y="120" width="66" height="30" rx="6"/><text class="dupText" x="490" y="139">Dog</text>
+  <rect class="dup" x="554" y="120" width="72" height="30" rx="6"/><text class="dupText" x="590" y="139">Mini pony</text>
+
+  <!-- Panel 3: for sale -->
+  <path class="edge" d="M845 70 V95 H770 V120 M845 95 V120 M845 95 H922 V120"/>
+  <rect class="node root" x="785" y="40" width="120" height="30" rx="6"/>
+  <text class="rootText" x="845" y="59">Pets for sale</text>
+  <rect class="dup" x="737" y="120" width="66" height="30" rx="6"/><text class="dupText" x="770" y="139">Dog</text>
+  <rect class="dup" x="812" y="120" width="66" height="30" rx="6"/><text class="dupText" x="845" y="139">Cat</text>
+  <rect class="dup" x="886" y="120" width="72" height="30" rx="6"/><text class="dupText" x="922" y="139">Guinea pig</text>
+
+  <!-- Legend -->
+  <rect class="node" x="10" y="266" width="22" height="16" rx="4"/>
+  <text class="legend" x="40" y="278">One term</text>
+  <rect class="dup" x="130" y="266" width="22" height="16" rx="4"/>
+  <text class="legend" x="160" y="278">A duplicate term: a second "Dog" with its own archive, unconnected to the first. Tag a post with one, and the other archives never show it.</text>
+</svg>

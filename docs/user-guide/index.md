@@ -1,6 +1,6 @@
 ---
 title: User Guide
-nav_order: 3
+nav_order: 4
 has_children: true
 has_toc: false
 ---
@@ -14,7 +14,7 @@ This guide is split into the following pages:
 - **[Settings Reference](settings-reference.html)** — every tab at Settings > HyperTaxonomy.
 - **[Roles & Permissions](roles-permissions.html)** — the six custom capabilities and which roles get them.
 - **[Import & Migration](import-migration.html)** — JSON export/import and migrating from Tag Groups (now PublishPress Tag Groups).
-- **[Concepts](concepts.html)** — what terms and taxonomies are, the problem HyperTaxonomy solves, relationship types, Term Groups, and choosing between features.
+- **[Concepts](concepts.html)** — what terms and taxonomies are, relationship types, Term Groups, and choosing between features.
 - **[Term Relationships](term-relationships.html)** — Term Groups, inclusions, containers, synonyms, group inclusions, exclusions, and redirects.
 - **[Per-Term Settings](per-term-settings.html)** — visibility, icons, archive descriptions, sticky posts, and archive overrides.
 - **[Merge & Convert Terms](merge-convert.html)** — consolidating duplicate terms and moving terms between taxonomies.

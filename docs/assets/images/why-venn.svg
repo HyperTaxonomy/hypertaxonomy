@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 520" width="640" height="520" role="img" aria-labelledby="t d">
+  <title id="t">One Dog term in three overlapping sets</title>
+  <desc id="d">Three overlapping circles: Canines (Dog, Wolf), Service animals (Dog, Miniature pony) and Pets for sale (Dog, Cat, Guinea pig). Dog sits where all three overlap: one term, in all three archives.</desc>
+  <style>
+    text { font-family: Inter, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; font-size: 14px; fill: #14222e; text-anchor: middle; }
+    .label { font-size: 15px; font-weight: 600; }
+    .dog { font-size: 16px; font-weight: 700; }
+    .note { font-size: 12px; fill: #4a5a66; }
+  </style>
+
+  <circle cx="250" cy="210" r="150" fill="#86b847" fill-opacity="0.28" stroke="#5f8f2a" stroke-width="2"/>
+  <circle cx="390" cy="210" r="150" fill="#ee7d26" fill-opacity="0.25" stroke="#c45f12" stroke-width="2"/>
+  <circle cx="320" cy="330" r="150" fill="#b71c8c" fill-opacity="0.20" stroke="#8e146c" stroke-width="2"/>
+
+  <text class="label" x="150" y="48">Canines</text>
+  <text class="label" x="495" y="48">Service animals</text>
+  <text class="label" x="320" y="505">Pets for sale</text>
+
+  <text x="170" y="175">Wolf</text>
+  <text x="470" y="175">Mini pony</text>
+  <text x="320" y="405">Cat</text>
+  <text x="320" y="430">Guinea pig</text>
+
+  <circle cx="320" cy="244" r="30" fill="#ffffff" stroke="#1c78a1" stroke-width="2"/>
+  <text class="dog" x="320" y="250">Dog</text>
+  <text class="note" x="320" y="292">one term</text>
+</svg>

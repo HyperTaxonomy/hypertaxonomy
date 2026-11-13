@@ -45,6 +45,7 @@ Switching away from Tag Groups and keeping it alongside HyperTaxonomy are both s
 
 ## Documentation map
 
+- **[Why HyperTaxonomy](why-hypertaxonomy.html)** — the problem with tags and category trees, and how one term can belong to many structures.
 - **[Getting Started](getting-started.html)** — requirements, installation, and first steps.
 - **[User Guide](user-guide/)** — for site admins: settings, roles, import and migration, concepts, relationships, per-term settings, display and search shortcodes, the post editor, and modeling guidance.
 - **[Developer Reference](developer-reference/)** — for theme and plugin developers: custom taxonomy integration, the PHP API, sort and filter controls, actions, filters, REST endpoints, and the As the Crow Flies integration.

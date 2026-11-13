@@ -1,6 +1,6 @@
 ---
 title: Feature Comparison
-nav_order: 6
+nav_order: 7
 ---
 
 # Feature Comparison

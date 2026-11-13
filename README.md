@@ -43,6 +43,7 @@ For cross-site content — fetching related posts from peer WordPress sites, RSS
 
 The full documentation is published as a [Just-the-Docs](https://just-the-docs.com/) site (source under [`docs/`](docs/)):
 
+- [Why HyperTaxonomy](docs/why-hypertaxonomy.md) — The problem with tags and category trees, and how one term can belong to many structures
 - [Getting Started](docs/getting-started.md) — Requirements, installation, and first steps
 - [User Guide](docs/user-guide/) — Settings, roles, import/migration, concepts, relationships, display and search shortcodes, the post editor, and modeling guidance
 - [Developer Reference](docs/developer-reference/) — PHP API, actions/filters, REST API, and sort and filter controls for theme/plugin developers

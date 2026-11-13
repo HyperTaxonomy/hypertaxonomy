@@ -46,7 +46,7 @@ The full documentation is published as a [Just-the-Docs](https://just-the-docs.c
 - [Why HyperTaxonomy](docs/why-hypertaxonomy.md) — The problem with tags and category trees, and how one term can belong to many structures
 - [Getting Started](docs/getting-started.md) — Requirements, installation, and first steps
 - [User Guide](docs/user-guide/) — Settings, roles, import/migration, concepts, relationships, display and search shortcodes, the post editor, and modeling guidance
-- [Developer Reference](docs/developer-reference/) — PHP API, actions/filters, REST API, term meta for GraphQL plugins and page builders, and sort and filter controls for theme/plugin developers
+- [Developer Reference](docs/developer-reference/) — custom taxonomy integration, PHP API, actions/filters, REST API, term meta for GraphQL plugins and page builders, sort and filter controls, and the As the Crow Flies integration, for theme/plugin developers
 - [Architecture Reference](docs/architecture/) — Internal architecture, data storage, caching, query design, hook execution, performance
 - [Contributing](docs/architecture/contributing.md) — Design principles, coding standards, implementation patterns, block builds, error handling, and debug tools for HyperTaxonomy contributors
 

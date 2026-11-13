@@ -17,8 +17,8 @@ This guide is split into the following pages:
 
 - **[Custom Taxonomy Integration](custom-taxonomy.html)** — registering taxonomies for HyperTaxonomy, querying with inclusions, and custom relationship types.
 - **[PHP API](php-api.html)** — the integration API, term icons API, hidden terms, and low-level relationship data.
-- **[Sort & Filter Controls](sort-filter-controls.html)** — rendering the sort picker and filter panel from PHP, their HTML structures, and their JavaScript events.
 - **[Actions & Filters](actions-filters.html)** — every action HyperTaxonomy fires and every filter it exposes.
 - **[REST API](rest-api.html)** — the presence header, term and post endpoint enrichment, scored collections, and relationship-type endpoints.
 - **[Term Meta](term-meta.html)** — HyperTaxonomy's relationships, groups, pinned posts, identifiers, locations and icons as read-only `get_term_meta()` keys, for GraphQL plugins, page builders and themes.
+- **[Sort & Filter Controls](sort-filter-controls.html)** — rendering the sort picker and filter panel from PHP, their HTML structures, and their JavaScript events.
 - **[As the Crow Flies Integration](atcf.html)** — the built-in ATCF integration: distance field, proximity operators, location REST fields, and helper functions.

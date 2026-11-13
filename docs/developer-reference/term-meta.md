@@ -1,7 +1,7 @@
 ---
 title: Term Meta
 parent: Developer Reference
-nav_order: 6
+nav_order: 5
 ---
 
 # Term Meta

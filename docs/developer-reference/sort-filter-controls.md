@@ -1,7 +1,7 @@
 ---
 title: Sort & Filter Controls
 parent: Developer Reference
-nav_order: 3
+nav_order: 6
 ---
 
 # Sort & Filter Controls

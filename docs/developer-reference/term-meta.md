@@ -19,6 +19,8 @@ Available for terms in every HyperTaxonomy-enabled taxonomy, except Term Groups 
 | `htax_synonyms` | IDs of this term's synonyms: terms it includes that also include it. |
 | `htax_groups` | IDs of the Term Groups this term is assigned to. Only direct assignments, not the parent groups of those groups. |
 | `htax_archive_term_ids` | IDs of every term whose posts this term's archive shows: the term itself, its child terms and its inclusions. Use them in one tax query to get the archive's posts. |
+| `htax_term_uris` | The term's external identifier URIs, from [`htax_get_term_uris()`](php-api.html#provider-filters). TermConnect provides them: its knowledge-base and peer-site links, plus the As the Crow Flies address URIs and Social Hashtags & Mentions handles it indexes. Empty without TermConnect. |
+| `htax_locations` | The term's locations, when **Share list of locations** is on for the taxonomy: one row per location with `label`, `street_address`, `locality`, `region`, `postal_code`, `country`, `lat` and `lng`. Needs As the Crow Flies. |
 | `htax_redirect` | ID of the term this term redirects to, or `0`. |
 | `htax_icon_url` | URL of the term's icon at the large size, the taxonomy's configured icon size. `''` when there's no icon. |
 | `htax_icon_url_small`, `htax_icon_url_medium`, `htax_icon_url_large` | URL of the icon at each size the taxonomy's icon settings generate. |
@@ -30,7 +32,7 @@ $included = get_term_meta( $term_id, 'htax_includes', true ); // [ 12, 34 ]
 $icon     = get_term_meta( $term_id, 'htax_icon_url', true ); // 'https://…' or ''
 ```
 
-With `$single = false`, a list key returns its IDs as separate values, like any meta key with several values, and a single-value key returns a one-item array, or an empty array when there's no value.
+With `$single = false`, a list key returns its items as separate values, like any meta key with several values, and a single-value key returns a one-item array, or an empty array when there's no value.
 
 ## Hidden terms
 
@@ -56,8 +58,9 @@ Several keys overlap with HyperTaxonomy's [REST fields](rest-api.html#term-endpo
 | `htax_synonyms` | `htax_synonyms` | REST gives each synonym's ID, slug, name and taxonomy; meta gives IDs. |
 | `htax_redirect` | `htax_redirect` | REST gives the target's ID, name, slug and link; meta gives its ID, or `0`. |
 | `htax_icon_url`, `htax_icon_url_small` / `_medium` / `_large` | `htax_icon` | REST gives each size's URL, width and height in one object; meta gives one URL per key. |
-| `htax_containers`, `htax_groups`, `htax_archive_term_ids` | — | Term meta only. |
-| — | `htax_relationships`, `htax_locations`, `htax_is_hidden` | REST only. |
+| `htax_locations` | `htax_locations` | Same locations and the same sharing setting. REST gives Schema.org `Place` objects with a nested address and coordinates; meta gives flat rows. |
+| `htax_containers`, `htax_groups`, `htax_archive_term_ids`, `htax_term_uris` | — | Term meta only. TermConnect adds its own `tc_links` REST field with each link's URL, platform and label. |
+| — | `htax_relationships`, `htax_is_hidden` | REST only. |
 
 Use the REST fields to get related terms' names and slugs in one request, as TermConnect does between peer sites. Use the meta keys from tools that can't read REST fields, or from PHP.
 
@@ -84,6 +87,12 @@ add_action( 'graphql_register_types', function () {
             },
         ) );
     }
+    register_graphql_field( 'TermNode', 'htaxTermUris', array(
+        'type'    => array( 'list_of' => 'String' ),
+        'resolve' => function ( $term ) {
+            return get_term_meta( $term->databaseId, 'htax_term_uris', true );
+        },
+    ) );
     register_graphql_field( 'TermNode', 'htaxIconUrl', array(
         'type'    => 'String',
         'resolve' => function ( $term ) {
@@ -103,4 +112,6 @@ add_action( 'graphql_register_types', function () {
 }
 ```
 
-The keys hold term IDs, so a second query fetches the related terms' names, for example `tags(where: { include: [34, 56] }) { nodes { name uri } }`.
+`htax_locations` holds rows rather than single values; to expose it, register an object type for a location, or return `wp_json_encode()` of the rows as a `String`.
+
+The relationship keys hold term IDs, so a second query fetches the related terms' names, for example `tags(where: { include: [34, 56] }) { nodes { name uri } }`.

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-12 21:51-0500\n"
+"POT-Creation-Date: 2026-11-13 00:21-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -3940,7 +3940,7 @@ msgstr ""
 msgid "Post not found."
 msgstr ""
 
-#: includes/core/relationship-types-rest.php:147 includes/core/rest-api.php:452
+#: includes/core/relationship-types-rest.php:147 includes/core/rest-api.php:460
 #: includes/core/term-conversion.php:129
 msgid "Term not found."
 msgstr ""
@@ -4307,45 +4307,55 @@ msgstr ""
 msgid "Database error during term merge; all changes rolled back."
 msgstr ""
 
-#: includes/core/term-meta-computed.php:165
+#: includes/core/term-meta-computed.php:184
 msgid ""
 "IDs of the terms whose posts this term's archive includes (HyperTaxonomy "
 "inclusions, group and container-group inclusions, after exclusions). Read-"
 "only."
 msgstr ""
 
-#: includes/core/term-meta-computed.php:166
+#: includes/core/term-meta-computed.php:185
 msgid "IDs of the terms whose archives include this term's posts. Read-only."
 msgstr ""
 
-#: includes/core/term-meta-computed.php:167
+#: includes/core/term-meta-computed.php:186
 msgid "IDs of this term's synonyms. Read-only."
 msgstr ""
 
-#: includes/core/term-meta-computed.php:168
+#: includes/core/term-meta-computed.php:187
 msgid "IDs of the Term Groups this term is assigned to. Read-only."
 msgstr ""
 
-#: includes/core/term-meta-computed.php:169
+#: includes/core/term-meta-computed.php:188
 msgid ""
 "IDs of every term whose posts this term's archive shows, including the term "
 "and its child terms. Read-only."
 msgstr ""
 
-#: includes/core/term-meta-computed.php:170
+#: includes/core/term-meta-computed.php:189
+msgid ""
+"External identifier URIs for this term, such as knowledge-base links. Read-"
+"only."
+msgstr ""
+
+#: includes/core/term-meta-computed.php:190
+msgid "Locations of this term, when the taxonomy shares them. Read-only."
+msgstr ""
+
+#: includes/core/term-meta-computed.php:191
 msgid "ID of the term this term redirects to, or 0. Read-only."
 msgstr ""
 
-#: includes/core/term-meta-computed.php:171
-#: includes/core/term-meta-computed.php:174
+#: includes/core/term-meta-computed.php:192
+#: includes/core/term-meta-computed.php:195
 msgid "URL of this term's icon at the large size. Read-only."
 msgstr ""
 
-#: includes/core/term-meta-computed.php:172
+#: includes/core/term-meta-computed.php:193
 msgid "URL of this term's icon at the small size. Read-only."
 msgstr ""
 
-#: includes/core/term-meta-computed.php:173
+#: includes/core/term-meta-computed.php:194
 msgid "URL of this term's icon at the medium size. Read-only."
 msgstr ""
 

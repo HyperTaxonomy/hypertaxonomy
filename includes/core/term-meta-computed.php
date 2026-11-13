@@ -22,7 +22,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * The computed keys: key => true when the value is a list of term IDs, false when it is one value.
+ * The computed keys: key => true when the value is a list (of term IDs, URIs or location rows),
+ * false when it is one value.
  *
  * @since 1.0.0
  * @return array<string,bool>
@@ -34,6 +35,8 @@ function htax_computed_term_meta_keys(): array {
         'htax_synonyms'         => true,
         'htax_groups'           => true,
         'htax_archive_term_ids' => true,
+        'htax_term_uris'        => true,
+        'htax_locations'        => true,
         'htax_redirect'         => false,
         'htax_icon_url'         => false,
         'htax_icon_url_small'   => false,
@@ -48,8 +51,9 @@ function htax_computed_term_meta_keys(): array {
  * @since 1.0.0
  * @param WP_Term $term Term.
  * @param string  $key  A key from htax_computed_term_meta_keys().
- * @return int[]|int|string Term IDs for list keys; a term ID (0 for none) for htax_redirect;
- *                          a URL ('' for none) for the icon keys.
+ * @return array|int|string A list for list keys (term IDs; URI strings for htax_term_uris;
+ *                          location rows for htax_locations); a term ID (0 for none) for
+ *                          htax_redirect; a URL ('' for none) for the icon keys.
  */
 function htax_compute_term_meta( WP_Term $term, string $key ) {
     switch ( $key ) {
@@ -72,6 +76,21 @@ function htax_compute_term_meta( WP_Term $term, string $key ) {
 
         case 'htax_archive_term_ids':
             return htax_remove_hidden_term_ids( htax_get_expanded_term_ids( $term->term_id ) );
+
+        case 'htax_term_uris':
+            // Every external identifier any provider gives the term: TermConnect's links,
+            // As the Crow Flies' address URIs, and so on.
+            return array_values( array_unique( array_filter( array_map( 'strval', htax_get_term_uris( $term->term_id ) ) ) ) );
+
+        case 'htax_locations':
+            // Same gate as the htax_locations REST field: shared only when the taxonomy's
+            // "Share list of locations" feature is on. Flat rows (label, street_address,
+            // locality, region, postal_code, country, lat, lng), easier for meta-reading
+            // tools than the REST field's nested Schema.org objects.
+            if ( ! htax_taxonomy_has_feature( $term->taxonomy, 'share_locations' ) ) {
+                return array();
+            }
+            return array_values( htax_get_term_locations( $term->term_id ) );
 
         case 'htax_redirect':
             $target = htax_get_redirect_target( $term->term_id );
@@ -167,6 +186,8 @@ function htax_register_computed_term_meta(): void {
         'htax_synonyms'         => __( 'IDs of this term\'s synonyms. Read-only.', 'hypertaxonomy' ),
         'htax_groups'           => __( 'IDs of the Term Groups this term is assigned to. Read-only.', 'hypertaxonomy' ),
         'htax_archive_term_ids' => __( 'IDs of every term whose posts this term\'s archive shows, including the term and its child terms. Read-only.', 'hypertaxonomy' ),
+        'htax_term_uris'        => __( 'External identifier URIs for this term, such as knowledge-base links. Read-only.', 'hypertaxonomy' ),
+        'htax_locations'        => __( 'Locations of this term, when the taxonomy shares them. Read-only.', 'hypertaxonomy' ),
         'htax_redirect'         => __( 'ID of the term this term redirects to, or 0. Read-only.', 'hypertaxonomy' ),
         'htax_icon_url'         => __( 'URL of this term\'s icon at the large size. Read-only.', 'hypertaxonomy' ),
         'htax_icon_url_small'   => __( 'URL of this term\'s icon at the small size. Read-only.', 'hypertaxonomy' ),

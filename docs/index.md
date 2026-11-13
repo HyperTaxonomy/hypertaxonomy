@@ -34,7 +34,7 @@ HyperTaxonomy adds term organization, relationships, and relevance-scored search
 - **Post List Shortcodes & Blocks** — Filtered post lists and related posts via shortcodes or Gutenberg blocks.
 - **Native Block Extensions** — A Term Group filter on the core Query Loop and Latest Posts blocks.
 - **External Posts** — Fetch related posts from peer WordPress sites and RSS/Atom feeds via [TermConnect](https://hypertaxonomy.org/termconnect/) (`[tc_peer_posts]`).
-- **Integration API** — Automatic inclusion expansion for third-party queries, REST endpoints and extra term fields in standard REST responses, and relationships, groups and icons readable as term meta for GraphQL plugins and page builders.
+- **Integration API** — Automatic inclusion expansion for third-party queries, REST endpoints and extra term fields in standard REST responses, and relationships, groups, identifiers, locations and icons readable as term meta for GraphQL plugins and page builders.
 - **Import / Export** — JSON-based data migration, with a Tag Groups migrator included.
 
 ## Coming from Tag Groups?

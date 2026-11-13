@@ -5,12 +5,21 @@ nav_order: 5
 ---
 
 # Term Relationships
+{: .no_toc }
 
 All relationship configuration is done on individual term edit screens — edit any tag, category, or custom taxonomy term and scroll to the HyperTaxonomy section. HyperTaxonomy also adds a top-level **Terms** menu to the admin sidebar containing **Term Groups**, **Merge Terms**, **Convert Terms**, and **Term Relationship Types**. When TermConnect is active, **Peer Sites** also appears in this menu (managed by TermConnect).
 
 Term edit screens are protected against simultaneous editing: if another admin already has a term open, a blocking overlay appears with their name and **Go Back** / **Take Over** options. Locks expire automatically after 150 seconds of inactivity.
 
 If you navigate away from a term edit screen with unsaved changes, the browser shows a confirmation prompt before leaving the page.
+
+## Table of contents
+{: .no_toc .text-delta }
+
+1. TOC
+{:toc}
+
+---
 
 ## Term Groups
 

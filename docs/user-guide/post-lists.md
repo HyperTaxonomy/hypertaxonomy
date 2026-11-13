@@ -5,10 +5,19 @@ nav_order: 9
 ---
 
 # Post Lists
+{: .no_toc }
 
 Two shortcodes for displaying posts from the local search index. For fetching posts from peer WordPress sites and RSS/Atom feeds, see the `[tc_peer_posts]` shortcode in the TermConnect documentation.
 
 > **Term and group attributes accept slugs or IDs.** Every term/group attribute below (`include_terms`, `exclude_terms`, `filter_terms`, `filter_out_terms`, `include_groups`, `exclude_groups`, `filter_groups`, `filter_out_groups`) accepts a comma-separated list of either numeric IDs **or** slugs, and the two may be mixed (e.g. `include_terms="news,42,featured"`). Term slugs resolve within the shortcode's `taxonomy`; group slugs resolve within the `group` taxonomy. A purely numeric token is always treated as an ID.
+
+## Table of contents
+{: .no_toc .text-delta }
+
+1. TOC
+{:toc}
+
+---
 
 ## Common Parameters
 

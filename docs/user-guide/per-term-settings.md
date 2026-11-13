@@ -5,8 +5,17 @@ nav_order: 6
 ---
 
 # Per-Term Settings
+{: .no_toc }
 
 Settings that apply to individual terms independently of their relationships — visibility, icons, descriptions, sticky posts, and archive overrides.
+
+## Table of contents
+{: .no_toc .text-delta }
+
+1. TOC
+{:toc}
+
+---
 
 ## Term Visibility
 

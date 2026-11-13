@@ -5,6 +5,15 @@ nav_order: 11
 ---
 
 # Search Widget
+{: .no_toc }
+
+## Table of contents
+{: .no_toc .text-delta }
+
+1. TOC
+{:toc}
+
+---
 
 ## Advanced Search Widget
 

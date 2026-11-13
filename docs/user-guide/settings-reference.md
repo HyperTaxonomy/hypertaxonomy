@@ -5,8 +5,17 @@ nav_order: 1
 ---
 
 # Settings Reference
+{: .no_toc }
 
 All settings are at **Settings > HyperTaxonomy**, organized into tabs.
+
+## Table of contents
+{: .no_toc .text-delta }
+
+1. TOC
+{:toc}
+
+---
 
 ## Features Tab
 
@@ -139,5 +148,5 @@ Description Match weights are configured independently from Name Match weights. 
 - **HyperTaxonomy Presence Header** — Add the `X-HyperTaxonomy` header to REST API responses. Peer sites, including TermConnect on remote installs, use it to detect HyperTaxonomy. Disable to opt out of being discovered as a vocabulary peer.
 - **Term Inclusion Relationships** — Include inclusion and synonym data in REST term responses. Disable on sites with deep relationship graphs where REST performance is a concern, or to keep vocabulary structure private.
 - **Custom Term Relationships and Relationship Types** — Expose custom relationship type definitions over REST, and include custom term relationships in REST term responses.
-- **Uninstall** — Option to delete all HyperTaxonomy data when the plugin is uninstalled.
+- **Uninstall** — Option to delete all HyperTaxonomy data when the plugin is uninstalled. See [Deactivation & Uninstall](deactivation-uninstall.html#uninstall).
 - **Health Check** — System status report: database table presence, search index state, and configuration validity.

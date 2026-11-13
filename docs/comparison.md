@@ -4,6 +4,7 @@ nav_order: 6
 ---
 
 # Feature Comparison
+{: .no_toc }
 
 Comparing **HyperTaxonomy** with **Tag Groups** (rebranded "PublishPress Tag Groups" in October 2026) — a popular plugin, commonly used for taxonomy term organization and management.
 
@@ -12,6 +13,12 @@ Comparing **HyperTaxonomy** with **Tag Groups** (rebranded "PublishPress Tag Gro
 Where Tag Groups lacks a feature but **TaxoPress** offers something comparable, the Tag Groups column notes it, for example `✗ · ~ *(TaxoPress Pro)*`. TaxoPress (rebranded "PublishPress Taxonomies" in September 2026) is a separate plugin from the same publisher.
 
 **A mark means a plugin has a feature in that area, not that the feature is equivalent.** Plugins can use the same name for things that differ widely in scope and behavior, so a ✓ in two columns doesn't make them interchangeable. The notes below each table explain the differences.
+
+## Table of contents
+{: .no_toc .text-delta }
+
+1. TOC
+{:toc}
 
 ---
 

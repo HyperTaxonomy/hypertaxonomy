@@ -5,10 +5,19 @@ nav_order: 6
 ---
 
 # As the Crow Flies Integration
+{: .no_toc }
 
 HyperTaxonomy ships a built-in integration with the [As the Crow Flies](https://wordpress.org/plugins/as-the-crow-flies/) (ATCF) plugin. ATCF attaches physical locations to taxonomy terms and provides radius-based proximity search. The integration is defined in `includes/integrations/class-atcf-integration.php` and is loaded automatically — no configuration required.
 
 Locations of a hidden term are left out for viewers who can't see it: ATCF skips locations whose term doesn't resolve, and `get_term()` doesn't resolve a hidden term for them.
+
+## Table of contents
+{: .no_toc .text-delta }
+
+1. TOC
+{:toc}
+
+---
 
 ## Detection
 

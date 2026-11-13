@@ -5,8 +5,17 @@ nav_order: 2
 ---
 
 # Function Reference
+{: .no_toc }
 
 Functions by module. Private helpers are not listed. For hook registration and execution order, see the [Hook Reference](hook-reference.html).
+
+## Table of contents
+{: .no_toc .text-delta }
+
+1. TOC
+{:toc}
+
+---
 
 ## Function Organization
 

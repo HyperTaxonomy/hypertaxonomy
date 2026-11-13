@@ -5,6 +5,15 @@ nav_order: 4
 ---
 
 # Actions & Filters
+{: .no_toc }
+
+## Table of contents
+{: .no_toc .text-delta }
+
+1. TOC
+{:toc}
+
+---
 
 ## Actions Fired by HyperTaxonomy
 

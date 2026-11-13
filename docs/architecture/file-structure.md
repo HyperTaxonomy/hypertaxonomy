@@ -5,6 +5,15 @@ nav_order: 1
 ---
 
 # File Structure & Loading
+{: .no_toc }
+
+## Table of contents
+{: .no_toc .text-delta }
+
+1. TOC
+{:toc}
+
+---
 
 ## File Structure
 
@@ -81,7 +90,7 @@ hypertaxonomy/
 ├── docs/                                     # Technical documentation (Just-the-Docs / Jekyll site) (not in the zip)
 │   ├── _config.yml                           # Jekyll / Just-the-Docs configuration
 │   ├── index.md                              # Docs home / landing page
-│   ├── getting-started.md                    # Requirements, installation, first steps, deactivation and uninstall
+│   ├── getting-started.md                    # Requirements, installation, first steps
 │   ├── user-guide/                           # User Guide section (parent + child pages)
 │   ├── developer-reference/                  # Developer Reference section (PHP API, hooks, REST)
 │   ├── architecture/                         # Architecture section (this reference and the contributing guide)

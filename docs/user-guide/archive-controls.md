@@ -5,6 +5,15 @@ nav_order: 10
 ---
 
 # Archive & Results Controls
+{: .no_toc }
+
+## Table of contents
+{: .no_toc .text-delta }
+
+1. TOC
+{:toc}
+
+---
 
 ## [ht_sort_order_options]
 

@@ -5,8 +5,17 @@ nav_order: 15
 ---
 
 # Working with Other Plugins
+{: .no_toc }
 
 HyperTaxonomy operates at the vocabulary level — it defines what taxonomy terms mean in relation to each other. The plugins in this section operate at other levels: post structure, custom fields, page building, e-commerce, content automation, and search. Because they address different problems, they are genuinely complementary.
+
+## Table of contents
+{: .no_toc .text-delta }
+
+1. TOC
+{:toc}
+
+---
 
 ## The Core Gap in Content-Modeling Frameworks
 

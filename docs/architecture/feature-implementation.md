@@ -5,8 +5,17 @@ nav_order: 5
 ---
 
 # Feature Implementation
+{: .no_toc }
 
 > For implementation patterns (nonce handling, AJAX detection, etc.), error handling patterns, and coding standards, see the [Contributing](contributing.html).
+
+## Table of contents
+{: .no_toc .text-delta }
+
+1. TOC
+{:toc}
+
+---
 
 ## Feature Flag Enforcement for Archive Expansion
 

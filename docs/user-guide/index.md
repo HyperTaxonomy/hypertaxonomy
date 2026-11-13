@@ -2,6 +2,7 @@
 title: User Guide
 nav_order: 3
 has_children: true
+has_toc: false
 ---
 
 # HyperTaxonomy User Guide
@@ -25,4 +26,5 @@ This guide is split into the following pages:
 - **[Editing Posts](editing-posts.html)** — the Tags field, inclusion and container badges, redirect indicators, hidden terms, and sticky pins in the post editor.
 - **[Modeling Guide](modeling-guide.html)** — how to structure content with HyperTaxonomy: patterns, design principles, and example scenarios.
 - **[Working with Other Plugins](other-plugins.html)** — how HyperTaxonomy fits alongside ACF, Pods, TaxoPress, FacetWP, SEO and translation plugins, and others.
+- **[Deactivation & Uninstall](deactivation-uninstall.html)** — what stops working while the plugin is deactivated, what reactivation restores, and what uninstalling deletes.
 - **[FAQ & Troubleshooting](faq.html)** — common questions and troubleshooting.

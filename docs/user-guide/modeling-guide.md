@@ -5,10 +5,17 @@ nav_order: 14
 ---
 
 # Modeling Guide
+{: .no_toc }
 
 Modeling guide for site architects and developers. Covers how to think about content relationships in HyperTaxonomy and when it is the right tool. For how it fits alongside ACF, FacetWP, Relevanssi, Elementor and other plugins, see [Working with Other Plugins](other-plugins.html).
 
 For feature descriptions and shortcode references see the rest of the [User Guide](./). For the PHP API and integration hooks see the [Developer Reference](../developer-reference/). For a comparison with Tag Groups specifically see [Feature Comparison](../comparison.html).
+
+## Table of contents
+{: .no_toc .text-delta }
+
+1. TOC
+{:toc}
 
 ---
 

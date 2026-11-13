@@ -5,10 +5,19 @@ nav_order: 3
 ---
 
 # Sort & Filter Controls
+{: .no_toc }
 
 The PHP rendering functions, the HTML structures they emit, and the JavaScript events for the sort order picker and the filter options panel.
 
 Both the sort order picker and the filter panel are rendered via PHP functions that theme templates can call directly, and both fire JavaScript events that custom code can listen to.
+
+## Table of contents
+{: .no_toc .text-delta }
+
+1. TOC
+{:toc}
+
+---
 
 ## Sort Order Picker
 

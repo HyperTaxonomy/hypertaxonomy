@@ -5,10 +5,19 @@ nav_order: 8
 ---
 
 # Term Lists & Clouds
+{: .no_toc }
 
 Four built-in shortcodes for displaying terms on any page or widget. No dependencies required.
 
 **Default styles:** A minimal stylesheet is automatically included when shortcodes or blocks are rendered. Disable in Settings > HyperTaxonomy > Display (Frontend Styles) if providing custom styles. The stylesheet is at `assets/css/htax-shortcodes.css`.
+
+## Table of contents
+{: .no_toc .text-delta }
+
+1. TOC
+{:toc}
+
+---
 
 ## Common Parameters
 

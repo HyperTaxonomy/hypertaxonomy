@@ -43,7 +43,7 @@ For cross-site content — fetching related posts from peer WordPress sites, RSS
 
 The full documentation is published as a [Just-the-Docs](https://just-the-docs.com/) site (source under [`docs/`](docs/)):
 
-- [Getting Started](docs/getting-started.md) — Requirements, installation, first steps, and deactivation and uninstall
+- [Getting Started](docs/getting-started.md) — Requirements, installation, and first steps
 - [User Guide](docs/user-guide/) — Settings, roles, import/migration, concepts, relationships, display and search shortcodes, the post editor, and modeling guidance
 - [Developer Reference](docs/developer-reference/) — PHP API, actions/filters, REST API, and sort and filter controls for theme/plugin developers
 - [Architecture Reference](docs/architecture/) — Internal architecture, data storage, query design, hook execution, performance

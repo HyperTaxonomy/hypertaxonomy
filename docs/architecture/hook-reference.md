@@ -5,8 +5,17 @@ nav_order: 3
 ---
 
 # Hook Reference
+{: .no_toc }
 
 Where HyperTaxonomy registers its hooks, and the order they run in. For functions by module, see the [Function Reference](function-reference.html). For the hooks available to other plugins, see [Actions & Filters](../developer-reference/actions-filters.html).
+
+## Table of contents
+{: .no_toc .text-delta }
+
+1. TOC
+{:toc}
+
+---
 
 ## Hook Organization
 

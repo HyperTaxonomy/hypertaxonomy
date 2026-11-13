@@ -5,10 +5,17 @@ parent: Architecture
 ---
 
 # Contributing to HyperTaxonomy
+{: .no_toc }
 
 For developers contributing to HyperTaxonomy.
 
 For integrating HyperTaxonomy in your theme or plugin, see the [Developer Reference](../developer-reference/). For internal plugin architecture and implementation details, see the [Architecture](./) section.
+
+## Table of contents
+{: .no_toc .text-delta }
+
+1. TOC
+{:toc}
 
 ---
 

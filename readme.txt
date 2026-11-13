@@ -333,14 +333,15 @@ define( 'HTAX_DEBUG_VERBOSE', true ); // Optional: adds backtrace
 
 1. Term Edit — inclusion/container relationships and redirect controls with color-coded pills
 2. Term Groups — hierarchical group management with member term assignment
-3. Term Archive — contributing terms in heading, term icon, term description, and a sticky post
-4. Search widget with taxonomy pills/term icons, checklist filters and nested field groups
-5. Alphabetical term list shortcode rendered on the frontend, including italicized term redirects
-6. Settings → Features tab (Tags subtab), showing per-taxonomy feature toggles
-7. Settings → Search tab (Categories subtab), showing relevance weight configuration
-8. Post Editor top right menu expanded — custom panels for enabling editor enhancements
-9. Post Editor enhancements — inclusion/container badges, redirect indicators, etc.
-10. HyperTaxonomy Gutenberg block group in Post Editor's left column, showing HT Related Posts preview
+3. Tags list — the Groups, Redirect, Icon and Visibility columns HyperTaxonomy adds, with group, icon and visibility filters
+4. Term Archive — contributing terms in heading, term icon, term description, and a sticky post
+5. Search widget with taxonomy pills/term icons, checklist filters and nested field groups
+6. Alphabetical term list shortcode rendered on the frontend, including italicized term redirects
+7. Settings → Features tab (Tags subtab), showing per-taxonomy feature toggles
+8. Settings → Search tab (Categories subtab), showing relevance weight configuration
+9. Post Editor options menu — the panels for turning HyperTaxonomy's editor enhancements on and off
+10. Post Editor enhancements — inclusion/container badges, sticky pushpins, redirect indicators and faded hidden terms
+11. HyperTaxonomy blocks in the post editor — an HT Related Posts block with its settings, including the date window, and its live preview
 
 == Changelog ==
 

@@ -8,6 +8,8 @@ nav_order: 12
 
 HyperTaxonomy can display contextual indicators directly in the Gutenberg and Classic post editors when you assign tags or categories to a post. Each indicator is controlled by a per-user toggle in the block editor's **··· menu** (More options) under the HyperTaxonomy group, and also requires the corresponding feature to be enabled on the taxonomy (Features → [Taxonomy]). Both the per-user toggle and the taxonomy feature must be on for an indicator to appear. Preferences persist per user and take effect immediately without saving. The toggles exist only in the block editor, so the Classic Editor always uses their defaults: Redirect Indicators and Hidden Terms on, the others off.
 
+![The block editor's Options menu, with HyperTaxonomy's five panel toggles circled](../assets/images/screenshots/editor-panels-menu.png)
+
 On first visit to the block editor, a dismissible notice explains that these toggles exist and where to find them.
 
 ## Tags Field
@@ -15,6 +17,8 @@ On first visit to the block editor, a dismissible notice explains that these tog
 In the block editor, WordPress checks each tag you type or paste with the server and only adds it to the post once all the replies are back. On a slow site, tags entered during that wait can be lost. HyperTaxonomy prevents this for tags: entered tags are added once they've been checked, and the post's other tags are kept. Save and Publish are briefly disabled during the check. This is always on and doesn't apply to other taxonomies.
 
 ## Inclusion Badges and Container Badges
+
+![A post's tags in the block editor with inclusion and container badges, a pinned tag, a redirecting tag in italics, and a faded hidden tag](../assets/images/screenshots/editor-badges.png)
 
 When enabled, each term pill (flat taxonomies) or checklist entry (hierarchical taxonomies) can show:
 

@@ -121,6 +121,8 @@ Group name links open that group's edit page with context. `→ via:` links foll
 
 Posts assigned to the **included term** appear in this term's archive.
 
+![A tag's Term Relationships section: no container tags, the Big Cats and Birds of Prey groups and two tags included, the species included through the groups, and Cougar excluded](../assets/images/screenshots/term-relationships-edit.png)
+
 **To add an included term:** Use the **Included** autocomplete field, which is named for the taxonomy (for example, **Included Tags**). Type to search, select a term, save.
 
 **Constraints:**

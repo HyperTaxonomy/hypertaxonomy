@@ -94,7 +94,7 @@ hypertaxonomy/
 │   ├── user-guide/                           # User Guide section (parent + child pages)
 │   ├── developer-reference/                  # Developer Reference section (PHP API, hooks, REST)
 │   ├── architecture/                         # Architecture section (this reference and the contributing guide)
-│   ├── assets/images/                        # Logo and diagrams
+│   ├── assets/images/                        # Logo, diagrams, and screenshots/ (copies of the wp.org screenshots)
 │   └── comparison.md                         # Feature comparison
 │
 ├── includes/                                 # All PHP functionality

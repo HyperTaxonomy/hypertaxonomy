@@ -104,6 +104,8 @@ Upload a custom icon image for any term to display alongside it in shortcodes, s
 
 **Sortable columns:** The **Redirect**, **Icon**, **Visibility**, and **Groups** columns in the term list table are sortable. The first three default to descending on first click — putting terms *with* that attribute first — so you can immediately see all redirect terms, all terms with icons, or all hidden terms without relying on the filter dropdowns. The **Groups** column defaults to ascending (ungrouped terms first, then alphabetically by group name). The **Icon** and **Visibility** columns are hidden by default; enable them via **Screen Options** (top-right of the term list screen).
 
+![The Tags list filtered to one group, with HyperTaxonomy's Groups, Redirect, Icon and Visibility columns circled; two tags redirect to Cougar](../assets/images/screenshots/tags-list-columns.png)
+
 **Filter dropdowns:** The term list table provides filter dropdowns above the table. The **Redirect** dropdown offers: *All Terms*, *Non-Redirects* (terms that are not redirect sources — includes redirect targets), *Redirects*, *Auto-redirects*, and *Targets* (redirect targets only). The **Icon** dropdown offers: *All Icons*, *With Icons*, and *No Icons*. The **Visibility** dropdown offers: *All Visibility*, *Visible*, and *Hidden*. The **Groups** dropdown is a searchable checklist (with a native browser × to clear the search) that also appears in the **Assign to Term Groups** bulk action modal. Filter dropdowns for columns that are hidden via Screen Options are automatically hidden as well.
 
 ---
@@ -111,6 +113,8 @@ Upload a custom icon image for any term to display alongside it in shortcodes, s
 ## Archive Descriptions
 
 Enable **Show Description** on any term to display its description as formatted HTML below the archive title. This allows rich, styled introductory text on term archive pages.
+
+![A tag archive whose heading lists the tags it includes, with the tag's icon, its description, and a pinned post](../assets/images/screenshots/term-archive.png)
 
 To enable: Edit a term, expand **More options**, and check **Show Description**. The term's description field (standard WordPress) is then rendered as HTML on the archive page — above any sticky posts, if present. Requires **Archive Customization** enabled for the taxonomy (Settings > HyperTaxonomy > Features) and **Archive Description** enabled on the Display tab.
 

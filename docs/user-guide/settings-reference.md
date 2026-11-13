@@ -21,6 +21,8 @@ All settings are at **Settings > HyperTaxonomy**, organized into tabs.
 
 The main configuration hub. A **General** subtab controls which taxonomies HyperTaxonomy manages; additional subtabs appear for each enabled taxonomy (Tags, Categories, Term Groups, and any custom taxonomies).
 
+![The Features tab's Tags subtab: one checkbox per HyperTaxonomy feature](../assets/images/screenshots/settings-features.png)
+
 **General subtab** — Enable or disable HyperTaxonomy for each available taxonomy via a checklist. Enabling a taxonomy activates its term edit fields and makes it available for all features below.
 
 **Per-taxonomy subtabs** — Configure which features are active for that taxonomy. Each feature is a checkbox on screen, such as *Enable relationships for Tags*:
@@ -62,6 +64,8 @@ The Icons tab has a **General** subtab plus one subtab per taxonomy that has the
 ## Search Tab
 
 The Search tab is only available when at least one taxonomy has Search Enhancement enabled in the Features tab. It has a **General** subtab plus one subtab per enabled taxonomy (and Custom Flat / Custom Hierarchical templates for custom taxonomies).
+
+![The Search tab's Categories subtab: explicit-selection and name-match weights for each match type](../assets/images/screenshots/settings-search.png)
 
 **General subtab:**
 

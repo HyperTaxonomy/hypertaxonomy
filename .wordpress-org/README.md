@@ -20,6 +20,4 @@ in `.distignore` beyond the folder itself.
 
 ## Current state
 
-Icons, banners, and `screenshot-1.png` … `screenshot-10.png` (matching the readme's ten captions) are in place. The screenshots were taken on a local test site with a zoology demo dataset (species tags, Term Groups hierarchies, demo posts); host names in JSON views and peer labels were neutralized.
-
-`tag_table_top.png`, `term_groups_collapsed.png`, and `term_groups_expanded.png` are older, unnumbered images superseded by the numbered set; wp.org ignores them, so they can be deleted.
+Icons, banners, and `screenshot-1.png` … `screenshot-11.png` (matching the readme's eleven captions) are in place. The screenshots were taken on a local test site with a zoology demo dataset (species tags, Term Groups hierarchies, demo posts); host names in JSON views and peer labels were neutralized.

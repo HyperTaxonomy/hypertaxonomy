@@ -38,6 +38,8 @@ The XML sitemap lists a group only when its archive shows published posts, count
 
 ## Managing group members from the group side
 
+![Editing the Canids group: its parent group, visibility option, and member tags](../assets/images/screenshots/term-group-edit.png)
+
 The Term Groups admin screen (**Terms > Term Groups**, then click a group to edit) shows the following fields:
 
 - **Group Members** — terms directly assigned to this group, organized by taxonomy (Tags, Categories, custom taxonomies). Add or remove members here without editing each term individually.

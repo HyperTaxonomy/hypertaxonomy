@@ -162,6 +162,8 @@ No shortcode is needed — the block renders everything the shortcode does, conf
 
 The **HT Related Posts** Gutenberg block is the block-editor equivalent of `[ht_related_posts]`. It works in any post editor and in FSE post templates — anywhere WordPress provides a post context.
 
+![The HT Related Posts block in the editor: HyperTaxonomy's blocks in the inserter, the block's live preview, and its Query settings with the date window](../assets/images/screenshots/related-posts-block.png)
+
 Find it in the block inserter under **HyperTaxonomy → HT Related Posts**, or search for "hypertaxonomy". To display related content from peer WordPress sites and RSS/Atom feeds alongside local posts, use TermConnect's **Peer Posts** block instead.
 
 The block has the same Query, Filters, and Display inspector panels as the Post List block, including the meta line template field. The Query panel has **Boost posts matching the current post's title** in place of Keyword search (on by default; see *Automatic title boosting* below). The **Term Source** panel shows only the taxonomy selector — include/exclude term and group controls are not present because the term set is derived automatically from the current post. The taxonomy selector offers an **— All taxonomies —** choice (the empty value) that pools the current post's terms across every taxonomy it belongs to; pick a single taxonomy to restrict matching to it. (For a fixed subset of taxonomies, use the shortcode with a comma-separated `taxonomy` list.) The Query panel also has **Only posts near this post's date**, which shows **Days before this post** and **Days after this post** (see *Posts near the current post's date* below).

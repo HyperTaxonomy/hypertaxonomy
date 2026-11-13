@@ -342,7 +342,7 @@ Pills inherit border-radius from **Settings > HyperTaxonomy > Icons** per-taxono
 
 ## Hidden Terms
 
-For viewers who can't see them, hidden terms don't exist as far as your plugin or theme is concerned. On read requests outside wp-admin, `get_term()` and `get_term_by()` find nothing for them, and `get_terms()`, `get_tags()`, `get_categories()`, `wp_get_object_terms()`, `get_the_terms()` and `wp_count_terms()` leave them out, so you need no special handling. On writes, in wp-admin, and in cron and CLI you get the real terms.
+For viewers who can't see them, hidden terms don't exist as far as your plugin or theme is concerned. On read requests (GET and HEAD) outside wp-admin, `get_term()` and `get_term_by()` find nothing for them, and `get_terms()`, `get_tags()`, `get_categories()`, `wp_get_object_terms()`, `get_the_terms()` and `wp_count_terms()` leave them out, so you need no special handling. On writes and any other POST request, in wp-admin, and in cron and CLI you get the real terms. That includes plugins that serve terms to visitors through POST requests, such as most GraphQL plugins, which send queries that way: if yours does, check `htax_is_term_hidden()` and `htax_can_see_hidden_terms()` before returning a term.
 
 Posts are different: a post carrying a hidden term is never excluded, though `WP_Query` won't find posts *by* a hidden term for these viewers. `get_term_link()` returns a `WP_Error` and `term_exists()` returns nothing for a hidden term, unless you pass `get_term_link()` a term object you already hold. `has_term()` still answers for a hidden term, and `get_term_children()` and `get_ancestors()` can return its ID.
 
@@ -601,7 +601,7 @@ Results are cached in a transient (`htax_groups_{term_id}`).
 
 `htax_get_terms_in_groups( array $group_ids, string $taxonomy = 'post_tag' ): WP_Term[]`
 
-On front-end, REST and AJAX read requests, terms hidden from the current viewer are left out for callers in other plugins and themes.
+On front-end, REST and AJAX read requests (GET and HEAD), terms hidden from the current viewer are left out for callers in other plugins and themes.
 
 The same applies to `htax_get_included_terms()`, `htax_get_container_terms()`, `htax_get_synonym_terms()`, `htax_get_related_terms()` and `htax_get_reverse_related_terms()`.
 

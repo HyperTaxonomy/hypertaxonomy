@@ -1,7 +1,7 @@
 ---
 title: Merge & Convert Terms
 parent: User Guide
-nav_order: 5
+nav_order: 6
 ---
 
 # Merge & Convert Terms

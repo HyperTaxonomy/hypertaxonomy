@@ -1,7 +1,7 @@
 ---
 title: Per-Term Settings
 parent: User Guide
-nav_order: 4
+nav_order: 5
 ---
 
 # Per-Term Settings

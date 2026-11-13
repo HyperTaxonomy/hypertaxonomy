@@ -1,7 +1,7 @@
 ---
 title: Editing Posts
 parent: User Guide
-nav_order: 6
+nav_order: 12
 ---
 
 # Editing Posts

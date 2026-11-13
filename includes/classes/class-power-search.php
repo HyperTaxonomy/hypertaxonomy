@@ -16,6 +16,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 class HyperTaxonomy_Power_Search {
 
     /**
+     * Minimum score thresholds, as shortcode attributes and search config keys.
+     */
+    const MIN_SCORE_ATTS = array( 'min_score', 'min_title_score', 'min_content_score', 'min_excerpt_score', 'min_tags_score', 'min_categories_score', 'min_terms_score' );
+
+    /**
      * Singleton instance
      */
     private static $instance = null;
@@ -180,26 +185,10 @@ class HyperTaxonomy_Power_Search {
             if ( 'US' !== strtoupper( $atts['near_country'] ) ) {
                 $output .= '<input type="hidden" name="htax_near_country" value="' . esc_attr( strtoupper( $atts['near_country'] ) ) . '" />';
             }
-            if ( floatval( $atts['min_score'] ) > 0 ) {
-                $output .= '<input type="hidden" name="htax_min_score" value="' . esc_attr( $atts['min_score'] ) . '" />';
-            }
-            if ( floatval( $atts['min_title_score'] ) > 0 ) {
-                $output .= '<input type="hidden" name="htax_min_title_score" value="' . esc_attr( $atts['min_title_score'] ) . '" />';
-            }
-            if ( floatval( $atts['min_content_score'] ) > 0 ) {
-                $output .= '<input type="hidden" name="htax_min_content_score" value="' . esc_attr( $atts['min_content_score'] ) . '" />';
-            }
-            if ( floatval( $atts['min_excerpt_score'] ) > 0 ) {
-                $output .= '<input type="hidden" name="htax_min_excerpt_score" value="' . esc_attr( $atts['min_excerpt_score'] ) . '" />';
-            }
-            if ( floatval( $atts['min_tags_score'] ) > 0 ) {
-                $output .= '<input type="hidden" name="htax_min_tags_score" value="' . esc_attr( $atts['min_tags_score'] ) . '" />';
-            }
-            if ( floatval( $atts['min_categories_score'] ) > 0 ) {
-                $output .= '<input type="hidden" name="htax_min_categories_score" value="' . esc_attr( $atts['min_categories_score'] ) . '" />';
-            }
-            if ( floatval( $atts['min_terms_score'] ) > 0 ) {
-                $output .= '<input type="hidden" name="htax_min_terms_score" value="' . esc_attr( $atts['min_terms_score'] ) . '" />';
+            foreach ( self::MIN_SCORE_ATTS as $score_key ) {
+                if ( floatval( $atts[ $score_key ] ) > 0 ) {
+                    $output .= '<input type="hidden" name="htax_' . $score_key . '" value="' . esc_attr( $atts[ $score_key ] ) . '" />';
+                }
             }
         }
 
@@ -220,28 +209,10 @@ class HyperTaxonomy_Power_Search {
         if ( 'US' !== strtoupper( $atts['near_country'] ) ) {
             $output .= 'data-near-country="' . esc_attr( strtoupper( $atts['near_country'] ) ) . '" ';
         }
-        foreach ( array( 'min_score', 'min_title_score', 'min_content_score', 'min_excerpt_score', 'min_tags_score', 'min_categories_score', 'min_terms_score' ) as $score_key ) {
+        foreach ( self::MIN_SCORE_ATTS as $score_key ) {
             if ( floatval( $atts[ $score_key ] ) > 0 ) {
                 $output .= 'data-' . str_replace( '_', '-', $score_key ) . '="' . esc_attr( $atts[ $score_key ] ) . '" ';
             }
-        }
-        if ( floatval( $atts['min_title_score'] ) > 0 ) {
-            $output .= 'data-min-title-score="' . esc_attr( $atts['min_title_score'] ) . '" ';
-        }
-        if ( floatval( $atts['min_content_score'] ) > 0 ) {
-            $output .= 'data-min-content-score="' . esc_attr( $atts['min_content_score'] ) . '" ';
-        }
-        if ( floatval( $atts['min_excerpt_score'] ) > 0 ) {
-            $output .= 'data-min-excerpt-score="' . esc_attr( $atts['min_excerpt_score'] ) . '" ';
-        }
-        if ( floatval( $atts['min_tags_score'] ) > 0 ) {
-            $output .= 'data-min-tags-score="' . esc_attr( $atts['min_tags_score'] ) . '" ';
-        }
-        if ( floatval( $atts['min_categories_score'] ) > 0 ) {
-            $output .= 'data-min-categories-score="' . esc_attr( $atts['min_categories_score'] ) . '" ';
-        }
-        if ( floatval( $atts['min_terms_score'] ) > 0 ) {
-            $output .= 'data-min-terms-score="' . esc_attr( $atts['min_terms_score'] ) . '" ';
         }
         $output .= '/>';
 
@@ -267,11 +238,7 @@ class HyperTaxonomy_Power_Search {
      *                        '' for the AJAX request).
      */
     public function apply_score_thresholds( array &$config, array $source, string $prefix = '' ) {
-        $score_keys = array(
-            'min_score', 'min_title_score', 'min_content_score',
-            'min_excerpt_score', 'min_tags_score', 'min_categories_score', 'min_terms_score',
-        );
-        foreach ( $score_keys as $key ) {
+        foreach ( self::MIN_SCORE_ATTS as $key ) {
             $source_key = $prefix . $key;
             if ( isset( $source[ $source_key ] ) ) {
                 $config[ $key ] = floatval( $source[ $source_key ] );
@@ -861,24 +828,16 @@ class HyperTaxonomy_Power_Search {
         // avoiding any disruption to the existing $query_params ordering.
         $add_excluded_term_where = function( array $field_terms, string $taxonomy, bool $include_text_layer = false )
             use ( $wpdb, &$where_clause ) {
-            $hst_hidden = htax_can_see_hidden_terms() ? '' : ' AND hst.is_hidden = 0';
+            $hst_hidden = htax_get_hidden_term_filter_clause( 'hst.is_hidden' );
             $tax_sql    = $taxonomy !== '' ? " AND hst.taxonomy = '" . esc_sql( $taxonomy ) . "'" : '';
             foreach ( $field_terms as $td ) {
                 if ( empty( $td['excluded'] ) ) {
                     continue;
                 }
-                $term_str = $td['term'];
-                $ft_val   = strpos( $term_str, ' ' ) !== false ? '"' . $term_str . '"' : $term_str;
+                $ft_val = self::fulltext_phrase( $td['term'] );
 
                 // Layer 1: taxonomy exclusion (applies to all field operators and general).
-                $ids = $wpdb->get_col( $wpdb->prepare(
-                    "SELECT DISTINCT t.term_id FROM {$wpdb->terms} t
-                     WHERE MATCH(t.name) AGAINST(%s IN BOOLEAN MODE) > 0
-                     UNION
-                     SELECT tt.term_id FROM {$wpdb->term_taxonomy} tt
-                     WHERE MATCH(tt.description) AGAINST(%s IN BOOLEAN MODE) > 0",
-                    $ft_val, $ft_val
-                ) );
+                $ids = self::term_ids_matching( $ft_val );
                 if ( ! empty( $ids ) ) {
                     $id_list       = implode( ',', array_map( 'intval', $ids ) );
                     $where_clause .= " AND pt.post_id NOT IN (
@@ -919,23 +878,15 @@ class HyperTaxonomy_Power_Search {
         // $where_clause is captured by reference; $query_params is NOT modified here.
         $add_required_term_where = function( array $field_terms, string $taxonomy )
             use ( $wpdb, &$where_clause ) {
-            $hst_hidden = htax_can_see_hidden_terms() ? '' : ' AND hst.is_hidden = 0';
+            $hst_hidden = htax_get_hidden_term_filter_clause( 'hst.is_hidden' );
             $tax_sql    = $taxonomy !== '' ? " AND hst.taxonomy = '" . esc_sql( $taxonomy ) . "'" : '';
             foreach ( $field_terms as $td ) {
                 if ( empty( $td['required'] ) ) {
                     continue;
                 }
-                $term_str = $td['term'];
-                $ft_val   = strpos( $term_str, ' ' ) !== false ? '"' . $term_str . '"' : $term_str;
+                $ft_val = self::fulltext_phrase( $td['term'] );
                 // Fetch term IDs matching via name OR description (same two branches as the scoring JOIN).
-                $ids = $wpdb->get_col( $wpdb->prepare(
-                    "SELECT DISTINCT t.term_id FROM {$wpdb->terms} t
-                     WHERE MATCH(t.name) AGAINST(%s IN BOOLEAN MODE) > 0
-                     UNION
-                     SELECT tt.term_id FROM {$wpdb->term_taxonomy} tt
-                     WHERE MATCH(tt.description) AGAINST(%s IN BOOLEAN MODE) > 0",
-                    $ft_val, $ft_val
-                ) );
+                $ids = self::term_ids_matching( $ft_val );
                 if ( empty( $ids ) ) {
                     $where_clause .= ' AND 1=0'; // required term matches no terms → no posts possible
                     return;
@@ -955,22 +906,14 @@ class HyperTaxonomy_Power_Search {
         // Same pre-fetch pattern as $add_required_term_where — no %s added to $query_params.
         $add_required_general_term_where = function( array $general_terms )
             use ( $wpdb, &$where_clause ) {
-            $hst_hidden = htax_can_see_hidden_terms() ? '' : ' AND hst.is_hidden = 0';
+            $hst_hidden = htax_get_hidden_term_filter_clause( 'hst.is_hidden' );
             foreach ( $general_terms as $td ) {
                 if ( empty( $td['required'] ) ) {
                     continue;
                 }
-                $term_str = $td['term'];
-                $ft_val   = strpos( $term_str, ' ' ) !== false ? '"' . $term_str . '"' : $term_str;
+                $ft_val = self::fulltext_phrase( $td['term'] );
 
-                $ids = $wpdb->get_col( $wpdb->prepare(
-                    "SELECT DISTINCT t.term_id FROM {$wpdb->terms} t
-                     WHERE MATCH(t.name) AGAINST(%s IN BOOLEAN MODE) > 0
-                     UNION
-                     SELECT tt.term_id FROM {$wpdb->term_taxonomy} tt
-                     WHERE MATCH(tt.description) AGAINST(%s IN BOOLEAN MODE) > 0",
-                    $ft_val, $ft_val
-                ) );
+                $ids = self::term_ids_matching( $ft_val );
 
                 $text_cond = $wpdb->prepare(
                     'MATCH(pt.title, pt.body, pt.excerpt) AGAINST(%s IN BOOLEAN MODE) > 0',
@@ -1030,7 +973,7 @@ class HyperTaxonomy_Power_Search {
                 if ( empty( $td['required'] ) ) {
                     continue;
                 }
-                $ft_val        = strpos( $td['term'], ' ' ) !== false ? '"' . $td['term'] . '"' : $td['term'];
+                $ft_val        = self::fulltext_phrase( $td['term'] );
                 $where_clause .= $wpdb->prepare(
                     " AND MATCH({$field_col}) AGAINST(%s IN BOOLEAN MODE) > 0",
                     $ft_val
@@ -1136,7 +1079,7 @@ class HyperTaxonomy_Power_Search {
                 $case_sql_name = 'CASE ' . implode( ' ', $case_whens_name ) . ' ELSE 0 END';
                 // Appended to every hst branch below: visibility plus the strength model,
                 // since every branch scores by hst.strength.
-                $hst_hidden    = ( htax_can_see_hidden_terms() ? '' : ' AND hst.is_hidden = 0' )
+                $hst_hidden    = htax_get_hidden_term_filter_clause( 'hst.is_hidden' )
                                . htax_strength_model_sql( 'hst' );
                 // The exact-match branch has no CASE weight, so taxonomies scored in their own
                 // field are filtered out of every branch here.
@@ -1780,7 +1723,7 @@ class HyperTaxonomy_Power_Search {
 
         // Appended to every hst branch below: visibility plus the strength model,
         // since every branch scores by hst.strength.
-        $hst_hidden    = ( htax_can_see_hidden_terms() ? '' : ' AND hst.is_hidden = 0' )
+        $hst_hidden    = htax_get_hidden_term_filter_clause( 'hst.is_hidden' )
                        . htax_strength_model_sql( 'hst' );
         $esc_tax       = esc_sql( $taxonomy );
         $has_exact     = ! empty( $exact_term_ids );
@@ -1919,6 +1862,40 @@ class HyperTaxonomy_Power_Search {
     private function parse_search_query( string $query, string $near_country = 'US' ): array {
         return htax_parse_search_query( $query, $near_country );
     }
+
+    /**
+     * Quote a search term for a boolean-mode FULLTEXT match when it has spaces.
+     *
+     * @since 1.0.0
+     * @param string $term Search term.
+     * @return string The term, or the term in double quotes for a phrase match.
+     */
+    private static function fulltext_phrase( string $term ): string {
+        return false !== strpos( $term, ' ' ) ? '"' . $term . '"' : $term;
+    }
+
+    /**
+     * Get the IDs of terms whose name or description matches a FULLTEXT value.
+     *
+     * Uses the same two branches (name, description) as the scoring JOIN.
+     *
+     * @since 1.0.0
+     * @param string $ft_val Boolean-mode FULLTEXT value, see fulltext_phrase().
+     * @return string[] Term IDs.
+     */
+    private static function term_ids_matching( string $ft_val ): array {
+        global $wpdb;
+        return $wpdb->get_col( $wpdb->prepare(
+            "SELECT DISTINCT t.term_id FROM {$wpdb->terms} t
+             WHERE MATCH(t.name) AGAINST(%s IN BOOLEAN MODE) > 0
+             UNION
+             SELECT tt.term_id FROM {$wpdb->term_taxonomy} tt
+             WHERE MATCH(tt.description) AGAINST(%s IN BOOLEAN MODE) > 0",
+            $ft_val,
+            $ft_val
+        ) );
+    }
+
 }
 
 // Initialize

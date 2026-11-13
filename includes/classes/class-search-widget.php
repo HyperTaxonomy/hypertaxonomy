@@ -283,7 +283,6 @@ class HyperTaxonomy_Search_Widget {
         $actions      = self::$forms[ $form_id ]['group_actions'] ?? array();
         $term_actions = self::$forms[ $form_id ]['term_actions'] ?? array();
         $fields       = self::$forms[ $form_id ]['fields'] ?? array();
-        $hidden  = htax_can_see_hidden_terms() ? array() : array_flip( htax_get_all_hidden_term_ids() );
         $map     = array();
 
         // Fields naming individual terms need those terms resolved up front too.
@@ -306,7 +305,7 @@ class HyperTaxonomy_Search_Widget {
                 $ids = $term_mode
                     ? array( $gid )
                     : array_map( 'intval', array_keys( htax_get_terms_in_groups( array( $gid ), $field['taxonomy'] ) ) );
-                $ids = array_values( array_filter( $ids, static fn( $id ) => ! isset( $hidden[ $id ] ) ) );
+                $ids = array_values( htax_get_visible_term_ids( $ids ) );
 
                 $entry['groups'][ $gid ] = $ids;
                 $all_ids                 = array_merge( $all_ids, $ids );
@@ -330,11 +329,7 @@ class HyperTaxonomy_Search_Widget {
             if ( 'checklist' === $field['type'] ) {
                 $named = array_diff( array_map( 'intval', $named ), array_map( 'intval', $excluded ) );
             }
-            foreach ( array_map( 'intval', $named ) as $id ) {
-                if ( ! isset( $hidden[ $id ] ) ) {
-                    $all_ids[] = $id;
-                }
-            }
+            $all_ids = array_merge( $all_ids, htax_get_visible_term_ids( array_map( 'intval', array_values( $named ) ) ) );
             $entry['check_terms'] = ! empty( $term_actions[ $target ] );
 
             if ( $all_ids ) {

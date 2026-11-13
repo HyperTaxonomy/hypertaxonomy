@@ -684,6 +684,36 @@ class HyperTaxonomy_Settings {
     }
 
     /**
+     * Render one per-taxonomy feature checkbox with its description.
+     *
+     * @since 1.0.0
+     *
+     * @param string $tax_slug    Taxonomy slug.
+     * @param string $feature     Feature key in htax_settings[taxonomy_features][ $tax_slug ].
+     * @param array  $features    The taxonomy's saved features.
+     * @param string $label       Checkbox label, translated.
+     * @param string $description Description below the label, translated.
+     * @param array  $attrs       Extra input attributes, e.g. class or data-taxonomy.
+     */
+    private function render_feature_checkbox( $tax_slug, $feature, $features, $label, $description, $attrs = array() ) {
+        ?>
+                        <label style="display: block; margin-bottom: 8px;">
+                            <input type="checkbox"
+                                   name="htax_settings[taxonomy_features][<?php echo esc_attr( $tax_slug ); ?>][<?php echo esc_attr( $feature ); ?>]"
+                                   value="1"
+                                   <?php foreach ( $attrs as $attr => $value ) : ?>
+                                   <?php echo esc_attr( $attr ); ?>="<?php echo esc_attr( $value ); ?>"
+                                   <?php endforeach; ?>
+                                   <?php checked( ! empty( $features[ $feature ] ) ); ?> />
+                            <?php echo esc_html( $label ); ?>
+                            <p class="description" style="margin-left: 24px; margin-top: 4px;">
+                                <?php echo esc_html( $description ); ?>
+                            </p>
+                        </label>
+        <?php
+    }
+
+    /**
      * Render general settings for a specific taxonomy (post_tag or category)
      */
     private function render_general_taxonomy_settings( $tax_slug, $available_taxonomies ) {
@@ -764,51 +794,12 @@ class HyperTaxonomy_Settings {
                         <?php esc_html_e( 'Features', 'hypertaxonomy' ); ?>
                     </th>
                     <td>
-                        <label style="display: block; margin-bottom: 8px;">
-                            <input type="checkbox"
-                                   name="htax_settings[taxonomy_features][group][icons]"
-                                   value="1"
-                                   <?php checked( isset( $features['icons'] ) && $features['icons'] ); ?> />
-                            <?php esc_html_e( 'Enable Term Group icons', 'hypertaxonomy' ); ?>
-                            <p class="description" style="margin-left: 24px; margin-top: 4px;">
-                                <?php esc_html_e( 'Allow setting custom icons for term groups (used in group archives and in displaying Term Groups if supported by your theme).', 'hypertaxonomy' ); ?>
-                            </p>
-                        </label>
-
-                        <label style="display: block; margin-bottom: 8px;">
-                            <input type="checkbox"
-                                   class="htax-enable-redirects"
-                                   name="htax_settings[taxonomy_features][group][redirects]"
-                                   value="1"
-                                   data-taxonomy="group"
-                                   <?php checked( isset( $features['redirects'] ) && $features['redirects'] ); ?> />
-                            <?php esc_html_e( 'Allow Term Group redirects', 'hypertaxonomy' ); ?>
-                            <p class="description" style="margin-left: 24px; margin-top: 4px;">
-                                <?php esc_html_e( 'Term Group archive pages can redirect to other term groups\' archives - this allows to consolidate content, reorganize group hierarchies or rename groups without invalidating the original URLs.', 'hypertaxonomy' ); ?>
-                            </p>
-                        </label>
-
-                        <label style="display: block; margin-bottom: 8px;">
-                            <input type="checkbox"
-                                   name="htax_settings[taxonomy_features][group][visibility]"
-                                   value="1"
-                                   <?php checked( isset( $features['visibility'] ) && $features['visibility'] ); ?> />
-                            <?php esc_html_e( 'Enable Term Group visibility options', 'hypertaxonomy' ); ?>
-                            <p class="description" style="margin-left: 24px; margin-top: 4px;">
-                                <?php esc_html_e( 'Allow hiding individual groups and their subgroups from public view. Hidden group archives return 404 to unauthorized users and are excluded from REST API responses and sitemaps. Does not affect which posts appear in term archives that include the group — group expansion behavior is unchanged.', 'hypertaxonomy' ); ?>
-                            </p>
-                        </label>
-
-                        <label style="display: block; margin-bottom: 8px;">
-                            <input type="checkbox"
-                                   name="htax_settings[taxonomy_features][group][customize_archives]"
-                                   value="1"
-                                   <?php checked( isset( $features['customize_archives'] ) && $features['customize_archives'] ); ?> />
-                            <?php esc_html_e( 'Archive customization', 'hypertaxonomy' ); ?>
-                            <p class="description" style="margin-left: 24px; margin-top: 4px;">
-                                <?php esc_html_e( 'Per-group archive description display, sticky posts, posts per page, and sort order.', 'hypertaxonomy' ); ?>
-                            </p>
-                        </label>
+                        <?php
+                        $this->render_feature_checkbox( 'group', 'icons', $features, __( 'Enable Term Group icons', 'hypertaxonomy' ), __( 'Allow setting custom icons for term groups (used in group archives and in displaying Term Groups if supported by your theme).', 'hypertaxonomy' ) );
+                        $this->render_feature_checkbox( 'group', 'redirects', $features, __( 'Allow Term Group redirects', 'hypertaxonomy' ), __( 'Term Group archive pages can redirect to other term groups\' archives - this allows to consolidate content, reorganize group hierarchies or rename groups without invalidating the original URLs.', 'hypertaxonomy' ), array( 'class' => 'htax-enable-redirects', 'data-taxonomy' => 'group' ) );
+                        $this->render_feature_checkbox( 'group', 'visibility', $features, __( 'Enable Term Group visibility options', 'hypertaxonomy' ), __( 'Allow hiding individual groups and their subgroups from public view. Hidden group archives return 404 to unauthorized users and are excluded from REST API responses and sitemaps. Does not affect which posts appear in term archives that include the group — group expansion behavior is unchanged.', 'hypertaxonomy' ) );
+                        $this->render_feature_checkbox( 'group', 'customize_archives', $features, __( 'Archive customization', 'hypertaxonomy' ), __( 'Per-group archive description display, sticky posts, posts per page, and sort order.', 'hypertaxonomy' ) );
+                        ?>
                     </td>
                 </tr>
             </table>
@@ -823,141 +814,69 @@ class HyperTaxonomy_Settings {
                         <?php esc_html_e( 'Features', 'hypertaxonomy' ); ?>
                     </th>
                     <td>
-                        <label style="display: block; margin-bottom: 8px;">
-                            <input type="checkbox"
-                                   name="htax_settings[taxonomy_features][<?php echo esc_attr( $tax_slug ); ?>][group_assignment]"
-                                   value="1"
-                                   data-taxonomy="<?php echo esc_attr( $tax_slug ); ?>"
-                                   <?php checked( isset( $features['group_assignment'] ) && $features['group_assignment'] ); ?> />
-                            <?php esc_html_e( 'Enable Term Groups assignment', 'hypertaxonomy' ); ?>
-                            <p class="description" style="margin-left: 24px; margin-top: 4px;">
-                                <?php
-                                    $plural = isset( $tax_obj->labels->name ) ? $tax_obj->labels->name : ucfirst( $tax_slug );
-                                    printf( esc_html__( 'Assign %s to hierarchical term groups for organizational purposes and for aggregating content into group archives.', 'hypertaxonomy' ), esc_html( mb_strtolower( $plural, 'UTF-8' ) ) );
-                                ?>
-                            </p>
-                        </label>
+                        <?php
+                        $plural = mb_strtolower( isset( $tax_obj->labels->name ) ? $tax_obj->labels->name : $tax_slug, 'UTF-8' );
+                        $toggle = array( 'data-taxonomy' => $tax_slug );
 
-                        <label style="display: block; margin-bottom: 8px;">
-                            <input type="checkbox"
-                                   name="htax_settings[taxonomy_features][<?php echo esc_attr( $tax_slug ); ?>][term_relationships]"
-                                   value="1"
-                                   <?php checked( isset( $features['term_relationships'] ) && $features['term_relationships'] ); ?> />
-                            <?php
-                                $plural = isset( $tax_obj->labels->name ) ? mb_strtolower( $tax_obj->labels->name, 'UTF-8' ) : $tax_slug;
-                                printf( esc_html__( 'Enable relationships for %s', 'hypertaxonomy' ), esc_html( $plural ) );
-                            ?>
-                            <p class="description" style="margin-left: 24px; margin-top: 4px;">
-                                <?php
-                                    $plural = isset( $tax_obj->labels->name ) ? mb_strtolower( $tax_obj->labels->name, 'UTF-8' ) : $tax_slug;
-                                    printf( esc_html__( 'Enable inclusion/container relationships, group-based relationships, and custom relationship types for %s. Allows them to include or be included by other terms and to participate in custom relationships.', 'hypertaxonomy' ), esc_html( $plural ) );
-                                ?>
-                            </p>
-                        </label>
-
-                        <label style="display: block; margin-bottom: 8px;">
-                            <input type="checkbox"
-                                   class="htax-enable-redirects"
-                                   name="htax_settings[taxonomy_features][<?php echo esc_attr( $tax_slug ); ?>][redirects]"
-                                   value="1"
-                                   data-taxonomy="<?php echo esc_attr( $tax_slug ); ?>"
-                                   <?php checked( isset( $features['redirects'] ) && $features['redirects'] ); ?> />
-                            <?php
-                                $plural = isset( $tax_obj->labels->name ) ? mb_strtolower( $tax_obj->labels->name, 'UTF-8' ) : $tax_slug;
-                                printf( esc_html__( 'Allow redirects for %s', 'hypertaxonomy' ), esc_html( $plural ) );
-                            ?>
-                            <p class="description" style="margin-left: 24px; margin-top: 4px;">
-                                <?php
-                                    $plural = isset( $tax_obj->labels->name ) ? mb_strtolower( $tax_obj->labels->name, 'UTF-8' ) : $tax_slug;
-                                    printf( esc_html__( 'Archive pages for %s can redirect to other terms\' archives - this allows consolidating content, renaming them or converting them to other taxonomy terms without invalidating the original URLs.', 'hypertaxonomy' ), esc_html( $plural ) );
-                                ?>
-                            </p>
-                        </label>
-
-                        <label style="display: block; margin-bottom: 8px;">
-                            <input type="checkbox"
-                                   name="htax_settings[taxonomy_features][<?php echo esc_attr( $tax_slug ); ?>][icons]"
-                                   value="1"
-                                   <?php checked( isset( $features['icons'] ) && $features['icons'] ); ?> />
-                            <?php
-                                $plural = isset( $tax_obj->labels->name ) ? mb_strtolower( $tax_obj->labels->name, 'UTF-8' ) : $tax_slug;
-                                printf( esc_html__( 'Enable icons for %s', 'hypertaxonomy' ), esc_html( $plural ) );
-                            ?>
-                            <p class="description" style="margin-left: 24px; margin-top: 4px;">
-                                <?php
-                                    $plural = isset( $tax_obj->labels->name ) ? mb_strtolower( $tax_obj->labels->name, 'UTF-8' ) : $tax_slug;
-                                    printf( esc_html__( 'Allow setting custom icons for %s (used in search widgets, their archives and post meta, if supported by your theme).', 'hypertaxonomy' ), esc_html( $plural ) );
-                                ?>
-                            </p>
-                        </label>
-
-                        <label style="display: block; margin-bottom: 8px;">
-                            <input type="checkbox"
-                                   name="htax_settings[taxonomy_features][<?php echo esc_attr( $tax_slug ); ?>][visibility]"
-                                   value="1"
-                                   <?php checked( isset( $features['visibility'] ) && $features['visibility'] ); ?> />
-                            <?php
-                                $plural = isset( $tax_obj->labels->name ) ? mb_strtolower( $tax_obj->labels->name, 'UTF-8' ) : $tax_slug;
-                                printf( esc_html__( 'Enable Term visibility options for %s', 'hypertaxonomy' ), esc_html( $plural ) );
-                            ?>
-                            <p class="description" style="margin-left: 24px; margin-top: 4px;">
-                                <?php
-                                    $plural = isset( $tax_obj->labels->name ) ? mb_strtolower( $tax_obj->labels->name, 'UTF-8' ) : $tax_slug;
-                                    printf( esc_html__( 'Allow hiding specific %s from post meta or show them only to users who can edit posts.', 'hypertaxonomy' ), esc_html( $plural ) );
-                                ?>
-                            </p>
-                        </label>
-
-                        <label style="display: block; margin-bottom: 8px;">
-                            <input type="checkbox"
-                                   name="htax_settings[taxonomy_features][<?php echo esc_attr( $tax_slug ); ?>][customize_archives]"
-                                   value="1"
-                                   <?php checked( isset( $features['customize_archives'] ) && $features['customize_archives'] ); ?> />
-                            <?php
-                                $plural = isset( $tax_obj->labels->name ) ? $tax_obj->labels->name : ucfirst( $tax_slug );
-                                printf( esc_html__( 'Enable archive customization for %s', 'hypertaxonomy' ), esc_html( mb_strtolower( $plural, 'UTF-8' ) ) );
-                            ?>
-                            <p class="description" style="margin-left: 24px; margin-top: 4px;">
-                                <?php
-                                    $plural = isset( $tax_obj->labels->name ) ? mb_strtolower( $tax_obj->labels->name, 'UTF-8' ) : $tax_slug;
-                                    printf( esc_html__( 'Archive description display, sticky posts, posts per page, and sort order — configurable per term for %s.', 'hypertaxonomy' ), esc_html( $plural ) );
-                                ?>
-                            </p>
-                        </label>
-
-                        <label style="display: block; margin-bottom: 8px;">
-                            <input type="checkbox"
-                                   name="htax_settings[taxonomy_features][<?php echo esc_attr( $tax_slug ); ?>][search_enhancement]"
-                                   value="1"
-                                   <?php checked( isset( $features['search_enhancement'] ) && $features['search_enhancement'] ); ?> />
-                            <?php
-                                $plural = isset( $tax_obj->labels->name ) ? mb_strtolower( $tax_obj->labels->name, 'UTF-8' ) : $tax_slug;
-                                printf( esc_html__( 'Use %s for search enhancement', 'hypertaxonomy' ), esc_html( $plural ) );
-                            ?>
-                            <p class="description" style="margin-left: 24px; margin-top: 4px;">
-                                <?php
-                                    $plural = isset( $tax_obj->labels->name ) ? mb_strtolower( $tax_obj->labels->name, 'UTF-8' ) : $tax_slug;
-                                    printf( esc_html__( 'Consider %s for relevance-scored search based on configurable weights for various scenarios.', 'hypertaxonomy' ), esc_html( $plural ) );
-                                ?>
-                            </p>
-                        </label>
-
-
-                        <?php if ( class_exists( 'ATCF_Admin' ) ) : ?>
-                        <label style="display: block; margin-bottom: 8px;">
-                            <input type="checkbox"
-                                   name="htax_settings[taxonomy_features][<?php echo esc_attr( $tax_slug ); ?>][share_locations]"
-                                   value="1"
-                                   <?php checked( isset( $features['share_locations'] ) && $features['share_locations'] ); ?> />
-                            <?php
-                                $plural = isset( $tax_obj->labels->name ) ? mb_strtolower( $tax_obj->labels->name, 'UTF-8' ) : $tax_slug;
-                                printf( esc_html__( 'Share list of locations for %s', 'hypertaxonomy' ), esc_html( $plural ) );
-                            ?>
-                            <p class="description" style="margin-left: 24px; margin-top: 4px;">
-                                <?php esc_html_e( 'Include location data from As the Crow Flies in REST responses for this taxonomy — used by TermConnect peer site matching and proximity-enhanced search.', 'hypertaxonomy' ); ?>
-                            </p>
-                        </label>
-                        <?php endif; ?>
+                        $this->render_feature_checkbox(
+                            $tax_slug, 'group_assignment', $features,
+                            __( 'Enable Term Groups assignment', 'hypertaxonomy' ),
+                            /* translators: %s: taxonomy name, plural, lowercase */
+                            sprintf( __( 'Assign %s to hierarchical term groups for organizational purposes and for aggregating content into group archives.', 'hypertaxonomy' ), $plural ),
+                            $toggle
+                        );
+                        $this->render_feature_checkbox(
+                            $tax_slug, 'term_relationships', $features,
+                            /* translators: %s: taxonomy name, plural, lowercase */
+                            sprintf( __( 'Enable relationships for %s', 'hypertaxonomy' ), $plural ),
+                            /* translators: %s: taxonomy name, plural, lowercase */
+                            sprintf( __( 'Enable inclusion/container relationships, group-based relationships, and custom relationship types for %s. Allows them to include or be included by other terms and to participate in custom relationships.', 'hypertaxonomy' ), $plural )
+                        );
+                        $this->render_feature_checkbox(
+                            $tax_slug, 'redirects', $features,
+                            /* translators: %s: taxonomy name, plural, lowercase */
+                            sprintf( __( 'Allow redirects for %s', 'hypertaxonomy' ), $plural ),
+                            /* translators: %s: taxonomy name, plural, lowercase */
+                            sprintf( __( 'Archive pages for %s can redirect to other terms\' archives - this allows consolidating content, renaming them or converting them to other taxonomy terms without invalidating the original URLs.', 'hypertaxonomy' ), $plural ),
+                            array( 'class' => 'htax-enable-redirects' ) + $toggle
+                        );
+                        $this->render_feature_checkbox(
+                            $tax_slug, 'icons', $features,
+                            /* translators: %s: taxonomy name, plural, lowercase */
+                            sprintf( __( 'Enable icons for %s', 'hypertaxonomy' ), $plural ),
+                            /* translators: %s: taxonomy name, plural, lowercase */
+                            sprintf( __( 'Allow setting custom icons for %s (used in search widgets, their archives and post meta, if supported by your theme).', 'hypertaxonomy' ), $plural )
+                        );
+                        $this->render_feature_checkbox(
+                            $tax_slug, 'visibility', $features,
+                            /* translators: %s: taxonomy name, plural, lowercase */
+                            sprintf( __( 'Enable Term visibility options for %s', 'hypertaxonomy' ), $plural ),
+                            /* translators: %s: taxonomy name, plural, lowercase */
+                            sprintf( __( 'Allow hiding specific %s from post meta or show them only to users who can edit posts.', 'hypertaxonomy' ), $plural )
+                        );
+                        $this->render_feature_checkbox(
+                            $tax_slug, 'customize_archives', $features,
+                            /* translators: %s: taxonomy name, plural, lowercase */
+                            sprintf( __( 'Enable archive customization for %s', 'hypertaxonomy' ), $plural ),
+                            /* translators: %s: taxonomy name, plural, lowercase */
+                            sprintf( __( 'Archive description display, sticky posts, posts per page, and sort order — configurable per term for %s.', 'hypertaxonomy' ), $plural )
+                        );
+                        $this->render_feature_checkbox(
+                            $tax_slug, 'search_enhancement', $features,
+                            /* translators: %s: taxonomy name, plural, lowercase */
+                            sprintf( __( 'Use %s for search enhancement', 'hypertaxonomy' ), $plural ),
+                            /* translators: %s: taxonomy name, plural, lowercase */
+                            sprintf( __( 'Consider %s for relevance-scored search based on configurable weights for various scenarios.', 'hypertaxonomy' ), $plural )
+                        );
+                        if ( class_exists( 'ATCF_Admin' ) ) {
+                            $this->render_feature_checkbox(
+                                $tax_slug, 'share_locations', $features,
+                                /* translators: %s: taxonomy name, plural, lowercase */
+                                sprintf( __( 'Share list of locations for %s', 'hypertaxonomy' ), $plural ),
+                                __( 'Include location data from As the Crow Flies in REST responses for this taxonomy — used by TermConnect peer site matching and proximity-enhanced search.', 'hypertaxonomy' )
+                            );
+                        }
+                        ?>
 
                     </td>
                 </tr>

@@ -704,17 +704,8 @@ function htax_strip_hidden_terms_from_tax_clauses( array $clauses, array $hidden
  * @return array Array of term IDs with hidden terms removed if user can't see them.
  */
 function htax_get_visible_term_ids( $term_ids ) {
-    if ( empty( $term_ids ) || ! is_array( $term_ids ) ) {
+    if ( empty( $term_ids ) || ! is_array( $term_ids ) || htax_can_see_hidden_terms() ) {
         return $term_ids;
     }
-
-    // If user can see hidden terms, no filtering needed
-    if ( htax_can_see_hidden_terms() ) {
-        return $term_ids;
-    }
-
-    // Filter out hidden terms
-    return array_filter( $term_ids, function ( $term_id ) {
-        return ! htax_is_term_hidden( $term_id );
-    });
+    return htax_remove_hidden_term_ids( $term_ids );
 }

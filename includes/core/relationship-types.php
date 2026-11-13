@@ -724,34 +724,7 @@ function htax_add_term_relationship( int $source_term_id, int $target_term_id, s
         return new WP_Error( 'db_error', __( 'Database error saving relationship.', 'hypertaxonomy' ) );
     }
 
-    // Invalidate per-term caches for both sides.
-    htax_delete_transient( 'htax_crel_' . $type_slug . '_' . $source_term_id );
-    htax_delete_transient( 'htax_crel_rev_' . $type_slug . '_' . $target_term_id );
-    htax_delete_transient( 'htax_direct_rel_' . $type_slug . '_' . $source_term_id );
-    htax_delete_transient( 'htax_reverse_rel_' . $type_slug . '_' . $target_term_id );
-    htax_delete_transient( 'htax_direct_rel_grp_' . $type_slug . '_' . $source_term_id );
-    htax_delete_transient( 'htax_reverse_rel_grp_' . $type_slug . '_' . $target_term_id );
-
-    // Type-specific cache invalidation and change actions.
-    if ( $is_includes_mapped ) {
-        if ( $target_is_group ) {
-            htax_delete_transient( 'htax_inc_' . $source_term_id );
-            do_action( 'htax_includes_changed', $source_term_id, $source_term->taxonomy, null, null );
-            htax_clear_member_caches_for_groups( array( $target_term_id ), 'cont' );
-        } elseif ( $source_is_group ) {
-            htax_delete_transient( 'htax_cont_' . $target_term_id );
-            do_action( 'htax_containers_changed', $target_term_id, $target_term->taxonomy, null, null );
-            htax_clear_member_caches_for_groups( array( $source_term_id ), 'inc' );
-        } else {
-            htax_delete_transient( 'htax_inc_' . $source_term_id );
-            htax_delete_transient( 'htax_cont_' . $target_term_id );
-            do_action( 'htax_includes_changed', $source_term_id, $source_term->taxonomy, null, null );
-            do_action( 'htax_containers_changed', $target_term_id, $target_term->taxonomy, null, null );
-        }
-    } elseif ( 'excludes' === $type_slug ) {
-        htax_delete_transient( 'htax_excl_' . $source_term_id );
-        do_action( 'htax_excludes_changed', $source_term_id, $source_term->taxonomy, null, null );
-    }
+    htax_handle_term_relationship_change( $source_term_id, $target_term_id, $type_slug );
 
     /**
      * Fires after a relationship row is saved.
@@ -764,6 +737,61 @@ function htax_add_term_relationship( int $source_term_id, int $target_term_id, s
     do_action( 'htax_relationship_saved', $source_term_id, $target_term_id, $type_slug );
 
     return true;
+}
+
+/**
+ * Clear caches and fire change actions after a relationship row is saved or deleted.
+ *
+ * Clears both terms' per-type relationship caches. For inclusion-based types and
+ * excludes, also clears the archive caches the row feeds and fires the matching
+ * change action, so the search index and other listeners update. A group on
+ * either side clears its members' caches instead of its own.
+ *
+ * @since 1.0.0
+ * @param int    $source_term_id Source term ID.
+ * @param int    $target_term_id Target term ID.
+ * @param string $type_slug      Relationship type slug.
+ */
+function htax_handle_term_relationship_change( int $source_term_id, int $target_term_id, string $type_slug ): void {
+    htax_delete_transient( 'htax_crel_' . $type_slug . '_' . $source_term_id );
+    htax_delete_transient( 'htax_crel_rev_' . $type_slug . '_' . $target_term_id );
+    htax_delete_transient( 'htax_direct_rel_' . $type_slug . '_' . $source_term_id );
+    htax_delete_transient( 'htax_reverse_rel_' . $type_slug . '_' . $target_term_id );
+    htax_delete_transient( 'htax_direct_rel_grp_' . $type_slug . '_' . $source_term_id );
+    htax_delete_transient( 'htax_reverse_rel_grp_' . $type_slug . '_' . $target_term_id );
+
+    $type               = htax_get_relationship_type( $type_slug );
+    $is_includes_mapped = $type && 'includes' === ( $type['core_type'] ?? null );
+    if ( ! $is_includes_mapped && 'excludes' !== $type_slug ) {
+        return;
+    }
+
+    $source_term = get_term( $source_term_id );
+    $target_term = get_term( $target_term_id );
+    if ( ! $source_term instanceof WP_Term || ! $target_term instanceof WP_Term ) {
+        return;
+    }
+
+    if ( 'excludes' === $type_slug ) {
+        htax_delete_transient( 'htax_excl_' . $source_term_id );
+        do_action( 'htax_excludes_changed', $source_term_id, $source_term->taxonomy, null, null );
+        return;
+    }
+
+    if ( 'group' === $target_term->taxonomy ) {
+        htax_delete_transient( 'htax_inc_' . $source_term_id );
+        do_action( 'htax_includes_changed', $source_term_id, $source_term->taxonomy, null, null );
+        htax_clear_member_caches_for_groups( array( $target_term_id ), 'cont' );
+    } elseif ( 'group' === $source_term->taxonomy ) {
+        htax_delete_transient( 'htax_cont_' . $target_term_id );
+        do_action( 'htax_containers_changed', $target_term_id, $target_term->taxonomy, null, null );
+        htax_clear_member_caches_for_groups( array( $source_term_id ), 'inc' );
+    } else {
+        htax_delete_transient( 'htax_inc_' . $source_term_id );
+        htax_delete_transient( 'htax_cont_' . $target_term_id );
+        do_action( 'htax_includes_changed', $source_term_id, $source_term->taxonomy, null, null );
+        do_action( 'htax_containers_changed', $target_term_id, $target_term->taxonomy, null, null );
+    }
 }
 
 /**
@@ -785,17 +813,6 @@ function htax_remove_term_relationship( int $source_term_id, int $target_term_id
         return false;
     }
 
-    // Fetch terms before delete so we have taxonomy/group info for cache actions.
-    $type                    = htax_get_relationship_type( $type_slug );
-    $is_includes_mapped      = $type && ( 'includes' === ( $type['core_type'] ?? null ) );
-    $needs_type_invalidation = ( $is_includes_mapped || 'excludes' === $type_slug );
-    if ( $needs_type_invalidation ) {
-        $source_term     = get_term( $source_term_id );
-        $target_term     = get_term( $target_term_id );
-        $source_is_group = ( $source_term && ! is_wp_error( $source_term ) && 'group' === $source_term->taxonomy );
-        $target_is_group = ( $target_term && ! is_wp_error( $target_term ) && 'group' === $target_term->taxonomy );
-    }
-
     global $wpdb;
     $table  = $wpdb->prefix . 'htax_term_relationships';
     $result = $wpdb->delete(
@@ -809,34 +826,7 @@ function htax_remove_term_relationship( int $source_term_id, int $target_term_id
     );
 
     if ( $result ) {
-        // Invalidate per-term caches for both sides.
-        htax_delete_transient( 'htax_crel_' . $type_slug . '_' . $source_term_id );
-        htax_delete_transient( 'htax_crel_rev_' . $type_slug . '_' . $target_term_id );
-        htax_delete_transient( 'htax_direct_rel_' . $type_slug . '_' . $source_term_id );
-        htax_delete_transient( 'htax_reverse_rel_' . $type_slug . '_' . $target_term_id );
-        htax_delete_transient( 'htax_direct_rel_grp_' . $type_slug . '_' . $source_term_id );
-        htax_delete_transient( 'htax_reverse_rel_grp_' . $type_slug . '_' . $target_term_id );
-
-        // Type-specific cache invalidation and change actions.
-        if ( $is_includes_mapped ) {
-            if ( $target_is_group ) {
-                htax_delete_transient( 'htax_inc_' . $source_term_id );
-                do_action( 'htax_includes_changed', $source_term_id, $source_term->taxonomy, null, null );
-                htax_clear_member_caches_for_groups( array( $target_term_id ), 'cont' );
-            } elseif ( $source_is_group ) {
-                htax_delete_transient( 'htax_cont_' . $target_term_id );
-                do_action( 'htax_containers_changed', $target_term_id, $target_term->taxonomy, null, null );
-                htax_clear_member_caches_for_groups( array( $source_term_id ), 'inc' );
-            } else {
-                htax_delete_transient( 'htax_inc_' . $source_term_id );
-                htax_delete_transient( 'htax_cont_' . $target_term_id );
-                do_action( 'htax_includes_changed', $source_term_id, $source_term->taxonomy, null, null );
-                do_action( 'htax_containers_changed', $target_term_id, $target_term->taxonomy, null, null );
-            }
-        } elseif ( 'excludes' === $type_slug ) {
-            htax_delete_transient( 'htax_excl_' . $source_term_id );
-            do_action( 'htax_excludes_changed', $source_term_id, $source_term->taxonomy, null, null );
-        }
+        htax_handle_term_relationship_change( $source_term_id, $target_term_id, $type_slug );
 
         /**
          * Fires after a relationship row is deleted.

@@ -606,4 +606,37 @@ function htax_get_sticky_assignment_key( int $term_id ): string {
     return '_htax_sticky_' . $term_id;
 }
 
+/**
+ * Check rate limit for AJAX requests
+ *
+ * Prevents DoS attacks by limiting requests per user per minute
+ *
+ * @param string $action The AJAX action name
+ * @param int $limit Maximum requests per minute (default: 60)
+ * @return bool True if within limit, false if rate exceeded
+ */
+function htax_check_ajax_rate_limit( $action, $limit = 60 ) {
+    $user_id = get_current_user_id();
+    if ( ! $user_id ) {
+        return true; // Don't rate limit non-logged-in users (they're already blocked by capability checks)
+    }
 
+    $cache_key = 'htax_rate_' . md5( $action . '_' . $user_id );
+    $count     = wp_cache_incr( $cache_key, 1, 'htax_rate_limits' );
+    if ( false === $count ) {
+        wp_cache_set( $cache_key, 1, 'htax_rate_limits', MINUTE_IN_SECONDS );
+        $count = 1;
+    }
+
+    if ( $count > $limit ) {
+        htax_log_error( 'AJAX rate limit exceeded', array(
+            'action'  => $action,
+            'user_id' => $user_id,
+            'count'   => $count,
+            'limit'   => $limit,
+        ) );
+        return false;
+    }
+
+    return true;
+}

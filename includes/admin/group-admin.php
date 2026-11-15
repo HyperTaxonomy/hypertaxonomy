@@ -1,0 +1,1255 @@
+<?php
+/**
+ * Term Groups Admin UI
+ *
+ * Handles admin interface customizations for the Term Groups taxonomy.
+ *
+ * @package HyperTaxonomy
+ * @since 1.0
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
+
+/**
+ * Sort an enabled-taxonomies array: post_tag first, category second, rest alphabetically.
+ *
+ * @param array $taxonomies Associative array of taxonomy_slug => label
+ * @return array Sorted array
+ */
+function htax_sort_enabled_taxonomies( $taxonomies ) {
+    if ( empty( $taxonomies ) ) {
+        return $taxonomies;
+    }
+    $ordered = array();
+    if ( isset( $taxonomies['post_tag'] ) ) {
+        $ordered['post_tag'] = $taxonomies['post_tag'];
+        unset( $taxonomies['post_tag'] );
+    }
+    if ( isset( $taxonomies['category'] ) ) {
+        $ordered['category'] = $taxonomies['category'];
+        unset( $taxonomies['category'] );
+    }
+    ksort( $taxonomies );
+    return array_merge( $ordered, $taxonomies );
+}
+
+/**
+ * Prevent 'group' taxonomy from being assigned to posts
+ *
+ * Groups are only for organizing terms, not posts. This removes the group
+ * taxonomy meta box from post edit screens.
+ *
+ * @since 1.0
+ */
+function htax_prevent_group_post_assignment() {
+    // Get all post types
+    $post_types = get_post_types( array( 'public' => true ), 'names' );
+
+    foreach ( $post_types as $post_type ) {
+        unregister_taxonomy_for_object_type( 'group', $post_type );
+    }
+}
+add_action( 'init', 'htax_prevent_group_post_assignment', 999 );
+
+
+/**
+ * Add custom columns to group list table
+ *
+ * @since 1.0
+ *
+ * @param array $columns Existing columns.
+ * @return array Modified columns.
+ */
+function htax_group_custom_columns( $columns ) {
+    // Remove default posts count column
+    if ( isset( $columns['posts'] ) ) {
+        unset( $columns['posts'] );
+    }
+
+    // Add custom columns
+    $columns['terms_count'] = __( 'Terms', 'hypertaxonomy' );
+    $columns['taxonomies']  = __( 'Taxonomies', 'hypertaxonomy' );
+
+    return $columns;
+}
+add_filter( 'manage_edit-group_columns', 'htax_group_custom_columns' );
+
+/**
+ * Populate custom columns in group list table
+ *
+ * @since 1.0
+ *
+ * @param string $content     Column content (empty by default).
+ * @param string $column_name Column name.
+ * @param int    $term_id     Term ID.
+ * @return string Column content.
+ */
+function htax_group_custom_column_content( $content, $column_name, $term_id ) {
+    // Cache per term_id: one query serves both columns
+    static $cache = array();
+
+    if ( ! isset( $cache[ $term_id ] ) ) {
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'htax_term_relationships';
+
+        $rows = $wpdb->get_results(
+            $wpdb->prepare(
+                "SELECT source_term_id, source_taxonomy
+                FROM {$table_name}
+                WHERE target_term_id = %d
+                AND target_taxonomy = 'group'
+                AND relationship_type = 'member_of'",
+                $term_id
+            )
+        );
+
+        $taxonomies = array();
+        foreach ( (array) $rows as $row ) {
+            $taxonomies[ $row->source_taxonomy ] = true;
+        }
+
+        $cache[ $term_id ] = array(
+            'count'      => count( (array) $rows ),
+            'taxonomies' => array_keys( $taxonomies ),
+        );
+    }
+
+    if ( 'terms_count' === $column_name ) {
+        $content = number_format_i18n( $cache[ $term_id ]['count'] );
+    } elseif ( 'taxonomies' === $column_name ) {
+        $taxonomies = $cache[ $term_id ]['taxonomies'];
+        if ( empty( $taxonomies ) ) {
+            $content = '—';
+        } else {
+            $tax_labels = array();
+            foreach ( $taxonomies as $taxonomy ) {
+                $tax_obj = get_taxonomy( $taxonomy );
+                if ( $tax_obj ) {
+                    $tax_labels[] = esc_html( $tax_obj->labels->name );
+                }
+            }
+            $content = implode( ', ', $tax_labels );
+        }
+
+        // At-a-glance indicator for a Tag-Groups-mapped group, so the field
+        // locks on its edit screen don't come as a surprise.
+        if ( get_term_meta( $term_id, '_htax_tag_groups_source_id', true ) ) {
+            $content = '<span class="dashicons dashicons-lock" aria-hidden="true" title="' .
+                esc_attr__( 'Synced from Tag Groups', 'hypertaxonomy' ) . '"></span> ' . $content;
+        }
+    }
+
+    return $content;
+}
+add_filter( 'manage_group_custom_column', 'htax_group_custom_column_content', 10, 3 );
+
+/**
+ * Render the taxonomy-looped term-pill section shared by the three group edit fields.
+ *
+ * @param array  $enabled_taxonomies slug => label pairs (already sorted).
+ * @param array  $terms_by_taxonomy  slug => WP_Term[] of current relationship terms.
+ * @param string $section_css_class  CSS class suffix for the taxonomy div (e.g. 'members').
+ * @param string $data_target        data-target attribute value for the search input.
+ * @param string $field_name         Base hidden-input name (e.g. 'htax_group_members').
+ * @param array  $locked_taxonomies  Taxonomy slugs whose section is read-only here because
+ *                                   another tool owns that data for this group. Default array().
+ */
+function htax_render_group_term_section( $enabled_taxonomies, $terms_by_taxonomy, $section_css_class, $data_target, $field_name, $locked_taxonomies = array() ) {
+    foreach ( $enabled_taxonomies as $tax_slug => $tax_label ) :
+        $tax_obj       = get_taxonomy( $tax_slug );
+        $taxonomy_name = $tax_obj ? strtolower( $tax_obj->labels->singular_name ) : $tax_slug;
+        $is_locked     = in_array( $tax_slug, $locked_taxonomies, true );
+        ?>
+        <div class="htax-taxonomy-<?php echo esc_attr( $section_css_class ); ?>-section<?php echo $is_locked ? ' htax-taxonomy-section-locked' : ''; ?>" data-taxonomy="<?php echo esc_attr( $tax_slug ); ?>" style="margin-bottom: 20px;">
+            <h4 style="margin: 10px 0 8px 0; font-size: 13px; font-weight: 600;">
+                <?php echo esc_html( $tax_label ); ?>
+                <?php if ( $is_locked ) : ?>
+                    <span class="dashicons dashicons-lock" aria-hidden="true" title="<?php esc_attr_e( 'Managed by Tag Groups — edit membership there instead.', 'hypertaxonomy' ); ?>"></span>
+                <?php endif; ?>
+            </h4>
+
+            <?php if ( $is_locked ) : ?>
+                <p class="description" style="margin: 0 0 8px 0;">
+                    <?php esc_html_e( 'Managed by Tag Groups — edit this taxonomy\'s membership there instead. Changes made here would be reverted on the next migration.', 'hypertaxonomy' ); ?>
+                </p>
+            <?php endif; ?>
+
+            <div class="htax-tag-container" data-taxonomy="<?php echo esc_attr( $tax_slug ); ?>" data-current="0">
+                <?php
+                if ( isset( $terms_by_taxonomy[ $tax_slug ] ) ) {
+                    foreach ( $terms_by_taxonomy[ $tax_slug ] as $rel_term ) {
+                        ?>
+                        <span class="htax-pill<?php echo $is_locked ? ' htax-pill-locked' : ''; ?>" data-id="<?php echo esc_attr( $rel_term->term_id ); ?>" tabindex="0">
+                            <?php echo esc_html( $rel_term->name ); ?>
+                            <?php if ( ! $is_locked ) : ?>
+                                <button type="button" class="htax-remove" aria-label="<?php esc_attr_e( 'Remove', 'hypertaxonomy' ); ?>" tabindex="-1">
+                                    <span class="screen-reader-text"><?php esc_html_e( 'Remove term:', 'hypertaxonomy' ); ?></span>
+                                    <span aria-hidden="true">×</span>
+                                </button>
+                            <?php endif; ?>
+                        </span>
+                        <?php
+                    }
+                }
+                ?>
+
+                <?php if ( ! $is_locked ) : ?>
+                    <input type="text" class="htax-search"
+                           id="htax-search-<?php echo esc_attr( $data_target . '-' . $tax_slug ); ?>"
+                           aria-label="<?php /* translators: %s: taxonomy name, lowercase */ echo esc_attr( sprintf( __( 'Add %s...', 'hypertaxonomy' ), $taxonomy_name ) ); ?>"
+                           data-target="<?php echo esc_attr( $data_target ); ?>"
+                           placeholder="<?php /* translators: %s: taxonomy name, lowercase */ echo esc_attr( sprintf( __( 'Add %s...', 'hypertaxonomy' ), $taxonomy_name ) ); ?>" />
+                <?php endif; ?>
+                <input type="hidden" name="<?php echo esc_attr( $field_name ); ?>[<?php echo esc_attr( $tax_slug ); ?>]" value="<?php
+                    if ( isset( $terms_by_taxonomy[ $tax_slug ] ) ) {
+                        echo esc_attr( implode( ',', wp_list_pluck( $terms_by_taxonomy[ $tax_slug ], 'term_id' ) ) );
+                    }
+                ?>" <?php echo $is_locked ? 'disabled' : ''; ?> />
+            </div>
+        </div>
+        <?php
+    endforeach;
+}
+
+/**
+ * Notice on a Tag-Groups-mapped group's own edit screen: what deleting it
+ * actually does, and that its locked fields are editable in Tag Groups instead.
+ *
+ * Mapped groups aren't protected from deletion — deleting one is a legitimate
+ * action (e.g. cleaning up after a Tag Groups taxonomy is dropped) — this only
+ * makes the consequence visible before an admin acts, rather than blocking it.
+ *
+ * @since 1.0.0
+ * @param WP_Term $term Current taxonomy term object.
+ */
+function htax_group_tag_groups_mapping_notice( WP_Term $term ): void {
+    if ( 'group' !== $term->taxonomy ) {
+        return;
+    }
+    if ( ! get_term_meta( $term->term_id, '_htax_tag_groups_source_id', true ) ) {
+        return;
+    }
+    $locked = 'locked' === htax_tag_groups_integration_mode();
+    $live   = htax_tag_groups_live_sync_enabled();
+    ?>
+    <tr class="htax-tag-groups-mapping-notice">
+        <th scope="row" valign="top">
+            <label><?php esc_html_e( 'Tag Groups', 'hypertaxonomy' ); ?></label>
+        </th>
+        <td>
+            <div class="notice notice-info inline" style="margin: 0;">
+                <?php if ( $locked ) : ?>
+                    <p>
+                        <?php
+                        if ( $live ) {
+                            esc_html_e( 'This group was created via migration from Tag Groups. Per current settings, its name and member terms are kept in continuous sync with that plugin and aren\'t editable here.', 'hypertaxonomy' );
+                        } else {
+                            esc_html_e( 'This group was created via migration from Tag Groups. Per current settings, its name and member terms are synced with that plugin during each migration run and aren\'t editable here.', 'hypertaxonomy' );
+                        }
+                        ?>
+                    </p>
+                <?php endif; ?>
+                <p>
+                    <?php esc_html_e( 'Deleting this group is not blocked, but note: the next migration from Tag Groups recreates it with its Tag Groups members, and any HyperTaxonomy-only members and relationships on it (inclusion, reverse-inclusion, custom relationship types) are lost.', 'hypertaxonomy' ); ?>
+                </p>
+            </div>
+        </td>
+    </tr>
+    <?php
+}
+add_action( 'group_edit_form_fields', 'htax_group_tag_groups_mapping_notice', 5 );
+
+/**
+ * The term fields on the group edit screen: Group Members, Container For and Included By.
+ *
+ * Each field lists the terms on the other end of one kind of row to or from the
+ * group, grouped by taxonomy, and all three are rendered and saved by the same code.
+ *
+ * @since 1.0.0
+ *
+ * @return array<string, array> POST field name => field settings:
+ *     'type'            'member_of' or 'includes'.
+ *     'group_is_source' True for rows from the group to terms (container rows).
+ *     'feature'         Taxonomy feature that makes a taxonomy's terms editable here.
+ *     'row_class'       CSS class of the field's table row.
+ *     'section_class'   CSS class suffix of each taxonomy section.
+ *     'data_target'     data-target of the term search inputs.
+ *     'label'           Field label.
+ *     'description'     Text above the field.
+ *     'empty_notice'    Text shown when no taxonomy qualifies ('' for none).
+ *     'error'           Admin notice when a save is rolled back.
+ */
+function htax_get_group_screen_fields(): array {
+    return array(
+        'htax_group_members'             => array(
+            'type'            => 'member_of',
+            'group_is_source' => false,
+            'feature'         => 'group_assignment',
+            'row_class'       => 'htax-group-members-field',
+            'section_class'   => 'members',
+            'data_target'     => 'group-members',
+            'label'           => __( 'Group Members', 'hypertaxonomy' ),
+            'description'     => __( 'Terms directly assigned to this group. To add a term, type its name below and select it from the suggestions.', 'hypertaxonomy' ),
+            'empty_notice'    => __( 'No taxonomies have group assignment enabled. Enable group assignment in Settings → HyperTaxonomy.', 'hypertaxonomy' ),
+            'error'           => __( 'Database error saving group assignments; changes rolled back.', 'hypertaxonomy' ),
+        ),
+        'htax_container_members'         => array(
+            'type'            => 'includes',
+            'group_is_source' => true,
+            'feature'         => 'term_relationships',
+            'row_class'       => 'htax-group-container-members-field',
+            'section_class'   => 'container',
+            'data_target'     => 'container-members',
+            'label'           => __( 'Container For', 'hypertaxonomy' ),
+            'description'     => __( 'Terms whose posts appear in the archives of all same-taxonomy group members. Adding a term here sets this group as its container group.', 'hypertaxonomy' ),
+            'empty_notice'    => '',
+            'error'           => __( 'Database error saving relationship.', 'hypertaxonomy' ),
+        ),
+        'htax_terms_with_included_group' => array(
+            'type'            => 'includes',
+            'group_is_source' => false,
+            'feature'         => 'term_relationships',
+            'row_class'       => 'htax-terms-with-included-group-field',
+            'section_class'   => 'terms-with-included-group',
+            'data_target'     => 'terms-with-included-group',
+            'label'           => __( 'Included By', 'hypertaxonomy' ),
+            'description'     => __( 'Terms whose archives include posts from all same-taxonomy group members. Adding a term here adds this group to that term\'s included groups.', 'hypertaxonomy' ),
+            'empty_notice'    => '',
+            'error'           => __( 'Database error saving relationship.', 'hypertaxonomy' ),
+        ),
+    );
+}
+
+/**
+ * Get the taxonomies whose terms a group-screen field shows.
+ *
+ * Public taxonomies other than 'group' that have the field's feature. Inclusion
+ * fields also require the taxonomy to be enabled, as the term screen's
+ * relationship fields do.
+ *
+ * @since 1.0.0
+ *
+ * @param string $feature 'group_assignment' or 'term_relationships'.
+ * @return array<string, string> Taxonomy slug => plural label, sorted for display.
+ */
+function htax_get_group_screen_taxonomies( string $feature ): array {
+    $taxonomies = array();
+    foreach ( get_taxonomies( array( 'public' => true ), 'objects' ) as $tax_slug => $tax_obj ) {
+        if ( 'group' === $tax_slug || ! htax_taxonomy_has_feature( $tax_slug, $feature ) ) {
+            continue;
+        }
+        if ( 'term_relationships' === $feature && ! htax_is_taxonomy_enabled( $tax_slug ) ) {
+            continue;
+        }
+        $taxonomies[ $tax_slug ] = $tax_obj->labels->name;
+    }
+    return htax_sort_enabled_taxonomies( $taxonomies );
+}
+
+/**
+ * Get the taxonomies whose membership in a group Tag Groups owns.
+ *
+ * A Tag Groups re-run reasserts membership for these taxonomies, so the group
+ * screen shows their members read-only and a save keeps them unchanged. Locked
+ * per taxonomy, not per group: one group can hold members of several taxonomies,
+ * and only some may be managed by Tag Groups.
+ *
+ * @since 1.0.0
+ *
+ * @param int      $group_id   Group term ID.
+ * @param string[] $taxonomies Taxonomy slugs to check.
+ * @return string[] The locked taxonomy slugs.
+ */
+function htax_get_group_locked_taxonomies( int $group_id, array $taxonomies ): array {
+    if ( ! function_exists( 'htax_tag_groups_taxonomy_is_managed' )
+        || ! get_term_meta( $group_id, '_htax_tag_groups_source_id', true )
+    ) {
+        return array();
+    }
+    return array_values( array_filter( $taxonomies, 'htax_tag_groups_taxonomy_is_managed' ) );
+}
+
+/**
+ * Render the Group Members, Container For and Included By fields on the group edit form.
+ *
+ * @since 1.0.0
+ *
+ * @param WP_Term $term Current taxonomy term object.
+ */
+function htax_add_group_screen_fields( $term ) {
+    if ( 'group' !== $term->taxonomy ) {
+        return;
+    }
+
+    foreach ( htax_get_group_screen_fields() as $field => $config ) {
+        $taxonomies = htax_get_group_screen_taxonomies( $config['feature'] );
+
+        // Current terms by taxonomy; terms of taxonomies this field doesn't show are left out.
+        $terms_by_taxonomy = array();
+        $term_ids          = htax_get_group_screen_term_ids( (int) $term->term_id, $config['type'], $config['group_is_source'] );
+        if ( ! empty( $term_ids ) ) {
+            $fetched_terms = get_terms( array(
+                'include'    => $term_ids,
+                'hide_empty' => false,
+            ) );
+            if ( ! is_wp_error( $fetched_terms ) ) {
+                foreach ( $fetched_terms as $term_obj ) {
+                    if ( isset( $taxonomies[ $term_obj->taxonomy ] ) ) {
+                        $terms_by_taxonomy[ $term_obj->taxonomy ][] = $term_obj;
+                    }
+                }
+            }
+        }
+
+        $locked_taxonomies = 'member_of' === $config['type']
+            ? htax_get_group_locked_taxonomies( (int) $term->term_id, array_keys( $taxonomies ) )
+            : array();
+        ?>
+        <tr class="form-field <?php echo esc_attr( $config['row_class'] ); ?>">
+            <th scope="row" valign="top">
+                <label><?php echo esc_html( $config['label'] ); ?></label>
+            </th>
+            <td>
+                <p class="description" style="margin-top: 0;">
+                    <?php echo esc_html( $config['description'] ); ?>
+                </p>
+
+                <?php htax_render_group_term_section( $taxonomies, $terms_by_taxonomy, $config['section_class'], $config['data_target'], $field, $locked_taxonomies ); ?>
+
+                <?php if ( empty( $taxonomies ) && '' !== $config['empty_notice'] ) : ?>
+                    <p class="description">
+                        <?php echo esc_html( $config['empty_notice'] ); ?>
+                    </p>
+                <?php endif; ?>
+            </td>
+        </tr>
+        <?php
+    }
+}
+add_action( 'group_edit_form_fields', 'htax_add_group_screen_fields', 16 );
+
+/**
+ * Batch-fetch taxonomy slugs for a list of term IDs.
+ *
+ * Returns an array keyed by term ID with the taxonomy slug as the value.
+ * Terms that do not exist are omitted.
+ *
+ * @since 1.0
+ *
+ * @param int[] $term_ids List of term IDs to look up.
+ * @return array<int,string> Map of term_id => taxonomy.
+ */
+function htax_get_taxonomy_map_for_terms( $term_ids ) {
+    if ( empty( $term_ids ) ) {
+        return array();
+    }
+
+    $fetched = get_terms( array(
+        'include'    => array_values( $term_ids ),
+        'hide_empty' => false,
+    ) );
+
+    if ( is_wp_error( $fetched ) ) {
+        return array();
+    }
+
+    $map = array();
+    foreach ( $fetched as $term ) {
+        $map[ $term->term_id ] = $term->taxonomy;
+    }
+    return $map;
+}
+
+/**
+ * Fire a term-level group hook for each term a group-screen save changed.
+ *
+ * The group edit screen changes one group's rows for many terms at once, but the
+ * listeners (search index, relationship caches, archive change) work per term, so
+ * each changed term gets its own call: its group list after the save, and that list
+ * as it was before (with this group put back or taken out).
+ *
+ * Call after the term's caches were cleared, so `$get_group_ids` reads the saved rows.
+ *
+ * @since 1.0.0
+ *
+ * @param string   $hook          htax_term_groups_changed, htax_included_groups_changed or htax_container_groups_changed.
+ * @param int      $group_id      The group whose screen was saved.
+ * @param int[]    $added         Terms that gained a row to this group.
+ * @param int[]    $removed       Terms that lost their row to this group.
+ * @param callable $get_group_ids Returns a term's current group IDs for this kind of row.
+ */
+function htax_fire_group_changes_per_term( string $hook, int $group_id, array $added, array $removed, callable $get_group_ids ): void {
+    $added   = array_map( 'intval', $added );
+    $removed = array_map( 'intval', $removed );
+
+    // Listeners recount group counts per term; defer so each group is recounted once.
+    wp_defer_term_counting( true );
+    foreach ( htax_get_taxonomy_map_for_terms( array_merge( $added, $removed ) ) as $changed_term => $taxonomy ) {
+        $changed_term = (int) $changed_term;
+        $new_groups   = array_map( 'intval', $get_group_ids( $changed_term ) );
+        $old_groups   = in_array( $changed_term, $added, true )
+            ? array_values( array_diff( $new_groups, array( $group_id ) ) )
+            : array_values( array_unique( array_merge( $new_groups, array( $group_id ) ) ) );
+        do_action( $hook, $changed_term, $taxonomy, $new_groups, $old_groups );
+    }
+    wp_defer_term_counting( false );
+}
+
+/**
+ * Read the term IDs submitted in one group-screen field.
+ *
+ * The field is an array keyed by taxonomy, each value a comma-separated ID list.
+ * The keys aren't trusted: the caller checks each term's real taxonomy.
+ *
+ * @since 1.0.0
+ *
+ * @param string $field POST field name.
+ * @return int[]|null Submitted term IDs, or null when the field wasn't submitted.
+ */
+function htax_parse_group_screen_field( string $field ): ?array {
+    if ( ! isset( $_POST[ $field ] ) || ! is_array( $_POST[ $field ] ) ) {
+        return null;
+    }
+
+    $term_ids = array();
+    foreach ( map_deep( wp_unslash( $_POST[ $field ] ), 'sanitize_text_field' ) as $term_ids_string ) {
+        if ( '' !== $term_ids_string ) {
+            $term_ids = array_merge( $term_ids, array_map( 'intval', explode( ',', $term_ids_string ) ) );
+        }
+    }
+    return array_values( array_unique( array_filter( $term_ids ) ) );
+}
+
+/**
+ * SQL condition matching a group-screen relationship type.
+ *
+ * Inclusion rows match every inclusion-based type, so removing a term on the
+ * group screen removes its row whichever type created it.
+ *
+ * @since 1.0.0
+ *
+ * @param string $type 'member_of' or 'includes'.
+ * @return string SQL condition on relationship_type.
+ */
+function htax_group_screen_type_sql( string $type ): string {
+    return 'member_of' === $type ? "relationship_type = 'member_of'" : htax_relationship_type_sql_in( $type );
+}
+
+/**
+ * Get the terms on the other end of a group's rows of one type.
+ *
+ * @since 1.0.0
+ *
+ * @param int    $group_id        Group term ID.
+ * @param string $type            'member_of' or 'includes'.
+ * @param bool   $group_is_source True for rows from the group to terms (container rows),
+ *                                false for rows from terms to the group (members, inclusions).
+ * @return int[] Term IDs.
+ */
+function htax_get_group_screen_term_ids( int $group_id, string $type, bool $group_is_source ): array {
+    global $wpdb;
+    $table    = $wpdb->prefix . 'htax_term_relationships';
+    $type_sql = htax_group_screen_type_sql( $type );
+
+    $sql = $group_is_source
+        ? "SELECT target_term_id FROM {$table} WHERE source_term_id = %d AND source_taxonomy = 'group' AND {$type_sql} AND target_taxonomy != 'group'"
+        : "SELECT source_term_id FROM {$table} WHERE target_term_id = %d AND target_taxonomy = 'group' AND {$type_sql}";
+
+    return array_map( 'intval', $wpdb->get_col( $wpdb->prepare( $sql, $group_id ) ) );
+}
+
+/**
+ * Replace a group's rows of one type with the submitted set, in one transaction.
+ *
+ * Rows for terms no longer submitted are deleted and rows for new terms inserted.
+ * Either all changes are saved or, on a database error, none are and an error
+ * notice is shown.
+ *
+ * @since 1.0.0
+ *
+ * @param int    $group_id         Group term ID.
+ * @param string $type             'member_of' or 'includes'.
+ * @param bool   $group_is_source  See htax_get_group_screen_term_ids().
+ * @param int[]  $current_term_ids Terms with a row now.
+ * @param int[]  $new_term_ids     Terms that should have a row.
+ * @param string $error_message    Admin notice shown when the save is rolled back.
+ * @return array|null array( $added, $removed ) term IDs, or null when rolled back.
+ */
+function htax_replace_group_screen_rows( int $group_id, string $type, bool $group_is_source, array $current_term_ids, array $new_term_ids, string $error_message ): ?array {
+    global $wpdb;
+    $table    = $wpdb->prefix . 'htax_term_relationships';
+    $type_sql = htax_group_screen_type_sql( $type );
+
+    $terms_to_remove = array_values( array_diff( $current_term_ids, $new_term_ids ) );
+    $terms_to_add    = array_diff( $new_term_ids, $current_term_ids );
+
+    try {
+        $wpdb->query( 'START TRANSACTION' );
+
+        if ( ! empty( $terms_to_remove ) ) {
+            $placeholders = htax_sql_placeholders( count( $terms_to_remove ) );
+            if ( $group_is_source ) {
+                $sql  = "DELETE FROM `{$table}` WHERE source_term_id = %d AND target_term_id IN ({$placeholders}) AND {$type_sql} AND source_taxonomy = 'group'";
+                $args = array_merge( array( $group_id ), $terms_to_remove );
+            } else {
+                $sql  = "DELETE FROM `{$table}` WHERE source_term_id IN ({$placeholders}) AND target_term_id = %d AND {$type_sql} AND target_taxonomy = 'group'";
+                $args = array_merge( $terms_to_remove, array( $group_id ) );
+            }
+            $wpdb->query( $wpdb->prepare( $sql, $args ) );
+            htax_throw_on_db_error( __FUNCTION__ );
+        }
+
+        $term_taxonomy_map = htax_get_taxonomy_map_for_terms( $terms_to_add );
+        foreach ( $terms_to_add as $term_to_add ) {
+            if ( ! isset( $term_taxonomy_map[ $term_to_add ] ) ) {
+                continue;
+            }
+            $wpdb->replace(
+                $table,
+                array(
+                    'source_term_id'    => $group_is_source ? $group_id : $term_to_add,
+                    'target_term_id'    => $group_is_source ? $term_to_add : $group_id,
+                    'relationship_type' => $type,
+                    'source_taxonomy'   => $group_is_source ? 'group' : $term_taxonomy_map[ $term_to_add ],
+                    'target_taxonomy'   => $group_is_source ? $term_taxonomy_map[ $term_to_add ] : 'group',
+                ),
+                array( '%d', '%d', '%s', '%s', '%s' )
+            );
+            htax_throw_on_db_error( __FUNCTION__ );
+        }
+
+        $wpdb->query( 'COMMIT' );
+    } catch ( Exception $e ) {
+        $wpdb->query( 'ROLLBACK' );
+        htax_add_admin_notice( $error_message, 'error' );
+        return null;
+    }
+
+    return array( $terms_to_add, $terms_to_remove );
+}
+
+/**
+ * Save the Group Members, Container For and Included By fields of the group edit form.
+ *
+ * Each submitted field replaces the group's rows of its kind for the taxonomies
+ * the field can edit. Rows of other taxonomies (without the field's feature, not
+ * public, or, for members, owned by Tag Groups) aren't shown on the screen, so
+ * they are kept unchanged rather than deleted.
+ *
+ * After each field's save, the raw caches of the changed rows are cleared and the
+ * term-level group hook fires once per changed term, so the search index and the
+ * remaining caches update as they do for a term-screen save.
+ *
+ * @since 1.0.0
+ *
+ * @param int $term_id Group term ID.
+ */
+function htax_save_group_screen_fields( $term_id ) {
+    // Only for the term edit, add-term and Quick Edit forms, verified by their nonces.
+    if ( ! htax_verify_term_nonce( (int) $term_id ) ) {
+        return;
+    }
+    $group_id = (int) $term_id;
+
+    foreach ( htax_get_group_screen_fields() as $field => $config ) {
+        $submitted = htax_parse_group_screen_field( $field );
+        if ( null === $submitted ) {
+            continue;
+        }
+
+        $current_term_ids = htax_get_group_screen_term_ids( $group_id, $config['type'], $config['group_is_source'] );
+        $taxonomy_map     = htax_get_taxonomy_map_for_terms( array_merge( $current_term_ids, $submitted ) );
+        $taxonomies       = htax_get_group_screen_taxonomies( $config['feature'] );
+        if ( 'member_of' === $config['type'] ) {
+            $taxonomies = array_diff_key( $taxonomies, array_flip( htax_get_group_locked_taxonomies( $group_id, array_keys( $taxonomies ) ) ) );
+        }
+
+        // Submitted terms of editable taxonomies, plus current terms of the others.
+        // Rows of terms that no longer exist aren't carried forward.
+        $new_term_ids = array();
+        foreach ( $submitted as $submitted_id ) {
+            if ( isset( $taxonomy_map[ $submitted_id ], $taxonomies[ $taxonomy_map[ $submitted_id ] ] ) ) {
+                $new_term_ids[] = $submitted_id;
+            }
+        }
+        foreach ( $current_term_ids as $current_term_id ) {
+            if ( isset( $taxonomy_map[ $current_term_id ] ) && ! isset( $taxonomies[ $taxonomy_map[ $current_term_id ] ] ) ) {
+                $new_term_ids[] = $current_term_id;
+            }
+        }
+
+        $changes = htax_replace_group_screen_rows( $group_id, $config['type'], $config['group_is_source'], $current_term_ids, $new_term_ids, $config['error'] );
+        if ( null === $changes ) {
+            continue;
+        }
+        list( $terms_to_add, $terms_to_remove ) = $changes;
+        $changed_terms = array_unique( array_merge( $terms_to_add, $terms_to_remove ) );
+        if ( empty( $changed_terms ) ) {
+            continue;
+        }
+
+        if ( 'member_of' === $config['type'] ) {
+            // This group's member lists for the changed members' taxonomies (stale here
+            // means group expansion returns wrong members in inclusions and custom
+            // relationship lookups), and each changed member's group list, read below to
+            // tell its old and new groups apart. htax_term_groups_changed then updates
+            // the rest per member: its inclusion and archive caches, and those of terms
+            // connected through this group (htax_update_group_membership_caches()).
+            foreach ( array_unique( array_intersect_key( $taxonomy_map, array_flip( $changed_terms ) ) ) as $member_taxonomy ) {
+                htax_delete_transient( 'htax_grp_' . $group_id . '_' . $member_taxonomy );
+            }
+            foreach ( $changed_terms as $changed_term ) {
+                htax_delete_transient( 'htax_groups_' . (int) $changed_term );
+            }
+            htax_fire_group_changes_per_term( 'htax_term_groups_changed', $group_id, $terms_to_add, $terms_to_remove, 'htax_get_term_group_ids' );
+        } elseif ( $config['group_is_source'] ) {
+            // Container rows (group includes term). The raw caches on both sides: the
+            // group's rows to terms, and each changed target's rows from groups (read
+            // below to tell its old and new container groups apart). The targets'
+            // container lists are cleared by htax_container_groups_changed.
+            htax_delete_transient( 'htax_direct_rel_includes_' . $group_id );
+            foreach ( $changed_terms as $changed_term ) {
+                htax_delete_transient( 'htax_reverse_rel_grp_includes_' . (int) $changed_term );
+            }
+
+            // htax_inc_M is stale for members of this group and its ancestor groups:
+            // path 3 of htax_get_included_terms() expands member groups downward, so
+            // ancestor-group members also reach this group's container rows.
+            htax_clear_member_caches_for_groups( array( $group_id ), 'inc' );
+
+            htax_fire_group_changes_per_term(
+                'htax_container_groups_changed',
+                $group_id,
+                $terms_to_add,
+                $terms_to_remove,
+                fn( int $tid ) => htax_get_reverse_rel_group_ids( $tid, 'includes' )
+            );
+        } else {
+            // Inclusion rows (term includes group). The raw caches on both sides: the
+            // group's rows from terms, and each changed source's rows to groups (read
+            // below to tell its old and new included groups apart). The sources'
+            // inclusions and archives are cleared by htax_included_groups_changed.
+            htax_delete_transient( 'htax_reverse_rel_includes_' . $group_id );
+            foreach ( $changed_terms as $changed_term ) {
+                htax_delete_transient( 'htax_direct_rel_grp_includes_' . (int) $changed_term );
+            }
+
+            // htax_cont_M is stale for members of this group and its descendant groups
+            // (htax_get_container_terms() path 2 matches exact membership, and
+            // htax_get_terms_in_groups() expands downward when computing included terms).
+            htax_clear_member_caches_for_groups( array( $group_id ), 'cont' );
+
+            htax_fire_group_changes_per_term(
+                'htax_included_groups_changed',
+                $group_id,
+                $terms_to_add,
+                $terms_to_remove,
+                fn( int $tid ) => htax_get_direct_rel_group_ids( $tid, 'includes' )
+            );
+        }
+    }
+}
+add_action( 'edited_group', 'htax_save_group_screen_fields' );
+
+// ============================================================================
+// CUSTOM RELATIONSHIP TYPES ON GROUP EDIT SCREEN
+// ============================================================================
+
+/**
+ * Render a single pill container for one direction of a custom relationship on the group edit screen.
+ *
+ * Groups cannot be targets in group+group rows (always invalid), so this only handles
+ * non-group term targets/sources. Term objects are loaded cross-taxonomy.
+ *
+ * @since 1.0.0
+ * @param array $args {
+ *   int      term_id          Group term ID (the term being edited).
+ *   string   field_terms      Hidden input name for the comma-separated term IDs.
+ *   int[]    direct_term_ids  Current direct term IDs for this direction.
+ *   string[] target_taxonomies Optional taxonomy slugs to restrict the autocomplete search.
+ *   string   placeholder      Input placeholder text.
+ * }
+ */
+function htax_render_group_crel_pill_container( array $args ): void {
+    $term_id         = (int) $args['term_id'];
+    $field_terms     = $args['field_terms'];
+    $direct_term_ids = $args['direct_term_ids'] ?? array();
+    $placeholder     = $args['placeholder'] ?? __( 'Add…', 'hypertaxonomy' );
+    $target_taxes    = $args['target_taxonomies'] ?? array();
+
+    // Determine which taxonomies the autocomplete should search.
+    $all_non_group = array_values( array_diff( htax_get_enabled_taxonomies(), array( 'group' ) ) );
+    $search_taxes  = ! empty( $target_taxes )
+        ? array_values( array_intersect( $all_non_group, $target_taxes ) )
+        : $all_non_group;
+    if ( empty( $search_taxes ) ) {
+        $search_taxes = $all_non_group;
+    }
+
+    // Load term objects without taxonomy restriction.
+    $term_objects = array();
+    if ( ! empty( $direct_term_ids ) && ! empty( $all_non_group ) ) {
+        $fetched = get_terms( array(
+            'taxonomy'   => $all_non_group,
+            'include'    => $direct_term_ids,
+            'hide_empty' => false,
+        ) );
+        if ( ! is_wp_error( $fetched ) ) {
+            foreach ( $fetched as $t ) {
+                $term_objects[ $t->term_id ] = $t;
+            }
+        }
+    }
+    ?>
+    <div class="htax-tag-container htax-merged-container"
+         data-current="<?php echo esc_attr( $term_id ); ?>"
+         data-taxonomy="group"
+         data-taxonomies="<?php echo esc_attr( implode( ',', array_map( 'sanitize_key', $search_taxes ) ) ); ?>"
+         data-action="htax_search_terms">
+        <?php foreach ( $direct_term_ids as $tid ) :
+            $t = $term_objects[ $tid ] ?? null;
+            if ( ! $t ) { continue; }
+            $tax_obj   = get_taxonomy( $t->taxonomy );
+            $tax_label = $tax_obj ? strtolower( $tax_obj->labels->singular_name ) : $t->taxonomy;
+        ?>
+            <span class="htax-pill" data-id="<?php echo esc_attr( $tid ); ?>" tabindex="0">
+                <?php echo esc_html( $t->name ); ?>
+                <span style="color:#999;font-size:11px;">(<?php echo esc_html( $tax_label ); ?>)</span>
+                <button type="button" class="htax-remove"
+                        aria-label="<?php esc_attr_e( 'Remove', 'hypertaxonomy' ); ?>"
+                        tabindex="-1">
+                    <span class="screen-reader-text"><?php esc_html_e( 'Remove term:', 'hypertaxonomy' ); ?></span>
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </span>
+        <?php endforeach; ?>
+        <input type="text" class="htax-search"
+               id="htax-search-<?php echo esc_attr( $field_terms ); ?>"
+               aria-label="<?php echo esc_attr( $placeholder ); ?>"
+               placeholder="<?php echo esc_attr( $placeholder ); ?>" />
+        <input type="hidden" name="<?php echo esc_attr( $field_terms ); ?>"
+               value="<?php echo esc_attr( implode( ',', $direct_term_ids ) ); ?>" />
+    </div>
+    <?php
+}
+
+/**
+ * Add custom relationship type tabs to the group edit form.
+ *
+ * Shows one tab per registered non-core relationship type. Each tab has a forward
+ * panel (this group is the source) and a reverse panel (this group is the target).
+ * Groups cannot appear as the other side because group+group rows are always invalid.
+ *
+ * @since 1.0.0
+ * @param WP_Term $term Group term being edited.
+ */
+function htax_add_group_custom_relationships_field( WP_Term $term ): void {
+    if ( 'group' !== $term->taxonomy ) {
+        return;
+    }
+
+    if ( ! current_user_can( 'manage_term_relationships' ) ) {
+        return;
+    }
+
+    // Collect all non-core registered relationship types.
+    $custom_types = array();
+    foreach ( htax_get_registered_relationship_types() as $slug => $def ) {
+        if ( empty( $def['is_core'] ) ) {
+            $custom_types[ $slug ] = $def;
+        }
+    }
+
+    if ( empty( $custom_types ) ) {
+        return;
+    }
+
+    $term_id   = (int) $term->term_id;
+    $use_tabs  = count( $custom_types ) > 1;
+
+    // Pre-load direct IDs for all types in one pass.
+    $type_data = array();
+    foreach ( $custom_types as $slug => $def ) {
+        $type_data[ $slug ] = array(
+            'fwd' => htax_get_direct_rel_term_ids( $term_id, $slug ),
+            'rev' => htax_get_reverse_rel_term_ids( $term_id, $slug ),
+        );
+    }
+    ?>
+    <tr class="form-field htax-group-custom-rels-field">
+        <th scope="row" valign="top">
+            <label><?php esc_html_e( 'Custom Relationships', 'hypertaxonomy' ); ?></label>
+        </th>
+        <td>
+
+        <?php if ( $use_tabs ) : ?>
+        <nav class="htax-rel-tabs-nav" role="tablist">
+            <?php $first = true; foreach ( $custom_types as $slug => $def ) : ?>
+            <button type="button" class="htax-rel-tab-btn<?php echo $first ? ' active' : ''; ?>"
+                    role="tab" aria-selected="<?php echo $first ? 'true' : 'false'; ?>"
+                    data-tab="gcrel-<?php echo esc_attr( $slug ); ?>">
+                <?php echo esc_html( $def['label'] ); ?> / <?php echo esc_html( $def['inverse_label'] ); ?>
+            </button>
+            <?php $first = false; endforeach; ?>
+        </nav>
+        <?php endif; ?>
+
+        <?php $first = true; foreach ( $custom_types as $slug => $def ) :
+            $cd            = $type_data[ $slug ];
+            $fwd_taxes     = ! empty( $def['target_taxonomies'] ) ? $def['target_taxonomies'] : array();
+            $rev_taxes     = ! empty( $def['source_taxonomies'] ) ? $def['source_taxonomies'] : array();
+            /* translators: %s: relationship type label, lowercase */
+            $fwd_ph        = sprintf( __( 'Add %s…', 'hypertaxonomy' ), strtolower( $def['label'] ) );
+            /* translators: %s: relationship type inverse label, lowercase */
+            $rev_ph        = sprintf( __( 'Add %s…', 'hypertaxonomy' ), strtolower( $def['inverse_label'] ) );
+            $panel_hidden  = $use_tabs && ! $first;
+        ?>
+        <div class="htax-rel-tab-panel<?php echo $use_tabs ? '' : ' htax-no-tabs'; ?>"
+             data-panel="gcrel-<?php echo esc_attr( $slug ); ?>"
+             <?php echo $use_tabs ? 'role="tabpanel"' : ''; ?>
+             <?php echo $panel_hidden ? 'hidden' : ''; ?>>
+
+            <div class="htax-inclusions-panel">
+                <h4 class="htax-container-heading"><?php echo esc_html( $def['label'] ); ?></h4>
+                <p class="description" style="margin-top:0;">
+                    <?php esc_html_e( 'Terms this group has this relationship with (this group is the source).', 'hypertaxonomy' ); ?>
+                </p>
+                <?php htax_render_group_crel_pill_container( array(
+                    'term_id'           => $term_id,
+                    'field_terms'       => 'htax_cust_' . $slug . '_fwd_terms',
+                    'direct_term_ids'   => $cd['fwd'],
+                    'target_taxonomies' => $fwd_taxes,
+                    'placeholder'       => $fwd_ph,
+                ) ); ?>
+            </div>
+
+            <div class="htax-inclusions-panel">
+                <h4 class="htax-container-heading"><?php echo esc_html( $def['inverse_label'] ); ?></h4>
+                <p class="description" style="margin-top:0;">
+                    <?php esc_html_e( 'Terms that have this relationship with this group (this group is the target).', 'hypertaxonomy' ); ?>
+                </p>
+                <?php htax_render_group_crel_pill_container( array(
+                    'term_id'           => $term_id,
+                    'field_terms'       => 'htax_cust_' . $slug . '_rev_terms',
+                    'direct_term_ids'   => $cd['rev'],
+                    'target_taxonomies' => $rev_taxes,
+                    'placeholder'       => $rev_ph,
+                ) ); ?>
+            </div>
+
+        </div><?php /* end panel */
+        $first = false; endforeach; ?>
+
+        </td>
+    </tr>
+    <?php
+}
+add_action( 'group_edit_form_fields', 'htax_add_group_custom_relationships_field', 19 );
+
+/**
+ * Show a context info panel when the group edit page is reached via a term-pill tooltip link.
+ *
+ * URL params:
+ *   term_context  — ID of the originating term.
+ *   context_dir   — 'descendants' (look in subgroups) or 'ancestors' (look in parent groups).
+ *   context_rel   — 'member_of' (membership path) or 'includes' (includes-relationship path).
+ *
+ * For direct associations the panel is suppressed; a JS highlight is emitted instead so the
+ * user can spot the term pill on the page without needing a redundant notice.
+ * For indirect associations the panel names each intermediate group as a clickable link.
+ *
+ * @since 1.0.0
+ * @param WP_Term $term The group term being edited.
+ */
+function htax_group_context_panel( WP_Term $term ): void {
+    if ( 'group' !== $term->taxonomy ) {
+        return;
+    }
+    $context_id = isset( $_GET['term_context'] ) ? (int) $_GET['term_context'] : 0;
+    if ( ! $context_id ) {
+        return;
+    }
+    $context_term = get_term( $context_id );
+    if ( ! $context_term || is_wp_error( $context_term ) ) {
+        return;
+    }
+
+    $context_dir = isset( $_GET['context_dir'] ) && 'ancestors' === $_GET['context_dir'] ? 'ancestors' : 'descendants';
+    $raw_rel     = isset( $_GET['context_rel'] ) ? sanitize_key( $_GET['context_rel'] ) : '';
+    $context_rel = in_array( $raw_rel, array( 'includes_fwd', 'includes_rev' ), true ) ? $raw_rel : 'member_of';
+    $group_id    = $term->term_id;
+
+    // Build context-preserving URL for navigating to a related group.
+    $make_group_url = function ( int $gid ) use ( $context_id, $context_dir, $context_rel ): string {
+        return esc_url( add_query_arg(
+            array( 'term_context' => $context_id, 'context_dir' => $context_dir, 'context_rel' => $context_rel ),
+            get_edit_term_link( $gid, 'group' )
+        ) );
+    };
+
+    $is_direct      = false;
+    $related_groups = array();
+
+    if ( 'member_of' === $context_rel ) {
+        // Membership path: context term is a member_of this group or a group reachable via context_dir.
+        $member_groups = htax_get_term_group_ids( $context_id );
+
+        if ( empty( $member_groups ) ) {
+            echo '<tr><td colspan="2"><div class="notice notice-warning inline"><p>';
+            echo '<strong>' . esc_html( $context_term->name ) . '</strong> ';
+            esc_html_e( 'is not currently a member of any group.', 'hypertaxonomy' );
+            echo '</p></div></td></tr>';
+            return;
+        }
+
+        $member_set = array_flip( $member_groups );
+        $is_direct  = isset( $member_set[ $group_id ] );
+
+        if ( 'descendants' === $context_dir ) {
+            $candidates     = get_term_children( $group_id, 'group' );
+            $related_groups = ( ! is_wp_error( $candidates ) )
+                ? array_values( array_intersect( $candidates, $member_groups ) )
+                : array();
+        } else {
+            $candidates     = get_ancestors( $group_id, 'group', 'taxonomy' );
+            $related_groups = array_values( array_intersect( $candidates, $member_groups ) );
+        }
+    } elseif ( 'includes_fwd' === $context_rel ) {
+        // Forward includes path: this group includes the context term.
+        // The term pill is in the "Container For" field on this group's page.
+        $incl_fwd  = htax_get_direct_rel_term_ids( $group_id, 'includes' );
+        $is_direct = in_array( $context_id, $incl_fwd, true );
+
+        $ancestors = get_ancestors( $group_id, 'group', 'taxonomy' );
+        foreach ( $ancestors as $ancestor_gid ) {
+            $anc_fwd = htax_get_direct_rel_term_ids( (int) $ancestor_gid, 'includes' );
+            if ( in_array( $context_id, $anc_fwd, true ) ) {
+                $related_groups[] = (int) $ancestor_gid;
+            }
+        }
+    } else {
+        // Reverse includes path (includes_rev): the context term includes this group.
+        // The term pill is in the "Included By" field on this group's page.
+        $incl_rev  = htax_get_reverse_rel_term_ids( $group_id, 'includes' );
+        $is_direct = in_array( $context_id, $incl_rev, true );
+
+        $ancestors = get_ancestors( $group_id, 'group', 'taxonomy' );
+        foreach ( $ancestors as $ancestor_gid ) {
+            $anc_rev = htax_get_reverse_rel_term_ids( (int) $ancestor_gid, 'includes' );
+            if ( in_array( $context_id, $anc_rev, true ) ) {
+                $related_groups[] = (int) $ancestor_gid;
+            }
+        }
+    }
+
+    if ( ! $is_direct && empty( $related_groups ) ) {
+        echo '<tr><td colspan="2"><div class="notice notice-warning inline"><p>';
+        echo '<strong>' . esc_html( $context_term->name ) . '</strong> ';
+        esc_html_e( 'does not appear to be associated with this group.', 'hypertaxonomy' );
+        echo '</p></div></td></tr>';
+        return;
+    }
+
+    // Direct-only: highlight the exact pill that shows the relationship instead of a notice.
+    if ( empty( $related_groups ) ) {
+        if ( 'member_of' === $context_rel ) {
+            $pill_selector    = '.htax-group-members-field .htax-pill[data-id="' . $context_id . '"]';
+            $section_selector = '.htax-group-members-field';
+        } elseif ( 'includes_fwd' === $context_rel ) {
+            $pill_selector    = '.htax-group-container-members-field .htax-pill[data-id="' . $context_id . '"]';
+            $section_selector = '.htax-group-container-members-field';
+        } else {
+            $pill_selector    = '.htax-terms-with-included-group-field .htax-pill[data-id="' . $context_id . '"]';
+            $section_selector = '.htax-terms-with-included-group-field';
+        }
+        printf(
+            '<script>document.addEventListener("DOMContentLoaded",function(){' .
+            'document.querySelectorAll(%s).forEach(function(el){el.classList.add("htax-context-direct");});' .
+            'var s=document.querySelector(%s);' .
+            'if(s){var t=s.getBoundingClientRect().top+window.pageYOffset-60;window.scrollTo({top:Math.max(0,t),behavior:"smooth"});}' .
+            '});</script>',
+            wp_json_encode( $pill_selector ),
+            wp_json_encode( $section_selector )
+        );
+        return;
+    }
+
+    $links = array();
+    foreach ( $related_groups as $gid ) {
+        $g = get_term( (int) $gid, 'group' );
+        if ( $g && ! is_wp_error( $g ) ) {
+            $links[] = '<a href="' . $make_group_url( (int) $gid ) . '">' . esc_html( $g->name ) . '</a>';
+        }
+    }
+
+    if ( ! $links ) {
+        return;
+    }
+
+    if ( 'member_of' === $context_rel ) {
+        if ( 'descendants' === $context_dir ) {
+            $label = _n( 'member via subgroup:', 'member via subgroups:', count( $links ), 'hypertaxonomy' );
+        } else {
+            $label = _n( 'member via parent group:', 'member via parent groups:', count( $links ), 'hypertaxonomy' );
+        }
+    } else {
+        $label = _n( 'associated via parent group:', 'associated via parent groups:', count( $links ), 'hypertaxonomy' );
+    }
+
+    echo '<tr><td colspan="2"><div id="htax-context-panel" class="notice notice-info inline"><p>';
+    echo '<strong>' . esc_html( $context_term->name ) . '</strong> ';
+    esc_html_e( 'appears here because:', 'hypertaxonomy' );
+    echo ' ' . esc_html( $label ) . ' ' . wp_kses_post( implode( ', ', $links ) ) . '.';
+    echo '</p></div></td></tr>';
+    echo '<script>document.addEventListener("DOMContentLoaded",function(){' .
+         'var p=document.getElementById("htax-context-panel");' .
+         'if(p){var t=p.getBoundingClientRect().top+window.pageYOffset-60;window.scrollTo({top:Math.max(0,t),behavior:"smooth"});}' .
+         '});</script>';
+}
+add_action( 'group_edit_form_fields', 'htax_group_context_panel', 15 );
+
+/**
+ * Save custom relationship type rows submitted from the group edit form.
+ *
+ * Processes htax_cust_{slug}_fwd_terms and htax_cust_{slug}_rev_terms fields for
+ * every non-core registered type. Groups cannot be on the other side (group+group
+ * rows are always invalid), so only term IDs are handled here.
+ *
+ * @since 1.0.0
+ * @param int $term_id Group term ID.
+ */
+function htax_save_group_custom_type_relationships( int $term_id ): void {
+    // Only for the term edit, add-term and Quick Edit forms, verified by their nonces.
+    if ( ! htax_verify_term_nonce( (int) $term_id ) ) {
+        return;
+    }
+
+    if ( ! current_user_can( 'manage_term_relationships' ) ) {
+        return;
+    }
+
+    $parse_ids = function( string $key ): array {
+        if ( ! isset( $_POST[ $key ] ) ) {
+            return array();
+        }
+        $raw = sanitize_text_field( wp_unslash( $_POST[ $key ] ) );
+        return array_values( array_filter( array_map( 'intval', explode( ',', $raw ) ) ) );
+    };
+
+    foreach ( htax_get_registered_relationship_types() as $slug => $def ) {
+        if ( ! empty( $def['is_core'] ) ) {
+            continue;
+        }
+
+        $fwd_key = 'htax_cust_' . $slug . '_fwd_terms';
+        $rev_key = 'htax_cust_' . $slug . '_rev_terms';
+
+        if ( ! isset( $_POST[ $fwd_key ] ) && ! isset( $_POST[ $rev_key ] ) ) {
+            continue;
+        }
+
+        $new_fwd = $parse_ids( $fwd_key );
+        $new_rev = $parse_ids( $rev_key );
+
+        $cur_fwd = htax_get_term_relationship_ids( $term_id, 'target_term_id', 'source_term_id', $slug, array( 'target_taxonomy' => HTAX_NOT_GROUP ) );
+        $cur_rev = htax_get_term_relationship_ids( $term_id, 'source_term_id', 'target_term_id', $slug, array( 'source_taxonomy' => HTAX_NOT_GROUP ) );
+
+        foreach ( array_diff( $new_fwd, $cur_fwd ) as $tid ) {
+            htax_add_term_relationship( $term_id, $tid, $slug );
+        }
+        foreach ( array_diff( $cur_fwd, $new_fwd ) as $tid ) {
+            htax_remove_term_relationship( $term_id, $tid, $slug );
+        }
+
+        foreach ( array_diff( $new_rev, $cur_rev ) as $tid ) {
+            htax_add_term_relationship( $tid, $term_id, $slug );
+        }
+        foreach ( array_diff( $cur_rev, $new_rev ) as $tid ) {
+            htax_remove_term_relationship( $tid, $term_id, $slug );
+        }
+    }
+}
+add_action( 'edited_group', 'htax_save_group_custom_type_relationships' );
+
+/**
+ * Note: AJAX column display fix for new group terms is handled client-side
+ * in admin/js/htax-group-admin.js lines 78-102 via ajaxSuccess handler.
+ *
+ * @since 1.0
+ */
+
+/**
+ * Enqueue media uploader for group icon
+ *
+ * @since 1.0
+ */
+function htax_enqueue_group_admin_scripts( $hook ) {
+    global $taxnow;
+
+    // Only load on group taxonomy edit pages
+    if ( ! in_array( $hook, array( 'edit-tags.php', 'term.php' ), true ) || 'group' !== $taxnow ) {
+        return;
+    }
+
+    wp_enqueue_media();
+
+    // Enqueue jQuery UI autocomplete for term member search
+    wp_enqueue_script( 'jquery-ui-autocomplete' );
+    wp_enqueue_style( 'wp-jquery-ui-dialog' ); // Provides jQuery UI theme
+
+    wp_enqueue_script(
+        'htax-group-admin',
+        HTAX_PLUGIN_URL . 'admin/js/htax-group-admin.js',
+        array( 'jquery', 'jquery-ui-autocomplete', 'wp-i18n' ),
+        HTAX_VERSION,
+        true
+    );
+    wp_set_script_translations( 'htax-group-admin', 'hypertaxonomy', HTAX_PLUGIN_DIR . 'languages' );
+}
+add_action( 'admin_enqueue_scripts', 'htax_enqueue_group_admin_scripts' );
+
+/**
+ * Add help text to group taxonomy screen
+ *
+ * @since 1.0
+ */
+function htax_group_admin_help() {
+    $screen = get_current_screen();
+
+    if ( ! $screen || 'edit-group' !== $screen->id ) {
+        return;
+    }
+
+    $screen->add_help_tab(
+        array(
+            'id'      => 'htax_group_overview',
+            'title'   => __( 'Overview', 'hypertaxonomy' ),
+            'content' => '<p>' . __( 'Term Groups allow you to organize terms from different taxonomies (tags, categories, custom taxonomies) into hierarchical groups.', 'hypertaxonomy' ) . '</p>' .
+                '<p>' . __( 'Groups are hierarchical, meaning you can create parent and child groups. In addition to directly assigned terms, groups automatically include terms from all their child groups as well.', 'hypertaxonomy' ) . '</p>',
+        )
+    );
+
+    $screen->add_help_tab(
+        array(
+            'id'      => 'htax_group_usage',
+            'title'   => __( 'Usage', 'hypertaxonomy' ),
+            'content' => '<p>' . __( 'To assign terms to groups, edit the term (tag, category, etc.) and select the groups in the "Term Groups" section.', 'hypertaxonomy' ) . '</p>' .
+                '<p>' . __( 'Group archive pages (e.g., /group/colors/) will display posts from all terms assigned to that group across all enabled taxonomies.', 'hypertaxonomy' ) . '</p>',
+        )
+    );
+
+    $screen->add_help_tab(
+        array(
+            'id'      => 'htax_group_settings',
+            'title'   => __( 'Settings', 'hypertaxonomy' ),
+            'content' => '<p>' . __( 'You can enable or disable group assignment for each taxonomy in Settings → HyperTaxonomy → Term Groups.', 'hypertaxonomy' ) . '</p>' .
+                '<p>' . __( 'Only taxonomies with group assignment enabled will show the group selection interface on their term edit screens.', 'hypertaxonomy' ) . '</p>',
+        )
+    );
+}
+add_action( 'load-edit-tags.php', 'htax_group_admin_help' );
+add_action( 'load-term.php', 'htax_group_admin_help' );
+
+// Note: Term search autocomplete reuses the existing htax_search_terms AJAX handler from htax-term-edit.php

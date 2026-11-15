@@ -1,0 +1,22 @@
+.htax-sort-order-builder {
+	margin-bottom: 8px;
+}
+
+.htax-sort-row {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	margin-bottom: 6px;
+}
+
+/* Let the field dropdown fill available space. */
+.htax-sort-row .components-base-control {
+	flex: 1;
+	min-width: 0;
+	margin-bottom: 0 !important;
+}
+
+/* Compact icon buttons — prevent them from growing. */
+.htax-sort-row > .components-button {
+	flex-shrink: 0;
+}

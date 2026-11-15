@@ -1,0 +1,97 @@
+{
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+    "apiVersion": 3,
+    "name": "hypertaxonomy/term-cloud",
+    "version": "1.0.0",
+    "title": "HT Term Cloud",
+    "category": "hypertaxonomy",
+    "icon": "cloud",
+    "description": "Display a tag cloud with variable font sizes based on post count, with Term Groups filtering.",
+    "keywords": [ "tag", "cloud", "terms", "taxonomy", "hypertaxonomy" ],
+    "supports": {
+        "html": false,
+        "align": false
+    },
+    "textdomain": "hypertaxonomy",
+    "attributes": {
+        "taxonomy": {
+            "type": "string",
+            "default": "post_tag"
+        },
+        "hide_empty": {
+            "type": "string",
+            "default": "0"
+        },
+        "include_groups": {
+            "type": "string",
+            "default": ""
+        },
+        "exclude_groups": {
+            "type": "string",
+            "default": ""
+        },
+        "include_terms": {
+            "type": "string",
+            "default": ""
+        },
+        "exclude_terms": {
+            "type": "string",
+            "default": ""
+        },
+        "smallest": {
+            "type": "string",
+            "default": "12"
+        },
+        "largest": {
+            "type": "string",
+            "default": "22"
+        },
+        "unit": {
+            "type": "string",
+            "default": "pt"
+        },
+        "max_results": {
+            "type": "string",
+            "default": "0"
+        },
+        "separator": {
+            "type": "string",
+            "default": " "
+        },
+        "div_class": {
+            "type": "string",
+            "default": ""
+        },
+        "div_id": {
+            "type": "string",
+            "default": ""
+        },
+        "min_count": {
+            "type": "string",
+            "default": "0"
+        },
+        "header": {
+            "type": "string",
+            "default": ""
+        },
+        "prepend": {
+            "type": "string",
+            "default": ""
+        },
+        "append": {
+            "type": "string",
+            "default": ""
+        },
+        "show_icons": {
+            "type": "string",
+            "default": "when_available"
+        },
+        "class": {
+            "type": "string",
+            "default": ""
+        }
+    },
+    "example": {},
+    "editorScript": "file:./build/index.js",
+    "editorStyle": "file:./build/ht-term-cloud.css"
+}

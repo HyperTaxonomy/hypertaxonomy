@@ -1,0 +1,22 @@
+title: HyperTaxonomy
+description: Advanced taxonomy relationships for WordPress — term groups, inclusions, synonyms, redirects, relevance search, and more.
+remote_theme: just-the-docs/just-the-docs
+plugins:
+  - jekyll-remote-theme
+baseurl: "/hypertaxonomy"
+url: "https://hypertaxonomy.org"
+search_enabled: true
+heading_anchors: true
+color_scheme: hypertaxonomy
+aux_links:
+  "GitHub": ["https://github.com/HyperTaxonomy/hypertaxonomy"]
+  "HyperTaxonomy Suite": ["https://hypertaxonomy.org"]
+aux_links_new_tab: false
+# Local QA docs (gitignored); also excluded from the docs site build.
+exclude:
+  - TEST-PLAN.md
+  - TEST-PLAN-ATCF.md
+callouts:
+  note:
+    title: Note
+    color: blue

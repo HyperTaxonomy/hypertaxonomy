@@ -1,0 +1,121 @@
+{
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+    "apiVersion": 3,
+    "name": "hypertaxonomy/term-list",
+    "version": "1.0.0",
+    "title": "HT Term List",
+    "category": "hypertaxonomy",
+    "icon": "clipboard",
+    "description": "Display taxonomy terms as a filterable, optionally collapsible list with Term Groups support.",
+    "keywords": [ "terms", "taxonomy", "list", "hypertaxonomy" ],
+    "supports": {
+        "html": false,
+        "align": false
+    },
+    "textdomain": "hypertaxonomy",
+    "attributes": {
+        "taxonomy": {
+            "type": "string",
+            "default": "post_tag"
+        },
+        "hide_empty": {
+            "type": "string",
+            "default": "0"
+        },
+        "include_groups": {
+            "type": "string",
+            "default": ""
+        },
+        "exclude_groups": {
+            "type": "string",
+            "default": ""
+        },
+        "include_terms": {
+            "type": "string",
+            "default": ""
+        },
+        "exclude_terms": {
+            "type": "string",
+            "default": ""
+        },
+        "orderby": {
+            "type": "string",
+            "default": "name"
+        },
+        "order": {
+            "type": "string",
+            "default": "ASC"
+        },
+        "max_depth": {
+            "type": "string",
+            "default": "-1"
+        },
+        "indent_style": {
+            "type": "string",
+            "default": "padding"
+        },
+        "indent_size": {
+            "type": "string",
+            "default": "20"
+        },
+        "generate_anchors": {
+            "type": "string",
+            "default": "true"
+        },
+        "font_size": {
+            "type": "string",
+            "default": "12"
+        },
+        "columns": {
+            "type": "string",
+            "default": "1"
+        },
+        "collapsible": {
+            "type": "string",
+            "default": "false"
+        },
+        "separator": {
+            "type": "string",
+            "default": ""
+        },
+        "header_link_behavior": {
+            "type": "string",
+            "default": "none"
+        },
+        "min_count": {
+            "type": "string",
+            "default": "0"
+        },
+        "header": {
+            "type": "string",
+            "default": ""
+        },
+        "prepend": {
+            "type": "string",
+            "default": ""
+        },
+        "append": {
+            "type": "string",
+            "default": ""
+        },
+        "show_icons": {
+            "type": "string",
+            "default": "when_available"
+        },
+        "class": {
+            "type": "string",
+            "default": ""
+        },
+        "div_class": {
+            "type": "string",
+            "default": ""
+        },
+        "div_id": {
+            "type": "string",
+            "default": ""
+        }
+    },
+    "example": {},
+    "editorScript": "file:./build/index.js",
+    "editorStyle": "file:./build/ht-term-list.css"
+}

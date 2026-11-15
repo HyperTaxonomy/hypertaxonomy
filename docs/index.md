@@ -1,0 +1,73 @@
+---
+title: Home
+nav_order: 1
+---
+
+# HyperTaxonomy
+
+*Structure the unstructured*
+{: .fs-6 .fw-300 }
+
+Semantic term relationships for WordPress: inclusions, synonyms, redirects, term groups, rich archives, and faceted search — define a relationship once, and it propagates everywhere. Term inclusions and synonyms mean a post tagged "React" automatically surfaces in the archives for "JavaScript", "Frontend", and any other term that includes it, without re-tagging. A denormalized search index keeps archives and search fast, and the same relationships govern archive queries, the related-posts shortcode, the search widget, and the REST API.
+
+The core plugin of the [HyperTaxonomy Suite](https://hypertaxonomy.org) of interoperable WordPress taxonomy plugins.
+
+## Features
+
+HyperTaxonomy adds term organization, relationships, and relevance-scored search to any WordPress taxonomy — all built in, with no external plugin required.
+
+- **Term Groups** — Organize terms into hierarchical groups.
+- **Term Inclusions** — Include another term's posts in an archive, or a whole group's at once, or put a term's posts into every member of a group (reverse inclusion); bidirectional inclusions act as synonyms.
+- **Relationship Types** — Built-in inclusion/exclusion; define your own relationship types between terms; inclusion-based types expand archives just like inclusions.
+- **Term Redirects** — 301 redirects with automatic chain collapsing and circular-reference detection.
+- **Term Icons** — Media-library icons with colored icon-shaped placeholders; SVG support.
+- **Search Widget** — Modular form builder for faceted search/filtering (pills, checklists, text fields, nested field groups, and a geo distance filter with As the Crow Flies) with AJAX/POST modes.
+- **PowerSearch** — Post field and taxonomy operators (`title:`, `tag:`, …), required/optional/excluded term modifiers, any/all match modes, configurable scope, and a `near:` proximity operator with As the Crow Flies.
+- **Content-Based Tag Suggestions** — The block editor suggests unassigned tags based on post content, ranked by prominence.
+- **Sticky Posts** — Pin posts to specific term archives.
+- **Per-Term Archive Settings** — Set a description, pagination, and default sort order for each term's archive.
+- **Archive Sort & Filter Controls** — Let visitors re-sort and filter posts on archive pages.
+- **Hidden Terms** — Role-based term visibility, fully integrated with the search index.
+- **Merge Terms** — Consolidate duplicate terms, transferring posts and relationships with optional 301 redirect stubs.
+- **Taxonomy Conversion** — Move terms between taxonomies with optional 301 redirect stubs so old archive URLs keep working.
+- **Display Shortcodes & Blocks** — Term lists, tag clouds, alphabetical indexes, and group hierarchies for any taxonomy.
+- **Post List Shortcodes & Blocks** — Filtered post lists and related posts via shortcodes or Gutenberg blocks.
+- **Native Block Extensions** — A Term Group filter on the core Query Loop and Latest Posts blocks.
+- **Integration API** — Automatic inclusion expansion for third-party queries; REST endpoints; extra term fields in standard REST responses; term relationships, groups, pinned posts, identifiers, locations and icons readable as term meta for GraphQL plugins and page builders.
+- **Import / Export** — JSON-based data migration, with a Tag Groups migrator included.
+
+## Coming from Tag Groups?
+
+Tag Groups (rebranded "PublishPress Tag Groups" in October 2026) is a popular plugin for taxonomy term organization. For a side-by-side breakdown of how HyperTaxonomy compares — including what it adds beyond grouping — see **[HyperTaxonomy vs. Tag Groups](comparison.html)**.
+
+Switching away from Tag Groups and keeping it alongside HyperTaxonomy are both supported: the importer can migrate your group structure once, or sync it continuously while Tag Groups stays your group-management tool. See [Export, Import & Migration](user-guide/export-import-migration.html).
+
+## Documentation map
+
+- **[Why HyperTaxonomy](why-hypertaxonomy.html)** — the problem with tags and category trees, and how one term can belong to many structures.
+- **[User Guide](user-guide/)** — for site owners and editors: settings, roles, import and migration, concepts, relationships, per-term settings, display and search shortcodes, the post editor, and modeling guidance.
+- **[Developer Reference](developer-reference/)** — for theme and plugin developers: custom taxonomy integration, query expansion, relationship data, hidden terms, term icons, search ranking, cross-plugin data, sort and filter controls, actions, filters, REST endpoints, and locations and proximity search with As the Crow Flies.
+- **[Architecture](architecture/)** — for contributors: file structure, functions, hooks, data storage, caching, feature internals, search internals, and contributing guidelines.
+
+## Requirements
+
+| Item | Version |
+|------|---------|
+| WordPress | 6.6+ |
+| PHP | 7.4+ |
+| MySQL | 5.7+ (or MariaDB 10.3+) |
+
+No other plugins are required.
+
+## Getting started
+
+1. Install from the [WordPress.org plugin directory](https://wordpress.org/plugins/hypertaxonomy/), or download the zip from [GitHub Releases](https://github.com/HyperTaxonomy/hypertaxonomy/releases) and upload via **Plugins → Add New → Upload Plugin**, then activate it.
+2. Go to **Settings → HyperTaxonomy → Features**. On the **General** subtab, enable the taxonomies HyperTaxonomy should manage, such as Tags. On each taxonomy's own subtab, check the features you want, such as **Term Relationships**.
+3. Edit a tag and, in its HyperTaxonomy section, add another tag in the **Included Tags** field. Save.
+4. Open the first tag's archive. Posts tagged with the included tag now appear there too, with no re-tagging.
+
+To learn what else relationships can do, read [Concepts](user-guide/concepts.html), [Term Groups](user-guide/term-groups.html) and [Term Relationships](user-guide/term-relationships.html). Every option is described in [Per-Term Settings](user-guide/per-term-settings.html) and [Plugin Settings](user-guide/plugin-settings.html). To turn the plugin off or remove it, see [Deactivation & Uninstall](user-guide/deactivation-uninstall.html).
+
+## License
+
+GPLv2 or later — https://www.gnu.org/licenses/gpl-2.0.html

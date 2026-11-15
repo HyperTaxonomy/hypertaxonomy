@@ -1,0 +1,93 @@
+{
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+    "apiVersion": 3,
+    "name": "hypertaxonomy/term-groups",
+    "version": "1.0.0",
+    "title": "HT Term Groups",
+    "category": "hypertaxonomy",
+    "icon": "networking",
+    "description": "Display terms organized by their groups in a collapsible tree using native HTML details/summary elements.",
+    "keywords": [ "groups", "terms", "taxonomy", "tree", "hypertaxonomy" ],
+    "supports": {
+        "html": false,
+        "align": false
+    },
+    "textdomain": "hypertaxonomy",
+    "attributes": {
+        "taxonomies": {
+            "type": "string",
+            "default": "post_tag"
+        },
+        "hide_empty": {
+            "type": "string",
+            "default": "0"
+        },
+        "include_groups": {
+            "type": "string",
+            "default": ""
+        },
+        "exclude_groups": {
+            "type": "string",
+            "default": ""
+        },
+        "collapsible": {
+            "type": "string",
+            "default": "true"
+        },
+        "auto_collapse": {
+            "type": "string",
+            "default": "false"
+        },
+        "show_empty_groups": {
+            "type": "string",
+            "default": "true"
+        },
+        "show_group_count": {
+            "type": "string",
+            "default": "true"
+        },
+        "show_term_count": {
+            "type": "string",
+            "default": "true"
+        },
+        "group_icon": {
+            "type": "string",
+            "default": "📁"
+        },
+        "term_icon": {
+            "type": "string",
+            "default": "📄"
+        },
+        "show_term_icons": {
+            "type": "string",
+            "default": "never"
+        },
+        "prepend": {
+            "type": "string",
+            "default": ""
+        },
+        "append": {
+            "type": "string",
+            "default": ""
+        },
+        "show_icons": {
+            "type": "string",
+            "default": "when_available"
+        },
+        "div_class": {
+            "type": "string",
+            "default": ""
+        },
+        "div_id": {
+            "type": "string",
+            "default": ""
+        },
+        "class": {
+            "type": "string",
+            "default": ""
+        }
+    },
+    "example": {},
+    "editorScript": "file:./build/index.js",
+    "editorStyle": "file:./build/ht-term-groups.css"
+}

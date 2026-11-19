@@ -160,6 +160,25 @@ add_action( 'htax_term_visibility_changed', function( $term_id, $taxonomy ) {
 }, 10, 2 );
 ```
 
+#### How plugins take part in merges and conversions
+
+A plugin that keeps data on terms can take part in merges and conversions in two independent ways:
+
+- **Act on the operation**, with the before and after actions below: keep the data of terms that are about to be deleted, then put it where it belongs. Every plugin with data on terms needs these, since many operations never show the Merge Terms or Convert Terms page: merges and conversions run from code (another plugin, WP-CLI) and conversions by other tools, such as the Categories to Tags Converter.
+- **Ask the admin first** (optional), with the [check step](#check-step-before-a-merge-or-conversion): when the pages are used, show notices about what will happen to the plugin's data, and offer choices. A plugin with nothing to ask returns nothing there, and still acts on the operation as usual. When no plugin returns anything, the page doesn't show the step, and the operation runs straight away.
+
+So the choices made on the page are only one input: read them from `$options` when they are there, and apply your own defaults when they aren't. Code that runs an operation without the page can pass the operation-wide preference `$options['htax']['carry']` instead (see the check step). The events, in order:
+
+| Merge | Conversion |
+|---|---|
+| `htax_merge_terms_check`: only on the Merge Terms page, before the form is submitted | `htax_convert_terms_check`: only on the Convert Terms page, before the form is submitted |
+| `htax_before_merge_terms`: all sources, with `$options`. Keep the sources' data here: they are deleted inside the merge's database transaction | `htax_before_convert_terms`: the batch, with `$options` (HyperTaxonomy's own conversions only) |
+| The merge; redirect stubs are created after its transaction commits | For each term: `htax_before_convert_term` (the term and its meta still exist), the conversion, then `htax_after_convert_term`. These two also fire for conversions by other tools, and when a term is converted back to its redirect stub |
+| `htax_after_merge_terms`: with the result, including each source's stub in `redirect_stubs` | `htax_after_convert_terms`: the batch's result |
+| `htax_merge_terms_messages`: on the Merge Terms page, after the merge | `htax_convert_terms_messages`: on the Convert Terms page, after the conversion |
+
+Check the choices again when the operation runs: the redirect stub setting can change after the check step, and in a merge a stub can fail to be created (a term with its name may exist). `htax_carry_choice()` does this for the shared stub/move/copy/drop choice, per term.
+
 #### Before a merge
 
 `htax_before_merge_terms`
@@ -169,12 +188,16 @@ Fires immediately before HyperTaxonomy begins merging source terms into a target
 Use this hook to snapshot any per-term data you want to migrate to the target. This includes both term meta (which `wp_delete_term()` deletes after the transaction commits) and data in separate tables (which survives `wp_delete_term()` but will be cleaned up by your own `deleted_term` handler). Snapshot everything here, before any of it is touched.
 
 ```php
-add_action( 'htax_before_merge_terms', function( $source_ids, $target_id, $taxonomy, $create_redirect ) {
+add_action( 'htax_before_merge_terms', function( $source_ids, $target_id, $taxonomy, $create_redirect, $options ) {
     // $source_ids      — int[], source term IDs about to be merged and deleted
     // $target_id       — int, target term ID
     // $taxonomy        — string
     // $create_redirect — bool, whether redirect stubs will be created for each source
-}, 10, 4 );
+    // $options         — array, choices made on the check step, keyed by section ID
+    //                    (see "Check step before a merge or conversion"); for a merge
+    //                    started outside the Merge Terms page, only what its caller
+    //                    passed, such as the operation-wide preference, or nothing
+}, 10, 5 );
 ```
 
 #### After a merge
@@ -186,33 +209,64 @@ Fires after a successful merge. Post reassignments, HyperTaxonomy relationship t
 Important: source terms have been permanently deleted and their WordPress term meta is gone. Data stored in separate database tables (not term meta) is still present and can be moved to the target term.
 
 ```php
-add_action( 'htax_after_merge_terms', function( $source_ids, $target_id, $taxonomy, $result ) {
+add_action( 'htax_after_merge_terms', function( $source_ids, $target_id, $taxonomy, $result, $options ) {
     // $source_ids — int[], source term IDs (now deleted; term meta is gone)
     // $target_id  — int, target term ID
     // $taxonomy   — string
     // $result     — array {
-    //     posts_reassigned  int  Total post assignments moved.
-    //     terms_deleted     int  Number of source terms deleted.
-    //     redirects_created int  Number of redirect stubs created.
-    //     target_id         int  Actual target term ID used.
+    //     posts_reassigned  int   Total post assignments moved.
+    //     terms_deleted     int   Number of source terms deleted.
+    //     redirects_created int   Number of redirect stubs created.
+    //     redirect_stubs    int[] Stub term ID by source term ID, for the stubs created.
+    //     target_id         int   Actual target term ID used.
     // }
-}, 10, 4 );
+    // $options    — array, as for htax_before_merge_terms
+}, 10, 5 );
 ```
 
-**Typical pattern for companion plugins:** snapshot source data in `htax_before_merge_terms`, then apply it to the target in `htax_after_merge_terms`. Register a `deleted_term` handler for all term deletes — source terms deleted during a merge fire `deleted_term` the same as a standalone delete, so no suppression is needed. Also register a `delete_term_taxonomy` handler at an earlier priority for bulk taxonomy operations, where `deleted_term` does not fire.
+**Typical pattern for companion plugins:** snapshot source data in `htax_before_merge_terms`, then apply it to the target in `htax_after_merge_terms`. Register a `deleted_term` handler for all term deletes — source terms deleted during a merge fire `deleted_term` the same as a standalone delete, so no suppression is needed. Also register a `delete_term_taxonomy` handler at an earlier priority for bulk taxonomy operations, where `deleted_term` does not fire. Code that needs a deleted term's meta must run on `pre_delete_term`: `wp_delete_term()` deletes the meta before it fires `delete_term_taxonomy`. For conversions, use `htax_before_convert_term` instead, which fires only for terms being converted.
 
-#### Term converted to another taxonomy
+#### Before and after a conversion
 
-`htax_term_converted`
+`htax_before_convert_terms` / `htax_after_convert_terms`
 
-Fires when a term finishes converting to another taxonomy, or when a converted term is restored. `$old_term_id` is the redirect stub or the deleted term, which may no longer exist. Use it to update records keyed by taxonomy.
+Fire around a batch conversion (`htax_convert_terms_batch()`, used by the Convert Terms page). Each term converted in between fires `htax_before_convert_term` and `htax_after_convert_term`. Conversions made by other tools, such as the Categories to Tags Converter, fire only those two.
 
 ```php
-add_action( 'htax_term_converted', function( $new_term_id, $old_taxonomy, $new_taxonomy, $old_term_id ) {
+add_action( 'htax_before_convert_terms', function( $term_ids, $from_taxonomy, $to_taxonomy, $create_redirect, $options ) {
+    // $term_ids        — int[], terms about to be converted
+    // $from_taxonomy   — string
+    // $to_taxonomy     — string
+    // $create_redirect — bool, whether redirect stubs will be left in $from_taxonomy
+    // $options         — array, choices made on the check step, keyed by section ID
+}, 10, 5 );
+
+add_action( 'htax_after_convert_terms', function( $term_ids, $from_taxonomy, $to_taxonomy, $summary, $options ) {
+    // $summary — htax_convert_terms_batch() result: converted, redirects_created,
+    //            reverse_conversions, errors, failed_term_ids
+}, 10, 5 );
+```
+
+#### Before and after a term is converted
+
+`htax_before_convert_term` / `htax_after_convert_term`
+
+Fire around each term's conversion to another taxonomy: by `htax_convert_term()` (including a term converted back to its redirect stub), and by other tools that HyperTaxonomy detects, such as the Categories to Tags Converter. `htax_before_convert_term` fires while the term and its meta still exist, so keep there what you need afterwards when the term is deleted: in a conversion without a redirect stub, or by another tool. In a conversion by another tool, the new term already exists by then and its posts may have moved.
+
+```php
+add_action( 'htax_before_convert_term', function( $term_id, $from_taxonomy, $to_taxonomy ) {
+    // $term_id       — int, the term being converted
+    // $from_taxonomy — string
+    // $to_taxonomy   — string
+}, 10, 3 );
+
+add_action( 'htax_after_convert_term', function( $new_term_id, $old_taxonomy, $new_taxonomy, $old_term_id ) {
     // $new_term_id  — int, the term now in $new_taxonomy
     // $old_taxonomy — string
     // $new_taxonomy — string
-    // $old_term_id  — int
+    // $old_term_id  — int, the term that was converted: the redirect stub left in
+    //                 $old_taxonomy, or a deleted term. When a term is converted back
+    //                 to its stub, $new_term_id is the restored stub.
 }, 10, 4 );
 ```
 
@@ -238,7 +292,7 @@ Fires on `init` at priority 0, after the built-in relationship types are registe
 
 `htax_relationship_types_admin_footer`
 
-Fires at the bottom of the **Terms → Term Relationship Types** admin page. Use it to add your own UI.
+Fires at the bottom of the **Terms&nbsp;→ Term Relationship Types** admin page. Use it to add your own UI.
 
 #### Archive contents changed
 
@@ -290,7 +344,7 @@ add_action( 'htax_term_strength_missing', function( $post_id, $term_ids, $model 
 
 `htax_term_strengths_updated`
 
-Fires after an external model's strengths are stored with `htax_set_term_strengths()` or removed with `htax_remove_term_strengths()` (including Settings → Search → Clear Scores). Use it to invalidate anything that caches strength-based results.
+Fires after an external model's strengths are stored with `htax_set_term_strengths()` or removed with `htax_remove_term_strengths()` (including Settings&nbsp;→ Search&nbsp;→ Clear Scores). Use it to invalidate anything that caches strength-based results.
 
 ```php
 add_action( 'htax_term_strengths_updated', function( $post_id, $model, $term_ids ) {
@@ -303,7 +357,7 @@ add_action( 'htax_term_strengths_updated', function( $post_id, $model, $term_ids
 
 `htax_term_uris_changed` / `htax_term_locations_changed`
 
-Fire with `int $term_id` when a term's external URIs or locations change. HyperTaxonomy re-fires these from TermConnect's [`tc_term_uris_changed`](https://hypertaxonomy.org/termconnect/developer-reference/actions-filters.html#external-links-changed) and As the Crow Flies' [`atcf_term_location_changed`](https://hypertaxonomy.org/as-the-crow-flies/developer-reference/actions-filters.html#actions), so a plugin that reads `htax_get_term_uris()` or `htax_get_term_locations()` can clear its caches without depending on either plugin.
+Fire with `int $term_id` when a term's external URIs or locations change. HyperTaxonomy re-fires these from TermConnect's [`tconn_term_uris_changed`](https://hypertaxonomy.org/termconnect/developer-reference/actions-filters.html#external-links-changed) and As the Crow Flies' [`atcf_term_location_changed`](https://hypertaxonomy.org/as-the-crow-flies/developer-reference/actions-filters.html#actions), so a plugin that reads `htax_get_term_uris()` or `htax_get_term_locations()` can clear its caches without depending on either plugin.
 
 ## Available Filters
 
@@ -372,7 +426,7 @@ add_filter( 'htax_term_post_count', function( $count, $term_id, $taxonomy, $quer
 
 `htax_strength_field_weights`
 
-Override the TF formula coefficients used by `htax_calculate_direct_term_strength()` for the built-in strength model (`htax_tf`). To supply strengths from another source, register a separate model instead — see [Strength Models](search-ranking.html#strength-models). Coefficients must sum to ≤ 1.0 so the maximum achievable strength equals 1.0.
+Override the TF formula coefficients used by `htax_calculate_direct_term_strength()` for the built-in strength model (`htax_tf`). To supply strengths from another source, register a separate model instead — see [Strength Models](search-ranking.html#strength-models). Coefficients must sum to ≤&nbsp;1.0 so the maximum achievable strength equals 1.0.
 
 ```php
 add_filter( 'htax_strength_field_weights', function( $weights ) {
@@ -537,3 +591,66 @@ add_filter( 'htax_rate_limit_client_ip', function( string $ip, string $action ):
 
 **Parameters:** `string $ip` — `REMOTE_ADDR`, or `''` when it isn't a valid IP address; `string $action` — the AJAX action.
 **Returns:** `string` — the address to count requests against.
+
+#### Check step before a merge or conversion
+
+`htax_merge_terms_check` / `htax_convert_terms_check`
+
+When the Merge Terms or Convert Terms form is submitted, these filters are applied first (by AJAX), so a plugin that keeps data on the terms can say what the operation will do with it and offer choices, with defaults it computes for these terms. When no plugin returns anything, the operation runs straight away. Answering is optional: a plugin with nothing to ask still acts on the operation through the before and after actions (see [How plugins take part in merges and conversions](#how-plugins-take-part-in-merges-and-conversions)). Otherwise the page shows the returned notices and choices, with the redirect stub setting, which can still be changed there.
+
+```php
+add_filter( 'htax_merge_terms_check', function( $sections, $source_ids, $target_id, $taxonomy, $create_redirect ) {
+    $sections[] = array(
+        'id'      => 'my_plugin',                   // Key of the choices in $options.
+        'title'   => 'My Plugin',
+        'notices' => array(
+            array( 'type' => 'info', 'text' => 'Notes on the source terms are copied to the target.' ),
+        ),
+        'fields'  => array(
+            array(
+                'name'            => 'badge_12',    // $options['my_plugin']['badge_12'].
+                'label'           => 'Badge of Old Term',
+                'choices'         => array(
+                    array( 'value' => 'stub', 'label' => 'Keep it on the redirect stub', 'description' => '', 'stub' => 'required' ),
+                    array( 'value' => 'drop', 'label' => 'Delete it', 'description' => '', 'stub' => '' ),
+                ),
+                'default'         => 'stub',        // Selected with redirect stubs.
+                'default_no_stub' => 'drop',        // Selected without.
+            ),
+        ),
+    );
+    return $sections;
+}, 10, 5 );
+
+// Same form; arguments: $sections, $term_ids, $from_taxonomy, $to_taxonomy, $create_redirect.
+add_filter( 'htax_convert_terms_check', 'my_plugin_convert_check', 10, 5 );
+```
+
+A choice's `stub` is `'required'` (available only with redirect stubs), `'none'` (only without) or `''`. Text is shown as plain text, and IDs, names and values must be slugs. The choices reach `htax_merge_terms()` / `htax_convert_terms_batch()` as `$options[ section id ][ field name ]`, and are passed to the before and after actions. Check them again there: the stub setting or the terms may have changed, and operations started outside these pages have only what their caller passed (often nothing, or just the operation-wide preference below), so apply your own defaults.
+
+For data that a stub, the target (or new term), or both could keep, such as TermConnect's external links and As the Crow Flies' locations, offer the same four choices, so the page reads the same for every plugin: `stub` (leave it on the redirect stubs; needs stubs; the default with stubs), `move` (to the target or new terms; the default without stubs), `copy` (and leave it on the stubs; needs stubs) and `drop` (delete it). Two functions do this for you, and are always available in these hooks:
+
+- `htax_carry_field( array $args ): array` builds the field: `name`, `label` (what the data is), `target_name` (the merge target's name, or `''` for a conversion's new terms), `movable` (whether the target or new terms can take the data at all; without, only `stub` and `drop` are offered) and `descriptions` (by choice value).
+- `htax_carry_choice( array $options, string $section, string $field, bool $has_stub, bool $movable = true ): string` resolves the choice for one term: your field's value, else the operation-wide preference, else the default, fitted to whether that term has a stub and whether the data can move.
+
+The operation-wide preference is `$options['htax']['carry']` (one of the four values). The section ID `htax` is reserved for HyperTaxonomy. Code that runs a merge or conversion without the page passes it to say what should happen to data that plugins keep on the terms, without knowing which plugins those are:
+
+```php
+// Merge, and move everything plugins keep on the source to the target.
+htax_merge_terms( array( $old_id ), $new_id, 'post_tag', true, array( 'htax' => array( 'carry' => 'move' ) ) );
+```
+
+In a merge, the source terms are deleted before their stubs are created, so keep the data in `htax_before_merge_terms` and find each source's stub in `redirect_stubs` of the result. A stub that can't be created is missing from it: resolve that source's choice with `$has_stub` false. In a conversion with stubs, the old term becomes the stub and keeps its data; without, it is deleted before `htax_after_convert_term`, so keep the data in `htax_before_convert_term`.
+
+#### Messages after a merge or conversion
+
+`htax_merge_terms_messages` / `htax_convert_terms_messages`
+
+Filters the messages shown under the result on the Merge Terms or Convert Terms page, so a plugin can report what it did with its data (plain text, one per message). The second argument is the operation's result.
+
+```php
+add_filter( 'htax_merge_terms_messages', function( array $messages, array $result ): array {
+    $messages[] = 'Notes copied to the target: 2.';
+    return $messages;
+}, 10, 2 );
+```

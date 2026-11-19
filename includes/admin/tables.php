@@ -183,6 +183,24 @@ add_filter( 'terms_clauses', 'htax_sortable_column_terms_clauses', 10, 3 );
 // ============================================================================
 
 /**
+ * Mark term list screens of HyperTaxonomy-enabled taxonomies with the body class
+ * htax-term-list, which scopes the list table styles (htax-tables.css) to them.
+ *
+ * @since 1.0.0
+ *
+ * @param string $classes Space-separated admin body classes.
+ * @return string
+ */
+function htax_term_list_body_class( $classes ) {
+    $screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+    if ( $screen && 'edit-tags' === $screen->base && htax_is_taxonomy_enabled( (string) $screen->taxonomy ) ) {
+        $classes .= ' htax-term-list';
+    }
+    return $classes;
+}
+add_filter( 'admin_body_class', 'htax_term_list_body_class' );
+
+/**
  * Enqueue list table assets for term list tables
  */
 function htax_enqueue_table_assets( $hook ) {

@@ -66,9 +66,9 @@ AND pt.post_id IN (
 
 Enforcing exclusion and required-all conditions before LIMIT keeps page sizes and total counts accurate.
 
-**AJAX path**: `ajax_search_posts()` passes the raw `$fields` structure (field_name → field_data with `terms`, `taxonomy`, `match`, and optional `expand_types` keys) directly to `get_posts_by_custom_sql()`, which POST searches also use. A search with only a filter panel selection lists matching posts unscored, newest first. With no text, terms, exclusions or filter, the function returns no posts and sets `no_criteria`, which `ajax_search_posts()` includes in its response.
+**AJAX path**: `ajax_search_posts()` passes the raw `$fields` structure (field_name&nbsp;→ field_data with `terms`, `taxonomy`, `match`, and optional `expand_types` keys) directly to `get_posts_by_custom_sql()`, which POST searches also use. A search with only a filter panel selection lists matching posts unscored, newest first. With no text, terms, exclusions or filter, the function returns no posts and sets `no_criteria`, which `ajax_search_posts()` includes in its response.
 
-**`relationship_type IN (...)`** is computed per field by `HyperTaxonomy_Search_Widget::normalize_expand_types()`. By default it includes all types active for the taxonomy (`direct` always; `hierarchy` when hierarchical; `container` when `term_relationships` feature enabled; `redirect_target` when `redirects` feature enabled). A field carrying `expand_types` overrides this: `"all"` → feature-flag defaults; `"none"` → `direct` only; comma-separated tokens (`container`, `hierarchy`, `redirect`) → explicit subset. The `expand` shortcode attribute on `[ht_pills_field]`, `[ht_checklist_field]`, `[ht_hidden_field]`, and `[ht_distance_field]` sets this value.
+**`relationship_type IN (...)`** is computed per field by `HyperTaxonomy_Search_Widget::normalize_expand_types()`. By default it includes all types active for the taxonomy (`direct` always; `hierarchy` when hierarchical; `container` when `term_relationships` feature enabled; `redirect_target` when `redirects` feature enabled). A field carrying `expand_types` overrides this: `"all"` →&nbsp;feature-flag defaults; `"none"` → `direct` only; comma-separated tokens (`container`, `hierarchy`, `redirect`)&nbsp;→ explicit subset. The `expand` shortcode attribute on `[ht_pills_field]`, `[ht_checklist_field]`, `[ht_hidden_field]`, and `[ht_distance_field]` sets this value.
 
 ### PowerSearch — Double-Nested Subquery
 
@@ -107,7 +107,7 @@ Score thresholds on taxonomy fields don't change the path. `min_terms_score` com
 
 ### Field Operators (PowerSearch)
 
-The operators visitors type are listed in [PowerSearch → Query syntax](../user-guide/powersearch.html#query-syntax). `htax_parse_search_query()` (`includes/core/search.php`) splits the query into per-field arrays with this regex:
+The operators visitors type are listed in [PowerSearch&nbsp;→ Query syntax](../user-guide/powersearch.html#query-syntax). `htax_parse_search_query()` (`includes/core/search.php`) splits the query into per-field arrays with this regex:
 
 `/([+\-]?)\b(title|content|body|excerpt|tags?|categor(?:y|ies)|terms?|...):(...)/i`
 
@@ -153,7 +153,7 @@ Its text is matched as plain keywords against the fields in its `search_in` sett
 
 #### Nested Field Groups
 
-Nested `[ht_field_group]` tags are paired by `HyperTaxonomy_Search_Widget::render_form_content()`, which renders the content of `[ht_search_form]` and of every group: WordPress's shortcode parser would close an enclosing `[ht_field_group]` at the first `[/ht_field_group]` it meets, so groups are matched with a depth counter instead and rendered through `field_group_shortcode()` (which recurses back into `render_form_content()`), while text between groups goes through `do_shortcode()` as usual. Each group renders a `.htax-field-group` element, and the JS collects the nesting from the DOM.
+Nested `[ht_field_group]` tags are paired by `HyperTaxonomy_Search_Widget::render_form_content()`, which renders the content of `[ht_search_form]` and of every group: WordPress's shortcode parser would close an enclosing `[ht_field_group]` at the first `[/ht_field_group]` it meets, so groups are matched with a depth counter instead and rendered through `field_group_shortcode()` (which recurses back into `render_form_content()`), while text between groups goes through `do_shortcode()` as usual. The author's content is filtered with `wp_kses_post()` before it is parsed (in `render_form_content()` and for each group's content), so it may contain the HTML allowed in post content, while the form controls themselves come from the nested shortcodes. Each group renders a `.htax-field-group` element, and the JS collects the nesting from the DOM.
 
 #### Initial Selection and Actions
 
@@ -161,7 +161,7 @@ Initial selection attributes are resolved server-side. `fold_group_selection_att
 
 Term actions and field-level term attributes use the same map. `fold_group_selection_atts()` saves the field's own `add_terms` as `_explicit_add_terms` before folding groups in, and `option_action_shortcode()` records `add_terms` and `include_term_options` IDs under `term_actions`. `render_group_members_map()` then gives each target: `implied`, the explicit field-level IDs that exist, aren't in `exclude_term_options`, and aren't hidden from this viewer; `terms`, names and icons for every term named; `check_terms`, set when actions name terms, which makes `_isKnownTerm()` skip anything missing from `terms`; and for checklists `initial`, the implied terms to check. A forward `add_terms` action calls `addTerms( ids, true )`, which brings a term outside the pool into the field's `_actionTerms` (`_canJoinPool()` refuses terms missing from `terms`); `removeTerms()` takes it back out, and reversing a `remove_terms` action calls `addTerms()` without the flag, so it only restores terms still in the pool. `_impliedTerms()` returns `implied` plus `_actionTerms`. Pills add it to `_computeActiveOptions()` and to the `include_terms` autocomplete parameter (only when a pool is declared, since naming terms would otherwise narrow an open pool); hidden fields add it to `_computeActivePool()`; checklists add and remove an option for it (`_addOption()`, which places it by name among its siblings, under its parent when listed, using the `parent` from `build_terms_data()`). Pills apply `include_term_options` and `exclude_term_options` through `_includeTerms` / `_excludeTerms`. Once a prefetch finishes, pills drop selected terms outside the pool, which catches `add_groups` terms added before the pool was known.
 
-Controller group actions are resolved from a per-form map. `option_action_shortcode()` records the group IDs of every `add_groups` / `remove_groups` / `include_group_options` / `exclude_group_options` action per target field in `self::$forms[ $form_id ]['group_actions']`; after the form content has rendered (so every field and controller is known), `render_group_members_map()` outputs `<script type="application/json" class="htax-group-members">` with `{ field: { groups: { gid: [term IDs] }, terms: { id: {name, count, icon_url, placeholder_color} } } }` for pills and checklist targets — members in the field's taxonomy (descendant groups included) in post mode, the group itself in term mode; `terms` (pills only) labels pills for terms the field hasn't prefetched; hidden terms are omitted for viewers who can't see them. Hidden fields resolve groups from their own `data-groups-map` and are not included. `SearchForm` parses the map into `form.groupMembers`; `FieldBase._groupMemberIds()` resolves group IDs from it. PillsField `addGroups` / `removeGroups` add/remove the members (seeding `_termData` from `terms`) and merges the map into `_allOptionsByGroup` after prefetch so `include_group_options` / `exclude_group_options` can narrow the pool to groups outside the declared universe (the active set is still intersected with the prefetched universe). ChecklistField `addGroups` / `removeGroups` check/uncheck the members; checklist options are fixed at render time, so pool actions don't apply to it. Every checklist item — hierarchical and flat — carries `data-term-id`, which the selection actions use to find it.
+Controller group actions are resolved from a per-form map. `option_action_shortcode()` records the group IDs of every `add_groups` / `remove_groups` / `include_group_options` / `exclude_group_options` action per target field in `self::$forms[ $form_id ]['group_actions']`; after the form content has rendered (so every field and controller is known), `render_group_members_map()` outputs `<div hidden class="htax-group-members" data-map="…">` whose `data-map` attribute holds the JSON `{ field: { groups: { gid: [term IDs] }, terms: { id: {name, count, icon_url, placeholder_color} } } }` for pills and checklist targets — members in the field's taxonomy (descendant groups included) in post mode, the group itself in term mode; `terms` (pills only) labels pills for terms the field hasn't prefetched; hidden terms are omitted for viewers who can't see them. Hidden fields resolve groups from their own `data-groups-map` and are not included. `SearchForm` parses the attribute into `form.groupMembers`; `FieldBase._groupMemberIds()` resolves group IDs from it. PillsField `addGroups` / `removeGroups` add/remove the members (seeding `_termData` from `terms`) and merges the map into `_allOptionsByGroup` after prefetch so `include_group_options` / `exclude_group_options` can narrow the pool to groups outside the declared universe (the active set is still intersected with the prefetched universe). ChecklistField `addGroups` / `removeGroups` check/uncheck the members; checklist options are fixed at render time, so pool actions don't apply to it. Every checklist item — hierarchical and flat — carries `data-term-id`, which the selection actions use to find it.
 
 #### Result Loading
 
@@ -238,6 +238,7 @@ PillsField supports two option-loading modes controlled by the `prefetch` shortc
   2. `htax_ui_state` JSON hidden input — flat map of `controller:name → show_when` and `enabled:controller:name → true/false` entries, written by `saveUiState()`.
 - PHP restoration on re-render: `get_saved_ui_state()` (static-cached) parses `htax_ui_state`; controllers restore their `show_when` and `enabled` state; fields restore only their `enabled` state (not `show_when` — controller actions during JS `init()` re-derive field visibility from scratch).
 - **Locked controller checkboxes:** when a checkbox controller's `min_items` constraint is at its limit, the last checked option's input gets `disabled` via `enforceConstraints()`. Browsers omit disabled inputs from POST. `preparePostSubmission()` compensates by appending a hidden `<input class="htax-locked-proxy">` for every `input[type="checkbox"].htax-locked`, so `get_post_controller_values()` sees the value in `$_POST[$name]` on the next render.
+- **Menu class:** every jQuery UI autocomplete the plugin creates (search widget pills, and the term edit and merge screens' term pickers) adds the class `htax-ac-menu` to its menu (`classes` option). `htax-search-widget.css` and `htax-term-picker.css` scope their `.ui-autocomplete` / `.ui-menu` rules to it with `:where(.htax-ac-menu)`, so other autocompletes on the page (a theme's, WordPress's tag suggestions) keep their own styles while the plugin's rules keep their specificity.
 - **Keyboard navigation in autocomplete:** jQuery UI autocomplete handles Up/Down arrow navigation and Enter selection natively. The custom `select` callback calls `addPill()` and clears the input; the `focus` callback (autocomplete's item-focus event, not DOM focus) prevents the input text from being replaced with the highlighted item's label while navigating.
 
 **Validation messages for `[ht_pills_field]` / `[ht_checklist_field]`:**
@@ -278,7 +279,7 @@ The PowerSearch system uses MySQL FULLTEXT indexes for performance with support 
 
 *Query Execution (perform_indexed_text_search in class-power-search.php):*
 1. Check 60-second transient cache; return cached result on hit. The cache key (`htax_ft_…`) is an MD5 of the query, the config, the hidden-terms visibility flag, and the resolved proximity condition. Including the flag prevents cross-user contamination: a result set computed for a user who can see hidden terms is never served to one who cannot, and vice versa. Including the proximity condition keeps `near:me` results separate per location.
-2. Get match mode from config; if not set, read the site-wide default from `htax_settings[default_match_mode]` via `htax_get_default_match_mode()` (configurable in Settings → Search → Default Match Mode; built-in default: 'any')
+2. Get match mode from config; if not set, read the site-wide default from `htax_settings[default_match_mode]` via `htax_get_default_match_mode()` (configurable in Settings&nbsp;→ Search&nbsp;→ Default Match Mode; built-in default: 'any')
 3. Parse search_in parameter and build allowed fields map
 4. Parse query with htax_parse_search_query() (supports field operators including singular aliases)
 5. Filter parsed query based on search_in restrictions
@@ -295,7 +296,7 @@ The PowerSearch system uses MySQL FULLTEXT indexes for performance with support 
    - `MAX(branch_score)` per `(post_id, source_term_id)` — across branches, across the several index rows through which a post can reach one matched term (several of its terms included in it, or several relationship types), in every variant of both paths — so a term counts once per post, at its strongest, never more than a direct match on it. `SUM` across terms yields the field score. In the field-specific path each relationship-type subquery returns `(post_id, source_term_id, score)` rows and `sum_term_scores_sql()` takes the MAX across relationship types before summing.
    - **Combined scan** (general queries with no field operators): single LEFT JOIN covering all taxonomies and rel-types, with separate CASE expressions for name/description text weights (the explicit relationship weight is baked into `hst.strength`, not applied in the CASE). If all indexed taxonomies have `use_description=false`, the description branch is omitted entirely. All taxonomy scores collapse into `terms_score`.
    - **Field-specific path** (explicit `tags:` / `categories:` / `terms:` or custom-taxonomy operators): separate LEFT JOIN per field (tags, categories, terms, custom taxonomies).
-   - **Required field-taxonomy term enforcement** (`+tags:word`, `+categories:word`, etc.): FULLTEXT queries for taxonomy fields use OR mode so individual term-name rows can match independently. Each required term is enforced by a pre-fetched `WHERE pt.post_id IN (SELECT post_id FROM htax_search_terms WHERE source_term_id IN (...))` clause. This correctly handles multiple required terms in the same field (`+tags:A +tags:B` → posts carrying both tags).
+   - **Required field-taxonomy term enforcement** (`+tags:word`, `+categories:word`, etc.): FULLTEXT queries for taxonomy fields use OR mode so individual term-name rows can match independently. Each required term is enforced by a pre-fetched `WHERE pt.post_id IN (SELECT post_id FROM htax_search_terms WHERE source_term_id IN (...))` clause. This correctly handles multiple required terms in the same field (`+tags:A +tags:B` →&nbsp;posts carrying both tags).
    - **Excluded term enforcement** (`-word` and `-field:word`): matching term IDs are pre-fetched and added as `WHERE pt.post_id NOT IN (SELECT post_id ... WHERE source_term_id IN (...))`. For general unqualified excluded terms (`-word`) — in both the combined and the field-specific path — a second NOT IN against `MATCH(pt.title, pt.body, pt.excerpt)` ensures posts where the excluded word appears in any text field are also removed, even when another field still scores positively. Field-specific excluded terms (`-tags:word`, `-terms:word`) only apply the taxonomy layer — post text is not checked.
 11. Calculate overall relevance as sum of all field scores; apply HAVING clause (min score thresholds)
 12. Apply dynamic ORDER BY; execute with LIMIT/OFFSET
@@ -380,7 +381,7 @@ A sort order that uses `last_comment`, `last_activity` or `relevance`, which WP_
 
 ### Strength Models (includes/core/strength-models.php)
 
-The public API is documented in [Search Ranking & Notices → Strength Models](../developer-reference/search-ranking.html#strength-models).
+The public API is documented in [Search Ranking & Notices&nbsp;→ Strength Models](../developer-reference/search-ranking.html#strength-models).
 
 - Registry (in memory, per request): `htax_register_strength_model( $key, $args )`, `htax_unregister_strength_model( $key )`, `htax_get_strength_models()`, `htax_validate_strength_model_key( $key )`. `htax_tf` and every other `htax_`-prefixed key are reserved: registering or unregistering them returns false.
 - Selection: `htax_get_strength_model( $purpose )` returns `htax_settings['strength_model']` when that model is registered, otherwise `htax_tf`. `htax_strength_model_sql( $alias, $purpose )` builds the ` AND {alias}.model = '…'` condition. The Settings sanitizer only accepts a new selection with full coverage; code writing `htax_settings` directly bypasses that check.
@@ -388,7 +389,7 @@ The public API is documented in [Search Ranking & Notices → Strength Models](.
 - Coverage: `htax_get_strength_model_coverage( $model )` (per taxonomy: `htax_tf` direct pairs vs. the model's direct pairs, via a primary-key self-join), `htax_strength_model_has_full_coverage( $model )`.
 - Internal helpers shared with `htax_index_post_terms()`: `htax_derive_indirect_strength()`, `htax_collect_strength_rows()`, `htax_write_strength_rows()`, `htax_get_external_direct_strengths()`.
 - `htax_get_stored_strength_models()`: distinct external model keys with stored rows, registered or not.
-- Admin: Settings → Search → Strength Model / Index Coverage / Index Rebuild render one panel per registered model plus one per *inactive* model (stored rows, not registered), and the dropdown shows the model in effect (`render_search_tab()`). Inactive models are listed only so their scores can be cleared: the sanitizer never saves an unregistered key. The form sends `strength_model_changed` (set to 1 by JS on change); when it is 0 the saved selection is left alone, so saving the tab while a selected provider is inactive keeps its selection. A note under the dropdown appears when the saved model differs from the one in effect.
+- Admin: Settings&nbsp;→ Search&nbsp;→ Strength Model / Index Coverage / Index Rebuild render one panel per registered model plus one per *inactive* model (stored rows, not registered), and the dropdown shows the model in effect (`render_search_tab()`). Inactive models are listed only so their scores can be cleared: the sanitizer never saves an unregistered key. The form sends `strength_model_changed` (set to 1 by JS on change); when it is 0 the saved selection is left alone, so saving the tab while a selected provider is inactive keeps its selection. A note under the dropdown appears when the saved model differs from the one in effect.
 - Clear Scores calls `htax_ajax_clear_strength_model()` (`admin/ajax.php`, nonce `htax-clear-strength-model`), which also switches the selection back to `htax_tf` if the cleared model was selected.
 
 ## Performance Architecture
@@ -397,15 +398,15 @@ The public API is documented in [Search Ranking & Notices → Strength Models](.
 
 `[ht_post_list]` queries, search, and relevance scores run against the pre-computed `wp_htax_search_terms` index. Each row in the index carries a **strength score** — how centrally the post covers that term — which directly affects search ranking. Keeping this index healthy and up to date is the most important operational concern.
 
-The index is updated incrementally (via WP Cron) as posts are created, edited, or have their term assignments changed. For large bulk imports (hundreds or thousands of posts), use **Settings → HyperTaxonomy → Search → General → Index Rebuild** after the import completes if results look out of date.
+The index is updated incrementally (via WP Cron) as posts are created, edited, or have their term assignments changed. For large bulk imports (hundreds or thousands of posts), use **Settings&nbsp;→ HyperTaxonomy&nbsp;→ Search&nbsp;→ General&nbsp;→ Index Rebuild** after the import completes if results look out of date.
 
-**Explicit relationship weights and strength.** The Explicit Selection weights under **Relevance Weights** on each taxonomy's subtab of Settings → HyperTaxonomy → Search control how much of a direct term's strength propagates to indirect relationships (hierarchy, inclusions, redirects). These weights are baked into the strength score at index build time. When you save a change to them, HyperTaxonomy automatically queues every post in the affected taxonomy for reindexing in the background (via WP Cron), so taxonomy-filter searches pick up the new weights within a few minutes — no manual rebuild needed. Text Search (keyword) weights remain dynamic and apply immediately.
+**Explicit relationship weights and strength.** The Explicit Selection weights under **Relevance Weights** on each taxonomy's subtab of Settings&nbsp;→ HyperTaxonomy&nbsp;→ Search control how much of a direct term's strength propagates to indirect relationships (hierarchy, inclusions, redirects). These weights are baked into the strength score at index build time. When you save a change to them, HyperTaxonomy automatically queues every post in the affected taxonomy for reindexing in the background (via WP Cron), so taxonomy-filter searches pick up the new weights within a few minutes — no manual rebuild needed. Text Search (keyword) weights remain dynamic and apply immediately.
 
 ### Reindex Queue System
 
 Posts are queued via `queue_post_reindex()` rather than processed immediately. At `shutdown`, the request's queue is deduplicated and added to the `htax_pending_reindex` option, and the `htax_process_reindex_batch` cron event works through it in batches of `REINDEX_BATCH_SIZE` (100) posts per run.
 
-Example: User edits a term's name — text matching needs no reindex, because term text is read from `wp_terms` at query time, but the built-in strength model scores each post by how the name appears in it, so `htax_handle_term_rename()` queues the posts the term is assigned to. User also changes includes → `htax_includes_changed` queues affected posts → each post is reindexed once.
+Example: User edits a term's name — text matching needs no reindex, because term text is read from `wp_terms` at query time, but the built-in strength model scores each post by how the name appears in it, so `htax_handle_term_rename()` queues the posts the term is assigned to. User also changes includes&nbsp;→ `htax_includes_changed` queues affected posts&nbsp;→ each post is reindexed once.
 
 ### Incremental Index Updates
 
@@ -421,7 +422,7 @@ For post-term assignments (`set_object_terms` / `deleted_term_relationships`):
 | Remove 1 term | ~12 queries | ~2 queries | **6×** |
 | Replace all terms | ~12 queries | ~14 queries | 0.8× |
 
-Trade-off: replacing all terms is slightly slower (rare case), but typical small changes are 5–6× faster.
+Trade-off: replacing all terms is slightly slower (rare case), but typical small changes are 5–6×&nbsp;faster.
 
 ### Container Change Optimization
 
@@ -430,7 +431,7 @@ When `htax_containers_changed` or `htax_container_groups_changed` fires, the ind
 2. Query OLD container state from index
 3. DELETE only removed containers, INSERT only added containers (delta-based)
 
-Example: Adding 1 container to a term that already has 10 containers and 100 affected posts = 1 INSERT (not 1 DELETE + 11 INSERTs) — approximately 25× faster.
+Example: Adding 1 container to a term that already has 10 containers and 100 affected posts = 1 INSERT (not 1 DELETE + 11 INSERTs) — approximately 25×&nbsp;faster.
 
 ### Async Processing for Large Batches
 
@@ -445,7 +446,7 @@ Hooks skip unnecessary work before doing any computation:
 
 ### Cache Layers
 
-The [Caching](caching.html) page describes the [cache layers](caching.html#cache-layers) above the database, and [which handler clears which cache](caching.html#what-clears-the-relationship-caches).
+The [Caching](caching.html) page describes the cache layers above the database, and which handler clears which cache.
 
 ### Bottlenecks to Monitor
 

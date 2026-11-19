@@ -33,12 +33,17 @@ function htax_register_tag_suggestions_rest_route(): void {
     register_rest_route( 'htax/v1', '/suggested-tags', array(
         'methods'             => WP_REST_Server::READABLE,
         'callback'            => 'htax_rest_suggested_tags',
-        'permission_callback' => function() {
-            return current_user_can( 'edit_posts' );
+        // Suggestions are built from the post's text and list the taxonomy's terms, so
+        // require edit access to that post and the right to assign that taxonomy's terms.
+        'permission_callback' => function( WP_REST_Request $request ) {
+            $taxonomy = get_taxonomy( sanitize_key( (string) $request['taxonomy'] ) );
+            return current_user_can( 'edit_post', absint( $request['post_id'] ) )
+                && $taxonomy
+                && current_user_can( $taxonomy->cap->assign_terms );
         },
         'args' => array(
             'post_id'  => array( 'required' => true, 'sanitize_callback' => 'absint' ),
-            'taxonomy' => array( 'default' => 'post_tag', 'sanitize_callback' => 'sanitize_key' ),
+            'taxonomy' => array( 'default' => 'post_tag', 'sanitize_callback' => 'sanitize_key', 'validate_callback' => 'taxonomy_exists' ),
             'per_page' => array( 'default' => 10, 'sanitize_callback' => 'absint' ),
         ),
     ) );

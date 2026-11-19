@@ -521,9 +521,9 @@ class HyperTaxonomy_Settings {
         } else {
             // Requested subtab doesn't exist or taxonomy is disabled, redirect to overview
             ?>
-            <script type="text/javascript">
+            <?php ob_start(); ?>
                 window.location.href = '?page=hypertaxonomy&tab=features&general_subtab=overview';
-            </script>
+            <?php htax_add_inline_script( 'settings', ob_get_clean() ); ?>
             <?php
         }
         ?>
@@ -1033,7 +1033,7 @@ class HyperTaxonomy_Settings {
 
 
         </table>
-        <script>
+        <?php ob_start(); ?>
         (function() {
             var stickyCheck   = document.getElementById('htax-show-sticky-posts');
             var stickyOptions = document.getElementById('htax-sticky-suboptions');
@@ -1043,7 +1043,7 @@ class HyperTaxonomy_Settings {
                 });
             }
         })();
-        </script>
+        <?php htax_add_inline_script( 'settings', ob_get_clean() ); ?>
         <?php
     }
 
@@ -1501,14 +1501,14 @@ if ( function_exists( 'htax_the_archive_icon' ) ) {
         </table>
 
         <?php else : // Requested subtab doesn't have icons enabled or doesn't exist ?>
-            <script type="text/javascript">
+            <?php ob_start(); ?>
                 // Redirect to first available taxonomy with icons or back to general tab
                 <?php if ( ! empty( $sorted_taxonomies ) ) : ?>
                 window.location.href = '?page=hypertaxonomy&tab=icons&icons_subtab=<?php echo esc_js( $sorted_taxonomies[0] ); ?>';
                 <?php else : ?>
                 window.location.href = '?page=hypertaxonomy&tab=features';
                 <?php endif; ?>
-            </script>
+            <?php htax_add_inline_script( 'settings', ob_get_clean() ); ?>
         <?php endif; // End of icon settings conditional ?>
 
         <?php
@@ -2249,7 +2249,7 @@ if ( function_exists( 'htax_the_archive_icon' ) ) {
                         <strong><?php esc_html_e( 'Text Search Matching:', 'hypertaxonomy' ); ?></strong> <?php esc_html_e( 'Posts are indexed with all their associated terms (direct assignments, hierarchy, inclusions, redirects). When a user searches for text, MySQL\'s FULLTEXT engine matches against all indexed term names and automatically scores higher when the search term appears in multiple places. Our tier weights then multiply these base scores to calculate final relevance.', 'hypertaxonomy' ); ?>
                     </p>
                     <?php if ( $show_text_column ) : ?>
-                    <script>
+                    <?php ob_start(); ?>
                     (function() {
                         var cb = document.getElementById('htax-use-desc-<?php echo esc_js( $taxonomy ); ?>');
                         if ( ! cb ) { return; }
@@ -2260,7 +2260,7 @@ if ( function_exists( 'htax_the_archive_icon' ) ) {
                             }
                         });
                     })();
-                    </script>
+                    <?php htax_add_inline_script( 'settings', ob_get_clean() ); ?>
                     <?php endif; ?>
                     <button type="button"
                             class="button htax-reset-weights"
@@ -2384,7 +2384,7 @@ if ( function_exists( 'htax_the_archive_icon' ) ) {
                     <p class="description" style="margin-top: 12px;">
                         <?php esc_html_e( 'These weights apply globally to all custom flat taxonomies during indexed text search. Explicit selection weights are configured per-taxonomy. The "Match term descriptions" checkbox can be overridden per-taxonomy in each taxonomy\'s own tab.', 'hypertaxonomy' ); ?>
                     </p>
-                    <script>
+                    <?php ob_start(); ?>
                     (function() {
                         var cb = document.getElementById('htax-use-desc-custom-flat');
                         if ( ! cb ) { return; }
@@ -2395,7 +2395,7 @@ if ( function_exists( 'htax_the_archive_icon' ) ) {
                             }
                         });
                     })();
-                    </script>
+                    <?php htax_add_inline_script( 'settings', ob_get_clean() ); ?>
                 </td>
             </tr>
         </table>
@@ -2525,7 +2525,7 @@ if ( function_exists( 'htax_the_archive_icon' ) ) {
                     <p class="description" style="margin-top: 12px;">
                         <?php esc_html_e( 'These weights apply globally to all custom hierarchical taxonomies during indexed text search. Explicit selection weights are configured per-taxonomy. The "Match term descriptions" checkbox can be overridden per-taxonomy in each taxonomy\'s own tab.', 'hypertaxonomy' ); ?>
                     </p>
-                    <script>
+                    <?php ob_start(); ?>
                     (function() {
                         var cb = document.getElementById('htax-use-desc-custom-hier');
                         if ( ! cb ) { return; }
@@ -2536,15 +2536,15 @@ if ( function_exists( 'htax_the_archive_icon' ) ) {
                             }
                         });
                     })();
-                    </script>
+                    <?php htax_add_inline_script( 'settings', ob_get_clean() ); ?>
                 </td>
             </tr>
         </table>
 
         <?php else : // Invalid search subtab - redirect to general ?>
-            <script type="text/javascript">
+            <?php ob_start(); ?>
                 window.location.href = '?page=hypertaxonomy&tab=search&search_subtab=general';
-            </script>
+            <?php htax_add_inline_script( 'settings', ob_get_clean() ); ?>
         <?php endif; ?>
         <?php
         return true; // Has content to save
@@ -2596,7 +2596,7 @@ if ( function_exists( 'htax_the_archive_icon' ) ) {
                                 <?php esc_html_e( 'seconds', 'hypertaxonomy' ); ?>
                             </td>
                             <td style="padding-left: 12px; color: #646970; font-size: 12px;">
-                                <?php esc_html_e( 'Tag and term autocomplete suggestions in the admin post editor.', 'hypertaxonomy' ); ?>
+                                <?php esc_html_e( 'Term autocomplete suggestions on term edit screens and the Merge Terms page.', 'hypertaxonomy' ); ?>
                             </td>
                             <td style="padding-left: 12px;">
                                 <a href="<?php echo esc_url( $type_base . 'autocomplete' ); ?>" class="button button-small"><?php esc_html_e( 'Clear', 'hypertaxonomy' ); ?></a>
@@ -2650,7 +2650,7 @@ if ( function_exists( 'htax_the_archive_icon' ) ) {
                                 <?php esc_html_e( 'seconds', 'hypertaxonomy' ); ?>
                             </td>
                             <td style="padding-left: 12px; color: #646970; font-size: 12px;">
-                                <?php esc_html_e( '[ht_post_list] and [ht_related_posts] rendered output. 0 = never expire (use Clear below when posts change).', 'hypertaxonomy' ); ?>
+                                <?php esc_html_e( '[ht_post_list] and [ht_related_posts] query results (post IDs and totals). 0 = never expire (use Clear below when posts change).', 'hypertaxonomy' ); ?>
                             </td>
                             <td style="padding-left: 12px;">
                                 <a href="<?php echo esc_url( $type_base . 'shortcode' ); ?>" class="button button-small"><?php esc_html_e( 'Clear', 'hypertaxonomy' ); ?></a>
@@ -2805,7 +2805,7 @@ if ( function_exists( 'htax_the_archive_icon' ) ) {
                             <?php esc_html_e( 'Comma-separated. Occurrences of these words are removed from the post text before matching.', 'hypertaxonomy' ); ?>
                         </p>
                     </div>
-                    <script>
+                    <?php ob_start(); ?>
                     ( function() {
                         var cb    = document.getElementById( 'htax-content-tag-suggestions' );
                         var input = document.getElementById( 'htax-ignore-words' );
@@ -2815,7 +2815,7 @@ if ( function_exists( 'htax_the_archive_icon' ) ) {
                             } );
                         }
                     } )();
-                    </script>
+                    <?php htax_add_inline_script( 'settings', ob_get_clean() ); ?>
                 </td>
             </tr>
 
@@ -2985,6 +2985,14 @@ if ( function_exists( 'htax_the_archive_icon' ) ) {
      * Sanitize settings before saving
      */
     public function sanitize_settings( $input ) {
+        // Each save merges its tab into the stored settings, so two at once (two admins, or a
+        // save and another change to the settings) would undo one another. Hold the settings'
+        // lock until WordPress writes them, and merge into what is stored now.
+        if ( htax_lock_option_until_saved( 'htax_settings' ) ) {
+            htax_get_option_fresh( 'htax_settings', array() );
+            self::$cached_options = null;
+        }
+
         // Get existing options first to preserve unchanged values
         $existing = $this->get_options();
         
@@ -3369,9 +3377,14 @@ if ( function_exists( 'htax_the_archive_icon' ) ) {
         // Sanitize cache settings
         if ( ! empty( $input['_cache_tab_present'] ) ) {
             if ( ! empty( $input['cache_settings'] ) && is_array( $input['cache_settings'] ) ) {
-                foreach ( $input['cache_settings'] as $key => $value ) {
-                    // 0 = never expire (explicit invalidation only); max matches the UI's 30-day cap.
-                    $sanitized['cache_settings'][$key] = max( 0, min( 2592000, absint( $value ) ) );
+                // Only the known duration keys are stored; anything else submitted is dropped.
+                $defaults   = $this->get_defaults();
+                $cache_keys = array_merge( array_keys( $defaults['cache_settings'] ), array( 'term_cache_duration' ) );
+                foreach ( $cache_keys as $key ) {
+                    if ( isset( $input['cache_settings'][ $key ] ) ) {
+                        // 0 = never expire (explicit invalidation only); max matches the UI's 30-day cap.
+                        $sanitized['cache_settings'][ $key ] = max( 0, min( 2592000, absint( $input['cache_settings'][ $key ] ) ) );
+                    }
                 }
             }
 

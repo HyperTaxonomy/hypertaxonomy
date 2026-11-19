@@ -41,7 +41,7 @@ These are questions about the *vocabulary* — the taxonomy terms themselves —
 
 **Limitation:** CPT UI creates vanilla WordPress taxonomies. Once a taxonomy exists, terms in it are flat, unconnected labels. "Algorithms" and "Machine Learning" are both terms in `subject_area`, but the system has no knowledge that they are related, or that browsing "Computer Science" should encompass both.
 
-**How HyperTaxonomy fills the gap:** Everything HyperTaxonomy provides — inclusions, groups and redirects ([Term Relationships](term-relationships.html)), term icons, per-term archive settings, sticky posts and hidden terms ([Per-Term Settings](per-term-settings.html)), the full-text search index — works directly on any taxonomy CPT UI registers. HyperTaxonomy lists registered taxonomies under **[Settings > HyperTaxonomy > Features](plugin-settings.html#features-tab)**; enable the taxonomy there.
+**How HyperTaxonomy fills the gap:** Everything HyperTaxonomy provides — inclusions, groups and redirects ([Term Relationships](term-relationships.html)), term icons, per-term archive settings, sticky posts and hidden terms ([Per-Term Settings](per-term-settings.html)), the full-text search index — works directly on any taxonomy CPT UI registers. HyperTaxonomy lists registered taxonomies under **[Settings&nbsp;→ HyperTaxonomy&nbsp;→ Features](plugin-settings.html#features-tab)**; enable the taxonomy there.
 
 **Combined, no-code:** CPT UI defines the structure; HyperTaxonomy defines the meaning. A site architect can define a `subject_area` taxonomy in CPT UI, then build a semantic graph of inclusions, groups, and redirects in HyperTaxonomy's term edit screens — all without writing a line of PHP. The Post List block makes it possible to surface those relationships in any page or template, also without coding.
 
@@ -100,10 +100,20 @@ These are questions about the *vocabulary* — the taxonomy terms themselves —
 **Combined architecture example (academic site):**
 - Pods: defines Faculty, Course, Department post types; Faculty.teaches ↔ Course schema
 - CPT UI (or Pods): registers `subject_area` taxonomy
-- HyperTaxonomy: "Computer Science includes Algorithms, Data Structures, Machine Learning"; GROUP "STEM Subjects" → [Computer Science, Mathematics, Physics]
+- HyperTaxonomy: "Computer Science includes Algorithms, Data Structures, Machine Learning"; GROUP "STEM Subjects"&nbsp;→ [Computer Science, Mathematics, Physics]
 - A subject archive at `/subject/computer-science/` shows all post types tagged with Computer Science or any included subject — powered by HyperTaxonomy
 - A course's sidebar shows "taught by Professor Y" — powered by Pods
 - A faculty profile page shows "related courses in the same subject area" — powered by HyperTaxonomy's Related Posts block
+
+---
+
+## Listing Widgets and Secondary Queries
+
+HyperTaxonomy expands the main query of a term archive automatically. Listing widgets and loop builders, such as [JetEngine](#jetengine) Dynamic Listings and [Elementor](#elementor) Loop widgets, run their own secondary `WP_Query`, which isn't expanded by default: a listing set to show "posts in category: JavaScript" shows only posts assigned to JavaScript itself. To get inclusion-expanded results there:
+
+1. **Turn on automatic expansion (simplest).** Enable **[Settings&nbsp;→ Search&nbsp;→ Third-Party Query Expansion](plugin-settings.html#search-tab)**. Listings that query a single term of an enabled taxonomy are then expanded, including results they load over AJAX, such as "load more" or live filtering. A query for several terms at once is treated as a filter the visitor chose and isn't expanded. The setting applies site-wide; to leave out one listing, set its query's `htax_expand_terms` variable to `false` in code (see [Expanding secondary queries](../developer-reference/query-expansion.html#expanding-secondary-queries)).
+2. **Expand in code.** Call [`htax_get_expanded_term_ids( $term_id )`](../developer-reference/query-expansion.html#get-a-terms-expanded-term-ids) and pass the term IDs to the listing's query, for example when only some listings should be expanded.
+3. **Use a Post List block.** Replace the listing with an [HT Post List block](post-lists.html#ht-post-list-block), which includes related terms' posts by default and needs no code.
 
 ---
 
@@ -115,9 +125,9 @@ These are questions about the *vocabulary* — the taxonomy terms themselves —
 
 1. **Relations are still post-to-post.** However capable at the instance level, JetEngine Relations cannot express "every post in the Machine Learning subject area is contextually related to every post in the Statistics subject area." That relationship belongs to the vocabulary layer, not the instance layer.
 
-2. **Smart Filters operate on the result set, not the vocabulary.** A JetEngine Smart Filter showing a "Subject Area" checkbox list will let users narrow to a specific subject — but clicking "Machine Learning" returns only posts directly tagged with Machine Learning. Posts tagged with Statistics or Data Engineering that HyperTaxonomy would include are not surfaced unless those subjects are also selected, or unless a single selection is expanded by Option 1 below.
+2. **Smart Filters operate on the result set, not the vocabulary.** A JetEngine Smart Filter showing a "Subject Area" checkbox list will let users narrow to a specific subject — but clicking "Machine Learning" returns only posts directly tagged with Machine Learning. Posts tagged with Statistics or Data Engineering that HyperTaxonomy would include are not surfaced unless those subjects are also selected, or unless a single selection is expanded automatically (see below).
 
-3. **Dynamic Listings use secondary WP_Query instances.** JetEngine Dynamic Listings instantiate their own `WP_Query` objects inside templates. HyperTaxonomy's `pre_get_posts` expansion applies only to the main WordPress query by default, so JetEngine loop widgets don't get term expansion unless you turn it on (Option 1 below).
+3. **Dynamic Listings use secondary WP_Query instances.** JetEngine Dynamic Listings instantiate their own `WP_Query` objects inside templates. HyperTaxonomy's `pre_get_posts` expansion applies only to the main WordPress query by default, so JetEngine loop widgets don't get term expansion unless you turn it on (see below).
 
 **How HyperTaxonomy fills the gap:**
 
@@ -125,13 +135,7 @@ These are questions about the *vocabulary* — the taxonomy terms themselves —
 - Archive query expansion: HyperTaxonomy enriches the main WordPress taxonomy archive query; the standard archive page for a subject therefore shows semantically related content even when JetEngine widgets are present on the same page
 - Search integration: HyperTaxonomy's faceted search widget surfaces content across semantically related subjects; JetEngine Smart Filters refine content within a specific subject
 
-JetEngine Relations handle instance-level connections (faculty ↔ course ↔ project); HyperTaxonomy handles term-level connections (subject ↔ subject ↔ method group). For JetEngine Dynamic Listings that need inclusion-expanded results, three options:
-
-**Option 1 — Enable automatic expansion (simplest):** Turn on **[Settings → Search → Third-Party Query Expansion](plugin-settings.html#search-tab)**. JetEngine listings that issue a single-term taxonomy query will automatically receive HyperTaxonomy inclusion expansion. Disable if a specific listing conflicts. This includes results the listing loads over AJAX, such as "load more" or live filtering.
-
-**Option 2 — Manual integration:** Call [`htax_get_expanded_term_ids( $term_id )`](../developer-reference/query-expansion.html#get-a-terms-expanded-term-ids) to get the full expanded term ID set, then inject it into the listing's query parameters. Use this if you need expansion on some listings but not others.
-
-**Option 3 — Use Post List block:** Replace the listing with an [HT Post List block](post-lists.html#ht-post-list-block), which is inclusion-aware by default and requires no code.
+JetEngine Relations handle instance-level connections (faculty ↔ course ↔ project); HyperTaxonomy handles term-level connections (subject ↔ subject ↔ method group). For JetEngine Dynamic Listings that need inclusion-expanded results, see [Listing Widgets and Secondary Queries](#listing-widgets-and-secondary-queries).
 
 JetEngine Smart Filters and HyperTaxonomy's faceted filter panel serve different needs on the same site:
 - HyperTaxonomy filter panel: best for filtering within a HyperTaxonomy-expanded result set (post list or search results), including the semantically related content
@@ -143,13 +147,7 @@ Avoid placing both on the same result block. Each can be used independently on d
 
 ## Elementor
 
-HyperTaxonomy's `pre_get_posts` expansion applies to the main WordPress query only. The standard taxonomy archive page therefore shows inclusion-expanded results automatically. Elementor Loop Builder widgets use secondary `WP_Query` instances and do not receive this expansion by default — an Elementor loop configured to show "posts in category: JavaScript" will show only directly tagged posts.
-
-**Option 1 — Enable automatic expansion (simplest):** Turn on **[Settings → Search → Third-Party Query Expansion](plugin-settings.html#search-tab)**. Elementor Loop widgets that issue a single-term taxonomy query will automatically receive HyperTaxonomy inclusion expansion. This includes results the listing loads over AJAX, such as "load more" or live filtering.
-
-**Option 2 — Manual integration:** Call [`htax_get_expanded_term_ids( $term_id )`](../developer-reference/query-expansion.html#get-a-terms-expanded-term-ids) to get the full expanded term ID set and pass it to the loop's query.
-
-**Option 3 — Use Post List block:** Replace the loop with an [HT Post List block](post-lists.html#ht-post-list-block), which is inclusion-aware by default and integrates natively with the Gutenberg editor.
+The standard taxonomy archive page shows inclusion-expanded results automatically. Elementor Loop Builder widgets run their own secondary query, so a loop configured to show "posts in category: JavaScript" shows only posts assigned to JavaScript itself. To expand loops, see [Listing Widgets and Secondary Queries](#listing-widgets-and-secondary-queries).
 
 For post-to-post relationships managed by ACF, Elementor's Dynamic Tags read ACF fields directly and can display related post data in any Loop Builder template.
 
@@ -164,7 +162,7 @@ For post-to-post relationships managed by ACF, Elementor's Dynamic Tags read ACF
 
 HyperTaxonomy works with WooCommerce taxonomies (`product_cat`, `product_tag`, and any custom attribute taxonomy registered as a standard taxonomy). Term inclusions, redirects, and hidden terms apply to product archives exactly as they would to post archives.
 
-The Post List block with `post_type="product"` provides a configurable product listing with inclusion-aware filtering, relevance sorting, and AJAX pagination — no template code required. Post lists read HyperTaxonomy's search index, which covers posts and pages by default: first add Products under **Indexed Post Types** in [Settings → HyperTaxonomy → Search](plugin-settings.html#search-tab).
+The Post List block with `post_type="product"` provides a configurable product listing with inclusion-aware filtering, relevance sorting, and AJAX pagination — no template code required. Post lists read HyperTaxonomy's search index, which covers posts and pages by default: first add Products under **Indexed Post Types** in [Settings&nbsp;→ HyperTaxonomy&nbsp;→ Search](plugin-settings.html#search-tab).
 
 HyperTaxonomy does not interact with WooCommerce's product variation or cross-sell/upsell systems. Those are WooCommerce post-level features; use WooCommerce's own tools or ACF for them.
 
@@ -180,7 +178,7 @@ HyperTaxonomy stores term icons as media library attachments, referenced by `_ht
 
 A conflict happens if the same archive template also calls `htax_the_archive_icon()`. The practical resolution:
 
-*Option A — Use only WooCommerce thumbnails for `product_cat`.* Do not enable the HyperTaxonomy Icons feature for the `product_cat` taxonomy in **Settings → HyperTaxonomy → Features**. All icon functionality is per-taxonomy, so other taxonomies are unaffected.
+*Option A — Use only WooCommerce thumbnails for `product_cat`.* Do not enable the HyperTaxonomy Icons feature for the `product_cat` taxonomy in **Settings&nbsp;→ HyperTaxonomy&nbsp;→ Features**. All icon functionality is per-taxonomy, so other taxonomies are unaffected.
 
 *Option B — Use only HyperTaxonomy icons for `product_cat`.* Remove the WooCommerce category image display from the theme template (or disable it in the WooCommerce template you are overriding). HyperTaxonomy icons give you three responsive sizes and configurable border-radius, and in term lists a colored placeholder stands in for terms without an icon — often a suitable replacement.
 
@@ -219,13 +217,13 @@ if ( $wc_thumbnail_id ) {
 
 **Co-tagging vs. inclusions.** TaxoPress Pro "Linked Terms" (co-tagging) adds Term B to a post at save time when Term A is applied. HyperTaxonomy inclusions operate at query time: Term A's archive dynamically shows Term B's posts without modifying any post's term assignments. For the same end result, inclusions are zero-maintenance and retroactive; co-tagging is an explicit assignment that accumulates in the database.
 
-**Do not use TaxoPress (or any external tool) to merge terms when HyperTaxonomy relationships are in use.** TaxoPress's merge feature reassigns posts via `wp_set_object_terms()` then deletes the source term via `wp_delete_term()`. The deletion fires HyperTaxonomy's cleanup hooks, which remove the source term's relationship rows — but nobody transfers them to the merge target. Group memberships, relationships, and sticky posts that belonged to the source term are permanently lost. HyperTaxonomy's own [merge screen](merge-convert.html#merge-terms) (**Terms → Merge Terms**) performs the relationship transfer atomically before deletion. If you need to script merges programmatically, use `htax_merge_terms()` directly, or hook into `htax_before_merge_terms` / `htax_after_merge_terms` to extend the built-in merge flow.
+**Do not use TaxoPress (or any external tool) to merge terms when HyperTaxonomy relationships are in use.** TaxoPress's merge feature reassigns posts via `wp_set_object_terms()` then deletes the source term via `wp_delete_term()`. The deletion fires HyperTaxonomy's cleanup hooks, which remove the source term's relationship rows — but nobody transfers them to the merge target. Group memberships, relationships, and sticky posts that belonged to the source term are permanently lost. HyperTaxonomy's own [merge screen](merge-convert.html#merge-terms) (**Terms&nbsp;→ Merge Terms**) performs the relationship transfer atomically before deletion. If you need to script merges programmatically, use `htax_merge_terms()` directly, or hook into `htax_before_merge_terms` / `htax_after_merge_terms` to extend the built-in merge flow.
 
-HyperTaxonomy also surfaces this warning directly where it matters: on TaxoPress's own Manage Terms → Merge Terms screen, whenever the taxonomy currently selected there is HyperTaxonomy-enabled, a dismissible notice names what would be lost and links to HyperTaxonomy's own **Merge Terms** page (Terms → Merge Terms) instead, with the same taxonomy preselected. The dismissal is per-admin-user and persists until TaxoPress is deactivated (and reactivated), at which point the notice reappears for everyone until dismissed again.
+HyperTaxonomy also surfaces this warning directly where it matters: on TaxoPress's own Manage Terms&nbsp;→ Merge Terms screen, whenever the taxonomy currently selected there is HyperTaxonomy-enabled, a dismissible notice names what would be lost and links to HyperTaxonomy's own **Merge Terms** page (Terms&nbsp;→ Merge Terms) instead, with the same taxonomy preselected. The dismissal is per-admin-user and persists until TaxoPress is deactivated (and reactivated), at which point the notice reappears for everyone until dismissed again.
 
 **Tag Groups.** TaxoPress and Tag Groups (rebranded "PublishPress Tag Groups" in October 2026) are both published by PublishPress as of their respective rebrands, but they are independent plugins with no cross-dependency. Running HyperTaxonomy + TaxoPress (without Tag Groups) is a natural combination for sites that need both semantic taxonomy management and content automation. Tag Groups (free) provides tabbed and accordion display layouts for term lists; Tag Groups Pro adds a table layout and live in-display search. If those display layouts are a hard requirement, evaluate Tag Groups on its own terms.
 
-HyperTaxonomy can also run alongside Tag Groups rather than replace it. Running both without any bridge between them does create overlapping responsibilities — two separate group systems with no shared data. The Export/Import → Migrate and Sync subtabs are that bridge: they read Tag Groups' group and term-assignment data directly from its database tables and map it onto HyperTaxonomy's native `group` taxonomy, either as a one-time migration or continuously. Under **Locked** integration mode, Tag Groups stays the system of record for group management — mapped groups are locked against edits in HyperTaxonomy, and the term edit screen promotes Tag Groups' own field to the spot HyperTaxonomy's group selector normally occupies — while HyperTaxonomy's archive pages, search indexing, hierarchy, and relationships apply to the synced result. For a one-time migration, Tag Groups doesn't need to stay active afterward. See [Export, Import & Migration](export-import-migration.html) for the full reference.
+HyperTaxonomy can also run alongside Tag Groups rather than replace it. Without a bridge, the two keep separate group systems with no shared data; the **Export/Import&nbsp;→ Migrate** and **Sync** subtabs map Tag Groups' groups and term assignments onto HyperTaxonomy's Term Groups, once or continuously, and can keep Tag Groups as the system of record. See [Export, Import & Migration&nbsp;→ Migrating from Tag Groups](export-import-migration.html#migrating-from-tag-groups).
 
 TaxoPress features HyperTaxonomy does not replicate: auto-linking term names in post content, automatic term assignment from post content, AI-assisted term suggestions at publish time, and related posts via co-occurrence. HyperTaxonomy features TaxoPress does not replicate: archive query expansion, semantic inclusions, FULLTEXT search, term redirects, sticky posts, term icons, a denormalized search index, and per-relationship strength scoring.
 
@@ -249,7 +247,7 @@ FacetWP excels at faceted filtering over custom post meta fields (prices, dates,
 
 **On a term archive:** the archive's own query is expanded by HyperTaxonomy as usual, so FacetWP's facets narrow a result set that already includes the archive's included terms.
 
-**Facet selections and counts:** FacetWP keeps its own index of which posts carry which terms and filters with it, rather than adding taxonomy clauses to the query. So, as far as we know, HyperTaxonomy's expansion — including **[Settings → Search → Third-Party Query Expansion](plugin-settings.html#search-tab)** — doesn't change which posts a FacetWP taxonomy facet returns, or the counts it shows: choosing "JavaScript" in a facet finds posts tagged JavaScript, not posts of the terms JavaScript includes. This hasn't been tested with FacetWP.
+**Facet selections and counts:** FacetWP keeps its own index of which posts carry which terms and filters with it, rather than adding taxonomy clauses to the query. So, as far as we know, HyperTaxonomy's expansion — including **[Settings&nbsp;→ Search&nbsp;→ Third-Party Query Expansion](plugin-settings.html#search-tab)** — doesn't change which posts a FacetWP taxonomy facet returns, or the counts it shows: choosing "JavaScript" in a facet finds posts tagged JavaScript, not posts of the terms JavaScript includes. This hasn't been tested with FacetWP.
 
 **When to keep them separate:** if FacetWP is used only for post-meta facets (prices, dates, numeric fields), there is no interaction and nothing to configure: FacetWP for post-meta filtering, HyperTaxonomy for taxonomy-based semantic browsing.
 
@@ -265,7 +263,7 @@ Like Relevanssi, SearchWP can index custom fields and taxonomy terms, and it can
 
 ## WP Grid Builder
 
-WP Grid Builder is a grid and faceted filtering plugin. Like FacetWP, it keeps its own index of post–term assignments for its facets, so, as far as we know, the same applies: a term archive's own query is expanded by HyperTaxonomy, but facet selections and facet counts are not. A grid that runs its own single-term taxonomy query is expanded with **[Settings → Search → Third-Party Query Expansion](plugin-settings.html#search-tab)** on, including results it loads over AJAX. This hasn't been tested with WP Grid Builder.
+WP Grid Builder is a grid and faceted filtering plugin. Like FacetWP, it keeps its own index of post–term assignments for its facets, so, as far as we know, the same applies: a term archive's own query is expanded by HyperTaxonomy, but facet selections and facet counts are not. A grid that runs its own single-term taxonomy query is expanded with **[Settings&nbsp;→ Search&nbsp;→ Third-Party Query Expansion](plugin-settings.html#search-tab)** on, including results it loads over AJAX. This hasn't been tested with WP Grid Builder.
 
 ---
 
@@ -281,10 +279,10 @@ Both SEO plugins can mark empty or thin term archives as `noindex` or redirect t
 
 **With a redirect stub** (HyperTaxonomy's default): the old term stays in the old taxonomy as the stub with the same `term_id`. Its existing Yoast record remains correctly attached, because `object_sub_type` still matches the stub's taxonomy. The new term gets its own record from Yoast. No action required.
 
-**Without a redirect stub** (or when using an external converter that deletes the old term): the old term is deleted, orphaning its Yoast record. The record references a `term_id` that no longer exists in the old taxonomy. Hook `htax_term_converted` to update it. This sample hasn't been tested against a current Yoast version, so try it on a staging site first:
+**Without a redirect stub** (or when using an external converter that deletes the old term): the old term is deleted, orphaning its Yoast record. The record references a `term_id` that no longer exists in the old taxonomy. Hook `htax_after_convert_term` to update it. This sample hasn't been tested against a current Yoast version, so try it on a staging site first:
 
 ```php
-add_action( 'htax_term_converted', function(
+add_action( 'htax_after_convert_term', function(
     int    $new_term_id,
     string $old_taxonomy,
     string $new_taxonomy,
@@ -319,7 +317,7 @@ What needs care with WPML is [converting terms](merge-convert.html#convert-terms
 
 **With a redirect stub**: the old term stays in the old taxonomy with the same `term_taxonomy_id`. WPML's translation links remain valid. The new term in the target taxonomy has no translation links; those must be set up manually in the WPML interface.
 
-**Without a redirect stub**: the old `term_taxonomy_id` row is deleted before `htax_term_converted` fires, so the old `element_id` cannot be looked up at hook time. WPML's translation links for the old term are broken.
+**Without a redirect stub**: the old `term_taxonomy_id` row is deleted before `htax_after_convert_term` fires, and WPML's translation links for the old term are broken. Code that carries them over can read the old `term_taxonomy_id` on `htax_before_convert_term`, which fires while the term still exists.
 
 The practical recommendation: **keep redirect stubs enabled when WPML is active**. The stub retains the original taxonomy and the same `term_taxonomy_id`, so all WPML translation links survive intact. The new term needs its translations set up in WPML, because one translation group can't hold terms from two taxonomies. WPML's `wpml_set_element_language_details` action sets a term's language and translation group from code. These notes haven't been tested with WPML, so try conversions on a staging site first.
 
@@ -338,7 +336,7 @@ What needs care with Polylang is [converting terms](merge-convert.html#convert-t
 
 Both use content-based algorithms to suggest related posts — YARPP via co-occurrence and text similarity, Jetpack via its cloud API. HyperTaxonomy's Related Posts block uses taxonomy relationship similarity (shared terms, inclusions, and relevance weighting from the search index). The approaches are complementary rather than conflicting: YARPP and Jetpack surface textually or semantically proximate content; HT Related Posts surfaces content that belongs to the same or related taxonomy vocabulary.
 
-A third option is the [TermConnect](https://hypertaxonomy.org/termconnect/) plugin's [`[tc_peer_posts]`](https://hypertaxonomy.org/termconnect/user-guide/displaying-peer-posts.html#tc_peer_posts-shortcode), which extends the same taxonomy vocabulary across to peer WordPress sites and RSS/Atom feeds. Where the Related Posts block finds content on the same site by shared terms, `[tc_peer_posts]` finds content on configured peer sites by mapped terms — posts authored by practitioners with a shared vocabulary but a different readership. The three can coexist: HT Related Posts for same-site taxonomy-driven content, YARPP or Jetpack for content-driven discovery, and TermConnect for network-sourced related reading.
+A third option is the [TermConnect](https://hypertaxonomy.org/termconnect/) plugin's [`[tconn_peer_posts]`](https://hypertaxonomy.org/termconnect/user-guide/displaying-peer-posts.html#tconn_peer_posts-shortcode), which extends the same taxonomy vocabulary across to peer WordPress sites and RSS/Atom feeds. Where the Related Posts block finds content on the same site by shared terms, `[tconn_peer_posts]` finds content on configured peer sites by mapped terms — posts authored by practitioners with a shared vocabulary but a different readership. The three can coexist: HT Related Posts for same-site taxonomy-driven content, YARPP or Jetpack for content-driven discovery, and TermConnect for network-sourced related reading.
 
 A common pattern: HT Related Posts for "more on this topic" (taxonomy-driven, this site), and YARPP or Jetpack for "you might also like" (content-driven) — two distinct discovery paths on one page.
 
@@ -346,7 +344,7 @@ A common pattern: HT Related Posts for "more on this topic" (taxonomy-driven, th
 
 GraphQL plugins build their own schema and don't read HyperTaxonomy's REST fields. They can read term meta, so HyperTaxonomy offers each term's relationships, groups, archive term set, pinned posts, external identifiers, shared locations, redirect and icon URLs as read-only term meta keys, with hidden terms left out for everyone. Gato GraphQL reads them once the keys are allowed in its settings; WPGraphQL needs a short snippet to add them as fields. See [Term Meta](../developer-reference/term-meta.html).
 
-Other plugins and headless front ends that read term meta over the REST API can get the same keys too: turn on **Settings → HyperTaxonomy → Advanced → Term Meta in REST**, and each term's `meta` object in REST responses includes them.
+Other plugins and headless front ends that read term meta over the REST API can get the same keys too: turn on **Settings&nbsp;→ HyperTaxonomy&nbsp;→ Advanced&nbsp;→ Term Meta in REST**, and each term's `meta` object in REST responses includes them.
 
 Page builders with dynamic term fields can read the same keys.
 
@@ -366,7 +364,7 @@ One of the advantages of HyperTaxonomy's Gutenberg block integration is that the
 | Auto-link term names in post content | TaxoPress (Auto Links) |
 | Display a filtered post list on any page | **Post List block** (block editor inspector) |
 | Display related posts on a post template | **Related Posts block** (block editor / FSE template) |
-| Display related posts from peer WordPress sites | **[`[tc_peer_posts]`](https://hypertaxonomy.org/termconnect/user-guide/displaying-peer-posts.html#tc_peer_posts-shortcode)** shortcode (TermConnect) |
+| Display related posts from peer WordPress sites | **[`[tconn_peer_posts]`](https://hypertaxonomy.org/termconnect/user-guide/displaying-peer-posts.html#tconn_peer_posts-shortcode)** shortcode (TermConnect) |
 | Build faceted search interfaces | HyperTaxonomy Search Widget (shortcodes) |
 | Add a keyword search form | **[HT PowerSearch block](powersearch.html#ht-powersearch-block)** |
 | Display ACF relationship fields | Elementor Dynamic Tags / ACF blocks |

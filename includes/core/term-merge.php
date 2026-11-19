@@ -27,7 +27,8 @@ if ( ! defined( 'ABSPATH' ) ) {
  *    cleanup and relationship table cleanup automatically).
  * 4. If $create_redirect is true, a redirect stub with the source term's name
  *    is created in the same taxonomy, pointing to the chain's final non-redirect
- *    target so no redirect chains are introduced.
+ *    target so no redirect chains are introduced. In a hierarchical taxonomy the
+ *    stub takes the source term's place: its parent and its children.
  *
  * @since 1.0.0
  *
@@ -35,14 +36,21 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @param int    $target_id       Target term ID to merge into.
  * @param string $taxonomy        Taxonomy all terms belong to.
  * @param bool   $create_redirect Whether to create redirect stubs for deleted terms.
+ * @param array  $options         Choices made by other plugins' merge options (see the
+ *                                htax_merge_terms_check filter), keyed by their section ID,
+ *                                and the operation-wide preference for data a stub or the
+ *                                target could keep, as [ 'htax' => [ 'carry' => value ] ]
+ *                                (see htax_carry_choice()). Passed to the merge actions;
+ *                                HyperTaxonomy ignores it.
  * @return array|WP_Error On success: {
- *     posts_reassigned int   Total post assignments moved.
- *     terms_deleted    int   Number of source terms deleted.
- *     redirects_created int  Number of redirect stubs created.
- *     target_id        int   Actual target term ID used.
+ *     posts_reassigned  int   Total post assignments moved.
+ *     terms_deleted     int   Number of source terms deleted.
+ *     redirects_created int   Number of redirect stubs created.
+ *     redirect_stubs    int[] Stub term ID by source term ID, for the stubs created.
+ *     target_id         int   Actual target term ID used.
  * } WP_Error on failure.
  */
-function htax_merge_terms( array $source_ids, int $target_id, string $taxonomy, bool $create_redirect = false ) {
+function htax_merge_terms( array $source_ids, int $target_id, string $taxonomy, bool $create_redirect = false, array $options = array() ) {
     global $wpdb;
 
     // ----------------------------------------------------------------
@@ -132,11 +140,22 @@ function htax_merge_terms( array $source_ids, int $target_id, string $taxonomy, 
             $source_id
         ) );
 
+        // Its place in the hierarchy, for its redirect stub: deleting it moves its children
+        // up a level. The target and other sources aren't given back to the stub.
+        $children = is_taxonomy_hierarchical( $taxonomy ) ? array_map( 'intval', (array) get_terms( array(
+            'taxonomy'   => $taxonomy,
+            'parent'     => $source_id,
+            'hide_empty' => false,
+            'fields'     => 'ids',
+        ) ) ) : array();
+
         $source_data[ $source_id ] = array(
             'name'      => $source_term->name,
             'slug'      => $source_term->slug,
             'tt_id'     => $source_tt_id,
             'group_ids' => array_map( 'intval', $group_ids ),
+            'parent'    => (int) $source_term->parent,
+            'children'  => array_values( array_diff( $children, $source_ids, array( $target_id ) ) ),
         );
     }
 
@@ -162,8 +181,10 @@ function htax_merge_terms( array $source_ids, int $target_id, string $taxonomy, 
      * @param int    $target_id       Target term ID.
      * @param string $taxonomy        Taxonomy slug.
      * @param bool   $create_redirect Whether redirect stubs will be created.
+     * @param array  $options         Choices made in other plugins' merge options, keyed by
+     *                                their section ID (see htax_merge_terms_check).
      */
-    do_action( 'htax_before_merge_terms', $source_ids, $target_id, $taxonomy, $create_redirect );
+    do_action( 'htax_before_merge_terms', $source_ids, $target_id, $taxonomy, $create_redirect, $options );
 
     // Terms the source terms include: their containers change when the relationships move to
     // the target. Read now, while the source terms exist.
@@ -357,6 +378,7 @@ function htax_merge_terms( array $source_ids, int $target_id, string $taxonomy, 
     // ----------------------------------------------------------------
 
     $redirects_created = 0;
+    $redirect_stubs    = array();
 
     if ( $create_redirect ) {
         // Resolve target's redirect chain to find the ultimate non-redirect term.
@@ -371,19 +393,36 @@ function htax_merge_terms( array $source_ids, int $target_id, string $taxonomy, 
             $hops++;
         }
 
-        foreach ( $source_ids as $source_id ) {
-            $data    = $source_data[ $source_id ];
-            $stub_id = htax_create_redirect_term(
-                $data['name'],
-                $taxonomy,
-                $resolved_target_id,
-                $taxonomy
-            );
-            if ( $stub_id ) {
-                // Keep the old archive URL when the source had a custom slug.
-                wp_update_term( $stub_id, $taxonomy, array( 'slug' => $data['slug'] ) );
-                $redirects_created++;
+        // Parents first, so a source whose parent is also a source can sit under that one's stub.
+        $pending = $source_ids;
+        while ( $pending ) {
+            $ready = array_filter( $pending, static fn( $id ) => ! in_array( $source_data[ $id ]['parent'], $pending, true ) );
+            $ready = $ready ?: array( reset( $pending ) );
+            foreach ( $ready as $source_id ) {
+                $data = $source_data[ $source_id ];
+
+                // A parent that was merged away is replaced by its stub, or by its own parent.
+                $parent = $data['parent'];
+                while ( isset( $source_data[ $parent ] ) && ! isset( $redirect_stubs[ $parent ] ) ) {
+                    $parent = $source_data[ $parent ]['parent'];
+                }
+                $parent = $redirect_stubs[ $parent ] ?? $parent;
+
+                $stub_id = htax_create_redirect_term(
+                    $data['name'],
+                    $taxonomy,
+                    $resolved_target_id,
+                    $taxonomy,
+                    array( 'parent' => $parent, 'children' => $data['children'] )
+                );
+                if ( $stub_id ) {
+                    // Keep the old archive URL when the source had a custom slug.
+                    wp_update_term( $stub_id, $taxonomy, array( 'slug' => $data['slug'] ) );
+                    $redirect_stubs[ $source_id ] = (int) $stub_id;
+                    $redirects_created++;
+                }
             }
+            $pending = array_values( array_diff( $pending, $ready ) );
         }
     }
 
@@ -457,6 +496,7 @@ function htax_merge_terms( array $source_ids, int $target_id, string $taxonomy, 
         'posts_reassigned'  => $posts_reassigned,
         'terms_deleted'     => $terms_deleted,
         'redirects_created' => $redirects_created,
+        'redirect_stubs'    => $redirect_stubs,
         'target_id'         => $target_id,
     );
 
@@ -472,13 +512,16 @@ function htax_merge_terms( array $source_ids, int $target_id, string $taxonomy, 
      * @param int    $target_id   Target term ID.
      * @param string $taxonomy    Taxonomy slug.
      * @param array  $result      Merge result: {
-     *     posts_reassigned  int  Total post assignments moved.
-     *     terms_deleted     int  Number of source terms deleted.
-     *     redirects_created int  Number of redirect stubs created.
-     *     target_id         int  Actual target term ID used.
+     *     posts_reassigned  int   Total post assignments moved.
+     *     terms_deleted     int   Number of source terms deleted.
+     *     redirects_created int   Number of redirect stubs created.
+     *     redirect_stubs    int[] Stub term ID by source term ID, for the stubs created.
+     *     target_id         int   Actual target term ID used.
      * }
+     * @param array  $options     Choices made in other plugins' merge options, keyed by
+     *                            their section ID (see htax_merge_terms_check).
      */
-    do_action( 'htax_after_merge_terms', $source_ids, $target_id, $taxonomy, $result );
+    do_action( 'htax_after_merge_terms', $source_ids, $target_id, $taxonomy, $result, $options );
 
     return $result;
 }

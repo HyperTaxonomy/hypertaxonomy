@@ -78,8 +78,57 @@ function htax_enqueue_convert_terms_assets( string $hook ): void {
 			'deselectAll'=> __( 'Deselect all', 'hypertaxonomy' ),
 		),
 	) );
+
+	htax_enqueue_operation_check( 'htax_convert_terms_check', 'htax_do_convert', 'htax-convert-terms' );
 }
 add_action( 'admin_enqueue_scripts', 'htax_enqueue_convert_terms_assets' );
+
+/**
+ * AJAX: check a conversion before it runs, so other plugins can say what it will do to
+ * their data and offer choices (the check step of the Convert Terms page). With nothing to
+ * show, the page converts straight away.
+ *
+ * Reads the page's form fields. An invalid selection returns no sections: the conversion
+ * itself then reports the problem.
+ *
+ * @since 1.0.0
+ */
+function htax_ajax_convert_terms_check(): void {
+	check_ajax_referer( 'htax_convert_terms_check', 'nonce' );
+	if ( ! current_user_can( 'manage_options' ) ) {
+		wp_send_json_error( null, 403 );
+	}
+
+	$from_taxonomy   = isset( $_POST['htax_from_taxonomy'] ) ? sanitize_key( wp_unslash( $_POST['htax_from_taxonomy'] ) ) : '';
+	$to_taxonomy     = isset( $_POST['htax_to_taxonomy'] ) ? sanitize_key( wp_unslash( $_POST['htax_to_taxonomy'] ) ) : '';
+	$create_redirect = ! empty( $_POST['htax_create_redirect'] );
+	$term_ids        = isset( $_POST['htax_convert_term_ids'] ) ? array_values( array_filter( array_map( 'absint', (array) wp_unslash( $_POST['htax_convert_term_ids'] ) ) ) ) : array();
+
+	if ( ! $from_taxonomy || ! $to_taxonomy || $from_taxonomy === $to_taxonomy || ! $term_ids
+		|| ! taxonomy_exists( $from_taxonomy ) || ! taxonomy_exists( $to_taxonomy ) ) {
+		htax_send_operation_check( array() );
+	}
+
+	/**
+	 * Filters what the Convert Terms page shows before a conversion: notices about what it
+	 * will do to a plugin's data, and choices that are passed to htax_convert_terms_batch()
+	 * as $options[ section id ][ field name ], and on to the conversion actions. When no
+	 * section is returned, the conversion runs without this step.
+	 *
+	 * Sections have the same form as for htax_merge_terms_check; a choice's stub restriction
+	 * refers to the redirect stubs left in the old taxonomy.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param array    $sections        Sections so far.
+	 * @param int[]    $term_ids        Terms to convert.
+	 * @param string   $from_taxonomy   Their taxonomy.
+	 * @param string   $to_taxonomy     Taxonomy to convert them to.
+	 * @param bool     $create_redirect Whether redirect stubs are selected.
+	 */
+	htax_send_operation_check( apply_filters( 'htax_convert_terms_check', array(), $term_ids, $from_taxonomy, $to_taxonomy, $create_redirect ) );
+}
+add_action( 'wp_ajax_htax_convert_terms_check', 'htax_ajax_convert_terms_check' );
 
 // ---------------------------------------------------------------------------
 // AJAX: load term checklist for a taxonomy
@@ -167,6 +216,7 @@ function htax_render_convert_terms_page(): void {
 		$raw_ids         = isset( $_POST['htax_convert_term_ids'] )
 			? array_map( 'absint', (array) wp_unslash( $_POST['htax_convert_term_ids'] ) ) : array();
 		$term_ids        = array_filter( array_map( 'intval', $raw_ids ) );
+		$convert_options = htax_shape_operation_options( isset( $_POST['htax_operation_options'] ) ? map_deep( wp_unslash( $_POST['htax_operation_options'] ), 'sanitize_key' ) : array() );
 
 		if ( ! $from_taxonomy ) {
 			$errors[] = __( 'Please select a source taxonomy.', 'hypertaxonomy' );
@@ -177,7 +227,7 @@ function htax_render_convert_terms_page(): void {
 		} elseif ( empty( $term_ids ) ) {
 			$errors[] = __( 'Please select at least one term to convert.', 'hypertaxonomy' );
 		} else {
-			$results = htax_convert_terms_batch( $term_ids, $from_taxonomy, $to_taxonomy, $create_redirect );
+			$results = htax_convert_terms_batch( $term_ids, $from_taxonomy, $to_taxonomy, $create_redirect, $convert_options );
 			if ( ! empty( $results['errors'] ) ) {
 				$errors = array_merge( $errors, $results['errors'] );
 			}
@@ -259,6 +309,17 @@ function htax_render_convert_terms_page(): void {
 					? esc_html__( 'Conversion complete with errors — some terms were skipped.', 'hypertaxonomy' )
 					: esc_html__( 'Conversion complete.', 'hypertaxonomy' );
 				?></strong></p>
+				<?php
+				/**
+				 * Filters messages shown after a conversion on the Convert Terms page, so
+				 * plugins can report what they did with their data (plain text, one per line).
+				 *
+				 * @since 1.0.0
+				 * @param string[] $messages Messages.
+				 * @param array    $results  htax_convert_terms_batch() result.
+				 */
+				htax_render_operation_messages( apply_filters( 'htax_convert_terms_messages', array(), $results ) );
+				?>
 			</div>
 		<?php elseif ( $has_errors ) : ?>
 			<div class="notice notice-error">
@@ -298,6 +359,7 @@ function htax_render_convert_terms_page(): void {
 		<form method="post" id="htax-convert-terms-form">
 			<?php wp_nonce_field( 'htax_convert_terms' ); ?>
 
+			<div id="htax-check-step1">
 			<h2 style="margin-top:1.5em;"><?php esc_html_e( 'Step 1 — Select terms to convert', 'hypertaxonomy' ); ?></h2>
 
 			<table class="form-table" role="presentation">
@@ -355,7 +417,7 @@ function htax_render_convert_terms_page(): void {
 					<th scope="row"><?php esc_html_e( 'Redirect stubs', 'hypertaxonomy' ); ?></th>
 					<td>
 						<label>
-							<input type="checkbox" name="htax_create_redirect" value="1"
+							<input type="checkbox" name="htax_create_redirect" id="htax_create_redirect" value="1"
 								<?php checked( $redirect_checked ); ?> />
 							<?php esc_html_e( 'Create 301 redirect stubs in the old taxonomy', 'hypertaxonomy' ); ?>
 						</label>
@@ -363,12 +425,16 @@ function htax_render_convert_terms_page(): void {
 					</td>
 				</tr>
 			</table>
+			</div>
 
-			<p class="submit">
+			<p class="submit" id="htax-check-step1-submit">
 				<button type="submit" name="htax_do_convert" class="button button-primary">
 					<?php esc_html_e( 'Convert Selected Terms', 'hypertaxonomy' ); ?>
 				</button>
+				<span class="htax-check-checking" aria-live="polite"></span>
 			</p>
+
+			<?php htax_render_operation_check_step( __( 'Create 301 redirect stubs in the old taxonomy', 'hypertaxonomy' ), __( 'Convert Selected Terms', 'hypertaxonomy' ) ); ?>
 		</form>
 	</div>
 	<?php

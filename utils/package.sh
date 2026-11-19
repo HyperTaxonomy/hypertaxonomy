@@ -43,7 +43,7 @@ fi
 # ---------------------------------------------------------------------------
 
 # Admin scripts that translate with wp.i18n (each enqueued with wp_set_script_translations()).
-JS_TRANSLATION_HANDLES="htax-tables-js=admin/js/htax-tables.js,htax-term-edit-js=admin/js/htax-term-edit.js,htax-group-admin=admin/js/htax-group-admin.js,htax-settings-js=admin/js/htax-settings.js,htax-tag-suggestions-js=admin/js/htax-tag-suggestions.js"
+JS_TRANSLATION_HANDLES="htax-tables-js=admin/js/htax-tables.js,htax-term-edit-js=admin/js/htax-term-edit.js,htax-group-admin=admin/js/htax-group-admin.js,htax-settings-js=admin/js/htax-settings.js,htax-tag-suggestions-js=admin/js/htax-tag-suggestions.js,htax-operation-check=admin/js/htax-operation-check.js"
 
 echo "Compiling translations..."
 for po in "$PLUGIN_ROOT"/languages/*-*.po; do

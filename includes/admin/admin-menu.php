@@ -128,7 +128,7 @@ function htax_sort_terms_submenu(): void {
 add_action( 'admin_menu', 'htax_sort_terms_submenu', 999 );
 
 add_action( 'admin_head', function () {
-    echo '<style>#adminmenu a[href*="htax-term-relationships"], #adminmenu a[href*="htax-link-types"] { white-space: nowrap; }</style>';
+    htax_print_inline_style( 'htax-admin-menu', '#adminmenu a[href*="htax-term-relationships"], #adminmenu a[href*="htax-link-types"] { white-space: nowrap; }' );
 } );
 
 /**
@@ -181,7 +181,7 @@ add_filter( 'submenu_file', 'htax_terms_menu_submenu_file' );
 function htax_admin_justify_help_text() {
     $page = isset( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : '';
     if ( in_array( $page, array( 'htax-synonyms', 'htax-merge-terms', 'htax-convert-terms', 'htax-term-relationships', 'hypertaxonomy' ), true ) ) {
-        echo '<style>.wrap p:not(td p):not(th p):not(.notice p), .wrap p:has(+ table) { text-align: justify; hyphens: none; }</style>';
+        htax_print_inline_style( 'htax-admin-help-text', '.wrap p:not(td p):not(th p):not(.notice p), .wrap p:has(+ table) { text-align: justify; hyphens: none; }' );
     }
 }
 add_action( 'admin_head', 'htax_admin_justify_help_text' );

@@ -90,7 +90,7 @@ $tag_groups_active = function_exists( 'tag_groups_init' );
 </p>
 </div>
 
-<script>
+<?php ob_start(); ?>
 jQuery(document).ready(function($) {
     var nonce = '<?php echo esc_js( wp_create_nonce( 'htax_import_tag_groups' ) ); ?>';
 
@@ -147,4 +147,4 @@ jQuery(document).ready(function($) {
         });
     });
 });
-</script>
+<?php htax_add_inline_script( 'tag-groups-sync', ob_get_clean() ); ?>

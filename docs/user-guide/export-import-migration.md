@@ -19,7 +19,7 @@ Back up HyperTaxonomy's data or move it to another site as a JSON file, and migr
 
 ## Import & Export
 
-**[Settings > HyperTaxonomy > Export / Import](plugin-settings.html#export--import-tab)** has four subtabs: **Export**, **Import** (HyperTaxonomy JSON), **Migrate** (Tag Groups import), and **Sync** (how HyperTaxonomy stays in step with Tag Groups afterward).
+**[Settings&nbsp;→ HyperTaxonomy&nbsp;→ Export / Import](plugin-settings.html#export--import-tab)** has four subtabs: **Export**, **Import** (HyperTaxonomy JSON), **Migrate** (Tag Groups import), and **Sync** (how HyperTaxonomy stays in step with Tag Groups afterward).
 
 ### Export
 
@@ -68,13 +68,13 @@ The importer copies Tag Groups data into HyperTaxonomy's [Term Groups](term-grou
 
 Enable Group Assignment for each taxonomy you want to import:
 
-1. **Settings > HyperTaxonomy > Features**
+1. **Settings&nbsp;→ HyperTaxonomy&nbsp;→ Features**
 2. Enable **Group Assignment** for each taxonomy whose group assignments you want imported (not limited to Tags and Categories)
 3. Save settings
 
 ### Import Steps
 
-1. **Settings > HyperTaxonomy > Export / Import > Migrate**
+1. **Settings&nbsp;→ HyperTaxonomy&nbsp;→ Export / Import&nbsp;→ Migrate**
 2. Review the summary (groups and term counts found, and — on a re-run — how many are new since your last import)
 3. Click **Migrate Tag Groups Now**
 4. Watch real-time progress
@@ -133,7 +133,7 @@ It also lists groups that were matched to an existing HyperTaxonomy group by nam
 The `term_groups` option is empty or missing. Verify Tag Groups plugin was used and groups were created. Check that `term_groups` and `term_group_labels` exist in `wp_options`.
 
 **Terms skipped, or a taxonomy's assignments missing**
-Terms in a taxonomy with Group Assignment off are counted as skipped, with no separate message. Enable Group Assignment for the taxonomy in **Settings > HyperTaxonomy > Features**, save, then re-run the migration.
+Terms in a taxonomy with Group Assignment off are counted as skipped, with no separate message. Enable Group Assignment for the taxonomy in **Settings&nbsp;→ HyperTaxonomy&nbsp;→ Features**, save, then re-run the migration.
 
 **Import times out**
 The migration runs in small batches, so a single large site rarely hits a limit. If a batch does time out, increase PHP `max_execution_time` in php.ini and run the migration again; it picks up where the data stands.
@@ -149,7 +149,7 @@ Tag Groups Pro allows the same label under different parent groups, but each Hyp
 ### After Import
 
 **Verify:**
-1. **Terms > Term Groups** — check all expected groups are present
+1. **Terms&nbsp;→ Term Groups** — check all expected groups are present
 2. Click into groups to verify term assignments
 3. Test frontend with `[ht_term_groups]` shortcode
 

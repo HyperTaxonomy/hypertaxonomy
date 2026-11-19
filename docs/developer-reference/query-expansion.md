@@ -23,7 +23,7 @@ nav_order: 2
 
 Returns the complete flat list of term IDs whose posts appear in a term's archive: the term itself, WordPress descendants (for hierarchical taxonomies), and all HyperTaxonomy-contributed terms (inclusions, group memberships, container groups). Returns an empty array if the term does not exist. When the `term_relationships` feature is disabled for its taxonomy, only the term itself and its visible WordPress descendants are returned (no HyperTaxonomy contributions). WordPress term IDs are globally unique, so no taxonomy parameter is needed.
 
-Pass `$include_redirect_sources = true` to also fold in terms that redirect (directly or transitively) to this term — so a query on a redirect *target* also matches posts tagged with the *redirecting* terms, matching the relevance index used by search and `[ht_related_posts]`. It's off by default because archive expansion proper does not follow redirects (a redirect 301s the archive request); discovery surfaces such as `[tc_peer_posts]`/`[tc_peer_browse]` and the WP-SKOS document endpoint pass `true`. The redirect inclusion is gated by the taxonomy's Redirects feature and filtered for term visibility.
+Pass `$include_redirect_sources = true` to also fold in terms that redirect (directly or transitively) to this term — so a query on a redirect *target* also matches posts tagged with the *redirecting* terms, matching the relevance index used by search and `[ht_related_posts]`. It's off by default because archive expansion proper does not follow redirects (a redirect 301s the archive request); discovery surfaces such as `[tconn_peer_posts]`/`[tconn_peer_browse]` and the WP-SKOS document endpoint pass `true`. The redirect inclusion is gated by the taxonomy's Redirects feature and filtered for term visibility.
 
 Applies the `htax_expanded_term_ids` filter before returning. The same list, without hidden terms, is readable as the `htax_archive_term_ids` [term meta key](term-meta.html).
 
@@ -68,7 +68,7 @@ $query->set( 'htax_expand_terms', false );
 $query->set( 'htax_expand_terms', true );
 ```
 
-**Global on/off:** Enable via **[Settings → Search](../user-guide/plugin-settings.html#search-tab) → Third-Party Query Expansion**. Defaults to off. When on, secondary queries using a single-term tax_query clause for a HyperTaxonomy-enabled taxonomy are automatically expanded.
+**Global on/off:** Enable via **[Settings&nbsp;→ Search](../user-guide/plugin-settings.html#search-tab)&nbsp;→ Third-Party Query Expansion**. Defaults to off. When on, secondary queries using a single-term tax_query clause for a HyperTaxonomy-enabled taxonomy are automatically expanded.
 
 Only single-term clauses are expanded. Multi-term clauses are treated as facet filters chosen by the user, not archive expansions.
 

@@ -1,4 +1,4 @@
-=== HyperTaxonomy – Semantic Term Relationships – tag/category/custom term groups, inclusions, synonyms, redirects, rich archives, and more ===
+=== HyperTaxonomy – Semantic Term Relationships ===
 Tags: tags, categories, taxonomy, relationships, archive, organization, synonyms, redirect, sticky posts, icons, search, SEO
 Contributors: eugenevv
 Author: Eugene Weinstein
@@ -158,9 +158,9 @@ Post lists, term lists, tag clouds, A–Z indexes, PowerSearch and sort-order co
 3. Go to Settings → HyperTaxonomy to configure
 4. Edit any tag/category to start creating relationships
 
-= No Dependencies Required =
+= Dependencies =
 
-All core features work out of the box with no additional plugins required. The Term Groups taxonomy, supplied by this plugin, provides group management.
+All core features work out of the box with no additional plugins required. The Term Groups taxonomy, supplied by this plugin, provides group management. The only exceptions are the geographic search features — PowerSearch's `near:` operators and the search widget's Geo Distance Filter — which need the free [As the Crow Flies](https://wordpress.org/plugins/as-the-crow-flies/) plugin for term locations; without it they are simply not offered.
 
 == Visual Indicators in Admin UI ==
 
@@ -189,7 +189,7 @@ Term Groups is a hierarchical taxonomy supplied by this plugin for organizing te
 
 = Do I need additional plugins? =
 
-No. All features — Term Groups, display shortcodes, search widget, relationship management, import/export — are built in. No external dependencies.
+No, with one exception. Term Groups, display shortcodes, the search widget, relationship management and import/export are all built in. The geographic search features (PowerSearch's `near:` operators and the Geo Distance Filter) need the free [As the Crow Flies](https://wordpress.org/plugins/as-the-crow-flies/) plugin, which supplies term locations; without it those features are hidden and everything else works.
 
 = Does this work with custom taxonomies? =
 
@@ -264,7 +264,7 @@ For the complete developer API — PHP functions, actions, filters, REST endpoin
 **Required:** WordPress 6.6+, PHP 7.4+, MySQL 5.7+ (or MariaDB 10.3+)
 **Editors:** Classic Editor, Gutenberg
 **Multisite:** Fully supported
-**No Plugin Dependencies:** Works standalone
+**Plugin Dependencies:** None required; geographic search features need [As the Crow Flies](https://wordpress.org/plugins/as-the-crow-flies/)
 
 == Screenshots ==
 

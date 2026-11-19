@@ -291,9 +291,15 @@ function htax_set_custom_relationship_type( string $slug, array $args, bool $is_
         }
     }
 
-    $stored          = get_option( HTAX_CUSTOM_REL_TYPES_OPTION, array() );
-    $stored[ $slug ] = $clean;
-    update_option( HTAX_CUSTOM_REL_TYPES_OPTION, $stored, true );
+    // The admin page and peer syncs (TermConnect) both change the stored types.
+    $saved = htax_update_option_locked( HTAX_CUSTOM_REL_TYPES_OPTION, static function ( $stored ) use ( $slug, $clean ): array {
+        $stored          = (array) $stored;
+        $stored[ $slug ] = $clean;
+        return $stored;
+    }, array(), true );
+    if ( ! $saved ) {
+        return new WP_Error( 'busy', __( 'Another update is in progress. Please try again.', 'hypertaxonomy' ) );
+    }
 
     // Sync in-memory registry (also clears slug cache via htax_register_relationship_type).
     htax_register_relationship_type( $slug, $clean );
@@ -336,9 +342,14 @@ function htax_remove_custom_relationship_type( string $slug ): bool {
         htax_handle_term_relationship_change( (int) $row['source_term_id'], (int) $row['target_term_id'], $slug );
     }
 
-    $stored = get_option( HTAX_CUSTOM_REL_TYPES_OPTION, array() );
-    unset( $stored[ $slug ] );
-    update_option( HTAX_CUSTOM_REL_TYPES_OPTION, $stored, true );
+    $removed = htax_update_option_locked( HTAX_CUSTOM_REL_TYPES_OPTION, static function ( $stored ) use ( $slug ): array {
+        $stored = (array) $stored;
+        unset( $stored[ $slug ] );
+        return $stored;
+    }, array(), true );
+    if ( ! $removed ) {
+        return false;
+    }
 
     global $htax_relationship_type_registry, $htax_relationship_type_slugs_cache;
     unset( $htax_relationship_type_registry[ $slug ] );
@@ -371,13 +382,19 @@ function htax_make_relationship_type_local( string $slug ): bool {
         return false;
     }
 
-    $stored = get_option( HTAX_CUSTOM_REL_TYPES_OPTION, array() );
-    if ( ! isset( $stored[ $slug ] ) ) {
+    $found = false;
+    $saved = htax_update_option_locked( HTAX_CUSTOM_REL_TYPES_OPTION, static function ( $stored ) use ( $slug, &$found ): ?array {
+        $stored = (array) $stored;
+        if ( ! isset( $stored[ $slug ] ) ) {
+            return null;
+        }
+        $found                          = true;
+        $stored[ $slug ]['source_site'] = '';
+        return $stored;
+    }, array(), true );
+    if ( ! $saved || ! $found ) {
         return false;
     }
-
-    $stored[ $slug ]['source_site'] = '';
-    update_option( HTAX_CUSTOM_REL_TYPES_OPTION, $stored, true );
 
     // Update in-memory registry.
     global $htax_relationship_type_registry;

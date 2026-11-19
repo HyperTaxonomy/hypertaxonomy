@@ -8,11 +8,11 @@ nav_order: 3
 
 Comparing **HyperTaxonomy** with **Tag Groups** (rebranded "PublishPress Tag Groups" in October 2026) — a popular plugin, commonly used for taxonomy term organization and management.
 
-**Legend:** ✓ Included · ~ Partial/limited · ✗ Not supported
+**Legend:** ✓&nbsp;Included · ~ Partial/limited · ✗&nbsp;Not supported
 
 Where Tag Groups lacks a feature but **TaxoPress** offers something comparable, the Tag Groups column notes it, for example `✗ · ~ *(TaxoPress Pro)*`. TaxoPress (rebranded "PublishPress Taxonomies" in September 2026) is a separate plugin from the same publisher.
 
-**A mark means a plugin has a feature in that area, not that the feature is equivalent.** Plugins can use the same name for things that differ widely in scope and behavior, so a ✓ in two columns doesn't make them interchangeable. The notes below each table explain the differences.
+**A mark means a plugin has a feature in that area, not that the feature is equivalent.** Plugins can use the same name for things that differ widely in scope and behavior, so a ✓&nbsp;in two columns doesn't make them interchangeable. The notes below each table explain the differences.
 
 ## Table of contents
 {: .no_toc .text-delta }
@@ -27,8 +27,8 @@ Where Tag Groups lacks a feature but **TaxoPress** offers something comparable, 
 | Feature | HyperTaxonomy | Tag Groups |
 |---------|:---:|:---:|
 | Term groups | ✓ | ✓ |
-| Term may belong to multiple groups | ✓ | ✓ *(TG Pro)* |
-| Hierarchical groups (parent/child) | ✓ | ✓ *(TG Pro)* |
+| Term may belong to multiple groups | ✓ | ✓&nbsp;*(TG Pro)* |
+| Hierarchical groups (parent/child) | ✓ | ✓&nbsp;*(TG Pro)* |
 | Supports categories | ✓ | ~ *(TG, experimental)* |
 | Supports custom taxonomies | ✓ | ✓ |
 | Groups implemented as native WordPress taxonomy | ✓ | ✗ |
@@ -95,13 +95,13 @@ Where Tag Groups lacks a feature but **TaxoPress** offers something comparable, 
 | Term list | ✓ | ✓ |
 | Term cloud | ✓ | ✓ |
 | Term index (A–Z with letter anchors) | ✓ | ✓ |
-| Term group hierarchy | ✓ | ✓ *(TG Pro)* |
+| Term group hierarchy | ✓ | ✓&nbsp;*(TG Pro)* |
 | Post list by specified terms or groups | ✓ | ✗ |
-| Related posts | ✓ | ✗ · ✓ *(TaxoPress)* |
+| Related posts | ✓ | ✗ · ✓&nbsp;*(TaxoPress)* |
 | Tabbed display layout | ✗ | ✓ |
 | Accordion display layout | ✗ | ✓ |
-| Table layout | ✗ | ✓ *(TG Pro)* |
-| Search/filter within term display | ✗ | ✓ *(TG Pro)* |
+| Table layout | ✗ | ✓&nbsp;*(TG Pro)* |
+| Search/filter within term display | ✗ | ✓&nbsp;*(TG Pro)* |
 
 **Term display.** Four shortcodes cover standard term presentation: `[ht_term_list]`, `[ht_term_cloud]`, `[ht_term_index]` (A–Z with letter anchors), and `[ht_term_groups]` (collapsible group tree). All support icons and redirect-term handling; each has a Gutenberg block. HyperTaxonomy does not have Tag Groups' tabbed, accordion, or table layouts, or client-side filter within term display.
 
@@ -139,11 +139,11 @@ Where Tag Groups lacks a feature but **TaxoPress** offers something comparable, 
 | Hidden terms with role-based visibility controls | ✓ | ✗ · ~ *(TaxoPress)* |
 | Quick Edit (term list table) | ✓ | ✗ |
 | Bulk actions on terms | ✓ | ✗ · ~ *(TaxoPress)* |
-| Merge terms | ✓ | ✗ · ✓ *(TaxoPress)* |
+| Merge terms | ✓ | ✗ · ✓&nbsp;*(TaxoPress)* |
 | Handle term taxonomy conversion | ✓ | ✗ · ~ *(TaxoPress)* |
 | Concurrent term edit locking with take-over flow | ✓ | ✗ |
 | Unsaved-changes warning when navigating away from term edit | ✓ | ✗ |
-| Content-based tag suggestions in post editor | ✓ | ✗ · ✓ *(TaxoPress Pro)* |
+| Content-based tag suggestions in post editor | ✓ | ✗ · ✓&nbsp;*(TaxoPress Pro)* |
 | Prevent accidental term creation in post editor | ✓ | ✗ |
 | Term icons (media library images and placeholders) | ✓ | ✗ |
 
@@ -244,7 +244,7 @@ The plugins below address capabilities outside the scope of this comparison and 
 
 **Choose Tag Groups** when rich display layouts — tabbed panels, accordions, a live-filter search box inside the term list — are the primary requirement and semantic relationships are not needed.
 
-**Using both together.** This isn't necessarily an either/or choice. HyperTaxonomy's Migrate and Sync tools (Export/Import → Migrate / Sync) read Tag Groups' group and term-assignment data directly from its database tables and keep HyperTaxonomy's native Term Groups taxonomy in step with it — as a one-time migration, or continuously. Under Locked integration mode, Tag Groups can remain the day-to-day tool for creating groups and assigning terms to them (its own field is promoted to the term edit screen's primary group-assignment spot), while HyperTaxonomy layers archive pages, search indexing, hierarchy, and relationships on top of the same group structure. See [Export, Import & Migration](user-guide/export-import-migration.html#migrating-from-tag-groups) for the integration modes and sync options.
+**Using both together.** This isn't necessarily an either/or choice. HyperTaxonomy's Migrate and Sync tools (Export/Import&nbsp;→ Migrate / Sync) read Tag Groups' group and term-assignment data directly from its database tables and keep HyperTaxonomy's native Term Groups taxonomy in step with it — as a one-time migration, or continuously. Under Locked integration mode, Tag Groups can remain the day-to-day tool for creating groups and assigning terms to them (its own field is promoted to the term edit screen's primary group-assignment spot), while HyperTaxonomy layers archive pages, search indexing, hierarchy, and relationships on top of the same group structure. See [Export, Import & Migration](user-guide/export-import-migration.html#migrating-from-tag-groups) for the integration modes and sync options.
 
 **TaxoPress** focuses on a different problem, automated term assignment and linking, and is a natural complement to HyperTaxonomy rather than an alternative, despite the overlaps noted above. TaxoPress (now PublishPress Taxonomies) and Tag Groups (now PublishPress Tag Groups) are both published by PublishPress as of their respective late-2026 rebrands, but remain independent plugins with no cross-dependency.
 

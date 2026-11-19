@@ -49,8 +49,79 @@ function htax_enqueue_merge_terms_assets( $hook ) {
         'min_search_length' => 2,
         'error_message'     => __( 'An error occurred. Please try again.', 'hypertaxonomy' ),
     ) );
+
+    htax_enqueue_operation_check( 'htax_merge_terms_check', 'htax_do_merge', 'htax-term-edit-js' );
 }
 add_action( 'admin_enqueue_scripts', 'htax_enqueue_merge_terms_assets' );
+
+/**
+ * AJAX: check a merge before it runs, so other plugins can say what it will do to their
+ * data and offer choices (step 2 of the Merge Terms page). With nothing to show, the page
+ * merges straight away.
+ *
+ * Returns { sections: [...] }, as provided by the htax_merge_terms_check filter. An invalid
+ * selection returns no sections: the merge itself then reports the problem.
+ *
+ * @since 1.0.0
+ */
+function htax_ajax_merge_terms_check(): void {
+    check_ajax_referer( 'htax_merge_terms_check', 'nonce' );
+    if ( ! current_user_can( 'manage_options' ) ) {
+        wp_send_json_error( null, 403 );
+    }
+
+    // The page's form fields, as the merge itself reads them.
+    $taxonomy        = isset( $_POST['htax_merge_taxonomy'] ) ? sanitize_key( wp_unslash( $_POST['htax_merge_taxonomy'] ) ) : '';
+    $source_ids      = isset( $_POST['htax_source_term_ids'] ) ? array_values( array_filter( array_map( 'intval', explode( ',', sanitize_text_field( wp_unslash( $_POST['htax_source_term_ids'] ) ) ) ) ) ) : array();
+    $target_id       = isset( $_POST['htax_target_term_id'] ) ? absint( $_POST['htax_target_term_id'] ) : 0;
+    $create_redirect = ! empty( $_POST['htax_create_redirect'] );
+
+    $valid = $taxonomy && $source_ids && $target_id && htax_is_taxonomy_enabled( $taxonomy )
+        && ! in_array( $target_id, $source_ids, true ) && get_term( $target_id, $taxonomy ) instanceof WP_Term;
+    foreach ( $source_ids as $source_id ) {
+        $valid = $valid && get_term( $source_id, $taxonomy ) instanceof WP_Term;
+    }
+    if ( ! $valid ) {
+        htax_send_operation_check( array() );
+    }
+
+    /**
+     * Filters what the Merge Terms page shows before a merge: notices about what the merge
+     * will do to a plugin's data, and choices that are passed to htax_merge_terms() as
+     * $options[ section id ][ field name ], and on to the merge actions. When no section is
+     * returned, the merge runs without this step.
+     *
+     * Each section: {
+     *     id      string Section ID (a slug), the key of its choices in $options.
+     *     title   string Heading.
+     *     notices array  Of { type: 'info'|'warning', text: string }.
+     *     fields  array  Of {
+     *         name            string Field name (a slug).
+     *         label           string Field label.
+     *         choices         array  Of { value: slug, label: string, description: string,
+     *                                stub: 'required'|'none'|'' }. 'required': available only
+     *                                with redirect stubs; 'none': only without.
+     *         default         string Choice selected with redirect stubs.
+     *         default_no_stub string Choice selected without.
+     *     }
+     * }
+     *
+     * Text is shown as plain text. Both defaults are given because the stub setting can
+     * still change on this step. The merge must check the choices again, and apply its own
+     * defaults when there are none (a merge started outside this page has only what its
+     * caller passed, such as the operation-wide preference in htax_carry_choice()).
+     *
+     * @since 1.0.0
+     *
+     * @param array  $sections        Sections so far.
+     * @param int[]  $source_ids      Source term IDs.
+     * @param int    $target_id       Target term ID.
+     * @param string $taxonomy        Taxonomy slug.
+     * @param bool   $create_redirect Whether redirect stubs are selected.
+     */
+    htax_send_operation_check( apply_filters( 'htax_merge_terms_check', array(), $source_ids, $target_id, $taxonomy, $create_redirect ) );
+}
+add_action( 'wp_ajax_htax_merge_terms_check', 'htax_ajax_merge_terms_check' );
 
 /**
  * Render the Merge Terms page.
@@ -69,6 +140,7 @@ function htax_render_merge_terms_page() {
         $source_ids_raw  = isset( $_POST['htax_source_term_ids'] ) ? sanitize_text_field( wp_unslash( $_POST['htax_source_term_ids'] ) ) : '';
         $target_id       = isset( $_POST['htax_target_term_id'] ) ? intval( wp_unslash( $_POST['htax_target_term_id'] ) ) : 0;
         $create_redirect = ! empty( $_POST['htax_create_redirect'] );
+        $merge_options   = htax_shape_operation_options( isset( $_POST['htax_operation_options'] ) ? map_deep( wp_unslash( $_POST['htax_operation_options'] ), 'sanitize_key' ) : array() );
 
         // Parse comma-separated source IDs.
         $source_ids = array_filter( array_map( 'intval', explode( ',', $source_ids_raw ) ) );
@@ -80,7 +152,7 @@ function htax_render_merge_terms_page() {
         } elseif ( ! $target_id ) {
             $errors[] = __( 'Please specify a target term.', 'hypertaxonomy' );
         } else {
-            $result = htax_merge_terms( $source_ids, $target_id, $taxonomy, $create_redirect );
+            $result = htax_merge_terms( $source_ids, $target_id, $taxonomy, $create_redirect, $merge_options );
             if ( is_wp_error( $result ) ) {
                 $errors[] = $result->get_error_message();
                 $result   = null;
@@ -139,6 +211,17 @@ function htax_render_merge_terms_page() {
         <?php if ( $result ) : ?>
             <div class="notice notice-success">
                 <p><strong><?php esc_html_e( 'Merge complete.', 'hypertaxonomy' ); ?></strong></p>
+                <?php
+                /**
+                 * Filters messages shown after a merge on the Merge Terms page, so plugins
+                 * can report what they did with their data (plain text, one per line).
+                 *
+                 * @since 1.0.0
+                 * @param string[] $messages Messages.
+                 * @param array    $result   htax_merge_terms() result.
+                 */
+                htax_render_operation_messages( apply_filters( 'htax_merge_terms_messages', array(), $result ) );
+                ?>
             </div>
             <table class="widefat" style="max-width:400px;margin-bottom:24px;">
                 <tbody>
@@ -163,6 +246,7 @@ function htax_render_merge_terms_page() {
         <form method="post" id="htax-merge-terms-form">
             <?php wp_nonce_field( 'htax_merge_terms' ); ?>
 
+            <div id="htax-check-step1">
             <table class="form-table" role="presentation">
                 <tr>
                     <th scope="row">
@@ -219,7 +303,7 @@ function htax_render_merge_terms_page() {
                     <th scope="row"><?php esc_html_e( 'Redirect stubs', 'hypertaxonomy' ); ?></th>
                     <td>
                         <label>
-                            <input type="checkbox" name="htax_create_redirect" value="1"
+                            <input type="checkbox" name="htax_create_redirect" id="htax_create_redirect" value="1"
                                 <?php checked( ! isset( $_POST['htax_do_merge'] ) || ! empty( $_POST['htax_create_redirect'] ) ); ?> />
                             <?php esc_html_e( 'Create 301 redirect stubs for deleted terms', 'hypertaxonomy' ); ?>
                         </label>
@@ -227,12 +311,16 @@ function htax_render_merge_terms_page() {
                     </td>
                 </tr>
             </table>
+            </div>
 
-            <p class="submit">
+            <p class="submit" id="htax-check-step1-submit">
                 <button type="submit" name="htax_do_merge" class="button button-primary">
                     <?php esc_html_e( 'Merge Terms', 'hypertaxonomy' ); ?>
                 </button>
+                <span class="htax-check-checking" aria-live="polite"></span>
             </p>
+
+            <?php htax_render_operation_check_step( __( 'Create 301 redirect stubs for deleted terms', 'hypertaxonomy' ), __( 'Merge Terms', 'hypertaxonomy' ) ); ?>
         </form>
     </div>
     <?php

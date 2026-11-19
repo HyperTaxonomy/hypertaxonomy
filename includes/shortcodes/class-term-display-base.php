@@ -83,6 +83,8 @@ abstract class HyperTaxonomy_Term_Display_Base extends HyperTaxonomy_Shortcode_B
             return array();
         }
 
+        $this->prime_term_icons( $terms );
+
         return $terms;
     }
 }

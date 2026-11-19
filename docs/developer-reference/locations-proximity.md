@@ -46,7 +46,7 @@ The `expand` attribute (`all` / `none` / comma-separated `container,hierarchy,re
 
 ## Location Data in REST Responses (`htax_locations`)
 
-When **Share list of locations** is enabled for a taxonomy in [Settings → HyperTaxonomy → Features](../user-guide/plugin-settings.html#features-tab), term REST responses for that taxonomy include an `htax_locations` field. It is available on both individual term responses and peer collection responses (when `htax_locations` is requested in `_fields`). The field is computed by `ATCF_REST_API::format_term_locations( int $term_id )`, which is owned by As the Crow Flies and caches results per term ID for the lifetime of the request.
+When **Share list of locations** is enabled for a taxonomy in [Settings&nbsp;→ HyperTaxonomy&nbsp;→ Features](../user-guide/plugin-settings.html#features-tab), term REST responses for that taxonomy include an `htax_locations` field. It is available on both individual term responses and peer collection responses (when `htax_locations` is requested in `_fields`). The field is computed by `ATCF_REST_API::format_term_locations( int $term_id )`, which is owned by As the Crow Flies and caches results per term ID for the lifetime of the request.
 
 ```json
 "htax_locations": [
@@ -79,7 +79,7 @@ When As the Crow Flies is active, `htax_parse_search_query()` recognizes proximi
 | Syntax | Reference point |
 |---|---|
 | `near:taxonomy:slug[/r]` | All As the Crow Flies locations of the named term, plus its WordPress descendants and HyperTaxonomy inclusions |
-| `near:X[/r]` | X checked against the configured country's postal format (uppercase). Match → postal centroid; no match → slug lookup across all location-enabled taxonomies |
+| `near:X[/r]` | X checked against the configured country's postal format (uppercase). Match&nbsp;→ postal centroid; no match&nbsp;→ slug lookup across all location-enabled taxonomies |
 | `near:me[/r]` | User location — see `get_user_location()` below |
 | `-near:...` | Negation — excludes posts whose terms are in range |
 
@@ -137,7 +137,7 @@ Each `$proximity` element:
 ]
 ```
 
-**Note on `postal_code` / slug disambiguation:** `location_type='postal_code'` is set whenever the value has no colon and is not `me`. The actual resolution (postal format check → centroid vs. slug lookup) happens in `resolve_reference_points()`, not at parse time, so the raw value is preserved as-is.
+**Note on `postal_code` / slug disambiguation:** `location_type='postal_code'` is set whenever the value has no colon and is not `me`. The actual resolution (postal format check&nbsp;→ centroid vs. slug lookup) happens in `resolve_reference_points()`, not at parse time, so the raw value is preserved as-is.
 
 ## Current visitor's location
 
@@ -152,7 +152,7 @@ $loc = HyperTaxonomy_ATCF_Integration::get_user_location();
 
 It returns `atcf_get_visitor_location()` from As the Crow Flies — the single location chain its own shortcodes and blocks use too: browser coordinates sent with the request (`_atcf_lat` / `_atcf_lng`), CDN location headers, IP geolocation, then that plugin's **Fallback location** setting. The search widget and PowerSearch scripts get the browser coordinates when a query contains `near:me` (`assets/js/htax-geo.js`: `HTAX_Geo.wantsLocation( text )`, and `HTAX_Geo.get()`, which delegates to As the Crow Flies' `atcfGeo.getBrowserLocation()` — the current position, otherwise the last one the browser gave, remembered for 7 days). In POST mode the coordinates are added to the form, so they travel in the results-page token and every page uses the same location.
 
-When a `near:` clause can't be resolved, or `near:me` falls back to the fallback location, the integration records a visitor-facing message with `htax_add_search_notice()` (see [Search Ranking & Notices → Search Notices](search-ranking.html#search-notices)).
+When a `near:` clause can't be resolved, or `near:me` falls back to the fallback location, the integration records a visitor-facing message with `htax_add_search_notice()` (see [Search Ranking & Notices&nbsp;→ Search Notices](search-ranking.html#search-notices)).
 
 ## Terms within range of points
 
@@ -180,7 +180,7 @@ The integration calls these As the Crow Flies functions, which are documented wi
 
 Cross-site matching of peer/FOAF terms by physical location works through **shared-identifier (URI) matching** — the same mechanism TermConnect uses for knowledge-base identifiers (Wikidata, GeoNames, LCSH) and TermConnect Social handles.
 
-As the Crow Flies exposes a **normalized address** per location (country + postal code + normalized address line) via `ATCF_Locations::get_normalized_addresses()`. HyperTaxonomy's As the Crow Flies integration bridges this into TermConnect by contributing a **normalized-address URI** — e.g. `urn:atcf:place:US:62704:123-main-street` — to the term's `_tc_uris` index through TermConnect's `tc_index_extra_uris` filter.
+As the Crow Flies exposes a **normalized address** per location (country + postal code + normalized address line) via `ATCF_Locations::get_normalized_addresses()`. HyperTaxonomy's As the Crow Flies integration bridges this into TermConnect by contributing a **normalized-address URI** — e.g. `urn:atcf:place:US:62704:123-main-street` — to the term's `_tconn_uris` index through TermConnect's `tconn_index_extra_uris` filter.
 
 Because the URI is derived from the normalized address rather than the term slug or label, the same place matches across sites even when the terms have different slugs and labels. As the Crow Flies itself stays unaware of TermConnect; HyperTaxonomy — which integrates with both — does the bridging.
 

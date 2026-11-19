@@ -831,8 +831,8 @@ function htax_render_synonyms_page(): void {
 
     $table = new HyperTaxonomy_Synonyms_Table();
     $table->prepare_items();
+    ob_start();
     ?>
-    <style>
         .wp-list-table.synonyms .column-term,
         .wp-list-table.synonyms .column-synonym { width: 18%; }
         .wp-list-table.synonyms .column-taxonomy { width: 8%; }
@@ -843,7 +843,9 @@ function htax_render_synonyms_page(): void {
         .wp-list-table.synonyms tr:target th { background: #fcf9e8; }
         .wp-list-table.synonyms .htax-synonym-reverse { text-decoration: none; }
         .wp-list-table.synonyms .htax-synonym-path { margin: 0 0 .4em; }
-    </style>
+    <?php
+    htax_print_inline_style( 'htax-synonyms', ob_get_clean() );
+    ?>
     <div class="wrap">
         <h1 class="wp-heading-inline"><?php esc_html_e( 'Synonyms', 'hypertaxonomy' ); ?></h1>
         <hr class="wp-header-end">

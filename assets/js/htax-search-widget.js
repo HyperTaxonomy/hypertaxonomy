@@ -53,7 +53,7 @@
             // (rendered by PHP at the end of the form; see render_group_members_map()).
             this.groupMembers = {};
             try {
-                this.groupMembers = JSON.parse($form.children('script.htax-group-members').text() || '{}');
+                this.groupMembers = JSON.parse($form.children('.htax-group-members').attr('data-map') || '{}');
             } catch (e) {
                 this.groupMembers = {};
             }
@@ -1752,6 +1752,8 @@
             };
 
             this.$input.autocomplete({
+                // Scopes the plugin's menu styles to its own autocompletes.
+                classes: { 'ui-autocomplete': 'htax-ac-menu' },
                 source: this.prefetch ? prefetchSource : ajaxSource,
                 minLength: this.suggestOnFocus ? 0 : 1,
                 delay: this.prefetch ? 0 : 300,

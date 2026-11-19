@@ -605,7 +605,7 @@ function htax_parse_filter_state_navigate( $raw ): array {
  */
 function htax_parse_filter_state_ajax( $raw ): array {
     if ( is_string( $raw ) ) {
-        $raw = json_decode( wp_unslash( $raw ), true );
+        $raw = htax_decode_json_request( wp_unslash( $raw ) );
     }
     return is_array( $raw ) ? htax_parse_filter_state_entries( $raw, true ) : htax_empty_filter_state();
 }

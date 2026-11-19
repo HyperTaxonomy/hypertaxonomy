@@ -135,7 +135,7 @@ Hierarchy change optimization: identifies changed term plus all descendants, del
 | 1 | `htax_mark_term_deleting` | Marks the term as deleted through `wp_delete_term()`, so the `delete_term_taxonomy` cleanup leaves it to `delete_term` |
 | 5 | `htax_capture_effective_sets_before_delete` | Records the term's effective inclusions and containers (any path, groups included) while it still exists, for `htax_invalidate_term_caches_on_delete()` |
 | 5 | `capture_group_delete_affected` (search index) | For a group: records the members of it and its subgroups, and the terms it is a container group for |
-| 5 | `htax_detect_external_conversion_pre_delete` | Checks whether the term being deleted has the same name as a recently created term in a different taxonomy (external-conversion pattern). If matched: captures groups, hierarchy, icon ID, hidden status, and sticky post assignments into `$GLOBALS['htax_pending_external_conversions']` before term meta is wiped by `wp_delete_term()`. Sticky assignments are captured here (not at `delete_term`) because `delete_term_taxonomy` fires before `delete_term` and the relationship cleanup deletes sticky postmeta. |
+| 5 | `htax_detect_external_conversion_pre_delete` | Checks whether the term being deleted has the same name as a recently created term in a different taxonomy (external-conversion pattern). If matched: captures groups, hierarchy, icon ID, hidden status, and sticky post assignments into `$GLOBALS['htax_pending_external_conversions']` before term meta is wiped by `wp_delete_term()`, then fires `htax_before_convert_term`. Sticky assignments are captured here (not at `delete_term`) because `delete_term_taxonomy` fires before `delete_term` and the relationship cleanup deletes sticky postmeta. |
 
 ### Event: `delete_term_taxonomy`
 
@@ -148,7 +148,7 @@ Hierarchy change optimization: identifies changed term plus all descendants, del
 | Priority | Handler | Action |
 |----------|---------|--------|
 | 5 | `on_term_deleted` (search index) | `DELETE FROM wp_htax_search_terms WHERE source_term_id = %d OR term_id = %d`: rows derived from the term and rows naming it as another term's container, ancestor or redirect target |
-| 5 | `htax_complete_external_conversion_after_delete` | If `$GLOBALS['htax_pending_external_conversions']` has an entry for this term (and `htax_native_conversion_in_progress` is not set): transfers hidden status, icon (if dimensions match), and sticky posts to the new term; queues reindex; fires `htax_term_converted`. Group memberships are not transferred — no stub means no taxonomy-correct recipient. No redirect stub is created. Sticky assignments were captured at `pre_delete_term` time (before `delete_term_taxonomy` cleans them up) and are replayed here directly. |
+| 5 | `htax_complete_external_conversion_after_delete` | If `$GLOBALS['htax_pending_external_conversions']` has an entry for this term (and `htax_native_conversion_in_progress` is not set): transfers hidden status, icon (if dimensions match), and sticky posts to the new term; queues reindex; fires `htax_after_convert_term`. Group memberships are not transferred — no stub means no taxonomy-correct recipient. No redirect stub is created. Sticky assignments were captured at `pre_delete_term` time (before `delete_term_taxonomy` cleans them up) and are replayed here directly. |
 | 10 | `htax_invalidate_term_caches_on_delete` | Invalidate term caches, including the container caches of what the term included and the inclusion caches of what included it (recorded at `pre_delete_term`) |
 | 10 | `htax_cleanup_deleted_term` | Delete from `wp_htax_term_relationships` (all relationship types) + term meta + `_htax_sticky_{term_id}` post meta |
 | 10 | `htax_cleanup_term_icon` | Clean up the term's icon |
@@ -163,10 +163,10 @@ The priority-10 handlers are independent and have no ordering dependency.
 |----------|---------|--------|
 | 10 | `on_term_relationships_added` | Delta-based incremental index update — diffs the indexed source terms against the post's actual terms read from the database (the hook's `$terms` holds only the appended terms on `wp_add_object_terms()`; `deleted_term_relationships` → `on_term_relationships_removed()` reuses the same path); targeted count cache clear |
 | 10 | `htax_keep_hidden_terms_on_save` | Restore hidden terms that a logged-in user who can't see them would otherwise remove by saving |
-| 10 | `htax_post_list_cache_on_object_terms_set` | Invalidate affected post list caches |
+| 10 | `htax_post_list_cache_on_object_terms_set` | Invalidate affected post list caches; nothing when the post's terms didn't change |
 | 10 | Closure in `term-archives.php` | `htax_invalidate_sticky_cache_for_post()` |
 
-**Incremental update:** Queries current source terms from index (1 query), calculates delta, deletes removed term relationships by `source_term_id` (1 query), inserts new ones (~4–9 queries per new term). Approximately 5× faster than full rebuild for typical 1–3 term changes. The inserted rows carry the column-default strength, so when terms were added the post is also queued (`queue_post_reindex()`) for a background reindex that computes their strengths.
+**Incremental update:** Queries current source terms from index (1 query), calculates delta, deletes removed term relationships by `source_term_id` (1 query), inserts new ones (~4–9 queries per new term). Approximately 5×&nbsp;faster than full rebuild for typical 1–3 term changes. The inserted rows carry the column-default strength, so when terms were added the post is also queued (`queue_post_reindex()`) for a background reindex that computes their strengths.
 
 ### Event: `deleted_term_relationships`
 
@@ -183,6 +183,12 @@ The priority-10 handlers are independent and have no ordering dependency.
 | 10 | `htax_cleanup_sticky_on_delete` | Delete sticky post meta (`delete_post` only) |
 | 10 | `on_post_delete` (search index) | Delete from the search index and `wp_htax_post_text` (both hooks) |
 
+### Event: `post_updated`
+
+| Priority | Handler | Action |
+|----------|---------|--------|
+| 10 | `htax_post_list_cache_on_post_updated` | For a published post that stays published: invalidate the post lists of its index terms whose order or filter uses a changed field (modified date on every save; title, content or excerpt, publication date, author when they change), and the contributing terms of archives ordered by one. Skips revisions, autosaves and post types that aren't indexed |
+
 ### Event: `save_post`
 
 | Priority | Handler | Action |
@@ -195,7 +201,7 @@ The priority-10 handlers are independent and have no ordering dependency.
 | Priority | Handler | Action |
 |----------|---------|--------|
 | 10 | `htax_sync_post_text_comment` | Update `comment_count` and `last_comment_gmt` in `wp_htax_post_text`. No-ops if the post row does not exist in the table. |
-| 10 | `htax_post_list_cache_on_comment_count` | Invalidate post lists for a published post's index terms |
+| 10 | `htax_post_list_cache_on_comment_count` | Invalidate the post lists of a published post's index terms that use comments, and the contributing terms of archives ordered by them |
 
 ### Event: `transition_post_status`
 

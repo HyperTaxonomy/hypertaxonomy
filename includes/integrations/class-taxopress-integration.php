@@ -105,14 +105,14 @@ class HyperTaxonomy_TaxoPress_Integration {
                 ?>
             </p>
         </div>
-        <script>
+        <?php ob_start(); ?>
         jQuery( document ).on( 'click', '.htax-taxopress-merge-notice .notice-dismiss', function() {
             jQuery.post( ajaxurl, {
                 action: 'htax_dismiss_taxopress_merge_notice',
                 nonce: jQuery( '.htax-taxopress-merge-notice' ).data( 'nonce' )
             } );
         } );
-        </script>
+        <?php htax_add_inline_script( 'taxopress-notice', ob_get_clean() ); ?>
         <?php
     }
 

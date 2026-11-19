@@ -26,7 +26,7 @@ For integrating HyperTaxonomy in your theme or plugin, see the [Developer Refere
 - **Caching Strategy** — Two layers: a static request-scope cache (unbounded per-request arrays; `htax_get_valid_term()` uses a bounded variant capped at 500 entries with FIFO eviction), and transients, which survive page loads and live in the database, or in a persistent object cache such as Redis or Memcached when one is installed. See [Caching](caching.html). Selective invalidation — narrow keys are cleared on specific events rather than broad cache flushes.
 - **Graceful Degradation** — Term Groups is built-in; no external plugin dependency. Features gate themselves via `htax_taxonomy_has_feature()` so disabling a feature at the settings level has immediate effect without code changes.
 - **Security** — ABSPATH checks on every file, nonce verification on AJAX and form saves, `current_user_can()` checks with HyperTaxonomy's capabilities before writes, `$wpdb->prepare()` for SQL that includes variable values, `wp_unslash()` before sanitizing request input, and escaping on output (`esc_html()`, `esc_attr()`, `esc_url()`, `wp_kses()`).
-- **Hidden Terms in Relationship Data** — Relationship data exposed outside wp-admin (the REST relationship fields, the computed term meta) leaves hidden terms out for every viewer: read it with `htax_get_public_related_term_ids()`, or filter other term IDs with `htax_remove_hidden_term_ids()`, never by the viewer's permissions. Every viewer then gets the same answer, safe to cache, whatever the request method. A hidden term's own record (REST term endpoints, `htax_is_hidden`) follows the viewer's permissions instead, because the block editor needs it. See [Feature Internals → Hidden Terms Architecture](feature-internals.html#hidden-terms-architecture).
+- **Hidden Terms in Relationship Data** — Relationship data exposed outside wp-admin (the REST relationship fields, the computed term meta) leaves hidden terms out for every viewer: read it with `htax_get_public_related_term_ids()`, or filter other term IDs with `htax_remove_hidden_term_ids()`, never by the viewer's permissions. Every viewer then gets the same answer, safe to cache, whatever the request method. A hidden term's own record (REST term endpoints, `htax_is_hidden`) follows the viewer's permissions instead, because the block editor needs it. See [Feature Internals&nbsp;→ Hidden Terms Architecture](feature-internals.html#hidden-terms-architecture).
 - **Atomicity** — Functions that replace related rows do their writes inside a MySQL transaction and check for a database error after each write. If any write fails, the transaction rolls back. See [Transactions](#transactions).
 
 ---
@@ -142,45 +142,13 @@ var columnFilterMap = {
 
 Queries for inclusions use `htax_relationship_type_sql_in( 'includes' )` rather than a hard-coded equality check. This ensures that user-defined types mapped to `includes` automatically participate in archive expansion, index queries, and admin display. Types with no user-defined mappings, such as `member_of` and `redirect`, use plain equality.
 
-The full API, with every field and example, is in [Custom Relationship Types](../developer-reference/custom-taxonomy.html#custom-relationship-types).
-
-**Registering a type in PHP** (hook into `htax_relationship_types`, which fires at init priority 0 after all built-in types are registered):
-
-```php
-add_action( 'htax_relationship_types', function () {
-    htax_register_relationship_type( 'wrote', array(
-        'label'           => __( 'Wrote', 'my-plugin' ),
-        'inverse_label'   => __( 'Written by', 'my-plugin' ),
-        'core_type'       => 'includes', // archive behavior: "wrote" posts appear in author term's archive
-        'show_in_ui'      => true,
-    ) );
-} );
-```
-
-**Registering via the admin UI** — **Terms → Term Relationship Types** lets editors add, edit, and delete user-defined types without code. Stored in `wp_options` under `htax_custom_relationship_types`.
-
-**`core_type` mapping** — only `'includes'` is user-mappable. A type mapped to `'includes'` causes posts tagged with the *target* term to appear in the *source* term's archive, identical to a direct `includes` relationship. The target may be an ordinary term or a group — if a group, every member term's posts are included, same as group inclusion.
+Registering types, their fields, the admin page, and saving or deleting rows with `htax_add_term_relationship()` / `htax_remove_term_relationship()` are documented in [Custom Relationship Types](../developer-reference/custom-taxonomy.html#custom-relationship-types).
 
 **SQL expansion** — query sites match inclusions with `htax_relationship_type_sql_in( 'includes' )` rather than `relationship_type = 'includes'`, which returns a fragment like `relationship_type IN ('includes','wrote')`. The fragment is safe to embed directly in `$wpdb->prepare()` strings because slugs come from the in-memory registry and are individually passed through `esc_sql()`.
 
-**Saving / deleting rows** for user-defined types:
-
-```php
-// Save a relationship row (validates taxonomy constraints, fires htax_relationship_saved)
-$result = htax_add_term_relationship( $source_term_id, $target_term_id, 'wrote' );
-if ( is_wp_error( $result ) ) {
-    // handle error
-}
-
-// Delete a relationship row (fires htax_relationship_deleted)
-htax_remove_term_relationship( $source_term_id, $target_term_id, 'wrote' );
-```
-
-For types mapped to `includes`, the helpers clear the caches the row feeds and fire the matching change actions, which update the search index for the terms it reaches (including a group's members when one side is a group). These helpers also accept `includes` and `excludes`. They reject `redirect` and `member_of`, which must go through `htax_set_redirect()` and `htax_set_term_groups()`.
-
 ### Transients
 
-Use `htax_get_transient()`, `htax_set_transient()`, and `htax_delete_transient()` for every HyperTaxonomy transient — never the core `get_transient()` family directly. The wrappers make bulk invalidation work under persistent external object caches, where the `DELETE … LIKE` clears in `includes/core/cache.php` can't reach cached entries. Give new transients an `htax_` prefix; if a new prefix needs its own bulk clear, add it to `htax_transient_family()` and end the clear with `htax_bump_cache_family()`. See [Caching → How transients are stored](caching.html#how-transients-are-stored).
+Use `htax_get_transient()`, `htax_set_transient()`, and `htax_delete_transient()` for every HyperTaxonomy transient — never the core `get_transient()` family directly. The wrappers make bulk invalidation work under persistent external object caches, where the `DELETE … LIKE` clears in `includes/core/cache.php` can't reach cached entries. Give new transients an `htax_` prefix; if a new prefix needs its own bulk clear, add it to `htax_transient_family()` and end the clear with `htax_bump_cache_family()`. See [Caching&nbsp;→ How transients are stored](caching.html#how-transients-are-stored).
 
 ### Walker Tree Type and Max Depth
 
@@ -370,11 +338,11 @@ When `WP_DEBUG` is on, a second panel adds the term ID, taxonomy, expanded term 
 
 ### Rebuilding the Search Index
 
-The search index covers all post types returned by `htax_get_indexed_post_types()` (default: posts and pages; configurable via Settings → Search → General). The rebuild processes all published posts of those types.
+The search index covers all post types returned by `htax_get_indexed_post_types()` (default: posts and pages; configurable via Settings&nbsp;→ Search&nbsp;→ General). The rebuild processes all published posts of those types.
 
 The index can be rebuilt from:
 
-- **Admin UI:** Settings > HyperTaxonomy > Search > General > Index Rebuild
+- **Admin UI:** Settings&nbsp;→ HyperTaxonomy&nbsp;→ Search&nbsp;→ General&nbsp;→ Index Rebuild
 - **AJAX action:** `wp_ajax_htax_rebuild_indexes` (empties `wp_htax_post_text` and the built-in model's rows in `wp_htax_search_terms`, returns total post count) / `wp_ajax_htax_bulk_rebuild` (processes one batch of 50 posts through both tables)
 
 To trigger a single-post reindex programmatically:

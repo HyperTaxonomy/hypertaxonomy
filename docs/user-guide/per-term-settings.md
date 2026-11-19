@@ -7,7 +7,7 @@ nav_order: 4
 # Per-Term Settings
 {: .no_toc }
 
-Settings that apply to individual terms independently of their [relationships](term-relationships.html) — group membership, visibility, icons, descriptions, sticky posts, and archive overrides.
+Settings that apply to individual terms independently of their [relationships](term-relationships.html) — group membership, visibility, icons, descriptions, sticky posts, and archive overrides — and the term list columns that show several of them at a glance.
 
 ## Table of contents
 {: .no_toc .text-delta }
@@ -17,9 +17,40 @@ Settings that apply to individual terms independently of their [relationships](t
 
 ---
 
+## Term List Columns
+
+On a taxonomy's term list (for example **Posts&nbsp;→ Tags**), HyperTaxonomy adds up to four columns, each shown when its feature is enabled for the taxonomy in [Settings&nbsp;→ HyperTaxonomy&nbsp;→ Features](plugin-settings.html#features-tab):
+
+| Column | Shows | Feature |
+|--------|-------|---------|
+| **Groups** | The term's [groups](#group-membership), each linked to its edit screen; — when it belongs to none | Group Assignment |
+| **Redirect** | For a [redirecting](term-relationships.html#redirects) term, ↪ and its target in italics, linked to the target's edit screen ({% include dashicon.html name="update" %} instead of ↪ for an auto-redirect left by [converting terms](merge-convert.html#convert-terms)); for a redirect target, ←&nbsp;and the number of terms that redirect to it; otherwise — | Redirects |
+| **Icon** | The term's [icon](#term-icons), or a faded image placeholder when it has none | Icons |
+| **Visibility** | A faded eye icon ({% include dashicon.html name="visibility" faded=true %}) for a visible term (the default) and a crossed-out eye icon ({% include dashicon.html name="hidden" %}) for a [hidden](#term-visibility) one, the same icons as for [hidden groups](term-groups.html) | Visibility |
+
+The **Icon** and **Visibility** columns are off by default; turn them on in **Screen Options** (top right of the term list screen).
+
+**Sortable columns:** The **Redirect**, **Icon**, **Visibility**, and **Groups** columns in the term list table are sortable. The first three default to descending on first click — putting terms *with* that attribute first — so you can immediately see all redirect terms, all terms with icons, or all hidden terms without relying on the filter dropdowns. The **Groups** column defaults to ascending (ungrouped terms first, then alphabetically by group name).
+
+![The Tags list filtered to one group, with HyperTaxonomy's Groups, Redirect, Icon and Visibility columns circled; two tags redirect to Cougar](../assets/images/screenshots/tags-list-columns.png)
+
+**Filter dropdowns:** The term list table provides filter dropdowns above the table. The **Redirect** dropdown offers: *All Terms*, *Non-Redirects* (terms that are not redirect sources — includes redirect targets), *Redirects*, *Auto-redirects*, and *Targets* (redirect targets only). The **Icon** dropdown offers: *All Icons*, *With Icons*, and *No Icons*. The **Visibility** dropdown offers: *All Visibility*, *Visible*, and *Hidden*. The **Groups** dropdown is a searchable checklist (with a native browser ×&nbsp;to clear the search) that also appears in the **Assign to Term Groups** bulk action modal. Filter dropdowns for columns that are hidden via Screen Options are automatically hidden as well.
+
+---
+
+## The Term Edit Screen
+
+HyperTaxonomy's fields sit on the term edit screen with the standard ones: the **Term Groups** checklist, the **Term Relationships** section (see [Term Relationships](term-relationships.html)), and the per-term settings described below.
+
+Term edit screens are protected against simultaneous editing: if another admin already has a term open, a blocking overlay appears with their name and **Go Back** / **Take Over** options. Locks expire automatically after 150 seconds of inactivity. Turn this off with **Concurrent Edit Locking** in [Settings&nbsp;→ HyperTaxonomy&nbsp;→ Advanced](plugin-settings.html#advanced-tab).
+
+If you navigate away from a term edit screen with unsaved changes, the browser shows a confirmation prompt before leaving the page.
+
+---
+
 ## Group Membership
 
-Assign a term to one or more [Term Groups](term-groups.html). Needs **Group Assignment** enabled for the taxonomy in [Settings > HyperTaxonomy > Features](plugin-settings.html#features-tab). A group's members can also be managed from the group's own edit screen; see [Term Groups → Group Members](term-groups.html#group-members).
+Assign a term to one or more [Term Groups](term-groups.html). Needs **Group Assignment** enabled for the taxonomy in [Settings&nbsp;→ HyperTaxonomy&nbsp;→ Features](plugin-settings.html#features-tab). A group's members can also be managed from the group's own edit screen; see [Term Groups&nbsp;→ Group Members](term-groups.html#group-members).
 
 - **Term edit screen** — Use the **Term Groups** checklist to assign the term to one or more groups. It sits directly above the [Term Relationships](term-relationships.html) section.
 - **Quick Edit** — Click Quick Edit on any term row to update group assignments inline via a scrollable checklist, without leaving the list.
@@ -29,7 +60,7 @@ Assign a term to one or more [Term Groups](term-groups.html). Needs **Group Assi
 
 ## Term Visibility
 
-Mark individual terms as **hidden** to use them for internal organization without public exposure.
+Terms are visible by default. Mark individual terms as **hidden** to use them for internal organization without public exposure.
 
 **What hidden terms do:**
 
@@ -48,7 +79,7 @@ Mark individual terms as **hidden** to use them for internal organization withou
 
 Editing a post doesn't remove hidden terms the user can't see, which can happen under the "Hidden from all users" option or with a custom role: the post keeps those terms. Only someone who can see a hidden term can remove it from a post.
 
-**Visibility setting** ([Settings > HyperTaxonomy > Display](plugin-settings.html#display-tab) > Hidden Terms):
+**Visibility setting** ([Settings&nbsp;→ HyperTaxonomy&nbsp;→ Display](plugin-settings.html#display-tab)&nbsp;→ Hidden Terms):
 
 | Setting | Who can see hidden terms |
 |---------|-------------------------|
@@ -64,7 +95,7 @@ When making a hidden term visible again (via the term edit screen, Quick Edit, o
 
 **Reparent and create cascade:** If a term is moved to be a child of a hidden parent, the term and all its own descendants are automatically marked hidden at save time. Similarly, creating a new term under a hidden parent immediately marks the new term hidden. No confirmation is requested in either case — making additional terms hidden is always safe.
 
-**Enable per taxonomy:** Settings > HyperTaxonomy > Features > [taxonomy] > Visibility.
+**Enable per taxonomy:** Settings&nbsp;→ HyperTaxonomy&nbsp;→ Features&nbsp;→ [taxonomy]&nbsp;→ Visibility.
 
 **Setting visibility:**
 - **Term edit screen** — In the **Visibility** row, check or uncheck **Hide this term from public view**.
@@ -72,6 +103,8 @@ When making a hidden term visible again (via the term edit screen, Quick Edit, o
 - **Bulk actions** — Select multiple terms and choose **Make Hidden** or **Make Visible** from the Bulk Actions dropdown.
 
 While any ancestor term is hidden, this checkbox on its descendants is disabled in the UI — make the ancestor visible first before you can individually reveal a descendant.
+
+The term list's **Visibility** column shows each term's state: see [Term List Columns](#term-list-columns).
 
 **Limitation — native WordPress category hierarchy:**
 
@@ -89,7 +122,7 @@ Upload a custom icon image for any term to display alongside it in shortcodes, s
 
 **Setup:**
 
-1. Configure icon dimensions in **Settings > HyperTaxonomy > Icons** for each taxonomy (width, height, border-radius style)
+1. Configure icon dimensions in **Settings&nbsp;→ HyperTaxonomy&nbsp;→ Icons** for each taxonomy (width, height, border-radius style)
 2. Edit any term (tag, category, or custom taxonomy term)
 3. Click **Upload Icon** in the Term Icon field
 4. Select or upload an image (see size rules below)
@@ -103,7 +136,7 @@ Upload a custom icon image for any term to display alongside it in shortcodes, s
 
 **Automatic file naming:** Icons are named after the term slug (e.g., `php.png` for a "PHP" tag). On name collision, the taxonomy is appended (`php-category.png`). Icons are automatically renamed when you change a term's slug or convert it to a different taxonomy.
 
-**Icon sizes:** Three sizes are generated from your configured dimensions. The configured dimensions are the large (full) size; WordPress generates the smaller variants automatically after upload or crop. Medium and small size percentages default to 50% and 25% but can be configured independently per taxonomy in **Settings → HyperTaxonomy → Icons**. Changing the percentages regenerates the medium and small files from the existing uploaded icons without requiring re-upload:
+**Icon sizes:** Three sizes are generated from your configured dimensions. The configured dimensions are the large (full) size; WordPress generates the smaller variants automatically after upload or crop. Medium and small size percentages default to 50% and 25% but can be configured independently per taxonomy in **Settings&nbsp;→ HyperTaxonomy&nbsp;→ Icons**. Changing the percentages regenerates the medium and small files from the existing uploaded icons without requiring re-upload:
 - Large (configured dimensions) — for archive headers
 - Medium (default 50% of large) — for lists
 - Small (default 25% of large) — for pills and inline display
@@ -111,12 +144,6 @@ Upload a custom icon image for any term to display alongside it in shortcodes, s
 **Changing dimensions:** Changing icon dimensions in Settings clears all existing icon assignments for that taxonomy (image files are preserved; you need to re-assign them).
 
 **Bulk actions:** Select multiple terms on the term list screen and choose **Remove Icon** to clear icons from all selected terms at once.
-
-**Sortable columns:** The **Redirect**, **Icon**, **Visibility**, and **Groups** columns in the term list table are sortable. The first three default to descending on first click — putting terms *with* that attribute first — so you can immediately see all redirect terms, all terms with icons, or all hidden terms without relying on the filter dropdowns. The **Groups** column defaults to ascending (ungrouped terms first, then alphabetically by group name). The **Icon** and **Visibility** columns are hidden by default; enable them via **Screen Options** (top-right of the term list screen).
-
-![The Tags list filtered to one group, with HyperTaxonomy's Groups, Redirect, Icon and Visibility columns circled; two tags redirect to Cougar](../assets/images/screenshots/tags-list-columns.png)
-
-**Filter dropdowns:** The term list table provides filter dropdowns above the table. The **Redirect** dropdown offers: *All Terms*, *Non-Redirects* (terms that are not redirect sources — includes redirect targets), *Redirects*, *Auto-redirects*, and *Targets* (redirect targets only). The **Icon** dropdown offers: *All Icons*, *With Icons*, and *No Icons*. The **Visibility** dropdown offers: *All Visibility*, *Visible*, and *Hidden*. The **Groups** dropdown is a searchable checklist (with a native browser × to clear the search) that also appears in the **Assign to Term Groups** bulk action modal. Filter dropdowns for columns that are hidden via Screen Options are automatically hidden as well.
 
 ---
 
@@ -126,7 +153,7 @@ Enable **Show Description** on any term to display its description as formatted 
 
 [![A tag archive whose heading lists the tags it includes, with the tag's icon, its description, and a pinned post](../assets/images/screenshots/term-archive.png){: .screenshot-small}](../assets/images/screenshots/term-archive.png)
 
-To enable: Edit a term, expand **More options**, and check **Show Description**. The term's description field (standard WordPress) is then rendered as HTML on the archive page — above any sticky posts, if present. Requires **Archive Customization** enabled for the taxonomy (Settings > HyperTaxonomy > Features) and **Archive Description** enabled on the Display tab.
+To enable: Edit a term, expand **More options**, and check **Show Description**. The term's description field (standard WordPress) is then rendered as HTML on the archive page — above any sticky posts, if present. Requires **Archive Customization** enabled for the taxonomy (Settings&nbsp;→ HyperTaxonomy&nbsp;→ Features) and **Archive Description** enabled on the Display tab.
 
 The description field appears in the **More options** collapsible on both the Add New Term and Edit Term screens. Its helper text explains that the description can also be used for autocomplete suggestions and PowerSearch relevance matching, which depends on **Match term descriptions** in the Search tab (off by default).
 
@@ -144,15 +171,15 @@ HyperTaxonomy's sticky posts work with any enabled taxonomy (tags, categories, o
 - Sticky posts are pinned at the top of page 1 and excluded from subsequent pages
 - At most the term's **Maximum sticky posts** (or the global setting) are pinned; any further sticky posts appear in their normal position. Pagination accounts for the pinned posts, so no regular post is skipped
 - The post must actually be assigned to that term to be sticky in its archive
-- Enable per taxonomy: Settings > HyperTaxonomy > Features > Archive Customization. **Sticky Posts** on the Display tab must also be on
+- Enable per taxonomy: Settings&nbsp;→ HyperTaxonomy&nbsp;→ Features&nbsp;→ Archive Customization. **Sticky Posts** on the Display tab must also be on
 
 **To make a post sticky for specific terms:**
 1. Edit the post in the block editor
-2. Enable **[Sticky Pushpins](editing-posts.html#sticky-pushpins)** in the ··· menu → HyperTaxonomy group (if not already on)
+2. Enable **[Sticky Pushpins](editing-posts.html#sticky-pushpins)** in the ··· menu&nbsp;→ HyperTaxonomy group (if not already on)
 3. Click the 📌 pushpin next to each term where this post should appear at the top — it turns filled when active
 4. Update the post
 
-**Maximum sticky posts per term:** Configurable per term in the term edit screen (Archive Settings → **Maximum sticky posts**). Leave blank to use the global setting (Settings → HyperTaxonomy → Display, default 10). The number pinned never exceeds the archive's posts per page.
+**Maximum sticky posts per term:** Configurable per term in the term edit screen (Archive Settings&nbsp;→ **Maximum sticky posts**). Leave blank to use the global setting (Settings&nbsp;→ HyperTaxonomy&nbsp;→ Display, default 10). The number pinned never exceeds the archive's posts per page.
 
 ---
 
@@ -163,7 +190,7 @@ Per-term archive overrides available on any enabled taxonomy's term edit screen 
 | Setting | What it does |
 |---------|-------------|
 | **Posts per page** | Override the global WordPress posts-per-page for this term's archive. Leave blank to use the WordPress default. |
-| **Maximum sticky posts** | Maximum number of sticky posts shown at the top of this term's archive. Leave blank to use the global maximum from Settings > HyperTaxonomy > Display. |
+| **Maximum sticky posts** | Maximum number of sticky posts shown at the top of this term's archive. Leave blank to use the global maximum from Settings&nbsp;→ HyperTaxonomy&nbsp;→ Display. |
 | **Sort order** | Default sort order for this term's archive. Click **+** to add criteria and drag them to change their order. Fields are date, last modified, title, author, comments, latest comment, latest activity, relevance, and ID. Leave empty to use the site default. Can be overridden at runtime via the `?htax_orderby=` URL parameter (e.g. from a [`[ht_sort_order_options action="navigate"]`](archive-controls.html#ht_sort_order_options) picker on the archive page). |
 
 These settings apply to any enabled taxonomy (tags, categories, or custom taxonomies) — not just built-in ones.

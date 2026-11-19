@@ -26,6 +26,14 @@ class HyperTaxonomy_Term_Groups extends HyperTaxonomy_Shortcode_Base {
     private $processed_terms = array();
     private $group_terms_cache = array();
 
+    /**
+     * Every term the tree can show, from one get_terms() call, in display order and keyed by
+     * term ID. Each group's list is taken from it.
+     *
+     * @var WP_Term[]
+     */
+    private $tree_terms = array();
+
     public function __construct() {
         add_shortcode( 'ht_term_groups', array( $this, 'shortcode_handler' ) );
     }
@@ -64,6 +72,8 @@ class HyperTaxonomy_Term_Groups extends HyperTaxonomy_Shortcode_Base {
         // One instance serves every use of this shortcode on a page, and each starts fresh.
         $this->processed_terms   = array();
         $this->group_terms_cache = array();
+        $this->groups_by_parent  = null; // Depends on this use's exclude_groups.
+        $this->tree_terms        = array();
 
         // Enqueue styles
         $this->enqueue_styles();
@@ -71,7 +81,7 @@ class HyperTaxonomy_Term_Groups extends HyperTaxonomy_Shortcode_Base {
         // Check if Term Groups taxonomy is registered
         if ( ! taxonomy_exists( 'group' ) ) {
             return '<div class="htax-error">' .
-                   __( 'The Term Groups taxonomy is not registered.', 'hypertaxonomy' ) .
+                   esc_html__( 'The Term Groups taxonomy is not registered.', 'hypertaxonomy' ) .
                    '</div>';
         }
 
@@ -84,7 +94,7 @@ class HyperTaxonomy_Term_Groups extends HyperTaxonomy_Shortcode_Base {
 
         if ( empty( $taxonomies ) ) {
             return '<div class="htax-error">' .
-                   __( 'No valid taxonomies specified.', 'hypertaxonomy' ) .
+                   esc_html__( 'No valid taxonomies specified.', 'hypertaxonomy' ) .
                    '</div>';
         }
 
@@ -100,8 +110,54 @@ class HyperTaxonomy_Term_Groups extends HyperTaxonomy_Shortcode_Base {
             return '';
         }
 
+        $this->load_tree_terms( $root_groups, $taxonomies );
+
         // Render the tree
         return $this->render_tree( $root_groups, $taxonomies );
+    }
+
+    /**
+     * Load the terms of every group in the tree at once: their member lists, term objects and
+     * meta, then one get_terms() call for all of them (which also primes their expanded counts),
+     * instead of one round of queries per group.
+     *
+     * @param WP_Term[] $root_groups Root groups.
+     * @param string[]  $taxonomies  Taxonomies to show.
+     */
+    private function load_tree_terms( array $root_groups, array $taxonomies ): void {
+        $group_ids = array();
+        $pending   = $root_groups;
+        while ( $pending ) {
+            $group = array_shift( $pending );
+            if ( isset( $group_ids[ $group->term_id ] ) ) {
+                continue;
+            }
+            $group_ids[ $group->term_id ] = true;
+            $pending                      = array_merge( $pending, $this->get_child_groups( $group->term_id ) );
+        }
+
+        $term_ids = array();
+        foreach ( $taxonomies as $taxonomy ) {
+            $term_ids += htax_get_terms_in_groups( array_keys( $group_ids ), $taxonomy );
+        }
+        if ( empty( $term_ids ) ) {
+            return;
+        }
+
+        $terms = get_terms( array(
+            'taxonomy'   => $taxonomies,
+            'include'    => array_keys( $term_ids ),
+            'hide_empty' => '1' === $this->htax_atts['hide_empty'],
+            'orderby'    => 'name',
+            'order'      => 'ASC',
+        ) );
+        if ( is_wp_error( $terms ) ) {
+            return;
+        }
+        foreach ( $terms as $term ) {
+            $this->tree_terms[ $term->term_id ] = $term;
+        }
+        $this->prime_term_icons( $terms, 'auto' === $this->htax_atts['show_term_icons'] );
     }
 
     /**
@@ -199,21 +255,8 @@ class HyperTaxonomy_Term_Groups extends HyperTaxonomy_Shortcode_Base {
             return array();
         }
 
-        // Get term objects for these IDs, filtered by taxonomies (always alphabetical)
-        $args = array(
-            'taxonomy' => $taxonomies,
-            'include' => $all_term_ids,
-            'hide_empty' => $this->htax_atts['hide_empty'] === '1',
-            'orderby' => 'name',
-            'order' => 'ASC',
-        );
-
-        $terms = get_terms( $args );
-
-        if ( is_wp_error( $terms ) ) {
-            $this->group_terms_cache[ $cache_key ] = array();
-            return array();
-        }
+        // This group's terms from the tree's (always alphabetical), already loaded at once.
+        $terms = array_values( array_intersect_key( $this->tree_terms, array_flip( $all_term_ids ) ) );
 
         // Filter terms
         $terms = $this->filter_terms( $terms );

@@ -31,7 +31,7 @@ Standalone text search with relevance scoring and field operators. Uses a shared
 | `min_length` | Minimum query length | 3 |
 | `match` | `any` (OR logic) or `all` (AND logic) | **Default Match Mode** setting (Search tab) |
 | `orderby` | Sort order — see below | `relevance:desc,date:desc` |
-| `posts_per_page` | Results per page. Defaults to the WordPress **Blog pages show at most** setting (Settings → Reading). | WP setting |
+| `posts_per_page` | Results per page. Defaults to the WordPress **Blog pages show at most** setting (Settings&nbsp;→ Reading). | WP setting |
 | `max_results` | Hard cap on total results across all pages (0 = no cap). | `0` |
 | `search_in` | Fields to search: `all`, or comma-separated: `title`, `content`, `excerpt`, `tags`, `categories`, `terms`, or a custom taxonomy slug | `all` |
 | `ajax` | Container ID for AJAX mode (empty = POST submission). When set, place `[ht_search_results id="…"]` with the same ID on the page. | — |
@@ -71,7 +71,7 @@ Operators combine freely. For example, `+category:mammalogy -tag:tiger title:lio
 | `category:slug` | `category:opinion` | Match posts in a category with exactly this slug |
 | `terms:word` | `terms:photography` | Match in all enabled taxonomy term names/descriptions (FULLTEXT) |
 | `term:slug` | `term:downtown` | Match posts carrying any enabled taxonomy term with exactly this slug |
-| `ProductCategories:word` | `product_categories:blue` | Custom taxonomy **plural** label (spaces → underscores, lowercase) — FULLTEXT in term names/descriptions |
+| `ProductCategories:word` | `product_categories:blue` | Custom taxonomy **plural** label (spaces&nbsp;→ underscores, lowercase) — FULLTEXT in term names/descriptions |
 | `ProductCategory:slug` | `product_category:blue-widgets` | Custom taxonomy **singular** label or slug — exact slug match |
 | `+word` | `+wordpress` | Required — must appear somewhere in each result |
 | `+field:word` | `+tags:react` | Required in that specific field — posts without a matching term are excluded even if the text matches. Multiple required terms in the same field (`+tags:A +tags:B`) find posts carrying all of them. |
@@ -107,8 +107,8 @@ A query made only of `near:` operators (e.g. `near:me/10`, `near:97201/5`) lists
 
 1. **The browser.** When the query contains `near:me`, the search asks the browser for the visitor's position (the browser asks the visitor's permission once per site; HTTPS required). The last position the browser gave is remembered on that device for 7 days and used if the visitor later declines or the browser can't provide one.
 2. **The site's CDN.** Behind Cloudflare with the "Add visitor location headers" managed transform on, the visitor's location comes from Cloudflare's request headers.
-3. **IP geolocation**, if enabled in As the Crow Flies (Settings → As the Crow Flies → Advanced).
-4. **The fallback location** set in As the Crow Flies (Settings → As the Crow Flies → Advanced) — e.g. the business's own location. The visitor is told that results are near the default location.
+3. **IP geolocation**, if enabled in As the Crow Flies (Settings&nbsp;→ As the Crow Flies&nbsp;→ Advanced).
+4. **The fallback location** set in As the Crow Flies (Settings&nbsp;→ As the Crow Flies&nbsp;→ Advanced) — e.g. the business's own location. The visitor is told that results are near the default location.
 
 When none of these is available, `near:me` is ignored and the visitor is told that the results aren't filtered by distance. The same message appears for a `near:` reference that has no location (e.g. a place name with no matching term). In AJAX mode the message appears above the results; on POST-mode results pages it appears above the theme's result list.
 
@@ -132,7 +132,7 @@ For AJAX mode, pair with `[ht_search_results id="…"]` — see **[[ht_search_re
 
 ## HT PowerSearch Block
 
-The **HT PowerSearch** block is the block-editor equivalent of `[ht_power_search]`. Find it in the inserter under **HyperTaxonomy → HT PowerSearch**, or search for "hypertaxonomy".
+The **HT PowerSearch** block is the block-editor equivalent of `[ht_power_search]`. Find it in the inserter under **HyperTaxonomy&nbsp;→ HT PowerSearch**, or search for "hypertaxonomy".
 
 ![The HT PowerSearch block in the editor: its live preview with a placeholder and a Search button, and its Search Form settings with the match mode set to Default](../assets/images/screenshots/power-search-block.png)
 
@@ -147,7 +147,7 @@ The block renders a live preview of the search form in the editor via server-sid
 
 HyperTaxonomy can replace WordPress's built-in search (`?s=…`) with the **PowerSearch** engine, which applies relevance scoring, term relationship expansion, and field operators to all site searches.
 
-**Enable globally:** [Settings > HyperTaxonomy > Search](plugin-settings.html#search-tab) > **Site Search Integration** — check **Use PowerSearch for WordPress site search**. Every `?s=` request on the site then uses the PowerSearch engine instead of WordPress's default SQL `LIKE` query.
+**Enable globally:** [Settings&nbsp;→ HyperTaxonomy&nbsp;→ Search](plugin-settings.html#search-tab)&nbsp;→ **Site Search Integration** — check **Use PowerSearch for WordPress site search**. Every `?s=` request on the site then uses the PowerSearch engine instead of WordPress's default SQL `LIKE` query.
 
 **Enable per-search:** Append `?htax_search` to any `?s=` URL (e.g. `?s=react&htax_search`) to use PowerSearch for that request only, without enabling it globally. Useful for testing before committing.
 

@@ -77,10 +77,7 @@ function htax_activate_single_site() {
         );
     }
 
-    // Set initial version.
-    add_option( 'htax_version', HTAX_VERSION );
-
-    // Run the activation class method.
+    // Record the version and create the custom tables.
     HyperTaxonomy_Activator::activate();
 
     // Set up capabilities.
@@ -103,9 +100,6 @@ function htax_activate_single_site() {
 
     // Flush rewrite rules.
     flush_rewrite_rules();
-
-    // Create search terms table.
-    htax_create_search_term_index_table();
 }
 
 /**

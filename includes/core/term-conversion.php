@@ -33,8 +33,8 @@
  *    Plugins such as the WordPress Categories to Tags Converter create a new
  *    term in the target taxonomy, then delete the old term. HT detects this
  *    by watching created_term and pre_delete_term/delete_term in the same
- *    request and creates a redirect stub in the old taxonomy using the now-free
- *    original slug.
+ *    request and gives the new term the old one's hidden status, icon and sticky
+ *    posts. No redirect stub is created: the converter chose to delete the term.
  *
  * @package HyperTaxonomy
  * @since 1.0
@@ -223,6 +223,22 @@ function htax_convert_term( int $term_id, string $target_taxonomy, bool $create_
 		);
 	}
 
+	/**
+	 * Fires before a term is converted to another taxonomy, while the term and its meta
+	 * still exist: in htax_convert_term() (including a term converted back to its redirect
+	 * stub), and in conversions by other tools that HyperTaxonomy detects, such as the
+	 * Categories to Tags Converter. Keep here what htax_after_convert_term needs when the
+	 * term is deleted (a conversion without a redirect stub, or by another tool). In a
+	 * conversion by another tool, the new term already exists and the posts may have moved.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int    $term_id       Term being converted.
+	 * @param string $from_taxonomy Its taxonomy.
+	 * @param string $to_taxonomy   Taxonomy it is converted to.
+	 */
+	do_action( 'htax_before_convert_term', $term_id, $old_taxonomy, $target_taxonomy );
+
 	// -----------------------------------------------------------------------
 	// Create the new term in the target taxonomy.
 	// For the redirect case the slug is auto-generated (old term keeps its slug
@@ -338,22 +354,22 @@ function htax_convert_term( int $term_id, string $target_taxonomy, bool $create_
 		do_action( 'htax_term_archive_changed', $new_term_id, $target_taxonomy );
 
 		/**
-		 * Fires after a term is successfully converted to a different taxonomy.
+		 * Fires after a term is converted to another taxonomy, wherever
+		 * htax_before_convert_term fired before it.
 		 *
-		 * In the no-redirect path $old_term_id is the ID of the deleted source
-		 * term and $new_term_id is the freshly created replacement. In the
-		 * redirect path they differ in the same way; for reverse conversions the
-		 * stub is restored so $new_term_id === $old_term_id.
+		 * $new_term_id is the term now in $new_taxonomy, and $old_term_id the term that
+		 * was converted: the redirect stub left in $old_taxonomy, or a deleted term
+		 * (without a stub, or by another tool). When a term is converted back to its
+		 * stub, $new_term_id is the restored stub and $old_term_id the deleted term.
 		 *
-		 * @since 1.0
+		 * @since 1.0.0
 		 *
-		 * @param int    $new_term_id  Term ID now in the new taxonomy.
-		 * @param string $old_taxonomy Taxonomy before conversion.
-		 * @param string $new_taxonomy Taxonomy after conversion.
-		 * @param int    $old_term_id  Original term ID: the redirect stub, or the deleted
-		 *                             term in the no-redirect path.
+		 * @param int    $new_term_id  Term now in the new taxonomy.
+		 * @param string $old_taxonomy Taxonomy before the conversion.
+		 * @param string $new_taxonomy Taxonomy after the conversion.
+		 * @param int    $old_term_id  Term that was converted: the redirect stub, or deleted.
 		 */
-		do_action( 'htax_term_converted', $new_term_id, $old_taxonomy, $target_taxonomy, $term_id );
+		do_action( 'htax_after_convert_term', $new_term_id, $old_taxonomy, $target_taxonomy, $term_id );
 
 		return array(
 			'converted'          => 1,
@@ -438,7 +454,8 @@ function htax_convert_term( int $term_id, string $target_taxonomy, bool $create_
 	htax_clear_ajax_caches( $term_id );
 
 	do_action( 'htax_term_archive_changed', $term_id, $old_taxonomy );
-	do_action( 'htax_term_converted', $new_term_id, $old_taxonomy, $target_taxonomy, $term_id );
+	/** This action is documented in includes/core/term-conversion.php */
+	do_action( 'htax_after_convert_term', $new_term_id, $old_taxonomy, $target_taxonomy, $term_id );
 
 	return array(
 		'converted'          => 1,
@@ -463,9 +480,15 @@ function htax_convert_term( int $term_id, string $target_taxonomy, bool $create_
  * @param string $from_taxonomy   Source taxonomy slug (used for validation).
  * @param string $to_taxonomy     Target taxonomy slug.
  * @param bool   $create_redirect Whether to leave redirect stubs.
+ * @param array  $options         Choices made by other plugins' conversion options (see the
+ *                                htax_convert_terms_check filter), keyed by their section ID,
+ *                                and the operation-wide preference for data a stub or the
+ *                                new term could keep, as [ 'htax' => [ 'carry' => value ] ]
+ *                                (see htax_carry_choice()). Passed to the conversion actions;
+ *                                HyperTaxonomy ignores it.
  * @return array
  */
-function htax_convert_terms_batch( array $term_ids, string $from_taxonomy, string $to_taxonomy, bool $create_redirect = true ): array {
+function htax_convert_terms_batch( array $term_ids, string $from_taxonomy, string $to_taxonomy, bool $create_redirect = true, array $options = array() ): array {
 	$summary = array(
 		'converted'           => 0,
 		'redirects_created'   => 0,
@@ -479,6 +502,21 @@ function htax_convert_terms_batch( array $term_ids, string $from_taxonomy, strin
 	if ( is_taxonomy_hierarchical( $from_taxonomy ) ) {
 		$term_ids = htax_sort_term_ids_parent_first( $term_ids, $from_taxonomy );
 	}
+
+	/**
+	 * Fires before HyperTaxonomy converts terms to another taxonomy. Each term converted
+	 * then fires htax_before_convert_term and htax_after_convert_term.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int[]  $term_ids        Terms to convert.
+	 * @param string $from_taxonomy   Their taxonomy.
+	 * @param string $to_taxonomy     Taxonomy to convert them to.
+	 * @param bool   $create_redirect Whether redirect stubs will be left in $from_taxonomy.
+	 * @param array  $options         Choices made in other plugins' conversion options, keyed
+	 *                                by their section ID (see htax_convert_terms_check).
+	 */
+	do_action( 'htax_before_convert_terms', array_map( 'intval', $term_ids ), $from_taxonomy, $to_taxonomy, $create_redirect, $options );
 
 	foreach ( $term_ids as $term_id ) {
 		$term_id = (int) $term_id;
@@ -505,6 +543,19 @@ function htax_convert_terms_batch( array $term_ids, string $from_taxonomy, strin
 			}
 		}
 	}
+
+	/**
+	 * Fires after HyperTaxonomy has converted terms to another taxonomy.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int[]  $term_ids      Terms that were to be converted.
+	 * @param string $from_taxonomy Their taxonomy.
+	 * @param string $to_taxonomy   Taxonomy they were converted to.
+	 * @param array  $summary       htax_convert_terms_batch() result.
+	 * @param array  $options       Choices made in other plugins' conversion options.
+	 */
+	do_action( 'htax_after_convert_terms', array_map( 'intval', $term_ids ), $from_taxonomy, $to_taxonomy, $summary, $options );
 
 	return $summary;
 }
@@ -535,6 +586,9 @@ function htax_restore_converted_term( int $new_term_id, string $new_taxonomy, st
 		return array( 'converted' => 0, 'redirect_created' => false, 'reverse_conversion' => false );
 	}
 	$new_tt_id = (int) $new_term->term_taxonomy_id;
+
+	/** This action is documented in includes/core/term-conversion.php */
+	do_action( 'htax_before_convert_term', $new_term_id, $new_taxonomy, $old_taxonomy );
 
 	// Move posts back from new term to stub.
 	$moved = $wpdb->update(
@@ -584,7 +638,8 @@ function htax_restore_converted_term( int $new_term_id, string $new_taxonomy, st
 	htax_clear_ajax_caches( $stub_term_id );
 
 	do_action( 'htax_term_archive_changed', $stub_term_id, $old_taxonomy );
-	do_action( 'htax_term_converted', $stub_term_id, $new_taxonomy, $old_taxonomy, $new_term_id );
+	/** This action is documented in includes/core/term-conversion.php */
+	do_action( 'htax_after_convert_term', $stub_term_id, $new_taxonomy, $old_taxonomy, $new_term_id );
 
 	return array(
 		'converted'          => 1,
@@ -767,6 +822,9 @@ function htax_detect_external_conversion_pre_delete( int $term_id, string $taxon
 	);
 
 	unset( $GLOBALS['htax_recently_created_terms'][ $key ] );
+
+	/** This action is documented in includes/core/term-conversion.php */
+	do_action( 'htax_before_convert_term', $term_id, $taxonomy, $created['taxonomy'] );
 }
 
 /**
@@ -840,7 +898,8 @@ function htax_complete_external_conversion_after_delete( int $term_id, int $tt_i
 	htax_reload_term_caches_on_edit( $new_term_id );
 	htax_update_nav_menu_items_for_converted_term( $term_id, $old_taxonomy, $new_term_id, $new_taxonomy );
 	do_action( 'htax_term_archive_changed', $new_term_id, $new_taxonomy );
-	do_action( 'htax_term_converted', $new_term_id, $old_taxonomy, $new_taxonomy, $term_id );
+	/** This action is documented in includes/core/term-conversion.php */
+	do_action( 'htax_after_convert_term', $new_term_id, $old_taxonomy, $new_taxonomy, $term_id );
 }
 
 // ---------------------------------------------------------------------------
@@ -989,11 +1048,10 @@ function htax_find_auto_redirect_to_term( $target_term_id, $taxonomy ) {
 }
 
 /**
- * Create a redirect stub term in $old_taxonomy pointing to the converted term.
+ * Create a redirect stub term in $old_taxonomy pointing to $target_term_id.
  *
- * Used by the external conversion detection path (wpcat2tag and similar).
- * The old slug is free at this point (old term was already deleted), so the
- * stub can claim the original slug.
+ * Used by htax_merge_terms() after the source terms are deleted, so the stub can
+ * claim a source term's slug, and given its hierarchy data, take its place.
  *
  * @since 1.0
  *

@@ -669,7 +669,7 @@ function htax_render_term_relationships_page(): void {
             </p>
         </div>
 
-        <script>
+        <?php ob_start(); ?>
         (function($) {
             var nonces = {
                 save:   '<?php echo esc_js( wp_create_nonce( 'htax_relationship_type_save' ) ); ?>',
@@ -968,7 +968,7 @@ function htax_render_term_relationships_page(): void {
             } );
 
         })(jQuery);
-        </script>
+        <?php htax_add_inline_script( 'relationship-types', ob_get_clean() ); ?>
 
     </div>
     <?php

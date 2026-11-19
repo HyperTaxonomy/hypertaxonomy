@@ -459,6 +459,96 @@ function htax_log_debug( $message, $context = array(), $backtrace = false ) {
 }
 
 /**
+ * Add a page-specific inline script through the script API.
+ *
+ * Registers a source-less script handle that prints in the footer and attaches $js
+ * to it. Each call gets its own handle, so each script prints as its own element.
+ * Call it before the footer scripts are printed, e.g. while rendering a screen.
+ *
+ * @since 1.0.0
+ *
+ * @param string   $name Short name for the handle ('htax-{name}-{n}').
+ * @param string   $js   JavaScript code, without the script element tags.
+ * @param string[] $deps Script dependencies.
+ */
+function htax_add_inline_script( string $name, string $js, array $deps = array( 'jquery' ) ): void {
+    static $count = 0;
+    $handle = 'htax-' . $name . '-' . ( ++$count );
+    wp_register_script( $handle, false, $deps, HTAX_VERSION, array( 'in_footer' => true ) );
+    wp_enqueue_script( $handle );
+    wp_add_inline_script( $handle, $js );
+}
+
+/**
+ * Print an inline stylesheet through the style API.
+ *
+ * For styles generated in wp_head or admin_head: registers a source-less style
+ * handle, attaches $css and prints it at once.
+ *
+ * @since 1.0.0
+ *
+ * @param string $handle Style handle.
+ * @param string $css    CSS, without the style element tags.
+ */
+function htax_print_inline_style( string $handle, string $css ): void {
+    wp_register_style( $handle, false, array(), HTAX_VERSION );
+    wp_add_inline_style( $handle, wp_strip_all_tags( $css ) );
+    wp_print_styles( $handle );
+}
+
+/**
+ * Decode a JSON request value and sanitize everything in it.
+ *
+ * Every string value is passed through $sanitize_string (with its key), and every
+ * key through sanitize_text_field(). Integers, floats, booleans and nulls keep their
+ * types. Use it for JSON submitted in $_POST/$_GET, passing the value through
+ * wp_unslash() first; callers still validate the shape.
+ *
+ * @since 1.0.0
+ *
+ * @param mixed         $raw             Unslashed request value.
+ * @param callable|null $sanitize_string Sanitizer for string values: fn( string $value, string $key ): string.
+ *                                       Defaults to sanitize_text_field().
+ * @return array|null The sanitized data, or null when $raw isn't a JSON object or array.
+ */
+function htax_decode_json_request( $raw, ?callable $sanitize_string = null ): ?array {
+    if ( ! is_string( $raw ) ) {
+        return null;
+    }
+    $data = json_decode( $raw, true );
+    if ( ! is_array( $data ) ) {
+        return null;
+    }
+    return htax_sanitize_decoded_json( $data, $sanitize_string ?? static function ( string $value ): string {
+        return sanitize_text_field( $value );
+    } );
+}
+
+/**
+ * Recursively sanitize decoded JSON data. See htax_decode_json_request().
+ *
+ * @since 1.0.0
+ *
+ * @param array    $data            Decoded data.
+ * @param callable $sanitize_string Sanitizer for string values: fn( string $value, string $key ): string.
+ * @return array
+ */
+function htax_sanitize_decoded_json( array $data, callable $sanitize_string ): array {
+    $clean = array();
+    foreach ( $data as $key => $value ) {
+        $key = is_int( $key ) ? $key : sanitize_text_field( (string) $key );
+        if ( is_array( $value ) ) {
+            $clean[ $key ] = htax_sanitize_decoded_json( $value, $sanitize_string );
+        } elseif ( is_string( $value ) ) {
+            $clean[ $key ] = $sanitize_string( $value, (string) $key );
+        } elseif ( is_int( $value ) || is_float( $value ) || is_bool( $value ) || null === $value ) {
+            $clean[ $key ] = $value;
+        }
+    }
+    return $clean;
+}
+
+/**
  * Log errors
  *
  * @since 1.0.0
@@ -756,4 +846,126 @@ function htax_allowed_form_html(): array {
 function htax_allow_form_css( $properties ) {
     $properties[] = 'box-sizing';
     return $properties;
+}
+
+/**
+ * Take a named lock for this site, so overlapping requests change shared data one at a time.
+ * A MySQL user lock (GET_LOCK), held until htax_release_lock() or the end of the request. The
+ * same request can take a lock it already holds (MySQL 5.7+, MariaDB 10.0.2+); release it as
+ * many times.
+ *
+ * @since 1.0.0
+ * @param string $name    Lock name, unique to its purpose.
+ * @param int    $timeout Seconds to wait for another request to release it.
+ * @return bool Whether the lock was taken.
+ */
+function htax_acquire_lock( string $name, int $timeout = 5 ): bool {
+    global $wpdb;
+    return '1' === (string) $wpdb->get_var( $wpdb->prepare( 'SELECT GET_LOCK(%s, %d)', htax_lock_name( $name ), $timeout ) );
+}
+
+/**
+ * Release a lock taken with htax_acquire_lock().
+ *
+ * @since 1.0.0
+ * @param string $name Lock name.
+ */
+function htax_release_lock( string $name ): void {
+    global $wpdb;
+    $wpdb->query( $wpdb->prepare( 'SELECT RELEASE_LOCK(%s)', htax_lock_name( $name ) ) );
+}
+
+/**
+ * A lock name scoped to this site (database and table prefix), within MySQL's 64-character limit.
+ *
+ * @since 1.0.0
+ * @param string $name Lock name.
+ * @return string
+ */
+function htax_lock_name( string $name ): string {
+    global $wpdb;
+    return substr( 'htax_' . md5( DB_NAME . '|' . $wpdb->prefix ) . '_' . $name, 0, 64 );
+}
+
+/**
+ * An option's current value in the database. get_option() serves the value cached when the
+ * request first read it (all autoloaded options load at its start), which another request may
+ * have changed since; a change based on that value would undo theirs.
+ *
+ * @since 1.0.0
+ * @param string $option  Option name.
+ * @param mixed  $default Value when the option doesn't exist.
+ * @return mixed
+ */
+function htax_get_option_fresh( string $option, $default = false ) {
+    wp_cache_delete( $option, 'options' );
+    $notoptions = wp_cache_get( 'notoptions', 'options' );
+    if ( is_array( $notoptions ) && isset( $notoptions[ $option ] ) ) {
+        unset( $notoptions[ $option ] );
+        wp_cache_set( 'notoptions', $notoptions, 'options' );
+    }
+    if ( array_key_exists( $option, wp_load_alloptions() ) ) {
+        wp_cache_delete( 'alloptions', 'options' );
+    }
+    return get_option( $option, $default );
+}
+
+/**
+ * Change an option safely when other requests may change it too: under a lock, read its
+ * current value, apply $change, and save the result.
+ *
+ * @since 1.0.0
+ * @param string      $option   Option name.
+ * @param callable    $change   Receives the current value; returns the new value, or null to
+ *                              leave the option as it is.
+ * @param mixed       $default  Value when the option doesn't exist.
+ * @param bool|null   $autoload Autoload setting for update_option() (null leaves it).
+ * @param string      $lock     Lock name; by default one per option.
+ * @return bool False when the lock couldn't be taken (nothing was changed).
+ */
+function htax_update_option_locked( string $option, callable $change, $default = array(), ?bool $autoload = null, string $lock = '' ): bool {
+    $lock = '' !== $lock ? $lock : 'option_' . $option;
+    if ( ! htax_acquire_lock( $lock ) ) {
+        return false;
+    }
+    try {
+        $value = $change( htax_get_option_fresh( $option, $default ) );
+        if ( null !== $value ) {
+            update_option( $option, $value, $autoload );
+        }
+    } finally {
+        htax_release_lock( $lock );
+    }
+    return true;
+}
+
+/**
+ * Hold an option's lock (the one htax_update_option_locked() uses) from now until the option
+ * is saved, for a save that merges a form into the stored value, such as a Settings API
+ * sanitize callback. Released once WordPress has written the option, or at the end of the
+ * request if the value didn't change. Calling it again before then does nothing.
+ *
+ * @since 1.0.0
+ * @param string $option Option name.
+ * @return bool Whether the lock is held (false when another request kept it too long).
+ */
+function htax_lock_option_until_saved( string $option ): bool {
+    static $held = array();
+    if ( ! empty( $held[ $option ] ) ) {
+        return true;
+    }
+    if ( ! htax_acquire_lock( 'option_' . $option, 10 ) ) {
+        return false;
+    }
+    $held[ $option ] = true;
+    $release         = static function () use ( $option, &$held ): void {
+        if ( ! empty( $held[ $option ] ) ) {
+            $held[ $option ] = false;
+            htax_release_lock( 'option_' . $option );
+        }
+    };
+    add_action( "update_option_{$option}", $release, PHP_INT_MAX, 0 );
+    add_action( "add_option_{$option}", $release, PHP_INT_MAX, 0 );
+    add_action( 'shutdown', $release, 0, 0 );
+    return true;
 }

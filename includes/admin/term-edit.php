@@ -989,8 +989,9 @@ function htax_add_term_groups_field( $term_or_taxonomy ) {
  * @param int $term_id Term ID.
  */
 function htax_save_term_groups( $term_id ) {
-    // Only for the term edit, add-term and Quick Edit forms, verified by their nonces.
-    if ( ! htax_verify_term_nonce( (int) $term_id ) ) {
+    // Only for the term edit, add-term and Quick Edit forms, verified by their nonces,
+    // by users who can edit the term.
+    if ( ! htax_verify_term_nonce( (int) $term_id ) || ! current_user_can( 'edit_term', (int) $term_id ) ) {
         return;
     }
 

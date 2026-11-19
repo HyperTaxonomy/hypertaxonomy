@@ -35,6 +35,7 @@ hypertaxonomy/
 ├── admin/                                    # Admin assets
 │   ├── css/
 │   │   ├── htax-hierarchical-checklist.css   # Hierarchical checklist UI component styles
+│   │   ├── htax-operation-check.css          # Check step of the Merge Terms and Convert Terms pages
 │   │   ├── htax-post-edit.css                # Post edit screen styles
 │   │   ├── htax-settings.css                 # Settings page styles
 │   │   ├── htax-tables.css                   # List table styles
@@ -44,6 +45,7 @@ hypertaxonomy/
 │       ├── htax-editor-prefs.js              # Post editor display preferences (More menu toggles, stored in core/preferences)
 │       ├── htax-group-admin.js               # Term Groups admin UI logic
 │       ├── htax-hierarchical-checklist.js    # Hierarchical checklist UI component
+│       ├── htax-operation-check.js           # Check step of the Merge Terms and Convert Terms pages (plugins' notices and choices)
 │       ├── htax-post-edit.js                 # Post edit screen logic
 │       ├── htax-settings.js                  # Settings page logic
 │       ├── htax-tables.js                    # List table filter logic, Screen Options sync, bulk group assignment
@@ -112,6 +114,7 @@ hypertaxonomy/
 │   │   ├── import-tag-groups-handler.php     # Tag Groups mapping, re-run locks, integration mode helpers
 │   │   ├── import-ui.php                     # Export / Import tab: Import subtab
 │   │   ├── merge-terms.php                   # Merge Terms admin UI and handler
+│   │   ├── operation-check.php               # Check step shared by Merge Terms and Convert Terms
 │   │   ├── post-edit.php                     # Post editor: assets, sticky terms REST field, display preferences notice, tag creation on post saves
 │   │   ├── relationship-types-admin.php      # Term Relationship Types admin page: view built-in types, manage user-defined types
 │   │   ├── settings.php                      # Settings page UI (HyperTaxonomy_Settings class)
@@ -157,6 +160,7 @@ hypertaxonomy/
 │   │   ├── term-conversion.php               # Term taxonomy conversion: native engine, icon-transfer, sticky transfer, redirect stub creation
 │   │   ├── term-groups.php                   # Term Groups inclusion/container functions
 │   │   ├── term-merge.php                    # Term merge logic (transfer posts and relationships, optional redirect stub)
+│   │   ├── term-operations.php               # Merge and conversion options shared by other plugins (stub/move/copy/drop choice)
 │   │   ├── term-meta.php                     # Stored term meta key list and sanitizing; computed get_term_meta() keys, optionally in REST
 │   │   ├── term-relationships.php            # Synonyms/includes/redirects (includes relationship helpers)
 │   │   └── term-visibility.php               # Term visibility logic (hidden terms, write-time cascade, frontend query filtering)
@@ -231,6 +235,7 @@ Load order (dependencies verified):
    - core/term-groups.php (included/container groups)
    - core/term-conversion.php (term taxonomy conversion — native engine, external-plugin detection, redirect stub creation, sticky transfer)
    - core/term-merge.php (term merge logic)
+   - core/term-operations.php (merge and conversion options shared by other plugins)
 
 2. INFRASTRUCTURE CLASSES - Early Load
    - classes/class-capabilities.php (auto-initializes, used by other classes)
@@ -277,6 +282,7 @@ Load order (dependencies verified):
    - admin/term-filters.php              (backend filtering logic for admin tables)
    - admin/bulk-actions.php              (bulk operations for term lists)
    - admin/group-admin.php               (Term Groups admin UI)
+   - admin/operation-check.php           (check step of the Merge and Convert Terms pages)
    - admin/merge-terms.php               (Merge Terms admin page)
    - admin/convert-terms.php             (Convert Terms admin page + AJAX term loader)
    - admin/synonyms.php                  (Synonyms admin page)

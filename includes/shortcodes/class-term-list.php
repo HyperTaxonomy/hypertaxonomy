@@ -177,6 +177,7 @@ class HyperTaxonomy_Term_List extends HyperTaxonomy_Term_Display_Base {
         if ( is_wp_error( $all_terms ) || empty( $all_terms ) ) {
             return;
         }
+        $this->prime_term_icons( $all_terms );
 
         foreach ( $all_terms as $term ) {
             $this->children_map[ (int) $term->parent ][] = $term;

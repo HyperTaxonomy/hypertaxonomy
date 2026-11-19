@@ -99,14 +99,14 @@ function htax_maybe_show_tag_groups_coexistence_notice() {
             ?>
         </p>
     </div>
-    <script>
+    <?php ob_start(); ?>
     jQuery( document ).on( 'click', '.htax-tag-groups-notice .notice-dismiss', function() {
         jQuery.post( ajaxurl, {
             action: 'htax_dismiss_tag_groups_notice',
             nonce: jQuery( '.htax-tag-groups-notice' ).data( 'nonce' )
         } );
     } );
-    </script>
+    <?php htax_add_inline_script( 'tag-groups-notice', ob_get_clean() ); ?>
     <?php
 }
 add_action( 'admin_notices', 'htax_maybe_show_tag_groups_coexistence_notice' );
@@ -246,6 +246,7 @@ add_action( 'set_object_terms',          'htax_post_list_cache_on_object_terms_s
 add_action( 'deleted_term_relationships', 'htax_post_list_cache_on_term_relationships_deleted', 10, 3 );
 add_action( 'transition_post_status',    'htax_post_list_cache_on_post_status_change',          10, 3 );
 add_action( 'wp_update_comment_count',   'htax_post_list_cache_on_comment_count',               10, 1 );
+add_action( 'post_updated',              'htax_post_list_cache_on_post_updated',                10, 3 );
 add_action( 'htax_term_visibility_changed', 'htax_post_list_cache_on_visibility_change',        20, 1 );
 add_action( 'htax_term_visibility_changed', 'htax_invalidate_archives_on_visibility_change',   20, 2 );
 

@@ -66,11 +66,12 @@ class HyperTaxonomy_Upgrader {
     }
 
     /**
-     * Upgrade to version 1.0.0
+     * Install the 1.0.0 schema when it isn't recorded as installed, e.g. when
+     * table creation failed during activation. install_schema() records the
+     * version only once every table exists, so a failure is retried.
      */
     private static function upgrade_to_1_0_0() {
-        HyperTaxonomy_Activator::add_indexes();
-        update_option( 'htax_db_version', '1.0.0' );
+        HyperTaxonomy_Activator::install_schema();
     }
     
     

@@ -550,7 +550,7 @@ function htax_ajax_import_tag_groups_batch() {
         return;
     }
 
-    $group_mapping = isset( $_POST['group_mapping'] ) ? json_decode( wp_unslash( $_POST['group_mapping'] ), true ) : array();
+    $group_mapping = isset( $_POST['group_mapping'] ) ? htax_decode_json_request( wp_unslash( $_POST['group_mapping'] ) ) : array();
     $offset        = isset( $_POST['offset'] ) ? (int) $_POST['offset'] : 0;
     $batch_size    = isset( $_POST['batch_size'] ) ? (int) $_POST['batch_size'] : 50;
     $batch_size    = max( 1, min( 200, $batch_size ) );
@@ -679,8 +679,8 @@ function htax_ajax_export() {
     require_once HTAX_PLUGIN_DIR . 'includes/admin/export-hypertaxonomy.php';
 
     // Get taxonomies from POST (sent as JSON.stringify'd array by the export form).
-    $taxonomies_raw = isset( $_POST['taxonomies'] ) ? wp_unslash( $_POST['taxonomies'] ) : '';
-    $taxonomies     = is_string( $taxonomies_raw ) ? json_decode( $taxonomies_raw, true ) : array();
+    $taxonomies = isset( $_POST['taxonomies'] ) ? htax_decode_json_request( wp_unslash( $_POST['taxonomies'] ) ) : array();
+    $taxonomies = is_array( $taxonomies ) ? array_map( 'sanitize_key', array_filter( $taxonomies, 'is_string' ) ) : array();
     $include_term_posts = isset( $_POST['include_term_posts'] ) && '1' === sanitize_text_field( wp_unslash( $_POST['include_term_posts'] ) );
 
     // Validate taxonomies
@@ -724,7 +724,7 @@ function htax_ajax_preview_import() {
     require_once HTAX_PLUGIN_DIR . 'includes/admin/import-hypertaxonomy.php';
 
     // Get import data from POST
-    $import_data = isset( $_POST['import_data'] ) ? json_decode( wp_unslash( $_POST['import_data'] ), true ) : null;
+    $import_data = isset( $_POST['import_data'] ) ? htax_decode_json_request( wp_unslash( $_POST['import_data'] ), 'htax_sanitize_import_string' ) : null;
 
     if ( empty( $import_data ) ) {
         wp_send_json_error( array( 'error' => __( 'No import data provided.', 'hypertaxonomy' ) ) );
@@ -766,7 +766,7 @@ function htax_ajax_import() {
     require_once HTAX_PLUGIN_DIR . 'includes/admin/import-hypertaxonomy.php';
 
     // Get import data and options from POST
-    $import_data = isset( $_POST['import_data'] ) ? json_decode( wp_unslash( $_POST['import_data'] ), true ) : null;
+    $import_data = isset( $_POST['import_data'] ) ? htax_decode_json_request( wp_unslash( $_POST['import_data'] ), 'htax_sanitize_import_string' ) : null;
     $update_existing = isset( $_POST['update_existing'] ) && '1' === $_POST['update_existing'];
     $import_term_posts = isset( $_POST['import_term_posts'] ) && '1' === $_POST['import_term_posts'];
 
@@ -861,11 +861,14 @@ function htax_ajax_clear_strength_model() {
         return;
     }
 
-    $options = get_option( 'htax_settings', array() );
-    if ( isset( $options['strength_model'] ) && $model === $options['strength_model'] ) {
+    // Under the settings' lock, so a Settings save at the same moment isn't undone.
+    htax_update_option_locked( 'htax_settings', static function ( $options ) use ( $model ): ?array {
+        if ( ! is_array( $options ) || ( $options['strength_model'] ?? null ) !== $model ) {
+            return null;
+        }
         $options['strength_model'] = HTAX_DEFAULT_STRENGTH_MODEL;
-        update_option( 'htax_settings', $options );
-    }
+        return $options;
+    } );
 
     wp_send_json_success( array( 'removed' => $removed ) );
 }

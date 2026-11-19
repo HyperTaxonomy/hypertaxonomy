@@ -456,7 +456,9 @@ class HyperTaxonomy_Term_Icons {
                     'fields' => 'ids',
                     'no_found_rows' => true,
                 ) );
-                
+                // 'ids' doesn't load the posts; load them and their meta at once for the URLs.
+                _prime_post_caches( $attachments, false, true );
+
                 // Get URLs for each attachment
                 foreach ( $attachments as $attachment_id ) {
                     $image = wp_get_attachment_image_src( $attachment_id, $size );
@@ -976,8 +978,6 @@ class HyperTaxonomy_Term_Icons {
      * @return int|WP_Error New attachment ID or error.
      */
     private function create_attachment_from_cropped_file( $file_path, $parent_id ) {
-        require_once ABSPATH . 'wp-admin/includes/image.php';
-
         $mime = wp_check_filetype( basename( $file_path ), null );
         if ( ! $mime['type'] ) {
             return new WP_Error( 'invalid_mime', __( 'Could not determine the file format of the cropped image.', 'hypertaxonomy' ) );

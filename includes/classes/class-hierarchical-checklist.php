@@ -252,7 +252,7 @@ function htax_hierarchical_checklist( $args = array() ) {
             </ul>
         <?php endif; ?>
 
-        <div id="<?php echo esc_attr( $args['id'] . '-all' ); ?>" class="tabs-panel" <?php echo $args['show_tabs'] ? 'style="display: none; margin: 0; padding: 0;"' : 'style="border: 0; padding: 0; margin: 0;"'; ?>>
+        <div id="<?php echo esc_attr( $args['id'] . '-all' ); ?>" class="tabs-panel htax-tabs-panel" <?php echo $args['show_tabs'] ? 'style="display: none; margin: 0; padding: 0;"' : 'style="border: 0; padding: 0; margin: 0;"'; ?>>
             <?php
             // Hidden input to ensure empty value is sent
             echo '<input type="hidden" name="' . esc_attr( $args['name'] ) . '[]" value="0" />';

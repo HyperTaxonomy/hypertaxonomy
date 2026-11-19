@@ -1,0 +1,37 @@
+/* Check step of the Merge Terms and Convert Terms pages (htax-operation-check.js). */
+
+.htax-check-step2 {
+	max-width: 760px;
+}
+
+.htax-check-checking {
+	margin-left: 8px;
+	color: #646970;
+}
+
+.htax-check-step2 .notice.inline {
+	margin: 8px 0 12px;
+}
+
+.htax-check-field {
+	margin: 0 0 16px;
+}
+
+.htax-check-field legend {
+	font-weight: 600;
+	margin-bottom: 6px;
+}
+
+.htax-check-choice {
+	display: block;
+	margin: 0 0 8px;
+}
+
+.htax-check-choice .description {
+	display: block;
+	margin-left: 24px;
+}
+
+.htax-check-choice.is-unavailable {
+	opacity: 0.55;
+}

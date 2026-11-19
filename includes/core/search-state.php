@@ -131,9 +131,12 @@ function htax_redirect_search_submission(): void {
         return;
     }
 
+    // Field names are identifiers (letters, digits, '_' and '-'); others are not ours and are
+    // dropped. Values are plain text, sanitized as the POST-mode handlers read them.
     $state = array();
-    foreach ( wp_unslash( $_POST ) as $key => $value ) {
-        if ( in_array( $key, array( $nonce_field, '_wp_http_referer' ), true ) || false !== strpos( (string) $key, '_termdata' ) ) {
+    foreach ( map_deep( wp_unslash( $_POST ), 'sanitize_text_field' ) as $key => $value ) {
+        $key = (string) $key;
+        if ( ! preg_match( '/^[A-Za-z0-9_-]+$/', $key ) || in_array( $key, array( $nonce_field, '_wp_http_referer' ), true ) || false !== strpos( $key, '_termdata' ) ) {
             continue;
         }
         $state[ $key ] = $value;
@@ -168,6 +171,9 @@ function htax_restore_search_state(): void {
     if ( null === $state || ( empty( $state['htax_post_search'] ) && empty( $state['htax_power_post_search'] ) ) ) {
         return;
     }
+    $state = htax_sanitize_decoded_json( $state, static function ( string $value ): string {
+        return sanitize_text_field( $value );
+    } );
     foreach ( wp_slash( $state ) as $key => $value ) {
         $_POST[ $key ]    = $value;
         $_REQUEST[ $key ] = $value;

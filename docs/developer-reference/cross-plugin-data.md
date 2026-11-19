@@ -7,7 +7,7 @@ nav_order: 7
 # Cross-Plugin Data
 {: .no_toc }
 
-External knowledge-base identifiers (Wikidata, Wikipedia, GeoNames, and more) attached to terms are managed by **TermConnect**. The Term Links API — `tc_get_term_links()`, `tc_get_link_uri()`, `tc_get_terms_by_uri()`, `tc_get_platform_link_types()`, and related functions — is documented in the [TermConnect Developer Reference](https://hypertaxonomy.org/termconnect/developer-reference/term-links-api.html).
+External knowledge-base identifiers (Wikidata, Wikipedia, GeoNames, and more) attached to terms are managed by **TermConnect**. The Term Links API — `tconn_get_term_links()`, `tconn_get_link_uri()`, `tconn_get_terms_by_uri()`, `tconn_get_platform_link_types()`, and related functions — is documented in the [TermConnect Developer Reference](https://hypertaxonomy.org/termconnect/developer-reference/term-links-api.html).
 
 ## Table of contents
 {: .no_toc .text-delta }
@@ -30,7 +30,7 @@ add_filter( 'htax_term_uris', function( array $uris, int $term_id ): array {
 }, 10, 2 );
 ```
 
-`htax_term_uris` is a same-site PHP filter only — HyperTaxonomy does not expose it as a REST field. External identifier data in REST responses is TermConnect's responsibility, exposed via `tc_links` on TermConnect-enabled term endpoints.
+`htax_term_uris` is a same-site PHP filter only — HyperTaxonomy does not expose it as a REST field. External identifier data in REST responses is TermConnect's responsibility, exposed via `tconn_links` on TermConnect-enabled term endpoints.
 
 ## Term locations
 

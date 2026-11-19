@@ -148,10 +148,9 @@ class HyperTaxonomy_Search_Widget {
         // Hidden fields for POST submissions: identify search and carry all form-level config
         if ( ! $is_ajax ) {
             $output .= '<input type="hidden" name="htax_post_search" value="1" />';
-            $ui_state = isset( $_POST['htax_post_search'], $_POST['htax_ui_state'] )
-                ? wp_unslash( $_POST['htax_ui_state'] )
-                : '';
-            $output .= '<input type="hidden" name="htax_ui_state" value="' . esc_attr( $ui_state ) . '" />';
+            // Carry the submitted UI state forward, as validated by get_saved_ui_state().
+            $ui_state = $this->get_saved_ui_state();
+            $output  .= '<input type="hidden" name="htax_ui_state" value="' . esc_attr( empty( $ui_state ) ? '' : (string) wp_json_encode( $ui_state ) ) . '" />';
             $output .= '<input type="hidden" name="htax_orderby" value="' . esc_attr( $atts['orderby'] ) . '" />';
             $output .= '<input type="hidden" name="htax_posts_per_page" value="' . max( 1, intval( $atts['posts_per_page'] ) ) . '" />';
             $output .= '<input type="hidden" name="htax_max_results" value="' . max( 0, intval( $atts['max_results'] ) ) . '" />';
@@ -389,9 +388,7 @@ class HyperTaxonomy_Search_Widget {
         if ( empty( $map ) ) {
             return '';
         }
-        return '<script type="application/json" class="htax-group-members">'
-            . wp_json_encode( $map, JSON_HEX_TAG | JSON_HEX_AMP )
-            . '</script>';
+        return '<div hidden class="htax-group-members" data-map="' . esc_attr( (string) wp_json_encode( $map ) ) . '"></div>';
     }
 
     /**
@@ -1117,8 +1114,9 @@ class HyperTaxonomy_Search_Widget {
         $termdata_field_name = $atts['name'] . '_termdata' . $field_suffix;
         $term_data_value = '';
         if ( isset( $_POST['htax_post_search'] ) && isset( $_POST[ $termdata_field_name ] ) ) {
-            // Get raw value and stripslashes (WordPress may add magic quotes)
-            $term_data_value = wp_unslash( $_POST[ $termdata_field_name ] );
+            // Labels of the submitted pills, as JSON; sanitized, then passed back to the form.
+            $term_data       = htax_decode_json_request( wp_unslash( $_POST[ $termdata_field_name ] ) );
+            $term_data_value = null === $term_data ? '' : (string) wp_json_encode( $term_data );
         } elseif ( ! empty( $atts['add_terms'] ) ) {
             // Seed names/icons for the initial selection so its pills are labeled even
             // when there is no prefetched option pool to supply them.
@@ -1135,8 +1133,7 @@ class HyperTaxonomy_Search_Widget {
         $output .= '<input type="hidden" ';
         $output .= 'name="' . esc_attr( $termdata_field_name ) . '" ';
         $output .= 'class="htax-pills-termdata" ';
-        // Use htmlspecialchars to properly escape for HTML attribute
-        $output .= 'value="' . htmlspecialchars( $term_data_value, ENT_QUOTES, 'UTF-8' ) . '" />';
+        $output .= 'value="' . esc_attr( $term_data_value ) . '" />';
 
         $output .= '</div>';
 
@@ -1764,7 +1761,8 @@ class HyperTaxonomy_Search_Widget {
         $output .= $this->get_group_data_attr();
         $output .= '>';
 
-        $output .= do_shortcode( $content );
+        // The author's HTML around the nested field shortcodes; the shortcodes expand afterwards.
+        $output .= do_shortcode( wp_kses_post( (string) $content ) );
 
         $output .= '</div>';
 
@@ -1859,11 +1857,13 @@ class HyperTaxonomy_Search_Widget {
         if ( ! $parsed ) {
             $parsed = true;
             if ( isset( $_POST['htax_post_search'], $_POST['htax_ui_state'] ) ) {
-                $decoded = json_decode( wp_unslash( $_POST['htax_ui_state'] ), true );
+                // The state is a flat JSON object of short keys and keyword values, which
+                // sanitize_text_field() leaves intact; each entry is then validated below.
+                $decoded = json_decode( sanitize_text_field( wp_unslash( $_POST['htax_ui_state'] ) ), true );
                 if ( is_array( $decoded ) ) {
                     $valid_show_when = array( 'always', 'expanded', 'collapsed', 'never' );
                     foreach ( $decoded as $key => $value ) {
-                        if ( ! is_string( $key ) || ! is_string( $value ) ) {
+                        if ( ! is_string( $key ) || ! is_string( $value ) || sanitize_text_field( $key ) !== $key ) {
                             continue;
                         }
                         if ( strpos( $key, 'enabled:' ) === 0 ) {
@@ -2061,7 +2061,7 @@ class HyperTaxonomy_Search_Widget {
         }
         
         if ( ! $has_default ) {
-            $output .= '<option value="">' . __( 'Select...', 'hypertaxonomy' ) . '</option>';
+            $output .= '<option value="">' . esc_html__( 'Select...', 'hypertaxonomy' ) . '</option>';
         }
         
         foreach ( $options as $option ) {
@@ -2189,7 +2189,7 @@ class HyperTaxonomy_Search_Widget {
         $output .= $col_style . '>';
 
         $output .= '<div class="htax-results-container"></div>';
-        $output .= '<div class="htax-loading" style="display: none;">' . __( 'Loading...', 'hypertaxonomy' ) . '</div>';
+        $output .= '<div class="htax-loading" style="display: none;">' . esc_html__( 'Loading...', 'hypertaxonomy' ) . '</div>';
         $output .= '<nav class="htax-search-results-nav" aria-label="' . esc_attr__( 'Search results navigation', 'hypertaxonomy' ) . '"></nav>';
 
         $output .= '</div>'; // .htax-search-results
@@ -2457,7 +2457,8 @@ class HyperTaxonomy_Search_Widget {
      * @return string Rendered HTML.
      */
     private function render_form_content( $content ) {
-        $content = (string) $content;
+        // The author's HTML around the nested field shortcodes; the shortcodes expand afterwards.
+        $content = wp_kses_post( (string) $content );
         $pattern = '/(?<!\[)\[(\/?)ht_field_group\b([^\]]*)\](?!\])/';
         if ( ! preg_match_all( $pattern, $content, $tags, PREG_SET_ORDER | PREG_OFFSET_CAPTURE ) ) {
             return do_shortcode( $content );
@@ -3357,7 +3358,12 @@ class HyperTaxonomy_Search_Widget {
             return;
         }
 
-        $query = isset( $_POST['fields'] ) ? wp_unslash( (array) $_POST['fields'] ) : array();
+        // The search spec: a nested array of field definitions, term IDs and search text.
+        $query = isset( $_POST['fields'] ) && is_array( $_POST['fields'] )
+            ? htax_sanitize_decoded_json( wp_unslash( $_POST['fields'] ), static function ( string $value ): string {
+                return sanitize_text_field( $value );
+            } )
+            : array();
 
         if ( ! is_array( $query ) ) {
             wp_send_json_error( __( 'Invalid fields format.', 'hypertaxonomy' ) );
@@ -3397,8 +3403,8 @@ class HyperTaxonomy_Search_Widget {
 
         // Build extra WHERE from filter state
         $extra_where = '';
-        $raw_filter = isset( $_POST['htax_filter'] ) ? wp_unslash( $_POST['htax_filter'] ) : '';
-        if ( '' !== $raw_filter ) {
+        $raw_filter = isset( $_POST['htax_filter'] ) ? htax_decode_json_request( wp_unslash( $_POST['htax_filter'] ) ) : null;
+        if ( null !== $raw_filter ) {
             $filter_state = htax_parse_filter_state_ajax( $raw_filter );
             if ( ! empty( $filter_state ) ) {
                 $extra_where = htax_build_filter_sql( $filter_state );

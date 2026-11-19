@@ -11,13 +11,17 @@ If you need to build a `tax_query` from a term's expanded post set, react to arc
 
 What each relationship type does is described in [Term Relationships](../user-guide/term-relationships.html) in the User Guide. All public functions are prefixed `htax_`. Check `function_exists()` before calling if your code must run without HyperTaxonomy active.
 
-On front-end, REST and AJAX read requests (GET and HEAD), terms hidden from the current viewer are left out for callers in other plugins and themes by `htax_get_included_terms()`, `htax_get_container_terms()`, `htax_get_synonym_terms()`, `htax_get_related_terms()`, `htax_get_reverse_related_terms()` and `htax_get_terms_in_groups()`. See [Handling Hidden Terms](hidden-terms.html).
-
 ## Table of contents
 {: .no_toc .text-delta }
 
 1. TOC
 {:toc}
+
+---
+
+## Hidden Terms
+
+On front-end, REST and AJAX read requests (GET and HEAD), terms hidden from the current viewer are left out for callers in other plugins and themes by `htax_get_included_terms()`, `htax_get_container_terms()`, `htax_get_synonym_terms()`, `htax_get_related_terms()`, `htax_get_reverse_related_terms()` and `htax_get_terms_in_groups()`. See [Handling Hidden Terms](hidden-terms.html).
 
 ---
 
@@ -59,7 +63,7 @@ Returns an empty array when the **Term Relationships** feature is disabled for t
 
 `htax_get_synonym_terms( int|WP_Term $term, bool $include_redirect_data = false ): array`
 
-Returns the terms that the given term includes and that include it in turn: the intersection of its effective inclusions (`htax_get_included_terms()`) and its effective containers (`htax_get_container_terms()`). Each direction can come from any inclusion path — a direct inclusion, an inclusion-based custom type, a group inclusion or a container group — and exclusions apply. Synonyms contribute each other's directly assigned posts to their archives, but not their other inclusions; see [Term Relationships → Synonyms](../user-guide/term-relationships.html#synonyms).
+Returns the terms that the given term includes and that include it in turn: the intersection of its effective inclusions (`htax_get_included_terms()`) and its effective containers (`htax_get_container_terms()`). Each direction can come from any inclusion path — a direct inclusion, an inclusion-based custom type, a group inclusion or a container group — and exclusions apply. Synonyms contribute each other's directly assigned posts to their archives, but not their other inclusions; see [Term Relationships&nbsp;→ Synonyms](../user-guide/term-relationships.html#synonyms).
 
 ```php
 $synonyms = htax_get_synonym_terms( $term_id );

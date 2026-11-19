@@ -41,6 +41,9 @@ require_once HTAX_PLUGIN_DIR . 'includes/core/term-conversion.php';
 // Term merge
 require_once HTAX_PLUGIN_DIR . 'includes/core/term-merge.php';
 
+// Options of merges and conversions shared by other plugins
+require_once HTAX_PLUGIN_DIR . 'includes/core/term-operations.php';
+
 // ============================================================================
 // INFRASTRUCTURE CLASSES (Load Early)
 // ============================================================================
@@ -121,6 +124,7 @@ if ( is_admin() ) {
     require_once HTAX_PLUGIN_DIR . 'includes/admin/term-filters.php';  // Backend filtering logic for admin tables
     require_once HTAX_PLUGIN_DIR . 'includes/admin/bulk-actions.php';  // Bulk actions for term list tables
     require_once HTAX_PLUGIN_DIR . 'includes/admin/group-admin.php';   // Term Groups admin UI
+    require_once HTAX_PLUGIN_DIR . 'includes/admin/operation-check.php'; // Check step of the Merge and Convert Terms pages
     require_once HTAX_PLUGIN_DIR . 'includes/admin/merge-terms.php';   // Merge Terms admin page
     require_once HTAX_PLUGIN_DIR . 'includes/admin/convert-terms.php'; // Convert Terms admin page
     require_once HTAX_PLUGIN_DIR . 'includes/admin/synonyms.php';      // Synonyms admin page

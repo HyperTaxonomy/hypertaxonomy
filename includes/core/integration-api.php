@@ -454,7 +454,7 @@ function htax_get_term_uris( int $term_id ): array {
     return apply_filters( 'htax_term_uris', array(), $term_id );
 }
 
-add_action( 'tc_term_uris_changed', 'htax_relay_term_uris_changed' );
+add_action( 'tconn_term_uris_changed', 'htax_relay_term_uris_changed' );
 
 /**
  * Re-fire TermConnect's URI change under HyperTaxonomy's namespace, so that plugins
@@ -515,7 +515,7 @@ function htax_get_term_locations( int $term_id ): array {
  *   - 'per_page'   int              Hint for how many posts to fetch.
  *
  * Each post is a normalized array (the shape produced by TermConnect's
- * tc_external_normalize_post(): keys include url, title, excerpt, date_gmt,
+ * tconn_external_normalize_post(): keys include url, title, excerpt, date_gmt,
  * modified_gmt, thumbnail_url, origin, score, …).
  *
  * @since 1.0.0

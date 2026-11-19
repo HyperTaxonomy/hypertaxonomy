@@ -199,7 +199,7 @@ add_filter( 'term_links-post_tag', function( $links ) {
 
 ### Icon Sizes
 
-The configured dimensions are the **large** (full) size. Upload at large size; WordPress generates medium and small automatically. The medium and small percentages default to 50% and 25% but are configurable per taxonomy in **Settings → HyperTaxonomy → Icons**. Changing percentages regenerates the smaller sizes from existing uploads without requiring re-upload.
+The configured dimensions are the **large** (full) size. Upload at large size; WordPress generates medium and small automatically. The medium and small percentages default to 50% and 25% but are configurable per taxonomy in **Settings&nbsp;→ HyperTaxonomy&nbsp;→ Icons**. Changing percentages regenerates the smaller sizes from existing uploads without requiring re-upload.
 
 | Shortcut | Full name pattern | Default fraction | Use case |
 |----------|------------------|------------------|----------|
@@ -211,7 +211,7 @@ API functions accept both the shortcut (`'small'`) and the full name, and resolv
 
 ### Pill Styling
 
-Pills inherit border-radius from **[Settings > HyperTaxonomy > Icons](../user-guide/plugin-settings.html#icons-tab)** per-taxonomy configuration. The border-radius applies to both the icon/placeholder and the pill container, creating a seamless visual style. Default CSS class is `htax-pill`; the plugin stylesheet provides base styling.
+Pills inherit border-radius from **[Settings&nbsp;→ HyperTaxonomy&nbsp;→ Icons](../user-guide/plugin-settings.html#icons-tab)** per-taxonomy configuration. The border-radius applies to both the icon/placeholder and the pill container, creating a seamless visual style. Default CSS class is `htax-pill`; the plugin stylesheet provides base styling.
 
 ---
 
@@ -224,7 +224,7 @@ The post editor displays the following visual cues:
 - **Includes badge** (`⇉ [N]`): Light blue circle with a rightward-double-arrow symbol and count. Indicates this term's archive effectively includes N other terms' posts (via direct inclusion, inclusion groups, or container-group relationships).
 - **Container badge** (`⇇ [N]`): Light green circle with a leftward-double-arrow symbol and count. Indicates N other terms include this term's posts in their archives.
 - **Redirect styling** (*italic text*): When a term is a redirect, its pill/list item is displayed in italics. An additional hook symbol (↪, U+21AA) is appended to the term name as an extra visual cue.
-- **Hidden styling** (*opacity fade*): Terms marked as hidden are displayed with reduced opacity (45%).
+- **Hidden styling** (<span style="opacity: .45">opacity fade</span>): Terms marked as hidden are displayed with reduced opacity (45%).
 
 **Badge colors:**
 
@@ -235,13 +235,13 @@ Badge rendering is handled by `admin/js/htax-post-edit.js` and `admin/css/htax-p
 
 **Which features appear is governed by two gates, both of which must be on:**
 
-1. **Per-user preference** toggled in the Gutenberg block editor's **··· menu (More options) → HyperTaxonomy group** ([Editing Posts](../user-guide/editing-posts.html) describes each toggle). These are stored in the `core/preferences` store under the `htax/post-edit` scope and persist per user. Defaults:
+1. **Per-user preference** toggled in the Gutenberg block editor's **··· menu (More options)&nbsp;→ HyperTaxonomy group** ([Editing Posts](../user-guide/editing-posts.html) describes each toggle). These are stored in the `core/preferences` store under the `htax/post-edit` scope and persist per user. Defaults:
    - Inclusion Badges — off by default
    - Container Badges — off by default
    - Redirect Indicators — on by default
    - Hidden Terms — on by default
    - Sticky Pushpins — off by default
-2. The corresponding feature enabled for that taxonomy (e.g. `redirects`, `term_relationships`, `visibility`, `customize_archives`) in **[Settings → HyperTaxonomy → Features](../user-guide/plugin-settings.html#features-tab)**.
+2. The corresponding feature enabled for that taxonomy (e.g. `redirects`, `term_relationships`, `visibility`, `customize_archives`) in **[Settings&nbsp;→ HyperTaxonomy&nbsp;→ Features](../user-guide/plugin-settings.html#features-tab)**.
 
 **JS globals emitted alongside `htaxTermMeta`:**
 

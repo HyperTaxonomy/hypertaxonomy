@@ -21,14 +21,14 @@ Permanently consolidate duplicate or outdated terms into a single canonical term
 
 **How to merge:**
 
-1. Go to **Terms > Merge Terms**, or use a row's **⧉ Merge** link on the [Synonyms](term-relationships.html#the-synonyms-page) page, which fills in steps 2–4 for that pair
+1. Go to **Terms&nbsp;→ Merge Terms**, or use a row's **⧉&nbsp;Merge** link on the [Synonyms](term-relationships.html#the-synonyms-page) page, which fills in steps 2–4 for that pair
 2. Select the **Taxonomy** the terms belong to
 3. Type and select one or more **Source terms** (the terms to be deleted)
 4. Type and select a **Target term** (the term to keep)
 5. Leave **Create 301 redirect stubs for deleted terms** checked (the default, recommended), or uncheck it
 6. Click **Merge Terms**
 
-![Terms > Merge Terms, opened from the Synonyms page: Tags selected as the taxonomy, Killer Whale as the source term, Orca as the target term, and the option to create 301 redirect stubs checked](../assets/images/screenshots/merge-terms.png)
+![Terms → Merge Terms, opened from the Synonyms page: Tags selected as the taxonomy, Killer Whale as the source term, Orca as the target term, and the option to create 301 redirect stubs checked](../assets/images/screenshots/merge-terms.png)
 
 The **Source terms** field takes several terms: type a name, select it from the suggestions, then type the next. The terms you've selected are listed in the field, in gray, and a term already selected isn't added twice. **Target term** takes a single term. Changing the **Taxonomy** clears both fields. If you opened the page from the Synonyms page, the row's term is the source and its synonym the target; you can change either before merging.
 
@@ -40,7 +40,11 @@ The **Source terms** field takes several terms: type a name, select it from the 
 - Posts pinned to a source term are pinned to the target term. The target's **Maximum sticky posts** still limits how many are shown at once
 - Source terms are deleted. The target keeps its own icon, description, and visibility; those of the source terms aren't transferred
 
-**Redirect stubs (recommended):** When enabled, a new redirect term is created with each source term's name and slug, pointing to the target. Old archive URLs (e.g. `/tag/old-name/`) then 301-redirect to the target's archive, preserving SEO value and preventing broken links. If the target term is itself a redirect, stubs point directly to the chain's final destination.
+**Redirect stubs (recommended):** When enabled, a new redirect term is created with each source term's name and slug, pointing to the target. Old archive URLs (e.g. `/tag/old-name/`) then 301-redirect to the target's archive, preserving SEO value and preventing broken links. If the target term is itself a redirect, stubs point directly to the chain's final destination. In a hierarchical taxonomy, a stub takes its source term's place: it gets the source's parent, and the source's child terms are moved under it (without stubs, they move up a level).
+
+**Plugins with data on the terms.** When another plugin keeps data on these terms, clicking **Merge Terms** first shows what the merge will do with it, with any choices the plugin offers. [TermConnect](https://hypertaxonomy.org/termconnect/user-guide/delegated-identity.html#merging-and-converting-terms), for example, asks what happens to the source terms' external links and delegated identities, and [As the Crow Flies](https://hypertaxonomy.org/as-the-crow-flies/user-guide/working-with-hypertaxonomy.html#term-merges-and-conversions) to their locations. With stubs, they stay on the stubs by default; without, they move to the target. The redirect stub setting is shown again there and can still be changed: choices that need a stub, or no stub, follow it. Click **Merge Terms** again to merge, or **Back** to change the selection. When no plugin has anything to say, the merge runs straight away.
+
+Merges started outside this page, such as from TermConnect's [merge proposals](https://hypertaxonomy.org/termconnect/user-guide/shared-vocabularies.html#merge-proposals), skip this step: each plugin uses its defaults, unless whatever started the merge asked for something else. TermConnect's merge proposals, for example, move everything to the replacement term. Developers can add their own section to this step, and act before and after merges and conversions, with the hooks in [Actions & Filters](../developer-reference/actions-filters.html#check-step-before-a-merge-or-conversion).
 
 **Warning:** This operation is permanent and cannot be undone. Back up your database before merging.
 
@@ -48,18 +52,18 @@ The **Source terms** field takes several terms: type a name, select it from the 
 
 ## Convert Terms
 
-**Terms > Convert Terms** moves terms from one taxonomy to another. A fresh term is created in the target taxonomy and all post assignments are moved to it. What happens to the old term depends on whether you choose to leave a redirect stub.
+**Terms&nbsp;→ Convert Terms** moves terms from one taxonomy to another. A fresh term is created in the target taxonomy and all post assignments are moved to it. What happens to the old term depends on whether you choose to leave a redirect stub.
 
 **How to convert:**
 
-1. Open **Terms > Convert Terms**.
+1. Open **Terms&nbsp;→ Convert Terms**.
 2. Choose a source taxonomy. The term list loads automatically.
 3. Check the terms you want to convert. Use **Select all / Deselect all** as needed.
 4. Choose the target taxonomy.
 5. Leave **Create 301 redirect stubs in the old taxonomy** checked (the default), or uncheck it (see below).
 6. Click **Convert Selected Terms**.
 
-![Terms > Convert Terms: Categories chosen as the source taxonomy, its terms listed with their post counts and subcategories indented under their parents, the Conservation category checked, Tags chosen as the target taxonomy, and the option to create 301 redirect stubs checked](../assets/images/screenshots/convert-terms.png)
+![Terms → Convert Terms: Categories chosen as the source taxonomy, its terms listed with their post counts and subcategories indented under their parents, the Conservation category checked, Tags chosen as the target taxonomy, and the option to create 301 redirect stubs checked](../assets/images/screenshots/convert-terms.png)
 
 The term list shows each term's post count, with child terms indented under their parents. Checking a parent doesn't check its children: only the terms you check are converted. When you convert a parent together with its children, the parent is converted first.
 
@@ -67,7 +71,7 @@ The term list shows each term's post count, with child terms indented under thei
 
 - If a term with the same name already exists in the target taxonomy, that term is skipped with an error. Rename one of them, then convert again.
 - Terms that are already redirect stubs cannot be converted — remove the redirect on the term edit screen first.
-- The site's default category cannot be converted — change the default in Settings > Writing first.
+- The site's default category cannot be converted — change the default in Settings&nbsp;→ Writing first.
 - A term whose `term_group` value (WordPress's own way of marking terms as aliases of each other) is already used by a different term in the target taxonomy cannot be converted, because the two would become aliases there. This only affects terms created as aliases, which is rare; change the `term_group` first.
 
 **With redirect stubs (default):**
@@ -82,4 +86,6 @@ The old term is deleted and its original URL slug is assigned to the new term, g
 
 **Slugs:** The new term's slug is auto-generated when a redirect stub is created (the stub needs the original slug for URL routing). Without a redirect stub, the new term receives the original slug.
 
-**Integration with other tools.** HyperTaxonomy also tracks conversions made by the [Categories to Tags Converter](https://wordpress.org/plugins/wpcat2tag-importer/) and other plugins that use the standard WordPress term-creation and term-deletion hooks. For those conversions, redirect stubs, hidden status, icons, and sticky posts are handled automatically. Direct database manipulation bypasses all hooks and is not tracked.
+**Plugins with data on the terms.** As for merging, when another plugin keeps data on these terms, clicking **Convert Selected Terms** first shows what the conversion will do with it, with any choices, and the redirect stub setting, which can still be changed there. [TermConnect](https://hypertaxonomy.org/termconnect/user-guide/delegated-identity.html#merging-and-converting-terms), for example, asks what happens to a term's external links and delegated identity, and whether to delegate the new term, and [As the Crow Flies](https://hypertaxonomy.org/as-the-crow-flies/user-guide/working-with-hypertaxonomy.html#term-merges-and-conversions) to its locations. Both give a redirect stub its data back when its term is converted back to it.
+
+**Integration with other tools.** HyperTaxonomy also tracks conversions made by the [Categories to Tags Converter](https://wordpress.org/plugins/wpcat2tag-importer/) and other plugins that use the standard WordPress term-creation and term-deletion hooks. For those conversions, the new term takes the old term's hidden status, sticky posts and icon, as above. No redirect stub is created: these tools delete the old term, as in a conversion without stubs. Plugins with data on the terms are told about these conversions too ([`htax_before_convert_term` and `htax_after_convert_term`](../developer-reference/actions-filters.html#before-and-after-a-term-is-converted)), and use their defaults for a conversion without stubs: TermConnect and As the Crow Flies, for example, move the old term's external links and locations to the new term. Direct database manipulation bypasses all hooks and is not tracked.

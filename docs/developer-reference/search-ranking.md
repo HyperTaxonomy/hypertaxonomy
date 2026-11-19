@@ -17,9 +17,9 @@ nav_order: 6
 
 ## Strength Models
 
-Every post–term relationship in the search index carries a **strength**: how central the term is to the post, from 0 to 1. Strength ranks term-based search results and related posts. HyperTaxonomy's built-in model, `htax_tf`, derives it from how prominently the term name appears in the post's title, excerpt, and body. Another plugin — for example one that computes semantic similarity with embeddings — can register its own model and supply scores; a site owner then selects it in **[Settings → Search](../user-guide/plugin-settings.html#search-tab) → Strength Model**.
+Every post–term relationship in the search index carries a **strength**: how central the term is to the post, from 0 to 1. Strength ranks term-based search results and related posts. HyperTaxonomy's built-in model, `htax_tf`, derives it from how prominently the term name appears in the post's title, excerpt, and body. Another plugin — for example one that computes semantic similarity with embeddings — can register its own model and supply scores; a site owner then selects it in **[Settings&nbsp;→ Search](../user-guide/plugin-settings.html#search-tab)&nbsp;→ Strength Model**.
 
-For how models are stored, selected and queried, see [Search Internals → Strength Models](../architecture/search-internals.html#strength-models-includescorestrength-modelsphp).
+For how models are stored, selected and queried, see [Search Internals&nbsp;→ Strength Models](../architecture/search-internals.html#strength-models-includescorestrength-modelsphp).
 
 **How a provider integrates:**
 
@@ -53,11 +53,11 @@ if ( function_exists( 'htax_remove_term_strengths' ) ) {
 }
 ```
 
-**What site owners see:** the model appears in Settings → Search → Strength Model with its coverage (how many directly assigned post–term pairs it has scored). It can only be selected once coverage is complete. While it is selected, pairs it hasn't scored yet don't contribute to term-based ranking — HyperTaxonomy never mixes its own scores into another model's ranking. Settings → Search → Index Rebuild is replaced by **Clear Scores** for external models, because only the provider can rescore posts.
+**What site owners see:** the model appears in Settings&nbsp;→ Search&nbsp;→ Strength Model with its coverage (how many directly assigned post–term pairs it has scored). It can only be selected once coverage is complete. While it is selected, pairs it hasn't scored yet don't contribute to term-based ranking — HyperTaxonomy never mixes its own scores into another model's ranking. Settings&nbsp;→ Search&nbsp;→ Index Rebuild is replaced by **Clear Scores** for external models, because only the provider can rescore posts.
 
 **Scores survive reindexing.** When HyperTaxonomy reindexes a post (on save, after term or relationship changes, or in a full rebuild), it keeps each model's scores for terms that are still directly assigned and re-derives the dependent rows. Scores for unassigned terms are dropped.
 
-**Unregistering does not delete scores.** Registration is per request, so a temporarily deactivated provider keeps its scores; they are simply not read, and the selection falls back to `htax_tf` until the model is registered again (the saved selection is kept). Delete them explicitly with `htax_remove_term_strengths()` — e.g. in your uninstall routine — or let the site owner use Clear Scores: Settings → Search lists models that still have stored scores but aren't registered as *inactive*, with their coverage and Clear Scores, without allowing them to be selected.
+**Unregistering does not delete scores.** Registration is per request, so a temporarily deactivated provider keeps its scores; they are simply not read, and the selection falls back to `htax_tf` until the model is registered again (the saved selection is kept). Delete them explicitly with `htax_remove_term_strengths()` — e.g. in your uninstall routine — or let the site owner use Clear Scores: Settings&nbsp;→ Search lists models that still have stored scores but aren't registered as *inactive*, with their coverage and Clear Scores, without allowing them to be selected.
 
 ### Functions
 
@@ -75,7 +75,7 @@ if ( function_exists( 'htax_remove_term_strengths' ) ) {
 
 **`htax_get_strength_model_coverage( string $model ): array`** — per taxonomy, `[ 'scored' => int, 'total' => int ]` directly assigned post–term pairs. **`htax_strength_model_has_full_coverage( string $model ): bool`** — whether every pair is scored.
 
-**`htax_get_strength_model( string $purpose = 'search' ): string`** — the model strength-ranked reads use: the one selected in Settings → Search if it is registered, otherwise `htax_tf`. `$purpose` is `'search'` or `'related'`; both currently read the same selection.
+**`htax_get_strength_model( string $purpose = 'search' ): string`** — the model strength-ranked reads use: the one selected in Settings&nbsp;→ Search if it is registered, otherwise `htax_tf`. `$purpose` is `'search'` or `'related'`; both currently read the same selection.
 
 **`htax_strength_model_sql( string $alias = '', string $purpose = 'search' ): string`** — returns ` AND {alias}.model = '…'` for that model, safe to interpolate.
 

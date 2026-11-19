@@ -9,7 +9,7 @@ nav_order: 7
 
 Four shortcodes, each with a matching block, for displaying terms on any page or in a widget.
 
-**Default styles:** A minimal stylesheet is automatically included when shortcodes or blocks are rendered. Disable in Settings > HyperTaxonomy > Display (Frontend Styles) if providing custom styles. The stylesheet is at `assets/css/htax-shortcodes.css`.
+**Default styles:** A minimal stylesheet is automatically included when shortcodes or blocks are rendered. Disable in Settings&nbsp;→ HyperTaxonomy&nbsp;→ Display (Frontend Styles) if providing custom styles. The stylesheet is at `assets/css/htax-shortcodes.css`.
 
 ## Table of contents
 {: .no_toc .text-delta }
@@ -138,7 +138,7 @@ Hierarchical or flat term list with optional depth control, indentation, and col
 
 ## HT Term List Block
 
-The **HT Term List** block is the block-editor equivalent of `[ht_term_list]`. Find it in the inserter under **HyperTaxonomy → HT Term List**, or search for "hypertaxonomy".
+The **HT Term List** block is the block-editor equivalent of `[ht_term_list]`. Find it in the inserter under **HyperTaxonomy&nbsp;→ HT Term List**, or search for "hypertaxonomy".
 
 The **Term Source** panel configures the taxonomy, hide-empty, include/exclude groups, and include/exclude terms. The **Display** panel covers sort order and direction, max depth, indent style, columns, collapsible behavior, header link behavior (`none`, `link`, `toggle`), minimum post count filter, and optional header text (supports `{term_count}`, `{total_count}`, and `{group_names}` placeholders).
 
@@ -177,7 +177,7 @@ Alphabetical index with A–Z navigation. Terms are always sorted alphabetically
 
 ## HT Term Index Block
 
-The **HT Term Index** block is the block-editor equivalent of `[ht_term_index]`. Find it in the inserter under **HyperTaxonomy → HT Term Index**, or search for "hypertaxonomy".
+The **HT Term Index** block is the block-editor equivalent of `[ht_term_index]`. Find it in the inserter under **HyperTaxonomy&nbsp;→ HT Term Index**, or search for "hypertaxonomy".
 
 The **Term Source** panel configures taxonomy and include/exclude filters. The **Display** panel controls A–Z navigation, letter headers, navigation position, columns, post count visibility, minimum post count filter, additional CSS class, and optional header text (supports `{term_count}`, `{total_count}`, and `{group_names}` placeholders). Letter case, list format, separator, and container class and ID are available through the shortcode only.
 
@@ -214,7 +214,7 @@ Tag cloud with font sizes proportional to post counts.
 
 ## HT Term Cloud Block
 
-The **HT Term Cloud** block is the block-editor equivalent of `[ht_term_cloud]`. Find it in the inserter under **HyperTaxonomy → HT Term Cloud**, or search for "hypertaxonomy".
+The **HT Term Cloud** block is the block-editor equivalent of `[ht_term_cloud]`. Find it in the inserter under **HyperTaxonomy&nbsp;→ HT Term Cloud**, or search for "hypertaxonomy".
 
 The **Term Source** panel configures taxonomy and include/exclude filters. The **Display** panel controls font size range, unit, maximum number of terms shown, minimum post count filter, and optional header text (supports `{term_count}`, `{total_count}`, and `{group_names}` placeholders).
 
@@ -260,6 +260,6 @@ Collapsible tree structure showing [Term Groups](term-groups.html) with member t
 
 ## HT Term Groups Block
 
-The **HT Term Groups** block is the block-editor equivalent of `[ht_term_groups]`. Find it in the inserter under **HyperTaxonomy → HT Term Groups**, or search for "hypertaxonomy".
+The **HT Term Groups** block is the block-editor equivalent of `[ht_term_groups]`. Find it in the inserter under **HyperTaxonomy&nbsp;→ HT Term Groups**, or search for "hypertaxonomy".
 
 The **Term Source** panel accepts one or more taxonomy slugs (equivalent to the `taxonomies` attribute) and include/exclude group filters. The **Display** panel controls collapsible behavior, auto-collapse, empty group visibility, group/term count display, **Term icons**, and additional CSS class.

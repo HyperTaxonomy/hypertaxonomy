@@ -161,7 +161,7 @@ function htax_frontend_styles() {
 
         /*
          * Printed from wp_head at priority 999, after the theme's styles, as an inline
-         * style on a source-less handle, so WordPress prints the <style> element. Tags are
+         * style on a source-less handle, so WordPress prints the style element. Tags are
          * stripped from the filtered CSS so it can't close the element early.
          */
         $css = wp_strip_all_tags( apply_filters( 'htax_frontend_styles', '
@@ -351,8 +351,8 @@ function htax_icon_border_radius_styles() {
         return;
     }
 
+    ob_start();
     ?>
-    <style type="text/css" id="htax-icon-border-radius">
         /* HyperTaxonomy Dynamic Icon Border Radius - Per Taxonomy */
         <?php foreach ( $css_rules as $taxonomy => $css ) : ?>
         /* <?php echo esc_attr( $taxonomy ); ?> */
@@ -423,8 +423,8 @@ function htax_icon_border_radius_styles() {
             border-radius: <?php echo esc_attr( $css ); ?> !important;
         }
         <?php endforeach; ?>
-    </style>
     <?php
+    htax_print_inline_style( 'htax-icon-border-radius', ob_get_clean() );
 }
 
 /**
@@ -589,6 +589,28 @@ function htax_get_term_icon_url( $term, $size = 'htax-icon-small' ) {
     $data = $icons->get_term_icon_data( $term_id, $size, false );
 
     return $data['has_icon'] ? $data['url'] : false;
+}
+
+/**
+ * Load the icon attachments of many terms at once (their posts and meta, two queries), so
+ * rendering their icons one by one doesn't query each attachment. Reads the terms' icon meta,
+ * which WordPress loads for all of them in one query.
+ *
+ * @since 1.0.0
+ *
+ * @param WP_Term[] $terms Terms about to be shown with icons.
+ */
+function htax_prime_term_icons( array $terms ): void {
+    $attachment_ids = array();
+    foreach ( $terms as $term ) {
+        $attachment_id = $term instanceof WP_Term ? (int) get_term_meta( $term->term_id, '_htax_icon_id', true ) : 0;
+        if ( $attachment_id ) {
+            $attachment_ids[ $attachment_id ] = true;
+        }
+    }
+    if ( $attachment_ids ) {
+        _prime_post_caches( array_keys( $attachment_ids ), false, true );
+    }
 }
 
 /**

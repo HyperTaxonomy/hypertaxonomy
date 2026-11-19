@@ -62,7 +62,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 <div id="htax-import-preview" style="margin-top: 15px;"></div>
 
-<script>
+<?php ob_start(); ?>
 jQuery(document).ready(function($) {
     // Preview import
     $('#htax-preview-import').on('click', function() {
@@ -95,21 +95,23 @@ jQuery(document).ready(function($) {
                     success: function(response) {
                         if (response.success && response.data.preview) {
                             var preview = response.data.preview;
+                            // Values from the import file are inserted as text.
+                            var esc = function(v) { return $('<div>').text(String(v)).html(); };
 
                             var html = '<div style="background: #e7f7e7; border-left: 4px solid #46b450; padding: 12px; margin-bottom: 15px;">';
                             html += '<p style="margin: 0 0 8px 0;"><strong><?php esc_html_e( 'Import Preview', 'hypertaxonomy' ); ?></strong></p>';
                             html += '<table style="width: 100%; border-collapse: collapse;">';
-                            html += '<tr><td style="padding: 2px 10px 2px 0;"><strong><?php esc_html_e( 'Exported from:', 'hypertaxonomy' ); ?></strong></td><td>' + preview.exported_from + '</td></tr>';
-                            html += '<tr><td style="padding: 2px 10px 2px 0;"><strong><?php esc_html_e( 'Exported at:', 'hypertaxonomy' ); ?></strong></td><td>' + preview.exported_at + '</td></tr>';
-                            html += '<tr><td style="padding: 2px 10px 2px 0;"><strong><?php esc_html_e( 'Total Terms:', 'hypertaxonomy' ); ?></strong></td><td>' + preview.total_terms + '</td></tr>';
-                            html += '<tr><td style="padding: 2px 10px 2px 0;"><strong><?php esc_html_e( 'Total Relationships:', 'hypertaxonomy' ); ?></strong></td><td>' + preview.total_relationships + '</td></tr>';
+                            html += '<tr><td style="padding: 2px 10px 2px 0;"><strong><?php esc_html_e( 'Exported from:', 'hypertaxonomy' ); ?></strong></td><td>' + esc(preview.exported_from) + '</td></tr>';
+                            html += '<tr><td style="padding: 2px 10px 2px 0;"><strong><?php esc_html_e( 'Exported at:', 'hypertaxonomy' ); ?></strong></td><td>' + esc(preview.exported_at) + '</td></tr>';
+                            html += '<tr><td style="padding: 2px 10px 2px 0;"><strong><?php esc_html_e( 'Total Terms:', 'hypertaxonomy' ); ?></strong></td><td>' + esc(preview.total_terms) + '</td></tr>';
+                            html += '<tr><td style="padding: 2px 10px 2px 0;"><strong><?php esc_html_e( 'Total Relationships:', 'hypertaxonomy' ); ?></strong></td><td>' + esc(preview.total_relationships) + '</td></tr>';
                             html += '</table></div>';
 
                             if (Object.keys(preview.taxonomies).length > 0) {
                                 html += '<p style="margin-bottom: 8px;"><strong><?php esc_html_e( 'Terms by Taxonomy:', 'hypertaxonomy' ); ?></strong></p>';
                                 html += '<ul style="list-style: disc; margin: 0 0 15px 25px;">';
                                 $.each(preview.taxonomies, function(tax, counts) {
-                                    html += '<li>' + tax + ': ' + counts.new + ' new, ' + counts.existing + ' existing</li>';
+                                    html += '<li>' + esc(tax) + ': ' + esc(counts.new) + ' new, ' + esc(counts.existing) + ' existing</li>';
                                 });
                                 html += '</ul>';
                             }
@@ -117,7 +119,7 @@ jQuery(document).ready(function($) {
                             $preview.html(html);
                             $importButton.show();
                         } else {
-                            $preview.html('<div style="background: #f8d7da; border-left: 4px solid #d63638; padding: 12px;"><p style="margin: 0;">' + (response.data.error || '<?php esc_html_e( 'Invalid import file', 'hypertaxonomy' ); ?>') + '</p></div>');
+                            $preview.html('<div style="background: #f8d7da; border-left: 4px solid #d63638; padding: 12px;"><p style="margin: 0;"></p></div>').find('p').text(response.data.error || '<?php echo esc_js( __( 'Invalid import file', 'hypertaxonomy' ) ); ?>');
                             $importButton.hide();
                         }
 
@@ -179,7 +181,7 @@ jQuery(document).ready(function($) {
                             $button.hide();
                             $('#htax-preview-import').prop('disabled', false).text('<?php esc_html_e( 'Import Another File', 'hypertaxonomy' ); ?>');
                         } else {
-                            $preview.html('<div style="background: #f8d7da; border-left: 4px solid #d63638; padding: 12px;"><p style="margin: 0;">' + (response.data.error || '<?php esc_html_e( 'Import failed', 'hypertaxonomy' ); ?>') + '</p></div>');
+                            $preview.html('<div style="background: #f8d7da; border-left: 4px solid #d63638; padding: 12px;"><p style="margin: 0;"></p></div>').find('p').text(response.data.error || '<?php echo esc_js( __( 'Import failed', 'hypertaxonomy' ) ); ?>');
                             $button.prop('disabled', false).text('<?php esc_html_e( 'Start Import', 'hypertaxonomy' ); ?>');
                             $('#htax-preview-import').prop('disabled', false);
                         }
@@ -201,4 +203,4 @@ jQuery(document).ready(function($) {
         reader.readAsText(fileInput.files[0]);
     });
 });
-</script>
+<?php htax_add_inline_script( 'import', ob_get_clean() ); ?>

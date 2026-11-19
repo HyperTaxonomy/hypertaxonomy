@@ -36,20 +36,20 @@ There is still one *Dog*. Each structure is a set, and the sets overlap wherever
 
 ![A Venn diagram of three overlapping sets: Canines (Dog, Wolf), Service animals (Dog, Mini pony) and Pets requiring vaccination (Dog, Cat, Ferret). Dog sits where all three overlap.](assets/images/why-venn.svg)
 
-A post filed only under *Dog* now appears in the *Canines*, *Service animals* and *Pets requiring vaccination* archives. A post filed under *Cat* appears under *Felines* and *Pets requiring vaccination*. Each structure keeps its own question intact, and nobody re-tags anything. When vets start recommending vaccines for miniature ponies too, adding *Mini pony* to *Pets requiring vaccination* brings every existing pony post into that archive at once, and every future one.
+A post filed only under *Dog* now appears in the *Canines*, *Service animals* and *Pets requiring vaccination* archives. A post filed under *Cat* appears under *Felines* and *Pets requiring vaccination*. Each structure keeps its own question intact, and nobody re-tags anything.
 
 ## Beyond inclusion
 
 Inclusion is the main tool, but HyperTaxonomy adds others for the same kind of problem:
 
-- **Synonyms:** two terms that include each other, like *USA* and *United States*, show each other's posts in their archives.
-- **Term Groups:** a named set of terms that a term can include as a whole. If *Service animals* includes a *Guide animals* group, every animal added to the group joins the service-animal archive.
-- **Redirects:** an outdated term sends visitors to its replacement with a permanent redirect, keeping its search ranking.
-- **Your own relationship types:** name the relationships your subject needs, of two kinds.
-  - An **inclusion-based** type works like inclusion under a name of your choosing: a veterinary site could say *Rabies vaccine* **protects** *Dog*, and the *Rabies vaccine* archive and search results pick up dog posts exactly as with *includes*.
-  - A **custom** type only records the connection, for example *Dog* **can live with** *Cat*. HyperTaxonomy stores it, shows it in the term editor and returns it through its API, and your theme or plugin decides what it does, such as listing compatible pets on an animal's page.
+- **Synonyms:** two terms that are set up to include each other, like *USA* and *United States*, show each other's posts in their archives.
+- **Term Groups:** a named set of terms that can be included as a whole. If *Service animals* includes a *Guide animals* **group**, every animal added to the group joins the service-animal archive automatically.
+- **Redirects:** a term with an alternative or outdated name sends visitors to its replacement/preferred term with a permanent HTTP redirect, keeping its search ranking and existing links functional.
+- **Your own relationship types,** named relationships between concepts specific to your domain, of two kinds:
+  - An **inclusion-based** type works like the built-in inclusion, but under a name of your choosing: a veterinary site could say *Rabies vaccine* ***protects*** *Dog*, and the *Rabies vaccine* archive and search results will pick up dog posts exactly as with *includes*.
+  - A **custom** type only records the connection, for example *Dog* ***can live with*** *Cat*. HyperTaxonomy stores it, shows it in the term editor and returns it through its API, while your theme or plugin decides what it does, such as listing compatible pets on an animal's page.
 
-  To create them, see [Term Relationships → Custom Relationship Types](user-guide/term-relationships.html#custom-relationship-types); for the API, see the [Developer Reference](developer-reference/custom-taxonomy.html#custom-relationship-types).
+  To create them, see [Term Relationships&nbsp;→ Custom Relationship Types](user-guide/term-relationships.html#custom-relationship-types); for the API, see the [Developer Reference](developer-reference/custom-taxonomy.html#custom-relationship-types).
 - **Relevance:** HyperTaxonomy records how central each term is to each post, so search results and related posts rank a dedicated dog-training guide above a post that mentions dogs in passing.
 
 ## Where to next

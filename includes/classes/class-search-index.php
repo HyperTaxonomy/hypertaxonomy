@@ -1889,12 +1889,15 @@ class HyperTaxonomy_Search_Index_Manager {
         $post_ids = htax_sanitize_term_ids( $post_ids );
 
         // Always defer to cron — no reindex batch belongs in the save request's shutdown.
-        $existing = get_option( 'htax_pending_reindex', array() );
-        update_option(
-            'htax_pending_reindex',
-            htax_sanitize_term_ids( array_merge( (array) $existing, $post_ids ) ),
-            false
-        );
+        // Other requests add to the queue and the cron batch takes from it at the same time,
+        // so this adds to its current value under its lock. If the lock can't be had, adding
+        // without it still beats dropping the posts.
+        $append = static function ( $queue ) use ( $post_ids ): array {
+            return htax_sanitize_term_ids( array_merge( (array) $queue, $post_ids ) );
+        };
+        if ( ! htax_update_option_locked( 'htax_pending_reindex', $append, array(), false ) ) {
+            update_option( 'htax_pending_reindex', $append( htax_get_option_fresh( 'htax_pending_reindex', array() ) ), false );
+        }
 
         if ( ! wp_next_scheduled( 'htax_process_reindex_batch' ) ) {
             wp_schedule_single_event( time(), 'htax_process_reindex_batch' );
@@ -2147,28 +2150,36 @@ class HyperTaxonomy_Search_Index_Manager {
      * Called automatically by WP Cron when scheduled.
      */
     public function process_async_reindex_batch() {
-        $queue = (array) get_option( 'htax_pending_reindex', array() );
-
-        if ( empty( $queue ) ) {
+        // Take this batch off the queue under its lock, before processing: posts queued during
+        // this run are added to the stored remainder by batch_reindex_posts(). Without the
+        // lock, the next run takes it.
+        $post_ids  = array();
+        $remaining = array();
+        $taken     = htax_update_option_locked(
+            'htax_pending_reindex',
+            static function ( $queue ) use ( &$post_ids, &$remaining ): ?array {
+                $queue = array_values( (array) $queue );
+                if ( ! $queue ) {
+                    return null;
+                }
+                $post_ids  = array_slice( $queue, 0, self::REINDEX_BATCH_SIZE );
+                $remaining = array_slice( $queue, self::REINDEX_BATCH_SIZE );
+                return $remaining;
+            },
+            array(),
+            false
+        );
+        if ( ! $taken && ! wp_next_scheduled( 'htax_process_reindex_batch' ) ) {
+            wp_schedule_single_event( time() + 60, 'htax_process_reindex_batch' );
+        }
+        if ( empty( $post_ids ) ) {
             return;
         }
 
-        $post_ids  = array_slice( $queue, 0, self::REINDEX_BATCH_SIZE );
-        $remaining = array_slice( $queue, self::REINDEX_BATCH_SIZE );
-
-        // Write the remainder back BEFORE processing. Posts queued during this run are
-        // merged into that stored remainder by batch_reindex_posts(); updating the queue
-        // after processing instead would silently discard those additions.
-        if ( empty( $remaining ) ) {
-            delete_option( 'htax_pending_reindex' );
-        } else {
-            update_option( 'htax_pending_reindex', array_values( $remaining ), false );
-
-            // WP Cron unschedules a single event before running it, so this schedules
-            // the next batch unless a post queued meanwhile already did.
-            if ( ! wp_next_scheduled( 'htax_process_reindex_batch' ) ) {
-                wp_schedule_single_event( time(), 'htax_process_reindex_batch' );
-            }
+        // WP Cron unschedules a single event before running it, so this schedules the next
+        // batch unless a post queued meanwhile already did.
+        if ( $remaining && ! wp_next_scheduled( 'htax_process_reindex_batch' ) ) {
+            wp_schedule_single_event( time(), 'htax_process_reindex_batch' );
         }
 
         // Sync post_text rows first (same as the manual rebuild path). If a row was
@@ -2180,7 +2191,7 @@ class HyperTaxonomy_Search_Index_Manager {
             }
         }
 
-        $old_term_ids = htax_get_post_index_term_ids( $post_ids );
+        $old_rows = $this->get_index_row_signatures( $post_ids );
 
         htax_prewarm_redirect_cache();
         $post_text_map = htax_fetch_post_text_batch( $post_ids );
@@ -2189,8 +2200,52 @@ class HyperTaxonomy_Search_Index_Manager {
         }
 
         // Clear post lists now the index is current: anything cached since the change that
-        // queued these posts, or missed because the index was still empty, was built from old rows.
-        htax_invalidate_post_list_cache( array_merge( $old_term_ids, htax_get_post_index_term_ids( $post_ids ) ) );
+        // queued these posts, or missed because the index was still empty, was built from old
+        // rows. A term whose rows a post gained or lost (or whose hidden state changed) changes
+        // membership, so all its lists go; a changed strength only reorders relevance lists.
+        $new_rows   = $this->get_index_row_signatures( $post_ids );
+        $membership = array();
+        $strength   = array();
+        foreach ( array_keys( $old_rows + $new_rows ) as $pair ) {
+            $term_id = (int) substr( $pair, strpos( $pair, ':' ) + 1 );
+            if ( ! isset( $old_rows[ $pair ], $new_rows[ $pair ] ) || $old_rows[ $pair ]['h'] !== $new_rows[ $pair ]['h'] ) {
+                $membership[ $term_id ] = true;
+            } elseif ( $old_rows[ $pair ]['s'] !== $new_rows[ $pair ]['s'] ) {
+                $strength[ $term_id ] = true;
+            }
+        }
+        htax_invalidate_post_list_cache( array_keys( $membership ) );
+        htax_invalidate_post_list_cache( array_keys( array_diff_key( $strength, $membership ) ), 'r' );
+    }
+
+    /**
+     * Summarize the index rows of some posts, per post and term: summed strength (rounded)
+     * and whether any row is hidden. Compared before and after a reindex to tell which
+     * terms' post lists changed membership and which only changed relevance order.
+     *
+     * @since 1.0.0
+     *
+     * @param int[] $post_ids Post IDs.
+     * @return array<string, array{s: string, h: int}> Keyed "{post_id}:{term_id}".
+     */
+    private function get_index_row_signatures( array $post_ids ): array {
+        global $wpdb;
+        $post_ids = array_values( array_filter( array_map( 'intval', $post_ids ) ) );
+        if ( empty( $post_ids ) ) {
+            return array();
+        }
+        $rows = $wpdb->get_results( $wpdb->prepare(
+            "SELECT post_id, term_id, ROUND( SUM( strength ), 6 ) AS s, MAX( is_hidden ) AS h
+             FROM {$wpdb->prefix}htax_search_terms
+             WHERE post_id IN (" . htax_sql_placeholders( count( $post_ids ) ) . ')
+             GROUP BY post_id, term_id',
+            $post_ids
+        ) );
+        $out = array();
+        foreach ( (array) $rows as $row ) {
+            $out[ (int) $row->post_id . ':' . (int) $row->term_id ] = array( 's' => (string) $row->s, 'h' => (int) $row->h );
+        }
+        return $out;
     }
 
 }
@@ -2228,7 +2283,7 @@ function htax_create_search_term_index_table() {
         model varchar(64) NOT NULL DEFAULT '" . HTAX_DEFAULT_STRENGTH_MODEL . "',
         is_hidden tinyint(1) NOT NULL DEFAULT 0,
         strength float NOT NULL DEFAULT 1.0,
-        PRIMARY KEY (post_id, term_id, source_term_id, relationship_type, model),
+        PRIMARY KEY  (post_id, term_id, source_term_id, relationship_type, model),
         KEY idx_taxonomy (taxonomy),
         KEY idx_term_lookup (term_id),
         KEY idx_model (model, relationship_type, taxonomy),

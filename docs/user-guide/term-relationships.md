@@ -7,13 +7,9 @@ nav_order: 3
 # Term Relationships
 {: .no_toc }
 
-All relationship configuration is done on individual term edit screens — edit any tag, category, or custom taxonomy term and scroll to the HyperTaxonomy section. HyperTaxonomy also adds a top-level **Terms** menu to the admin sidebar containing **Term Groups**, **Convert Terms**, **Merge Terms**, **[Synonyms](#the-synonyms-page)**, and **Term Relationship Types**. Companion plugins add their own screens to this menu: **[Peer Sites](https://hypertaxonomy.org/termconnect/user-guide/peer-sites-feeds.html)** when [TermConnect](https://hypertaxonomy.org/termconnect/) is active, and **[Term Locations](https://hypertaxonomy.org/as-the-crow-flies/user-guide/locations-settings.html#for-all-terms)** when [As the Crow Flies](https://hypertaxonomy.org/as-the-crow-flies/) is active.
+Relationships are set on the term edit screen: edit any tag, category, or custom taxonomy term and use its **Term Relationships** section. A group's relationships can also be set from the group's own edit screen (see [Term Groups](term-groups.html#editing-a-group)), and the [Synonyms page](#the-synonyms-page) lists the synonyms that result from them.
 
-Term edit screens are protected against simultaneous editing: if another admin already has a term open, a blocking overlay appears with their name and **Go Back** / **Take Over** options. Locks expire automatically after 150 seconds of inactivity.
-
-If you navigate away from a term edit screen with unsaved changes, the browser shows a confirmation prompt before leaving the page.
-
-Creating Term Groups, assigning terms to them and managing them from the group's own screen are covered in [Term Groups](term-groups.html). This page covers how groups take part in relationships: [Group Inclusions](#group-inclusions) and [Container Groups](#container-groups). Both need **Group Assignment** enabled for the taxonomy in [Settings > HyperTaxonomy > Features](plugin-settings.html#features-tab); while it is off, they are ignored.
+Creating Term Groups, assigning terms to them and managing them from the group's own screen are covered in [Term Groups](term-groups.html). This page covers how groups take part in relationships: [Group Inclusions](#group-inclusions) and [Container Groups](#container-groups). Both need **Group Assignment** enabled for the taxonomy in [Settings&nbsp;→ HyperTaxonomy&nbsp;→ Features](plugin-settings.html#features-tab); while it is off, they are ignored.
 
 Each built-in relationship type, as well as the custom types that you can define, is explained in its own section below, followed by the general [Term Relationships Display](#the-term-relationships-display) section, which explains the colors, symbols, badges and controls you see on the term edit screen.
 
@@ -32,8 +28,8 @@ An inclusion is one relationship that you can set up from either of the two term
 ![A tag's Term Relationships section: no container tags, the Big Cats and Birds of Prey groups and two tags included, the species included through the groups, and Cougar excluded](../assets/images/screenshots/term-relationships-edit.png)
 
 **To add an inclusion:** Depending on the perspective that your workflow reflects, use the **Included** or **Container** autocomplete field, which is named for the taxonomy (for example, **Included Tags** or **Container Tags**):
-- "What terms should appear in my archive?" → use the **Included** field
-- "Which archives should my posts appear in?" → use the **Container** field
+- "What terms should appear in my archive?"&nbsp;→ use the **Included** field
+- "Which archives should my posts appear in?"&nbsp;→ use the **Container** field
 
 Type to search, select a term, save.
 
@@ -71,17 +67,17 @@ Container groups appear as green pills, and the terms reached through them appea
 
 ## Synonyms
 
-When two terms include each other, they become synonyms: each term's archive shows the posts assigned to the other. Synonyms are marked with the ⇆ icon on their pills in the admin interface.
+When two terms include each other, they become synonyms: each term's archive shows the posts assigned to the other.
 
-**To create a synonym:** Add Term B to Term A's **Included** field, and Term A to Term B's **Included** field, then save each term.
+**On the term edit screen**, the [⇆&nbsp;symbol](#symbols) marks synonyms in the term's own relationship fields: a pill in the **Included** field whose term is also in the **Container** field, and a pill in the **Container** field whose term this term also includes, directly or through an included group. A pill that redirects isn't marked. These marks only reflect the relationships shown on this screen; [The Synonyms page](#the-synonyms-page) lists every pair, however the two terms became synonyms.
 
 **How terms become synonyms.** Each of the two inclusions can come about in any of the ways a term includes another, and the two directions don't have to match:
-- **Direct inclusion** — Term A has Term B in its **Included** field, or Term B has Term A in its **Container** field.
+- **Direct inclusion** — Term A has Term B in its **Included** field (and Term B has Term A in its **Container** field).
 - **[Group inclusion](#group-inclusions)** — Term A includes a group that Term B belongs to, or a parent group of one. For example, two terms that are both members of a group, and both include that group, are synonyms.
 - **[Container group](#container-groups)** — Term B has a container group that Term A belongs to, or a container group whose parent group Term A belongs to. For example, two terms that are both members of a group, and both have that group as their container group, are synonyms.
 - **[Custom relationship types](#custom-relationship-types)** — an inclusion-based custom type counts the same as a built-in inclusion, whether set directly or through a group.
 
-For example, Term A may include Term B directly, while Term B includes Term A through a group. Synonyms follow what each term actually includes, so an [exclusion](#exclusions) undoes them: if Term A excludes Term B, the two aren't synonyms, even if each would otherwise include the other. A term that [redirects](#redirects) has no inclusions in effect, and therefore no synonyms.
+When Term B also includes Term A in one (or more) of the ways listed above, the two form a synonym pair. For example, Term A may include Term B directly, while Term B includes Term A through a group. Synonyms follow what each term actually includes, so an [exclusion](#exclusions) undoes them: if Term A excludes Term B, the two aren't synonyms, even if each would otherwise include the other. A term that [redirects](#redirects) has no inclusions in effect, and therefore no synonyms.
 
 **Synonyms share posts, not relationships.** Like synonyms in natural language, synonym terms are rarely interchangeable in every context: their meanings mostly overlap, but may differ in subtle ways. In HyperTaxonomy, each synonym's archive shows the posts directly assigned to the other term. They don't share relationships, though: if one synonym includes other terms and the other doesn't, the first synonym's archive also shows posts from its own inclusions, which the second synonym's archive doesn't. This follows from inclusions being non-transitive: when A includes B and B includes C, A doesn't include C.
 
@@ -91,23 +87,23 @@ Mutual inclusion (A includes B, B includes A) is explicitly supported and useful
 
 ### The Synonyms page
 
-Sometimes synonyms are set up deliberately, to let editors use whichever of two interchangeable terms fits the context best, but often they result from indirect relationships crossing paths, for example overlapping group inclusions. **Terms → Synonyms** detects and lists every pair of synonyms in the taxonomies where **Term Relationships** is enabled, no matter how they became synonyms. Each pair is listed twice (term A and its synonym B, then B and its synonym A, possibly among other synonyms of the same terms), with these columns:
+Sometimes synonyms are set up deliberately, to let editors use whichever of two interchangeable terms fits the context best, but often they result from indirect relationships crossing paths, for example overlapping group inclusions. **Terms&nbsp;→ Synonyms** detects and lists every pair of synonyms in the taxonomies where **Term Relationships** is enabled, no matter how they became synonyms. Each pair is listed twice (term A and its synonym B, then B and its synonym A, possibly among other synonyms of the same terms), with these columns:
 - **Term** and **Synonym** — each linked to its edit screen, with its post count, and marked **Hidden** if it is [hidden](per-term-settings.html#term-visibility).
 - **Taxonomy** — the taxonomy of the two terms.
-- **Inclusion paths** — every way the row's term includes its synonym, one per line: **→ direct** (an inclusion set on the term itself, or on the synonym as a container), **⇢ “Type”** (directly, by a custom inclusion-based relationship type), **⇒ Group › Subgroup** (group inclusion: the term includes the first group, and the synonym belongs to the last, a subgroup of it), or **⇐ Subgroup ‹ Group** (container group: the synonym's container group comes first, and the term belongs to the last, a parent group of it). A custom type's name follows group paths in parentheses. Hover over a line for the full wording. **⇄ reverse** jumps to the row with the same two terms in the other order, which shows the other direction, on whichever page it falls. When one of the two terms includes terms that the other doesn't, so that their archives show different posts, an **Archives differ** note below the paths names those terms (the first few, then how many more).
+- **Inclusion paths** — every way the row's term includes its synonym, one per line: **→&nbsp;direct** (an inclusion set on the term itself, or on the synonym as a container), **⇢&nbsp;“Type”** (directly, by a custom inclusion-based relationship type), **⇒&nbsp;Group › Subgroup** (group inclusion: the term includes the first group, and the synonym belongs to the last, a subgroup of it), or **⇐&nbsp;Subgroup ‹ Group** (container group: the synonym's container group comes first, and the term belongs to the last, a parent group of it). A custom type's name follows group paths in parentheses. Hover over a line for the full wording. **⇄&nbsp;reverse** jumps to the row with the same two terms in the other order, which shows the other direction, on whichever page it falls. When one of the two terms includes terms that the other doesn't, so that their archives show different posts, an **Archives differ** note below the paths names those terms (the first few, then how many more).
 
 ![Terms → Synonyms: eight rows of tags that include each other, with their inclusion paths: direct, through the custom Alternate name type, through the Marine Mammals group and its Cetaceans and Pinnipeds subgroups, and through Cetaceans as a container group; rows whose archives differ list the tags only one of the two includes, and the Actions column has Merge links and links to the parts of the terms' edit screens that hold each relationship](../assets/images/screenshots/synonyms.png)
 
 In this example, the Marine Life tag includes the Marine Mammals group, whose subgroups are Cetaceans and Pinnipeds, and Marine Life's container group is Cetaceans. Reading the rows:
-- **Killer Whale and Orca** include each other directly, so their rows show **→ direct**. Orca also includes Killer Whale by a custom inclusion-based type, **Alternate name**, which adds a **⇢ “Alternate name”** line and a link to that tab of Orca's edit screen.
-- **Marine Life includes Orca** through the group it includes: **⇒ Marine Mammals › Cetaceans** says that Marine Life includes Marine Mammals, and Orca is a member of its Cetaceans subgroup.
-- **Orca includes Marine Life** the other way round: **⇐ Cetaceans** says that Marine Life has Cetaceans as a container group, and Orca is a member of it. The ✎ links lead to Marine Life's **container terms** and Orca's **term groups**.
+- **Killer Whale and Orca** include each other directly, so their rows show **→&nbsp;direct**. Orca also includes Killer Whale by a custom inclusion-based type, **Alternate name**, which adds a **⇢&nbsp;“Alternate name”** line and a link to that tab of Orca's edit screen.
+- **Marine Life includes Orca** through the group it includes: **⇒&nbsp;Marine Mammals › Cetaceans** says that Marine Life includes Marine Mammals, and Orca is a member of its Cetaceans subgroup.
+- **Orca includes Marine Life** the other way round: **⇐&nbsp;Cetaceans** says that Marine Life has Cetaceans as a container group, and Orca is a member of it. The ✎&nbsp;links lead to Marine Life's **container terms** and Orca's **term groups**.
 - **Marine Life includes Walrus** in two ways, each on its own line: Walrus is a member of Marine Mammals itself, and of its Pinnipeds subgroup.
-- **Walrus includes Marine Life** through **⇐ Cetaceans ‹ Marine Mammals**: Marine Life's container group is Cetaceans, and Walrus belongs to Marine Mammals, the parent group of Cetaceans. A container group applies to the members of its parent groups too.
+- **Walrus includes Marine Life** through **⇐&nbsp;Cetaceans ‹ Marine Mammals**: Marine Life's container group is Cetaceans, and Walrus belongs to Marine Mammals, the parent group of Cetaceans. A container group applies to the members of its parent groups too.
 - Marine Life includes the whole Marine Mammals group, while the other tags don't, so every row pairing Marine Life with another tag lists the tags that only Marine Life includes, after **Archives differ**.
 
 Above the table, you can filter the list:
-- **Taxonomy**.
+- **Taxonomy** — a pair of synonyms can only exist within the same taxonomy.
 - **Inclusion type** — **Direct inclusion**, **Group inclusion** or **Container group**: pairs in which either term includes the other in that way, so a pair whose two directions differ (say, one direct and one through a group) matches both.
 - **Relationship type** — **Includes** or an inclusion-based custom type, shown when such custom types exist. Combined with the previous filter, both must match the same way of inclusion.
 - **Archives differ** — pairs in which one term includes terms that the other doesn't, so their archives show different posts.
@@ -115,7 +111,7 @@ Above the table, you can filter the list:
 
 The list is sorted by the **Term** column, A to Z or Z to A; ties are sorted by the synonym's name. **Screen Options** sets how many rows appear per page.
 
-The **Actions** column lists, for each row: **⧉ Merge** into the synonym (for users who can access [Merge Terms](merge-convert.html#merge-terms)), and **✎** links to the parts of the two terms' edit screens that hold the relationship — the term's **included terms**, the synonym's **container terms**, a custom type's tab, or either term's **term groups** for a group path. Each opens the edit screen at that section, switching tab or expanding **More options** as needed. **Merge** opens the Merge Terms page with the taxonomy, the source term (the row's term) and the target term (its synonym) already filled in. Nothing is merged until you confirm there.
+The **Actions** column lists, for each row: **⧉&nbsp;Merge** into the synonym (for users who can access [Merge Terms](merge-convert.html#merge-terms)), and **✎** links to the parts of the two terms' edit screens that hold the relationship — the term's **included terms**, the synonym's **container terms**, a custom type's tab, or either term's **term groups** for a group path. Each opens the edit screen at that section, switching tab or expanding **More options** as needed. **Merge** opens the Merge Terms page with the taxonomy, the source term (the row's term) and the target term (its synonym) already filled in. Nothing is merged until you confirm there.
 
 ## Exclusions
 
@@ -145,7 +141,7 @@ Exclusions never affect native WordPress parent/child hierarchy. A child categor
 
 **Effect on the Includes panel:** When a term appears in both the includes panel and the excludes panel, the admin interface signals the conflict:
 
-- **Direct includes** that are also excluded are shown with strikethrough text and reduced opacity. The × button remains active so the redundant direct include can be removed. The exclusion wins at runtime regardless.
+- **Direct includes** that are also excluded are shown with <s>strikethrough</s> text and reduced opacity. The ×&nbsp;button remains active so the redundant direct include can be removed. The exclusion wins at runtime regardless.
 - **Indirect includes** (added via groups) that are excluded are suppressed entirely from the includes panel — they are not in the archive and showing them would be misleading. The group pill itself is unaffected; removing the exclusion restores the indirect inclusion pill.
 
 **To add an exclusion:** Use the **Excluded** field on the term edit screen, which is named for the taxonomy (for example, **Excluded Tags**).
@@ -160,10 +156,10 @@ Exclusions never affect native WordPress parent/child hierarchy. A child categor
 Set a 301 redirect from this term to another term. Visitors going to this term's archive URL are redirected to the target term's archive.
 
 **Behavior:**
-- `/tag/old-name/` → 301 redirect → `/tag/new-name/`
+- `/tag/old-name/` →&nbsp;301 redirect&nbsp;→ `/tag/new-name/`
 - Posts tagged with "old-name" appear in the target's archive only if the target includes "old-name", like any other included term; the redirect doesn't do that by itself. [Searches](search-overview.html) for the target find them either way, unless **Redirects** is turned off under [Term Relationship Expansion](plugin-settings.html#search-tab)
 - This term has no accessible archive of its own
-- Redirect terms are shown in italics in shortcodes and term lists by default
+- Redirect terms are shown in *italics* in shortcodes and term lists by default
 - Redirecting to a term from a different taxonomy is permitted
 
 **Redirect chain resolution:** If Tag A redirects to Tag B, and you later set Tag B to redirect to Tag C, Tag A automatically updates to redirect directly to Tag C. No chains are stored.
@@ -182,9 +178,9 @@ For hierarchical taxonomies (categories and hierarchical custom taxonomies), pos
 
 ## Custom Relationship Types
 
-Beyond the built-in relationships above, you can define your own. All types, built-in and your own, are listed at **Terms > Term Relationship Types**.
+Beyond the built-in relationships above, you can define your own. All types, built-in and your own, are listed at **Terms&nbsp;→ Term Relationship Types**.
 
-![Terms > Term Relationship Types: the table of the four built-in types, the table of local types with a custom Related type and an inclusion-based Alternate name type, the form for discovering types from a peer site, and the two buttons for adding a type](../assets/images/screenshots/relationship-types.png)
+![Terms → Term Relationship Types: the table of the four built-in types, the table of local types with a custom Related type and an inclusion-based Alternate name type, the form for discovering types from a peer site, and the two buttons for adding a type](../assets/images/screenshots/relationship-types.png)
 
 The page has these parts, top to bottom:
 - **Built-in Relationship Types** — the four core types (member_of, includes, excludes, redirect), with each one's **Label** and **Inverse label**, the wording used for the two directions of a relationship. **User-mappable** marks the type that your own inclusion-based types work like: Includes. **Namespace** identifies who defined a type, so that sites sharing types can tell them apart; the built-in types use HyperTaxonomy's.
@@ -223,7 +219,7 @@ The term edit screen shows all relationship fields in the **Term Relationships**
 
 ### Panel order
 
-The built-in panels appear in this order: **Container Tags** → **Included Tags** → **Excluded Tags**. For custom relationship types, the reverse direction (what points *to* this term) comes first, then the forward direction. This order puts the "what uses this term" perspective at the top consistently.
+The built-in panels appear in this order: **Container Tags**&nbsp;→ **Included Tags**&nbsp;→ **Excluded Tags**. For custom relationship types, the reverse direction (what points *to* this term) comes first, then the forward direction. This order puts the "what uses this term" perspective at the top consistently.
 
 ### Color coding
 
@@ -273,7 +269,7 @@ The built-in panels appear in this order: **Container Tags** → **Included Tags
 | Tan | Terms whose archives include this term via an inclusion-based custom relationship type (no group path) |
 | Other + tan tooltip | Reachable via a group path AND a custom type; custom type shown in tooltip only |
 
-To hide the non-removable (indirect) pills, click the eye icon next to the **Term Relationships** label; the group pills stay visible as a summary. Your choice applies to every term you edit, and is saved with your user account, so it stays the same across browsers and devices. Each user has their own setting.
+To hide the non-removable (indirect) pills, click the eye icon ({% include dashicon.html name="visibility" %}) next to the **Term Relationships** label; the group pills stay visible as a summary. Your choice applies to every term you edit, and is saved with your user account, so it stays the same across browsers and devices. Each user has their own setting.
 
 ### Symbols
 
@@ -282,7 +278,7 @@ To hide the non-removable (indirect) pills, click the eye icon next to the **Ter
 | ⇆ | Synonym — this pill's term also includes the current term |
 | ↩ | Redirects here — this pill's term redirects to the current term (informational) |
 | ↪ | Redirects elsewhere — this pill's term has no standalone archive; dimmed on containers (relationship inactive), informational on includes |
-| Strikethrough | Included but overridden by an exclusion rule — has no effect at runtime |
+| <s>Strikethrough</s> | Included but overridden by an exclusion rule — has no effect at runtime |
 
 ### Tooltip path indicators
 
@@ -299,18 +295,18 @@ Group name links open that group's edit page with context. `⇒ via:` links foll
 
 ### Path count badge
 
-Direct includes (editable, with × button) are listed first, sorted A–Z. Indirect includes (via groups, read-only) follow under a **via groups:** label, also sorted A–Z.
+Direct includes (editable, with ×&nbsp;button) are listed first, sorted A–Z. Indirect includes (via groups, read-only) follow under a **via groups:** label, also sorted A–Z.
 
 When a term is reachable via more than one path (directly included, via one or more included groups, and/or via container groups), a small **N** badge (white circle) appears on its pill. Hover anywhere on the pill to see a tooltip listing the exact paths:
 
-- **⇒ via: Group A, Group B** — groups through which this term is included (from the groups in the **Included** field)
-- **⇐ via: Group C** — groups through which a reverse container-group path brings this term in
+- **⇒&nbsp;via: Group A, Group B** — groups through which this term is included (from the groups in the **Included** field)
+- **⇐&nbsp;via: Group C** — groups through which a reverse container-group path brings this term in
 
 A term with no badge has exactly one path. Remove or change group memberships to reduce path count.
 
 ### Hiding indirect and reverse relationships
 
-When a term belongs to large groups, the non-removable indirect pills can become unwieldy. A **Hide indirect and reverse relationships** button ("eye" icon) appears next to the **Term Relationships** label whenever the term has indirect pills. It applies across all relationship tabs:
+When a term belongs to large groups, the non-removable indirect pills can become unwieldy. A **Hide indirect and reverse relationships** button (the eye icon, {% include dashicon.html name="visibility" %}) appears next to the **Term Relationships** label whenever the term has indirect pills. It applies across all relationship tabs:
 
 - **Off (default):** all indirect pills are shown individually.
 - **On:** individual indirect pills are hidden. Group pills stay visible, so it's still clear which groups are the source, without listing every member term.

@@ -632,44 +632,50 @@ abstract class HyperTaxonomy_Shortcode_Base {
     protected function process_placeholders( $text, $term, $depth = 0 ) {
         $is_redirect = isset( $this->redirect_terms[ $term->term_id ] );
 
-        $term_url = get_term_link( $term );
+        // Values that cost a lookup (links, icons, descriptions) are computed only when the
+        // template uses them, since this runs for every term shown.
+        $uses = static function ( string $placeholder ) use ( $text ): bool {
+            return false !== strpos( $text, $placeholder );
+        };
 
         $replacements = array(
             '{id}'                     => $term->term_id,
             '{name}'                   => esc_html( $term->name ),
-            '{url}'                    => ! is_wp_error( $term_url ) ? esc_url( $term_url ) : '',
+            '{url}'                    => '',
             '{slug}'                   => esc_html( $term->slug ),
-            '{description}'            => wp_kses_post( $term->description ),
+            '{description}'            => $uses( '{description}' ) ? wp_kses_post( $term->description ) : '',
             '{count}'                  => $term->count,
             '{depth_level}'            => $depth,
             '{is_redirect}'            => $is_redirect ? '1' : '0',
             '{target}'                 => '',
             '{redirect_target_link}'   => '',
             '{redirect_target_anchor}' => '',
-            '{icon}'                      => $this->resolve_icon_html( $term ),
-            '{icon_src}'                  => esc_url( (string) htax_get_term_icon_url( $term, 'htax-icon-small' ) ),
-            '{icon_src_medium}'           => esc_url( (string) htax_get_term_icon_url( $term, 'htax-icon-medium' ) ),
-            '{icon_src_large}'            => esc_url( (string) htax_get_term_icon_url( $term, 'htax-icon-large' ) ),
-            '{icon_width}'                => '',
-            '{icon_height}'               => '',
-            '{icon_width_medium}'         => '',
-            '{icon_height_medium}'        => '',
-            '{icon_width_large}'          => '',
-            '{icon_height_large}'         => '',
+            '{icon}'                   => $uses( '{icon}' ) ? $this->resolve_icon_html( $term ) : '',
+            '{icon_src}'               => $uses( '{icon_src}' ) ? esc_url( (string) htax_get_term_icon_url( $term, 'htax-icon-small' ) ) : '',
+            '{icon_src_medium}'        => $uses( '{icon_src_medium}' ) ? esc_url( (string) htax_get_term_icon_url( $term, 'htax-icon-medium' ) ) : '',
+            '{icon_src_large}'         => $uses( '{icon_src_large}' ) ? esc_url( (string) htax_get_term_icon_url( $term, 'htax-icon-large' ) ) : '',
         );
 
-        // Icon dimensions are taxonomy-configured, not per-attachment — free from settings cache.
-        $small  = HyperTaxonomy_Term_Icons::get_icon_dimensions( $term->taxonomy, 'small' );
-        $medium = HyperTaxonomy_Term_Icons::get_icon_dimensions( $term->taxonomy, 'medium' );
-        $large  = HyperTaxonomy_Term_Icons::get_icon_dimensions( $term->taxonomy, 'large' );
-        $replacements['{icon_width}']         = $small['width'];
-        $replacements['{icon_height}']        = $small['height'];
-        $replacements['{icon_width_medium}']  = $medium['width'];
-        $replacements['{icon_height_medium}'] = $medium['height'];
-        $replacements['{icon_width_large}']   = $large['width'];
-        $replacements['{icon_height_large}']  = $large['height'];
+        if ( $uses( '{url}' ) ) {
+            $term_url             = get_term_link( $term );
+            $replacements['{url}'] = ! is_wp_error( $term_url ) ? esc_url( $term_url ) : '';
+        }
 
-        if ( $is_redirect ) {
+        // Icon dimensions are taxonomy-configured, not per-attachment — free from settings cache.
+        if ( $uses( '{icon_width' ) || $uses( '{icon_height' ) ) {
+            foreach ( array( 'small' => '', 'medium' => '_medium', 'large' => '_large' ) as $size => $suffix ) {
+                $dimensions = HyperTaxonomy_Term_Icons::get_icon_dimensions( $term->taxonomy, $size );
+                $replacements[ '{icon_width' . $suffix . '}' ]  = $dimensions['width'];
+                $replacements[ '{icon_height' . $suffix . '}' ] = $dimensions['height'];
+            }
+        } else {
+            foreach ( array( '', '_medium', '_large' ) as $suffix ) {
+                $replacements[ '{icon_width' . $suffix . '}' ]  = '';
+                $replacements[ '{icon_height' . $suffix . '}' ] = '';
+            }
+        }
+
+        if ( $is_redirect && ( $uses( '{target}' ) || $uses( '{redirect_target_' ) ) ) {
             $target_id = $this->redirect_terms[ $term->term_id ]['target_id'];
             $target_term = get_term( $target_id, $term->taxonomy );
 
@@ -771,6 +777,20 @@ abstract class HyperTaxonomy_Shortcode_Base {
         }
 
         return '';
+    }
+
+    /**
+     * Load the icon attachments of the terms about to be shown, at once, when the prepend or
+     * append template shows icons (or $always), instead of one attachment at a time.
+     *
+     * @param WP_Term[] $terms  Terms to be shown.
+     * @param bool      $always Load them whatever the templates contain.
+     */
+    protected function prime_term_icons( array $terms, bool $always = false ): void {
+        $templates = ( $this->htax_atts['prepend'] ?? '' ) . ( $this->htax_atts['append'] ?? '' );
+        if ( $always || false !== strpos( $templates, '{icon}' ) || false !== strpos( $templates, '{icon_src' ) ) {
+            htax_prime_term_icons( $terms );
+        }
     }
 
     /**

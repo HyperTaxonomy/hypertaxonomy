@@ -21,14 +21,14 @@ Permanently consolidate duplicate or outdated terms into a single canonical term
 
 **How to merge:**
 
-1. Go to **Terms > Merge Terms**, or use a row's **⧉ Merge** link on the [Synonyms](term-relationships.html#the-synonyms-page) page, which fills in steps 2–4 for that pair
+1. Go to **Terms&nbsp;→ Merge Terms**, or use a row's **⧉&nbsp;Merge** link on the [Synonyms](term-relationships.html#the-synonyms-page) page, which fills in steps 2–4 for that pair
 2. Select the **Taxonomy** the terms belong to
 3. Type and select one or more **Source terms** (the terms to be deleted)
 4. Type and select a **Target term** (the term to keep)
 5. Leave **Create 301 redirect stubs for deleted terms** checked (the default, recommended), or uncheck it
 6. Click **Merge Terms**
 
-![Terms > Merge Terms, opened from the Synonyms page: Tags selected as the taxonomy, Killer Whale as the source term, Orca as the target term, and the option to create 301 redirect stubs checked](../assets/images/screenshots/merge-terms.png)
+![Terms → Merge Terms, opened from the Synonyms page: Tags selected as the taxonomy, Killer Whale as the source term, Orca as the target term, and the option to create 301 redirect stubs checked](../assets/images/screenshots/merge-terms.png)
 
 The **Source terms** field takes several terms: type a name, select it from the suggestions, then type the next. The terms you've selected are listed in the field, in gray, and a term already selected isn't added twice. **Target term** takes a single term. Changing the **Taxonomy** clears both fields. If you opened the page from the Synonyms page, the row's term is the source and its synonym the target; you can change either before merging.
 
@@ -48,18 +48,18 @@ The **Source terms** field takes several terms: type a name, select it from the 
 
 ## Convert Terms
 
-**Terms > Convert Terms** moves terms from one taxonomy to another. A fresh term is created in the target taxonomy and all post assignments are moved to it. What happens to the old term depends on whether you choose to leave a redirect stub.
+**Terms&nbsp;→ Convert Terms** moves terms from one taxonomy to another. A fresh term is created in the target taxonomy and all post assignments are moved to it. What happens to the old term depends on whether you choose to leave a redirect stub.
 
 **How to convert:**
 
-1. Open **Terms > Convert Terms**.
+1. Open **Terms&nbsp;→ Convert Terms**.
 2. Choose a source taxonomy. The term list loads automatically.
 3. Check the terms you want to convert. Use **Select all / Deselect all** as needed.
 4. Choose the target taxonomy.
 5. Leave **Create 301 redirect stubs in the old taxonomy** checked (the default), or uncheck it (see below).
 6. Click **Convert Selected Terms**.
 
-![Terms > Convert Terms: Categories chosen as the source taxonomy, its terms listed with their post counts and subcategories indented under their parents, the Conservation category checked, Tags chosen as the target taxonomy, and the option to create 301 redirect stubs checked](../assets/images/screenshots/convert-terms.png)
+![Terms → Convert Terms: Categories chosen as the source taxonomy, its terms listed with their post counts and subcategories indented under their parents, the Conservation category checked, Tags chosen as the target taxonomy, and the option to create 301 redirect stubs checked](../assets/images/screenshots/convert-terms.png)
 
 The term list shows each term's post count, with child terms indented under their parents. Checking a parent doesn't check its children: only the terms you check are converted. When you convert a parent together with its children, the parent is converted first.
 
@@ -67,7 +67,7 @@ The term list shows each term's post count, with child terms indented under thei
 
 - If a term with the same name already exists in the target taxonomy, that term is skipped with an error. Rename one of them, then convert again.
 - Terms that are already redirect stubs cannot be converted — remove the redirect on the term edit screen first.
-- The site's default category cannot be converted — change the default in Settings > Writing first.
+- The site's default category cannot be converted — change the default in Settings&nbsp;→ Writing first.
 - A term whose `term_group` value (WordPress's own way of marking terms as aliases of each other) is already used by a different term in the target taxonomy cannot be converted, because the two would become aliases there. This only affects terms created as aliases, which is rare; change the `term_group` first.
 
 **With redirect stubs (default):**

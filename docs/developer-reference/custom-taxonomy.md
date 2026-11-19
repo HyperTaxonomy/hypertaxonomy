@@ -19,7 +19,7 @@ Making a custom taxonomy work with HyperTaxonomy, querying it with inclusions, a
 
 ## Registering a Custom Taxonomy for HyperTaxonomy
 
-You can create the taxonomy with a plugin such as CPT UI, ACF or Pods instead of code (see [Working with Other Plugins](../user-guide/other-plugins.html)). In code, register it normally with `register_taxonomy()`. Either way, enable HyperTaxonomy features for it in Settings > HyperTaxonomy > Features. HyperTaxonomy detects all registered public taxonomies automatically.
+You can create the taxonomy with a plugin such as CPT UI, ACF or Pods instead of code (see [Working with Other Plugins](../user-guide/other-plugins.html)). In code, register it normally with `register_taxonomy()`. Either way, enable HyperTaxonomy features for it in Settings&nbsp;→ HyperTaxonomy&nbsp;→ Features. HyperTaxonomy detects all registered public taxonomies automatically.
 
 Features can also be enabled programmatically via the `htax_settings` option:
 
@@ -156,14 +156,14 @@ On front-end, REST and AJAX read requests (GET and HEAD), terms hidden from the 
 
 **Cleanup on term deletion.** `htax_cleanup_deleted_term()` already deletes all rows in `wp_htax_term_relationships` where the term appears as source or target — this covers custom relationship rows automatically. No separate `delete_term` hook is needed.
 
-**Registering via the admin UI.** **Terms → Term Relationship Types** lists three sections:
+**Registering via the admin UI.** **Terms&nbsp;→ Term Relationship Types** lists three sections:
 
 - **Built-in types** — read-only.
 - **Remote types** — types synced from peer sites via [TermConnect](https://hypertaxonomy.org/termconnect/user-guide/shared-vocabularies.html#relationship-delegation) (`source_site` field non-empty); read-only while delegated. **Make local** detaches a type from its source: `source_site` is cleared, the type becomes fully editable, and its namespace in REST responses changes to this site's URL. This action is irreversible and requires confirmation.
 - **Local types** — locally created or promoted types. Two creation forms are available:
   - **New Inclusion-based** — single shared taxonomy, `core_type = 'includes'`.
   - **New Custom** — `core_type = null`, independent source/target constraints.
-  - Both forms include a **Private** checkbox — when checked, `is_private = true` and the type is excluded from peer-sharing REST endpoints (see [REST API → Relationship type endpoints](rest-api.html#relationship-type-endpoints-htaxv1)).
+  - Both forms include a **Private** checkbox — when checked, `is_private = true` and the type is excluded from peer-sharing REST endpoints (see [REST API&nbsp;→ Relationship type endpoints](rest-api.html#relationship-type-endpoints-htaxv1)).
 
 Types created there are stored in `wp_options` under `htax_custom_relationship_types` and loaded into the registry on `init` priority 5. The `'group'` taxonomy is always excluded from `source_taxonomies` / `target_taxonomies` when saving via the admin UI — group terms are implicitly allowed through the group exemption in `htax_add_term_relationship()` and do not need to be listed.
 
@@ -183,7 +183,7 @@ Types created there are stored in `wp_options` under `htax_custom_relationship_t
 
 **Relationship rows and term taxonomy conversion.** A conversion with a redirect keeps the term's relationship rows on the redirect stub in the old taxonomy. A conversion without a redirect removes them along with the deleted term. In both cases the new term starts with no relationships.
 
-**Extending the relationship types admin page.** The `htax_relationship_types_admin_footer` action fires at the bottom of the **Terms → Term Relationship Types** admin page, after all three table sections (built-in, remote, local) have rendered. Hook here to append additional UI — for example, a "discover types from a peer site" panel.
+**Extending the relationship types admin page.** The `htax_relationship_types_admin_footer` action fires at the bottom of the **Terms&nbsp;→ Term Relationship Types** admin page, after all three table sections (built-in, remote, local) have rendered. Hook here to append additional UI — for example, a "discover types from a peer site" panel.
 
 ```php
 add_action( 'htax_relationship_types_admin_footer', function () {
@@ -201,6 +201,6 @@ For plugin and theme authors building their own HyperTaxonomy-aware code, HyperT
 
 **Cache invalidation.** [`htax_term_archive_changed`](query-expansion.html#reacting-to-archive-changes) fires whenever a term's archive changes: relationships, redirects, hierarchy or post assignments. Hook it to invalidate derived caches in your plugin without tracking each fine-grained action individually.
 
-**Custom relationship types.** The Relationship Type Registry (`includes/core/relationship-types.php`) lets plugin authors define two kinds of user-defined type. **Inclusion-based** types (`core_type = 'includes'`) automatically participate in archive expansion, post list queries, and the search index — all query sites use `htax_relationship_type_sql_in('includes')` rather than a hard-coded equality check. **Custom** types (`core_type = null`) store the relationship only; behavior is implemented by the registering plugin. Use `htax_register_relationship_type()` (hook into `htax_relationship_types`) for code registration, or the **Terms → Term Relationship Types** admin page (two creation buttons: Inclusion-based / Custom). Use `htax_add_term_relationship()` / `htax_remove_term_relationship()` rather than raw `$wpdb` calls. Cleanup on term deletion is handled automatically — no `delete_term` hook needed. See [Custom Relationship Types](#custom-relationship-types) for the full API.
+**Custom relationship types.** Define your own inclusion-based or storage-only relationship types, in code or on the **Terms&nbsp;→ Term Relationship Types** page, and save rows through the registry's helpers rather than raw `$wpdb` calls; see [Custom Relationship Types](#custom-relationship-types).
 
 See the [Developer Reference](./) for full function references, action and filter documentation, REST endpoints, and the capabilities API.

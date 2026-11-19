@@ -163,10 +163,10 @@ The priority-10 handlers are independent and have no ordering dependency.
 |----------|---------|--------|
 | 10 | `on_term_relationships_added` | Delta-based incremental index update — diffs the indexed source terms against the post's actual terms read from the database (the hook's `$terms` holds only the appended terms on `wp_add_object_terms()`; `deleted_term_relationships` → `on_term_relationships_removed()` reuses the same path); targeted count cache clear |
 | 10 | `htax_keep_hidden_terms_on_save` | Restore hidden terms that a logged-in user who can't see them would otherwise remove by saving |
-| 10 | `htax_post_list_cache_on_object_terms_set` | Invalidate affected post list caches |
+| 10 | `htax_post_list_cache_on_object_terms_set` | Invalidate affected post list caches; nothing when the post's terms didn't change |
 | 10 | Closure in `term-archives.php` | `htax_invalidate_sticky_cache_for_post()` |
 
-**Incremental update:** Queries current source terms from index (1 query), calculates delta, deletes removed term relationships by `source_term_id` (1 query), inserts new ones (~4–9 queries per new term). Approximately 5× faster than full rebuild for typical 1–3 term changes. The inserted rows carry the column-default strength, so when terms were added the post is also queued (`queue_post_reindex()`) for a background reindex that computes their strengths.
+**Incremental update:** Queries current source terms from index (1 query), calculates delta, deletes removed term relationships by `source_term_id` (1 query), inserts new ones (~4–9 queries per new term). Approximately 5×&nbsp;faster than full rebuild for typical 1–3 term changes. The inserted rows carry the column-default strength, so when terms were added the post is also queued (`queue_post_reindex()`) for a background reindex that computes their strengths.
 
 ### Event: `deleted_term_relationships`
 
@@ -183,6 +183,12 @@ The priority-10 handlers are independent and have no ordering dependency.
 | 10 | `htax_cleanup_sticky_on_delete` | Delete sticky post meta (`delete_post` only) |
 | 10 | `on_post_delete` (search index) | Delete from the search index and `wp_htax_post_text` (both hooks) |
 
+### Event: `post_updated`
+
+| Priority | Handler | Action |
+|----------|---------|--------|
+| 10 | `htax_post_list_cache_on_post_updated` | For a published post that stays published: invalidate the post lists of its index terms whose order or filter uses a changed field (modified date on every save; title, content or excerpt, publication date, author when they change), and the contributing terms of archives ordered by one. Skips revisions, autosaves and post types that aren't indexed |
+
 ### Event: `save_post`
 
 | Priority | Handler | Action |
@@ -195,7 +201,7 @@ The priority-10 handlers are independent and have no ordering dependency.
 | Priority | Handler | Action |
 |----------|---------|--------|
 | 10 | `htax_sync_post_text_comment` | Update `comment_count` and `last_comment_gmt` in `wp_htax_post_text`. No-ops if the post row does not exist in the table. |
-| 10 | `htax_post_list_cache_on_comment_count` | Invalidate post lists for a published post's index terms |
+| 10 | `htax_post_list_cache_on_comment_count` | Invalidate the post lists of a published post's index terms that use comments, and the contributing terms of archives ordered by them |
 
 ### Event: `transition_post_status`
 

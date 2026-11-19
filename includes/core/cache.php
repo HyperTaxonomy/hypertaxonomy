@@ -1588,15 +1588,16 @@ function htax_delete_count_cache_for_ids( $group_ids, $term_ids, $taxonomy ) {
  *
  * @param int|int[] $term_id Term ID, or several, to clear the caches of (one query for all).
  */
-function htax_invalidate_contrib_cache( $term_id ) {
+function htax_invalidate_contrib_cache( $term_id, bool $counts = true ) {
     // Already cleared this request (e.g. htax_delete_term_transients and htax_term_archive_changed
-    // both fire for the same term on edited_term) and nothing written since: skip it.
+    // both fire for the same term on edited_term) and nothing written since: skip it. The record
+    // says whether the counts went too (true), so a sweep without them doesn't skip a later one with.
     $cleared = &htax_request_cache( 'contrib_swept' );
 
     $term_ids = array();
     foreach ( array_unique( array_filter( array_map( 'intval', (array) $term_id ) ) ) as $tid ) {
-        if ( ! isset( $cleared[ $tid ] ) ) {
-            $cleared[ $tid ] = true;
+        if ( ! isset( $cleared[ $tid ] ) || ( $counts && true !== $cleared[ $tid ] ) ) {
+            $cleared[ $tid ] = $counts || ! empty( $cleared[ $tid ] );
             $term_ids[]      = $tid;
         }
     }
@@ -1617,8 +1618,11 @@ function htax_invalidate_contrib_cache( $term_id ) {
         "DELETE FROM {$wpdb->options} WHERE " . implode( ' OR ', $clauses ),
         $values
     ) );
-    // The terms' expanded post counts depend on the same archive composition.
-    htax_delete_term_cache_family_batch( $term_ids, array( 'htax_tcount_' ), array( '', '_h' ) );
+    // The terms' expanded post counts depend on the same archive composition, but not on
+    // the order of its posts (htax_invalidate_contrib_cache_for_fields() passes false).
+    if ( $counts ) {
+        htax_delete_term_cache_family_batch( $term_ids, array( 'htax_tcount_' ), array( '', '_h' ) );
+    }
     // Contrib keys are not enumerable per term in an object cache; bump the family.
     htax_bump_cache_family( 'contrib' );
 }
@@ -1919,58 +1923,64 @@ function htax_fire_term_archive_changed( int $term_id, string $taxonomy ): void 
  *
  * @param int[] $term_ids Term IDs whose dependent post list caches should be cleared.
  */
-function htax_invalidate_post_list_cache( $term_ids ) {
+function htax_invalidate_post_list_cache( $term_ids, string $changed = '' ) {
     global $wpdb;
-
-    // A term already swept in this request has no post list cached since, unless one was
-    // written in between (htax_set_transient() resets this record): skip it.
-    $swept    = &htax_request_cache( 'post_lists_swept' );
-    $term_ids = array_values( array_diff(
-        array_filter( array_unique( array_map( 'intval', (array) $term_ids ) ) ),
-        array_keys( $swept )
-    ) );
-    foreach ( $term_ids as $tid ) {
-        $swept[ $tid ] = true;
+    $term_ids = array_filter( array_unique( array_map( 'intval', (array) $term_ids ) ) );
+    if ( '' === $changed ) {
+        // A term already swept in this request has no post list cached since, unless one was
+        // written in between (htax_set_transient() resets this record): skip it.
+        $swept    = &htax_request_cache( 'post_lists_swept' );
+        $term_ids = array_values( array_diff( $term_ids, array_keys( $swept ) ) );
+        foreach ( $term_ids as $tid ) {
+            $swept[ $tid ] = true;
+        }
     }
+    $term_ids = array_values( $term_ids );
     if ( empty( $term_ids ) ) {
         return;
     }
-
+    // Only the lists whose _k segment names a changed field.
+    $field_sql = '';
+    if ( '' !== $changed ) {
+        $field_clauses = array();
+        foreach ( array_unique( str_split( $changed ) ) as $letter ) {
+            $field_clauses[] = $wpdb->prepare( 'option_name LIKE %s', '%' . $wpdb->esc_like( '_k' ) . '%' . $letter . '%' );
+        }
+        $field_sql = ' AND (' . implode( ' OR ', $field_clauses ) . ')';
+    }
     // Past this size a pattern per term costs more than rebuilding what's cached.
     if ( count( $term_ids ) > 100 ) {
-        htax_delete_transients_by_prefix( 'htax_pl_' );
+        if ( '' === $changed ) {
+            htax_delete_transients_by_prefix( 'htax_pl_' );
+        } else {
+            $wpdb->query( "DELETE FROM {$wpdb->options} WHERE (option_name LIKE '\\_transient\\_htax\\_pl\\_%' OR option_name LIKE '\\_transient\\_timeout\\_htax\\_pl\\_%')" . $field_sql );
+            htax_bump_cache_family( 'pl' );
+        }
         return;
     }
-
     $clauses = array();
     $values  = array();
+    $sep     = $wpdb->esc_like( '_' );
     foreach ( $term_ids as $tid ) {
-        // Match as a main term (t{id}_), individual filter term (f{id}_),
-        // or filter group (g{id}_). Group IDs are passed via htax_delete_term_transients
-        // when a group is edited, so g{id} entries are invalidated automatically.
-        $sep = $wpdb->esc_like( '_' );
-        $clauses[] = 'option_name LIKE %s';
-        $clauses[] = 'option_name LIKE %s';
-        $clauses[] = 'option_name LIKE %s';
-        $clauses[] = 'option_name LIKE %s';
-        $clauses[] = 'option_name LIKE %s';
-        $clauses[] = 'option_name LIKE %s';
-        $values[]  = '_transient_htax_pl_%t' . $tid . $sep . '%';
-        $values[]  = '_transient_timeout_htax_pl_%t' . $tid . $sep . '%';
-        $values[]  = '_transient_htax_pl_%f' . $tid . $sep . '%';
-        $values[]  = '_transient_timeout_htax_pl_%f' . $tid . $sep . '%';
-        $values[]  = '_transient_htax_pl_%g' . $tid . $sep . '%';
-        $values[]  = '_transient_timeout_htax_pl_%g' . $tid . $sep . '%';
+        // Match as a main term (t{id}_), filter term (f{id}_), filter group (g{id}_, which
+        // also matches fog{id}_) or filtered-out term (fo{id}_). Group IDs are passed via
+        // htax_delete_term_transients when a group is edited.
+        foreach ( array( 't', 'f', 'g', 'fo' ) as $segment ) {
+            foreach ( array( '_transient_htax_pl_%', '_transient_timeout_htax_pl_%' ) as $prefix ) {
+                $clauses[] = 'option_name LIKE %s';
+                $values[]  = $prefix . $segment . $tid . $sep . '%';
+            }
+        }
     }
-
     $wpdb->query(
         $wpdb->prepare(
-            "DELETE FROM {$wpdb->options} WHERE " . implode( ' OR ', $clauses ),
+            "DELETE FROM {$wpdb->options} WHERE (" . implode( ' OR ', $clauses ) . ')' . $field_sql,
             $values
         )
     );
     htax_bump_cache_family( 'pl' );
 }
+
 
 /**
  * Convert term taxonomy IDs to term IDs.
@@ -2060,6 +2070,113 @@ function htax_post_list_cache_on_visibility_change( $term_id ) {
 }
 
 /**
+ * Letters for the post fields a post list's result depends on, for its cache key's
+ * `_k{letters}` segment.
+ *
+ * m = modified date, t = title, x = content or excerpt, d = publication date, a = author,
+ * c = comments, r = relevance score. Membership (which posts have which terms, publish
+ * state, visibility) isn't listed: every list depends on it, and such changes clear all
+ * of a term's lists.
+ *
+ * @since 1.0.0
+ *
+ * @param string[] $order_fields Sort fields, as htax_parse_orderby() keys.
+ * @param bool     $has_search   Whether the list filters by a search string.
+ * @param bool     $has_range    Whether the list filters by a modified-date range.
+ * @return string Sorted letters, '' when the list depends on none of these fields.
+ */
+function htax_post_list_dependency_letters( array $order_fields, bool $has_search, bool $has_range ): string {
+    $map     = array(
+        'date'          => 'd',
+        'modified'      => 'm',
+        'title'         => 't',
+        'author'        => 'a',
+        'comment_count' => 'c',
+        'last_comment'  => 'c',
+        'last_activity' => 'cm',
+        'relevance'     => 'r',
+    );
+    $letters = '';
+    foreach ( $order_fields as $field ) {
+        $letters .= $map[ $field ] ?? '';
+    }
+    if ( $has_search ) {
+        $letters .= 'tx';
+    }
+    if ( $has_range ) {
+        $letters .= 'm';
+    }
+    $letters = array_unique( str_split( $letters ) );
+    sort( $letters );
+    return implode( '', array_filter( $letters ) );
+}
+
+/**
+ * Letters for the post fields that differ between two versions of a post (see
+ * htax_post_list_dependency_letters()).
+ *
+ * @since 1.0.0
+ *
+ * @param WP_Post $before Post before the update.
+ * @param WP_Post $after  Post after the update.
+ * @return string Letters of the changed fields.
+ */
+function htax_post_changed_letters( WP_Post $before, WP_Post $after ): string {
+    $letters = '';
+    if ( $before->post_modified_gmt !== $after->post_modified_gmt ) {
+        $letters .= 'm';
+    }
+    if ( $before->post_title !== $after->post_title ) {
+        $letters .= 't';
+    }
+    if ( $before->post_content !== $after->post_content || $before->post_excerpt !== $after->post_excerpt ) {
+        $letters .= 'x';
+    }
+    if ( $before->post_date_gmt !== $after->post_date_gmt ) {
+        $letters .= 'd';
+    }
+    if ( (int) $before->post_author !== (int) $after->post_author ) {
+        $letters .= 'a';
+    }
+    return $letters;
+}
+
+/**
+ * Letters for the post fields a term archive's order depends on: the term's sort order
+ * override, or the publication date (WordPress's archive order).
+ *
+ * @since 1.0.0
+ *
+ * @param int $term_id Term ID.
+ * @return string Letters (see htax_post_list_dependency_letters()).
+ */
+function htax_term_archive_dependency_letters( int $term_id ): string {
+    $order = htax_get_term_sort_order( $term_id );
+    return htax_post_list_dependency_letters( $order ? array_keys( $order ) : array( 'date' ), false, false );
+}
+
+/**
+ * Clear the contributing-terms caches of the archives among $term_ids whose order depends
+ * on one of $letters. Counts don't depend on post fields, so they are left alone.
+ *
+ * @since 1.0.0
+ *
+ * @param int[]  $term_ids Term IDs.
+ * @param string $letters  Letters of the changed post fields.
+ */
+function htax_invalidate_contrib_cache_for_fields( array $term_ids, string $letters ): void {
+    $affected = array();
+    foreach ( array_unique( array_map( 'intval', $term_ids ) ) as $tid ) {
+        if ( $tid && strpbrk( htax_term_archive_dependency_letters( $tid ), $letters ) ) {
+            $affected[] = $tid;
+        }
+    }
+    if ( $affected ) {
+        htax_invalidate_contrib_cache( $affected, false );
+    }
+}
+
+/**
  * Invalidate post list caches when a post's comment count changes, since lists can sort by it.
  *
  * @since 1.0.0
@@ -2068,8 +2185,41 @@ function htax_post_list_cache_on_visibility_change( $term_id ) {
  */
 function htax_post_list_cache_on_comment_count( $post_id ) {
     if ( 'publish' === get_post_status( $post_id ) ) {
-        htax_invalidate_post_list_cache( htax_get_post_index_term_ids( $post_id ) );
+        $term_ids = htax_get_post_index_term_ids( $post_id );
+        htax_invalidate_post_list_cache( $term_ids, 'c' );
+        htax_invalidate_contrib_cache_for_fields( $term_ids, 'c' );
     }
+}
+
+/**
+ * Invalidate the post lists and archive caches that depend on a published post's own fields
+ * when they change: modified date (every save), title, content or excerpt, publication date
+ * and author. Only caches whose keys or archive order depend on a changed field are cleared.
+ *
+ * Membership changes (terms, publish state) have their own handlers and clear all of a
+ * term's lists.
+ *
+ * Hook: post_updated.
+ *
+ * @since 1.0.0
+ * @param int     $post_id Post ID.
+ * @param WP_Post $after   Post after the update.
+ * @param WP_Post $before  Post before the update.
+ */
+function htax_post_list_cache_on_post_updated( $post_id, $after, $before ): void {
+    if ( ! $after instanceof WP_Post || ! $before instanceof WP_Post
+        || 'publish' !== $after->post_status || 'publish' !== $before->post_status
+        || wp_is_post_revision( $post_id ) || wp_is_post_autosave( $post_id )
+        || ! in_array( $after->post_type, htax_get_indexed_post_types(), true ) ) {
+        return;
+    }
+    $letters = htax_post_changed_letters( $before, $after );
+    if ( '' === $letters ) {
+        return;
+    }
+    $term_ids = htax_get_post_index_term_ids( (int) $post_id );
+    htax_invalidate_post_list_cache( $term_ids, $letters );
+    htax_invalidate_contrib_cache_for_fields( $term_ids, $letters );
 }
 
 /**
@@ -2105,6 +2255,15 @@ function htax_post_list_cache_on_object_terms_set( $object_id, $_terms, $tt_ids,
 
     $new_term_ids = htax_tt_ids_to_term_ids( $tt_ids );
     $old_term_ids = htax_tt_ids_to_term_ids( $old_tt_ids );
+    // WordPress sets a post's terms on every save. When they didn't change, no list or
+    // archive gains or loses the post; its own fields are handled on post_updated.
+    $sorted_new = $new_term_ids;
+    $sorted_old = $old_term_ids;
+    sort( $sorted_new );
+    sort( $sorted_old );
+    if ( $sorted_new === $sorted_old ) {
+        return;
+    }
     $direct_ids   = array_unique( array_merge( $new_term_ids, $old_term_ids ) );
     if ( empty( $direct_ids ) ) {
         return;
@@ -2207,8 +2366,10 @@ function htax_post_list_cache_on_post_status_change( $new_status, $old_status, $
  * Version of the term data that search forms cache (htax_get_term_data_cache_version()).
  *
  * The search widget caches each field's term data (members of its groups, names, counts,
- * icons) under a key that includes this number. Anything that can change that data bumps it,
- * at most once per request, so older entries are never read again and expire on their own.
+ * icons) under a key that includes this number. Anything that can change the members, names
+ * or icons bumps it, at most once per request, so older entries are never read again and
+ * expire on their own. Post counts aren't tracked: the browser uses them only to order a few
+ * pill suggestions, so an entry's counts may be up to a day (its lifetime) out of date.
  *
  * @since 1.0.0
  * @return int
@@ -2221,7 +2382,7 @@ function htax_get_term_data_cache_version(): int {
  * Bump the term data cache version (see htax_get_term_data_cache_version()).
  *
  * Hooked to term creation, edits and deletion (groups included), group membership, hidden
- * state, term icons, archive changes (which cover post counts) and settings saves.
+ * state, term icons and settings saves.
  *
  * @since 1.0.0
  */
@@ -2234,7 +2395,7 @@ function htax_bump_term_data_cache_version(): void {
     $bumped['done'] = true;
     update_option( 'htax_term_data_version', htax_get_term_data_cache_version() + 1, true );
 }
-foreach ( array( 'created_term', 'edited_term', 'delete_term', 'htax_term_groups_changed', 'htax_term_visibility_changed', 'htax_term_archive_changed', 'update_option_htax_settings' ) as $htax_hook ) {
+foreach ( array( 'created_term', 'edited_term', 'delete_term', 'htax_term_groups_changed', 'htax_term_visibility_changed', 'update_option_htax_settings' ) as $htax_hook ) {
     add_action( $htax_hook, 'htax_bump_term_data_cache_version', 99, 0 );
 }
 unset( $htax_hook );

@@ -2896,8 +2896,8 @@ msgid "Autocomplete cache:"
 msgstr "Кэширование автозаполнения:"
 
 #: includes/admin/settings.php:2599
-msgid "Tag and term autocomplete suggestions in the admin post editor."
-msgstr "Подсказки автозаполнения меток и терминов в редакторе записей."
+msgid "Term autocomplete suggestions on term edit screens and the Merge Terms page."
+msgstr "Подсказки автозаполнения терминов на экранах редактирования терминов и на странице «Слияние терминов»."
 
 #: includes/admin/settings.php:2607
 msgid "Relationship cache:"
@@ -2929,12 +2929,8 @@ msgid "Shortcode output cache:"
 msgstr "Кэширование вывода шорткодов:"
 
 #: includes/admin/settings.php:2653
-msgid ""
-"[ht_post_list] and [ht_related_posts] rendered output. 0 = never expire (use "
-"Clear below when posts change)."
-msgstr ""
-"Обработанный вывод [ht_post_list] и [ht_related_posts]. 0 = никогда не "
-"истекает (используйте «Очистить» ниже при изменении записей)."
+msgid "[ht_post_list] and [ht_related_posts] query results (post IDs and totals). 0 = never expire (use Clear below when posts change)."
+msgstr "Результаты запросов [ht_post_list] и [ht_related_posts] (ID записей и итоги). 0 = никогда не истекает (используйте «Очистить» ниже при изменении записей)."
 
 #: includes/admin/settings.php:2664
 msgid "Clear All Caches"

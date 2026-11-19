@@ -151,7 +151,7 @@
 }
 
 /* Autocomplete styles */
-.ui-autocomplete {
+.ui-autocomplete:where(.htax-ac-menu) {
     max-height: 300px !important;
     overflow-y: auto !important;
     overflow-x: hidden !important;
@@ -165,7 +165,7 @@
     margin-top: 1px;
 }
 
-.ui-menu {
+.ui-menu:where(.htax-ac-menu) {
     list-style: none;
     padding: 0;
     margin: 0;
@@ -173,14 +173,14 @@
     outline: none;
 }
 
-.ui-autocomplete .ui-menu-item {
+.ui-autocomplete:where(.htax-ac-menu) .ui-menu-item {
     margin: 0;
     padding: 0;
     cursor: pointer;
     list-style: none;
 }
 
-.ui-autocomplete .ui-menu-item div {
+.ui-autocomplete:where(.htax-ac-menu) .ui-menu-item div {
     display: block;
     padding: 3px 8px;
     margin: 0;
@@ -192,20 +192,20 @@
     text-decoration: none;
 }
 
-.ui-autocomplete .ui-menu-item:hover div,
-.ui-autocomplete .ui-state-focus div,
-.ui-autocomplete .ui-state-active div {
+.ui-autocomplete:where(.htax-ac-menu) .ui-menu-item:hover div,
+.ui-autocomplete:where(.htax-ac-menu) .ui-state-focus div,
+.ui-autocomplete:where(.htax-ac-menu) .ui-state-active div {
     background: #0073aa;
     color: #fff;
 }
 
-.ui-menu-item .match {
+:where(.htax-ac-menu) .ui-menu-item .match {
     font-weight: bold;
     text-decoration: underline;
 }
 
-.ui-autocomplete .ui-menu-item:hover .match,
-.ui-autocomplete .ui-state-focus .match {
+.ui-autocomplete:where(.htax-ac-menu) .ui-menu-item:hover .match,
+.ui-autocomplete:where(.htax-ac-menu) .ui-state-focus .match {
     color: #fff;
 }
 
@@ -254,8 +254,8 @@
 }
 
 /* Autocomplete styles to match WordPress native */
-.htax-tag-container + .ui-autocomplete,
-.htax-search + .ui-autocomplete {
+.htax-tag-container + .ui-autocomplete:where(.htax-ac-menu),
+.htax-search + .ui-autocomplete:where(.htax-ac-menu) {
     background: #fff !important;
     border: 1px solid #ddd !important;
     border-top: none !important;
@@ -268,13 +268,13 @@
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 }
 
-.ui-autocomplete .ui-menu-item {
+.ui-autocomplete:where(.htax-ac-menu) .ui-menu-item {
     margin: 0;
     padding: 0;
     list-style: none;
 }
 
-.ui-autocomplete .ui-menu-item > div {
+.ui-autocomplete:where(.htax-ac-menu) .ui-menu-item > div {
     display: block;
     padding: 6px 10px !important;
     margin: 0;
@@ -288,10 +288,10 @@
     white-space: normal;
 }
 
-.ui-autocomplete .ui-menu-item > div:hover,
-.ui-autocomplete .ui-state-focus > div,
-.ui-autocomplete .ui-state-active > div,
-.ui-autocomplete .ui-menu-item-focus > div {
+.ui-autocomplete:where(.htax-ac-menu) .ui-menu-item > div:hover,
+.ui-autocomplete:where(.htax-ac-menu) .ui-state-focus > div,
+.ui-autocomplete:where(.htax-ac-menu) .ui-state-active > div,
+.ui-autocomplete:where(.htax-ac-menu) .ui-menu-item-focus > div {
     background: #0073aa !important;
     color: #fff !important;
     outline: none !important;
@@ -299,13 +299,13 @@
 }
 
 /* Bold matching text */
-.ui-autocomplete .ui-menu-item strong {
+.ui-autocomplete:where(.htax-ac-menu) .ui-menu-item strong {
     font-weight: 600;
     color: inherit;
 }
 
 /* Style for description matches */
-.ui-autocomplete .htax-desc-match {
+.ui-autocomplete:where(.htax-ac-menu) .htax-desc-match {
     color: #666;
     font-size: 11px;
     margin-left: 5px;
@@ -313,12 +313,12 @@
 }
 
 /* Remove default jQuery UI theme styling */
-.ui-autocomplete.ui-widget {
+.ui-autocomplete:where(.htax-ac-menu).ui-widget {
     font-family: inherit !important;
 }
 
-.ui-autocomplete .ui-state-active,
-.ui-autocomplete .ui-state-focus {
+.ui-autocomplete:where(.htax-ac-menu) .ui-state-active,
+.ui-autocomplete:where(.htax-ac-menu) .ui-state-focus {
     border: none !important;
     background: transparent !important;
     font-weight: normal !important;
@@ -331,15 +331,15 @@
 }
 
 /* Match WordPress tag selector hover color */
-.ui-autocomplete .ui-menu-item > div:hover {
+.ui-autocomplete:where(.htax-ac-menu) .ui-menu-item > div:hover {
     background: #0073aa !important;
     color: #fff !important;
 }
 
-.ui-autocomplete .ui-menu-item > div:hover strong {
+.ui-autocomplete:where(.htax-ac-menu) .ui-menu-item > div:hover strong {
     color: #fff !important;
 }
 
-.ui-autocomplete .ui-menu-item > div:hover .htax-desc-match {
+.ui-autocomplete:where(.htax-ac-menu) .ui-menu-item > div:hover .htax-desc-match {
     color: #e6f3ff !important;
 }

@@ -102,20 +102,20 @@
 }
 
 /* Search input in add-tag form (no tabs) - eliminate gap below search */
-.tabs-panel[style*="border: 0"] .htax-checklist-search {
+.tabs-panel:where(.htax-tabs-panel)[style*="border: 0"] .htax-checklist-search {
 	margin-bottom: 0;
 	padding: 3px 6px;
 }
 
 /* Search input wrapper in add-tag form - remove white background gap */
-.tabs-panel[style*="border: 0"] {
+.tabs-panel:where(.htax-tabs-panel)[style*="border: 0"] {
 	background-color: transparent;
 	padding-top: 0;
 	padding-bottom: 0;
 }
 
 /* Checklist container in add-tag form - eliminate gap after search input */
-.tabs-panel[style*="border: 0"] .htax-checklist-container {
+.tabs-panel:where(.htax-tabs-panel)[style*="border: 0"] .htax-checklist-container {
 	margin-top: 0;
 }
 
@@ -192,7 +192,7 @@
 }
 
 /* Form utility */
-.form-no-clear {
+.form-no-clear:where(.htax-checklist) {
 	overflow: auto;
 }
 

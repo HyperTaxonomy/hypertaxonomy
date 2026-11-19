@@ -261,6 +261,8 @@ jQuery(document).ready(function($) {
         var action      = $container.data('action') || 'htax_search_terms';
 
         $input.autocomplete({
+            // Scopes the plugin's menu styles to its own autocompletes.
+            classes: { 'ui-autocomplete': 'htax-ac-menu' },
             source: function(req, resp) {
                 if (req.term.length < AUTOCOMPLETE_CONFIG.minSearchLength) { resp([]); return; }
                 $.ajax({
@@ -439,6 +441,8 @@ jQuery(document).ready(function($) {
 
         // Autocomplete: search terms, exclude all existing pills (both directions).
         $input.autocomplete({
+            // Scopes the plugin's menu styles to its own autocompletes.
+            classes: { 'ui-autocomplete': 'htax-ac-menu' },
             source: function(req, resp) {
                 if (req.term.length < AUTOCOMPLETE_CONFIG.minSearchLength) { resp([]); return; }
                 $.ajax({
@@ -517,6 +521,8 @@ jQuery(document).ready(function($) {
         // Read-only panels (e.g. on group edit screens) render the container without a search input.
         if ( $input.length ) {
             $input.autocomplete({
+                // Scopes the plugin's menu styles to its own autocompletes.
+                classes: { 'ui-autocomplete': 'htax-ac-menu' },
                 source: function(req, resp) {
                     if (req.term.length < AUTOCOMPLETE_CONFIG.minSearchLength) { resp([]); return; }
 
@@ -1450,6 +1456,8 @@ jQuery(document).ready(function($) {
         }
 
         $input.autocomplete({
+            // Scopes the plugin's menu styles to its own autocompletes.
+            classes: { 'ui-autocomplete': 'htax-ac-menu' },
             minLength: HTAX_Ajax.min_search_length || 2,
             source: function( request, response ) {
                 var tax = getTaxonomy();

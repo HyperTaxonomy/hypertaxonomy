@@ -161,7 +161,7 @@ function htax_frontend_styles() {
 
         /*
          * Printed from wp_head at priority 999, after the theme's styles, as an inline
-         * style on a source-less handle, so WordPress prints the <style> element. Tags are
+         * style on a source-less handle, so WordPress prints the style element. Tags are
          * stripped from the filtered CSS so it can't close the element early.
          */
         $css = wp_strip_all_tags( apply_filters( 'htax_frontend_styles', '
@@ -351,8 +351,8 @@ function htax_icon_border_radius_styles() {
         return;
     }
 
+    ob_start();
     ?>
-    <style type="text/css" id="htax-icon-border-radius">
         /* HyperTaxonomy Dynamic Icon Border Radius - Per Taxonomy */
         <?php foreach ( $css_rules as $taxonomy => $css ) : ?>
         /* <?php echo esc_attr( $taxonomy ); ?> */
@@ -423,8 +423,8 @@ function htax_icon_border_radius_styles() {
             border-radius: <?php echo esc_attr( $css ); ?> !important;
         }
         <?php endforeach; ?>
-    </style>
     <?php
+    htax_print_inline_style( 'htax-icon-border-radius', ob_get_clean() );
 }
 
 /**

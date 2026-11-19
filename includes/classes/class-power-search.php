@@ -286,8 +286,8 @@ class HyperTaxonomy_Power_Search {
 
         // Build extra WHERE from filter state
         $extra_where = '';
-        $raw_filter = isset( $_POST['htax_filter'] ) ? wp_unslash( $_POST['htax_filter'] ) : '';
-        if ( '' !== $raw_filter ) {
+        $raw_filter = isset( $_POST['htax_filter'] ) ? htax_decode_json_request( wp_unslash( $_POST['htax_filter'] ) ) : null;
+        if ( null !== $raw_filter ) {
             $filter_state = htax_parse_filter_state_ajax( $raw_filter );
             if ( ! empty( $filter_state ) ) {
                 $extra_where = htax_build_filter_sql( $filter_state );

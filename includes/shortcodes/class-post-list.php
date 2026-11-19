@@ -475,6 +475,14 @@ class HyperTaxonomy_Shortcode_Post_List extends HyperTaxonomy_Shortcode_Base {
         $date_clause      = ( '' !== $modified_after ? $wpdb->prepare( ' AND pt.post_modified_gmt > %s', $modified_after ) : '' )
                           . ( '' !== $modified_before ? $wpdb->prepare( ' AND pt.post_modified_gmt <= %s', $modified_before ) : '' );
 
+        // The post fields the result depends on (sort order, search, date window), so a
+        // post edit clears only the lists that a changed field can affect.
+        $dependency_letters = htax_post_list_dependency_letters(
+            array_keys( htax_parse_orderby( $orderby_raw ) ),
+            '' !== $search_string,
+            '' !== $date_clause
+        );
+
         $cache_key = 'htax_pl_t' . implode( '_t', $sorted_term_ids )
                    . ( ! empty( $sorted_filter_term_ids ) ? '_f' . implode( '_f', $sorted_filter_term_ids ) : '' )
                    . ( ! empty( $sorted_filter_group_ids ) ? '_g' . implode( '_g', $sorted_filter_group_ids ) : '' )
@@ -488,6 +496,7 @@ class HyperTaxonomy_Shortcode_Post_List extends HyperTaxonomy_Shortcode_Base {
                    . ( ! empty( $exclude_ids_int ) ? '_x' . implode( '-', $exclude_ids_int ) : '' )
                    . ( '' !== $search_string ? '_s' . substr( md5( $search_string ), 0, 8 ) : '' )
                    . ( '' !== $date_clause ? '_w' . substr( md5( $modified_after . '|' . $modified_before ), 0, 8 ) : '' )
+                   . ( '' !== $dependency_letters ? '_k' . $dependency_letters : '' )
                    . ( htax_can_see_hidden_terms() ? 'H' : '' );
 
         // Never cache results shaped by a user-driven inline filter panel (htax_filter /
@@ -1008,7 +1017,7 @@ class HyperTaxonomy_Shortcode_Post_List extends HyperTaxonomy_Shortcode_Base {
         // and submit action modes do not connect to [htax_post_list] and never reach here.
         $user_filter_sql = '';
         if ( ! empty( $_POST['htax_filter'] ) ) {
-            $filter_state    = htax_parse_filter_state_ajax( wp_unslash( $_POST['htax_filter'] ) );
+            $filter_state    = htax_parse_filter_state_ajax( htax_decode_json_request( wp_unslash( $_POST['htax_filter'] ) ) ?? array() );
             $user_filter_sql = htax_build_filter_sql( $filter_state );
         }
 

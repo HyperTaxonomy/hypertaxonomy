@@ -47,45 +47,45 @@
 }
 
 /* Terms count column (for group taxonomy) */
-.column-terms_count {
+:where(.htax-term-list) .column-terms_count {
 	width: 60px;
 	max-width: 60px;
 	text-align: center;
 }
 
 /* Taxonomies column (for group taxonomy) */
-.column-taxonomies {
+:where(.htax-term-list) .column-taxonomies {
 	width: 90px;
 	max-width: 90px;
 }
 
 /* Name column - force adequate width */
-.column-name {
+:where(.htax-term-list) .column-name {
 	width: 33% !important;
 	min-width: 250px;
 }
 
 /* Slug column - compact */
-.column-slug {
+:where(.htax-term-list) .column-slug {
 	width: 100px;
 	max-width: 100px;
 }
 
 /* Description column - more space for descriptions */
-.column-description {
+:where(.htax-term-list) .column-description {
 	width: 25% !important;
 	max-width: 300px;
 }
 
 /* Posts count column - wider to fit sort arrows */
-.column-posts {
+:where(.htax-term-list) .column-posts {
 	width: 80px;
 	max-width: 80px;
 	text-align: center;
 }
 
 /* Checkbox column - keep narrow */
-.column-cb {
+:where(.htax-term-list) .column-cb {
 	width: 2.2em;
 	max-width: 2.2em;
 }
@@ -95,20 +95,20 @@
    ============================================================================ */
 
 /* Name column - always wrap, never truncate */
-.wp-list-table .column-name {
+:where(.htax-term-list) .wp-list-table .column-name {
 	white-space: normal;
 	word-break: break-word;
 }
 
 /* Description column - truncate to save space */
-.wp-list-table .column-description {
+:where(.htax-term-list) .wp-list-table .column-description {
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
 
 /* Use auto layout to let Name column expand naturally */
-.wp-list-table {
+:where(.htax-term-list) .wp-list-table {
 	table-layout: auto;
 	width: 100%;
 }
@@ -136,15 +136,15 @@
 .wp-list-table tfoot  th.column-htax_redirect a,
 .wp-list-table thead th.column-htax_term_groups a,
 .wp-list-table tfoot  th.column-htax_term_groups a,
-.wp-list-table thead th.column-description a,
-.wp-list-table tfoot  th.column-description a {
+:where(.htax-term-list) .wp-list-table thead th.column-description a,
+:where(.htax-term-list) .wp-list-table tfoot  th.column-description a {
 	white-space: nowrap;
 	flex-wrap: nowrap;
 }
 
 /* Ensure Description always gets enough width for its header + sort indicator. */
-.wp-list-table thead th.column-description,
-.wp-list-table tfoot  th.column-description {
+:where(.htax-term-list) .wp-list-table thead th.column-description,
+:where(.htax-term-list) .wp-list-table tfoot  th.column-description {
 	min-width: 140px;
 }
 
@@ -185,21 +185,21 @@ tr.htax-is-redirect td:not(.column-htax_redirect) {
 }
 
 /* Make "Add Tag" and "Add Category" forms narrower to leave more room for the table */
-.taxonomy-post_tag #col-left,
-.taxonomy-category #col-left {
+.taxonomy-post_tag:where(.htax-term-list) #col-left,
+.taxonomy-category:where(.htax-term-list) #col-left {
 	width: 30%;
 }
 
-.taxonomy-post_tag #col-right,
-.taxonomy-category #col-right {
+.taxonomy-post_tag:where(.htax-term-list) #col-right,
+.taxonomy-category:where(.htax-term-list) #col-right {
 	width: 68%;
 }
 
 /* Keep Add Term form fields at 95% width to match native WP fields */
-#col-left .form-field input[type="text"],
-#col-left .form-field input[type="search"],
-#col-left .form-field textarea,
-#col-left .form-field select,
+:where(.htax-term-list) #col-left .form-field input[type="text"],
+:where(.htax-term-list) #col-left .form-field input[type="search"],
+:where(.htax-term-list) #col-left .form-field textarea,
+:where(.htax-term-list) #col-left .form-field select,
 #col-left .form-field .htax-tag-container,
 #col-left .form-field .htax-hierarchical-checklist-wrapper,
 #col-left .form-field .htax-member-pills-container,

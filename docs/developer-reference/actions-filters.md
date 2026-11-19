@@ -238,7 +238,7 @@ Fires on `init` at priority 0, after the built-in relationship types are registe
 
 `htax_relationship_types_admin_footer`
 
-Fires at the bottom of the **Terms → Term Relationship Types** admin page. Use it to add your own UI.
+Fires at the bottom of the **Terms&nbsp;→ Term Relationship Types** admin page. Use it to add your own UI.
 
 #### Archive contents changed
 
@@ -290,7 +290,7 @@ add_action( 'htax_term_strength_missing', function( $post_id, $term_ids, $model 
 
 `htax_term_strengths_updated`
 
-Fires after an external model's strengths are stored with `htax_set_term_strengths()` or removed with `htax_remove_term_strengths()` (including Settings → Search → Clear Scores). Use it to invalidate anything that caches strength-based results.
+Fires after an external model's strengths are stored with `htax_set_term_strengths()` or removed with `htax_remove_term_strengths()` (including Settings&nbsp;→ Search&nbsp;→ Clear Scores). Use it to invalidate anything that caches strength-based results.
 
 ```php
 add_action( 'htax_term_strengths_updated', function( $post_id, $model, $term_ids ) {
@@ -303,7 +303,7 @@ add_action( 'htax_term_strengths_updated', function( $post_id, $model, $term_ids
 
 `htax_term_uris_changed` / `htax_term_locations_changed`
 
-Fire with `int $term_id` when a term's external URIs or locations change. HyperTaxonomy re-fires these from TermConnect's [`tc_term_uris_changed`](https://hypertaxonomy.org/termconnect/developer-reference/actions-filters.html#external-links-changed) and As the Crow Flies' [`atcf_term_location_changed`](https://hypertaxonomy.org/as-the-crow-flies/developer-reference/actions-filters.html#actions), so a plugin that reads `htax_get_term_uris()` or `htax_get_term_locations()` can clear its caches without depending on either plugin.
+Fire with `int $term_id` when a term's external URIs or locations change. HyperTaxonomy re-fires these from TermConnect's [`tconn_term_uris_changed`](https://hypertaxonomy.org/termconnect/developer-reference/actions-filters.html#external-links-changed) and As the Crow Flies' [`atcf_term_location_changed`](https://hypertaxonomy.org/as-the-crow-flies/developer-reference/actions-filters.html#actions), so a plugin that reads `htax_get_term_uris()` or `htax_get_term_locations()` can clear its caches without depending on either plugin.
 
 ## Available Filters
 
@@ -372,7 +372,7 @@ add_filter( 'htax_term_post_count', function( $count, $term_id, $taxonomy, $quer
 
 `htax_strength_field_weights`
 
-Override the TF formula coefficients used by `htax_calculate_direct_term_strength()` for the built-in strength model (`htax_tf`). To supply strengths from another source, register a separate model instead — see [Strength Models](search-ranking.html#strength-models). Coefficients must sum to ≤ 1.0 so the maximum achievable strength equals 1.0.
+Override the TF formula coefficients used by `htax_calculate_direct_term_strength()` for the built-in strength model (`htax_tf`). To supply strengths from another source, register a separate model instead — see [Strength Models](search-ranking.html#strength-models). Coefficients must sum to ≤&nbsp;1.0 so the maximum achievable strength equals 1.0.
 
 ```php
 add_filter( 'htax_strength_field_weights', function( $weights ) {

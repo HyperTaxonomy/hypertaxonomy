@@ -164,7 +164,7 @@ $auto_resync = isset( $_GET['resync'] ) && $tag_groups_count > 0;
     </div>
 </div>
 
-<script>
+<?php ob_start(); ?>
 jQuery(document).ready(function($) {
     var nonce      = '<?php echo esc_js( wp_create_nonce( 'htax_import_tag_groups' ) ); ?>';
     var BATCH_SIZE = 50;
@@ -298,4 +298,4 @@ jQuery(document).ready(function($) {
     $('#htax-start-import').trigger('click');
     <?php endif; ?>
 });
-</script>
+<?php htax_add_inline_script( 'tag-groups-migrate', ob_get_clean() ); ?>

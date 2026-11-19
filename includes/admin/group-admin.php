@@ -647,8 +647,9 @@ function htax_replace_group_screen_rows( int $group_id, string $type, bool $grou
  * @param int $term_id Group term ID.
  */
 function htax_save_group_screen_fields( $term_id ) {
-    // Only for the term edit, add-term and Quick Edit forms, verified by their nonces.
-    if ( ! htax_verify_term_nonce( (int) $term_id ) ) {
+    // Only for the term edit, add-term and Quick Edit forms, verified by their nonces,
+    // by users who can edit the group.
+    if ( ! htax_verify_term_nonce( (int) $term_id ) || ! current_user_can( 'edit_term', (int) $term_id ) ) {
         return;
     }
     $group_id = (int) $term_id;
@@ -1064,15 +1065,15 @@ function htax_group_context_panel( WP_Term $term ): void {
             $pill_selector    = '.htax-terms-with-included-group-field .htax-pill[data-id="' . $context_id . '"]';
             $section_selector = '.htax-terms-with-included-group-field';
         }
-        printf(
-            '<script>document.addEventListener("DOMContentLoaded",function(){' .
+        htax_add_inline_script( 'group-context', sprintf(
+            'document.addEventListener("DOMContentLoaded",function(){' .
             'document.querySelectorAll(%s).forEach(function(el){el.classList.add("htax-context-direct");});' .
             'var s=document.querySelector(%s);' .
             'if(s){var t=s.getBoundingClientRect().top+window.pageYOffset-60;window.scrollTo({top:Math.max(0,t),behavior:"smooth"});}' .
-            '});</script>',
+            '});',
             wp_json_encode( $pill_selector ),
             wp_json_encode( $section_selector )
-        );
+        ), array() );
         return;
     }
 
@@ -1103,10 +1104,11 @@ function htax_group_context_panel( WP_Term $term ): void {
     esc_html_e( 'appears here because:', 'hypertaxonomy' );
     echo ' ' . esc_html( $label ) . ' ' . wp_kses_post( implode( ', ', $links ) ) . '.';
     echo '</p></div></td></tr>';
-    echo '<script>document.addEventListener("DOMContentLoaded",function(){' .
-         'var p=document.getElementById("htax-context-panel");' .
-         'if(p){var t=p.getBoundingClientRect().top+window.pageYOffset-60;window.scrollTo({top:Math.max(0,t),behavior:"smooth"});}' .
-         '});</script>';
+    htax_add_inline_script( 'group-context',
+        'document.addEventListener("DOMContentLoaded",function(){' .
+        'var p=document.getElementById("htax-context-panel");' .
+        'if(p){var t=p.getBoundingClientRect().top+window.pageYOffset-60;window.scrollTo({top:Math.max(0,t),behavior:"smooth"});}' .
+        '});', array() );
 }
 add_action( 'group_edit_form_fields', 'htax_group_context_panel', 15 );
 

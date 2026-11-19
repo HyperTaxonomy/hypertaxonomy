@@ -67,7 +67,7 @@ $all_taxonomies = get_taxonomies( array( 'public' => true ), 'objects' );
 </button>
 <span id="htax-export-message" style="margin-left: 10px;"></span>
 
-<script>
+<?php ob_start(); ?>
 jQuery(document).ready(function($) {
     $('#htax-export-button').on('click', function() {
         var $button = $(this);
@@ -136,4 +136,4 @@ jQuery(document).ready(function($) {
         }, 1000);
     });
 });
-</script>
+<?php htax_add_inline_script( 'export', ob_get_clean() ); ?>

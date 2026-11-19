@@ -459,6 +459,96 @@ function htax_log_debug( $message, $context = array(), $backtrace = false ) {
 }
 
 /**
+ * Add a page-specific inline script through the script API.
+ *
+ * Registers a source-less script handle that prints in the footer and attaches $js
+ * to it. Each call gets its own handle, so each script prints as its own element.
+ * Call it before the footer scripts are printed, e.g. while rendering a screen.
+ *
+ * @since 1.0.0
+ *
+ * @param string   $name Short name for the handle ('htax-{name}-{n}').
+ * @param string   $js   JavaScript code, without the script element tags.
+ * @param string[] $deps Script dependencies.
+ */
+function htax_add_inline_script( string $name, string $js, array $deps = array( 'jquery' ) ): void {
+    static $count = 0;
+    $handle = 'htax-' . $name . '-' . ( ++$count );
+    wp_register_script( $handle, false, $deps, HTAX_VERSION, array( 'in_footer' => true ) );
+    wp_enqueue_script( $handle );
+    wp_add_inline_script( $handle, $js );
+}
+
+/**
+ * Print an inline stylesheet through the style API.
+ *
+ * For styles generated in wp_head or admin_head: registers a source-less style
+ * handle, attaches $css and prints it at once.
+ *
+ * @since 1.0.0
+ *
+ * @param string $handle Style handle.
+ * @param string $css    CSS, without the style element tags.
+ */
+function htax_print_inline_style( string $handle, string $css ): void {
+    wp_register_style( $handle, false, array(), HTAX_VERSION );
+    wp_add_inline_style( $handle, wp_strip_all_tags( $css ) );
+    wp_print_styles( $handle );
+}
+
+/**
+ * Decode a JSON request value and sanitize everything in it.
+ *
+ * Every string value is passed through $sanitize_string (with its key), and every
+ * key through sanitize_text_field(). Integers, floats, booleans and nulls keep their
+ * types. Use it for JSON submitted in $_POST/$_GET, passing the value through
+ * wp_unslash() first; callers still validate the shape.
+ *
+ * @since 1.0.0
+ *
+ * @param mixed         $raw             Unslashed request value.
+ * @param callable|null $sanitize_string Sanitizer for string values: fn( string $value, string $key ): string.
+ *                                       Defaults to sanitize_text_field().
+ * @return array|null The sanitized data, or null when $raw isn't a JSON object or array.
+ */
+function htax_decode_json_request( $raw, ?callable $sanitize_string = null ): ?array {
+    if ( ! is_string( $raw ) ) {
+        return null;
+    }
+    $data = json_decode( $raw, true );
+    if ( ! is_array( $data ) ) {
+        return null;
+    }
+    return htax_sanitize_decoded_json( $data, $sanitize_string ?? static function ( string $value ): string {
+        return sanitize_text_field( $value );
+    } );
+}
+
+/**
+ * Recursively sanitize decoded JSON data. See htax_decode_json_request().
+ *
+ * @since 1.0.0
+ *
+ * @param array    $data            Decoded data.
+ * @param callable $sanitize_string Sanitizer for string values: fn( string $value, string $key ): string.
+ * @return array
+ */
+function htax_sanitize_decoded_json( array $data, callable $sanitize_string ): array {
+    $clean = array();
+    foreach ( $data as $key => $value ) {
+        $key = is_int( $key ) ? $key : sanitize_text_field( (string) $key );
+        if ( is_array( $value ) ) {
+            $clean[ $key ] = htax_sanitize_decoded_json( $value, $sanitize_string );
+        } elseif ( is_string( $value ) ) {
+            $clean[ $key ] = $sanitize_string( $value, (string) $key );
+        } elseif ( is_int( $value ) || is_float( $value ) || is_bool( $value ) || null === $value ) {
+            $clean[ $key ] = $value;
+        }
+    }
+    return $clean;
+}
+
+/**
  * Log errors
  *
  * @since 1.0.0

@@ -266,8 +266,8 @@ jQuery(document).ready(function($) {
 				'htax_icon':        function() { return $filterContainer.find('#htax_icon_filter').first(); },
 				'htax_hidden':      function() { return $filterContainer.find('#htax_visibility_filter').first(); },
 				'atcf_locations':   function() { return $filterContainer.find('#atcf_has_locations').first(); },
-				'tc_ext_links':     function() { return $filterContainer.find('#tc_ext_links_filter').first(); },
-				'tc_di_issues':     function() { return $filterContainer.find('#tc_di_issues_filter').first(); }
+				'tconn_ext_links':     function() { return $filterContainer.find('#tconn_ext_links_filter').first(); },
+				'tconn_di_issues':     function() { return $filterContainer.find('#tconn_di_issues_filter').first(); }
 			};
 			$('.wp-list-table thead th').each(function() {
 				var m = this.className.match(/\bcolumn-(\S+)/);

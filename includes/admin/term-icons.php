@@ -976,8 +976,6 @@ class HyperTaxonomy_Term_Icons {
      * @return int|WP_Error New attachment ID or error.
      */
     private function create_attachment_from_cropped_file( $file_path, $parent_id ) {
-        require_once ABSPATH . 'wp-admin/includes/image.php';
-
         $mime = wp_check_filetype( basename( $file_path ), null );
         if ( ! $mime['type'] ) {
             return new WP_Error( 'invalid_mime', __( 'Could not determine the file format of the cropped image.', 'hypertaxonomy' ) );

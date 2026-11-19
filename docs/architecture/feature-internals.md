@@ -19,7 +19,7 @@ How individual features are built: the feature flag behind archive expansion, gr
 
 ## Feature Flag Enforcement for Archive Expansion
 
-Site owners turn the flag on per taxonomy as **Term Relationships** in [Settings → HyperTaxonomy → Features](../user-guide/plugin-settings.html#features-tab). The public functions for archive expansion are in the [Query Expansion API](../developer-reference/query-expansion.html).
+Site owners turn the flag on per taxonomy as **Term Relationships** in [Settings&nbsp;→ HyperTaxonomy&nbsp;→ Features](../user-guide/plugin-settings.html#features-tab). The public functions for archive expansion are in the [Query Expansion API](../developer-reference/query-expansion.html).
 
 One feature flag controls the entire archive expansion pipeline:
 
@@ -31,7 +31,7 @@ The flag is checked by `htax_taxonomy_has_feature()` at runtime, so enabling or 
 
 ## Group Relationships
 
-For how site owners set these up, see [Term Relationships → Group Inclusions](../user-guide/term-relationships.html#group-inclusions) and [Container Groups](../user-guide/term-relationships.html#container-groups); for reading group data in code, see [Relationship Data API → Term Groups](../developer-reference/relationship-data.html#term-groups).
+For how site owners set these up, see [Term Relationships&nbsp;→ Group Inclusions](../user-guide/term-relationships.html#group-inclusions) and [Container Groups](../user-guide/term-relationships.html#container-groups); for reading group data in code, see [Relationship Data API&nbsp;→ Term Groups](../developer-reference/relationship-data.html#term-groups).
 
 Terms relate to groups in two directions. A **group inclusion** puts a group's members' posts into the including term's archive; a **container group** puts a term's posts into the archive of every member of the group and of its parent groups. Relationships are stored as intent and expanded at query time. See [Custom Database Tables](data-storage.html#custom-database-tables) for the row formats.
 
@@ -84,11 +84,11 @@ A term can belong to several groups at once.
 ### Restrictions
 
 - A relationship cannot have a group term on both sides (group+group rows are always invalid).
-- Can be disabled per-taxonomy by turning off its relationships feature (`term_relationships`) in Settings → HyperTaxonomy → Features. This gates all archive expansion including group-based relationships.
+- Can be disabled per-taxonomy by turning off its relationships feature (`term_relationships`) in Settings&nbsp;→ HyperTaxonomy&nbsp;→ Features. This gates all archive expansion including group-based relationships.
 
 ## Native Block Group Filter
 
-For how editors use it, see [Archive & Results Controls → Query Loop and Latest Posts](../user-guide/archive-controls.html#gutenberg-block-extensions).
+For how editors use it, see [Archive & Results Controls&nbsp;→ Query Loop and Latest Posts](../user-guide/archive-controls.html#gutenberg-block-extensions).
 
 The HT Term Group Filter extends the native WordPress `core/query` (Query Loop) and `core/latest-posts` (Latest Posts) blocks. It requires no template changes — the filter is added through each block's inspector.
 
@@ -133,7 +133,7 @@ Algorithm:
 
 ## Redirects
 
-For how site owners create redirects, see [Term Relationships → Redirects](../user-guide/term-relationships.html#redirects); for reading them in code, see [Relationship Data API → Redirect target](../developer-reference/relationship-data.html#redirect-target).
+For how site owners create redirects, see [Term Relationships&nbsp;→ Redirects](../user-guide/term-relationships.html#redirects); for reading them in code, see [Relationship Data API&nbsp;→ Redirect target](../developer-reference/relationship-data.html#redirect-target).
 
 **What Makes Redirects Special:**
 
@@ -165,7 +165,7 @@ For how site owners create redirects, see [Term Relationships → Redirects](../
      index a `hierarchy` row for B or A.
    When the redirect is removed, all of these hierarchy entries are restored automatically.
 
-**Example: ML → Machine Learning**
+**Example: ML&nbsp;→ Machine Learning**
 ```
 Setup:
   - Term "ML" redirects to "Machine Learning"
@@ -203,15 +203,15 @@ When Physics redirect is removed:
 **Example:**
 - Term A redirects to Term B
 - Term C redirects to Term A
-- User changes A's redirect: A → D (instead of A → B)
+- User changes A's redirect: A&nbsp;→ D (instead of A&nbsp;→ B)
 - **Result:**
-  - C's redirect updates: C → D (prevents chain C → A → D)
+  - C's redirect updates: C&nbsp;→ D (prevents chain C&nbsp;→ A&nbsp;→ D)
 
 **Implementation:** the cascade in `htax_set_redirect()`, in `includes/core/term-relationships.php`.
 
 ## Hierarchical Taxonomy Display Depth
 
-`[ht_term_list]` (and the Term List block) and the search widget's hierarchical checklists (`[ht_checklist_field]`) accept `max_depth`: `0` shows only the top level, and `1`–`99` limit the depth. Their `-1` default means "use the **Max Term Hierarchy Depth** setting" (Settings → HyperTaxonomy → Display), whose own `-1` means unlimited. User-facing usage is in [Term Lists & Clouds](../user-guide/term-lists.html) and [Search Widget](../user-guide/search-widget.html).
+`[ht_term_list]` (and the Term List block) and the search widget's hierarchical checklists (`[ht_checklist_field]`) accept `max_depth`: `0` shows only the top level, and `1`–`99` limit the depth. Their `-1` default means "use the **Max Term Hierarchy Depth** setting" (Settings&nbsp;→ HyperTaxonomy&nbsp;→ Display), whose own `-1` means unlimited. User-facing usage is in [Term Lists & Clouds](../user-guide/term-lists.html) and [Search Widget](../user-guide/search-widget.html).
 
 **Implementation:** `render_hierarchical_list()` (term lists) and `render_hierarchical_checklist()` (search widget) track depth while rendering recursively and stop at the limit.
 
@@ -219,7 +219,7 @@ When Physics redirect is removed:
 
 ## Term Icon System
 
-For how site owners add icons, see [Per-Term Settings → Term Icons](../user-guide/per-term-settings.html#term-icons); for displaying them in themes, see [Term Icons & Badges](../developer-reference/term-icons.html).
+For how site owners add icons, see [Per-Term Settings&nbsp;→ Term Icons](../user-guide/per-term-settings.html#term-icons); for displaying them in themes, see [Term Icons & Badges](../developer-reference/term-icons.html).
 
 Icons are stored as media library attachments. The filename is derived from the term slug at upload time using a collision-avoidance scheme: `slug.ext` → `slug-taxonomy.ext` → `slug-taxonomy-N.ext`. When a term's slug changes, the icon file is automatically renamed to match. The configured dimensions are the large (full) size; medium and small are generated at configurable percentages (defaults: 50% and 25%) set per taxonomy in Settings.
 
@@ -235,13 +235,13 @@ An icon-shaped color placeholder ([`get_color_for_slug()`](../developer-referenc
 
 During taxonomy conversion (a term moving from one taxonomy to another), icons are preserved when the source and destination taxonomies share the same configured icon dimensions; otherwise the icon is detached and must be re-uploaded.
 
-When icons are enabled for a taxonomy, icon URLs and dimensions are exposed in the WordPress REST API as the `htax_icon` field on the term object. The field is absent when no icon is set. See [REST API → Term endpoint enrichment](../developer-reference/rest-api.html#term-endpoint-enrichment) for the full field structure.
+When icons are enabled for a taxonomy, icon URLs and dimensions are exposed in the WordPress REST API as the `htax_icon` field on the term object. The field is absent when no icon is set. See [REST API&nbsp;→ Term endpoint enrichment](../developer-reference/rest-api.html#term-endpoint-enrichment) for the full field structure.
 
 ---
 
 ## Hidden Terms Architecture
 
-Site owners hide terms as described in [Per-Term Settings → Term Visibility](../user-guide/per-term-settings.html#term-visibility). [Handling Hidden Terms](../developer-reference/hidden-terms.html) covers what other plugins and themes see.
+Site owners hide terms as described in [Per-Term Settings&nbsp;→ Term Visibility](../user-guide/per-term-settings.html#term-visibility). [Handling Hidden Terms](../developer-reference/hidden-terms.html) covers what other plugins and themes see.
 
 ### Two-Tier Approach
 
@@ -314,14 +314,14 @@ WHERE source_term_id = $term_id OR term_id = $term_id
 
 ## Term Taxonomy Conversion
 
-For how site owners convert terms, see [Merge & Convert Terms → Convert Terms](../user-guide/merge-convert.html#convert-terms); the `htax_term_converted` action is in [Actions & Filters](../developer-reference/actions-filters.html#term-converted-to-another-taxonomy).
+For how site owners convert terms, see [Merge & Convert Terms&nbsp;→ Convert Terms](../user-guide/merge-convert.html#convert-terms); the `htax_term_converted` action is in [Actions & Filters](../developer-reference/actions-filters.html#term-converted-to-another-taxonomy).
 
 There are two paths.
 
 *Native path (`htax_convert_term` / `htax_convert_terms_batch`).* Creates a new clean term in the target taxonomy and moves post assignments via a single `UPDATE wp_term_relationships` query. The handling of the old term then diverges:
 
 - **With redirect stub** (`$create_redirect = true`, the default): the old term stays in the old taxonomy and becomes the redirect stub pointing to the new term. It keeps its original slug — so `/old-tax/old-slug` correctly finds the stub and HyperTaxonomy's `template_redirect` handler fires the 301 redirect. Group memberships and HyperTaxonomy relationships stay on the stub, which is in the correct taxonomy for them. The new term gets the hidden status, a copy of the icon when `htax_should_transfer_icon()` allows it, and the sticky posts. Because the old term's `term_id` is unchanged, child terms' `parent` pointers remain valid with no re-parenting needed. Slug uniqueness follows WordPress's own rule: per-taxonomy. If no term in the target taxonomy already has the slug, the new term receives the original slug — the stub in the old taxonomy retains the same slug, which is valid since they live in different taxonomies. The redirect is stored as a `redirect` row in `wp_htax_term_relationships` (source = stub, target = new term) plus `_htax_auto_redirect = 1` term meta on the stub. `htax_find_auto_redirect_to_term()` detects existing stubs by querying `wp_htax_term_relationships` for this combination, enabling reverse conversion.
-- **Without redirect stub** (`$create_redirect = false`): fires the same WordPress hook sequence as wpcat2tag — `wp_insert_term()` (fires `created_term`) → `UPDATE wp_term_relationships` → `wp_delete_term()` (fires `delete_term`) → `wp_update_term()` to claim the original slug. This ordering means plugins that detect term conversions by watching standard WordPress hooks (WPML, Polylang, etc.) recognize HyperTaxonomy's native no-redirect conversion automatically, without needing HyperTaxonomy-specific integration. A flag (`$GLOBALS['htax_native_conversion_in_progress']`) suppresses HyperTaxonomy's own external-detection hooks during this sequence to prevent double-firing.
+- **Without redirect stub** (`$create_redirect = false`): fires the same WordPress hook sequence as wpcat2tag — `wp_insert_term()` (fires `created_term`)&nbsp;→ `UPDATE wp_term_relationships` → `wp_delete_term()` (fires `delete_term`)&nbsp;→ `wp_update_term()` to claim the original slug. This ordering means plugins that detect term conversions by watching standard WordPress hooks (WPML, Polylang, etc.) recognize HyperTaxonomy's native no-redirect conversion automatically, without needing HyperTaxonomy-specific integration. A flag (`$GLOBALS['htax_native_conversion_in_progress']`) suppresses HyperTaxonomy's own external-detection hooks during this sequence to prevent double-firing.
 
 Reverse conversion is detected at the start of `htax_convert_term()` via `htax_find_auto_redirect_to_term()`, which queries `wp_htax_term_relationships` for a `redirect` row pointing from the target taxonomy to the source term combined with `_htax_auto_redirect = 1` term meta. If such a stub is found, `htax_restore_converted_term()` moves posts back to the stub, removes the redirect row and meta, and deletes the replacement term — restoring the original term to its exact pre-conversion state.
 
@@ -341,7 +341,7 @@ Pre-conversion guards: name collision in target taxonomy (rejects — consistent
 
 ## Term Merge
 
-For how site owners merge terms, see [Merge & Convert Terms → Merge Terms](../user-guide/merge-convert.html#merge-terms); the merge actions are in [Actions & Filters](../developer-reference/actions-filters.html#before-a-merge).
+For how site owners merge terms, see [Merge & Convert Terms&nbsp;→ Merge Terms](../user-guide/merge-convert.html#merge-terms); the merge actions are in [Actions & Filters](../developer-reference/actions-filters.html#before-a-merge).
 
 `htax_merge_terms()` creates [redirect stubs](../user-guide/term-relationships.html#redirects) with `htax_create_redirect_term()` after deleting the source terms, because a stub takes its source's name and slug. That step runs after the transaction, so a failed stub doesn't undo the merge: it just isn't counted in `redirects_created`.
 
@@ -351,7 +351,7 @@ When a term merge transfers source terms' `member_of` group memberships to the t
 
 ## Conflict Detection
 
-The constraints site owners see on the term edit screen are summarized in [Term Relationships → Inclusions and Containers](../user-guide/term-relationships.html#inclusions-and-containers).
+The constraints site owners see on the term edit screen are summarized in [Term Relationships&nbsp;→ Inclusions and Containers](../user-guide/term-relationships.html#inclusions-and-containers).
 
 HyperTaxonomy automatically prevents or resolves several classes of relationship conflicts:
 
@@ -422,7 +422,7 @@ Functions:
 
 ### Redirect Constraints
 
-Site owners meet these rules on the term edit screen; see [Term Relationships → Redirects](../user-guide/term-relationships.html#redirects).
+Site owners meet these rules on the term edit screen; see [Term Relationships&nbsp;→ Redirects](../user-guide/term-relationships.html#redirects).
 
 - **No circular redirects:** When A→B is set and B already redirects (directly or transitively) back to A, B's redirect is removed so the new one can save, and an info notice explains it
 - **No redirect chains:** When A→B exists and B's redirect target changes to C, A is automatically updated to A→C

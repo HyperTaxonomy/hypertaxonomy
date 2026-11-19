@@ -9,11 +9,6 @@ nav_order: 8
 
 Two shortcodes for displaying posts from the local search index. For fetching posts from peer WordPress sites and RSS/Atom feeds, see [Posts from peer sites and feeds](#posts-from-peer-sites-and-feeds) below.
 
-{: .note-title }
-> Term and group attributes accept slugs or IDs
->
-> Every term/group attribute below (`include_terms`, `exclude_terms`, `filter_terms`, `filter_out_terms`, `include_groups`, `exclude_groups`, `filter_groups`, `filter_out_groups`) accepts a comma-separated list of either numeric IDs **or** slugs, and the two may be mixed (e.g. `include_terms="news,42,featured"`). Term slugs resolve within the shortcode's `taxonomy`; group slugs resolve within the `group` taxonomy. A purely numeric token is always treated as an ID.
-
 ## Table of contents
 {: .no_toc .text-delta }
 
@@ -23,6 +18,11 @@ Two shortcodes for displaying posts from the local search index. For fetching po
 ---
 
 ## Common Parameters
+
+{: .note-title }
+> Term and group attributes accept slugs or IDs
+>
+> Every term/group attribute below (`include_terms`, `exclude_terms`, `filter_terms`, `filter_out_terms`, `include_groups`, `exclude_groups`, `filter_groups`, `filter_out_groups`) accepts a comma-separated list of either numeric IDs **or** slugs, and the two may be mixed (e.g. `include_terms="news,42,featured"`). Term slugs resolve within the shortcode's `taxonomy`; group slugs resolve within the `group` taxonomy. A purely numeric token is always treated as an ID.
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
@@ -37,7 +37,7 @@ Two shortcodes for displaying posts from the local search index. For fetching po
 | `show_excerpt` | Show post excerpt (`div` format only) | `true` |
 | `meta` | Template string for the meta line rendered below the post title in `div` format. Supports the post placeholders below, such as `{date}`, `{author}`, and `{modified}`. Leave empty to hide the meta line entirely. | `{date} by {author}` |
 | `image_size` | WordPress registered image size used for the thumbnail in `div` format. Any size registered via `add_image_size()` or the built-in sizes (`thumbnail`, `medium`, `medium_large`, `large`, `full`) is accepted. | `medium` |
-| `columns` | Number of columns. For `div` format: CSS grid layout. For `ul`/`ol` format: CSS multi-column text flow. Responsive — automatically collapses to 2 columns on tablet (≤ 768 px) and 1 column on mobile (≤ 480 px). | `1` |
+| `columns` | Number of columns. For `div` format: CSS grid layout. For `ul`/`ol` format: CSS multi-column text flow. Responsive — automatically collapses to 2 columns on tablet (≤&nbsp;768 px) and 1 column on mobile (≤&nbsp;480 px). | `1` |
 | `format` | Output format: `ul` (unordered list), `ol` (ordered list), or `div` (full article cards). `ul`/`ol` render a `<ul>`/`<ol>` with one `<li>` per post containing only the title linked. `div` renders full article cards with thumbnail, excerpt, and meta. For `ol` with pagination, numbering continues across pages (page 2 starts at `posts_per_page + 1`). | `ul` |
 | `template` | CSS template modifier appended to `htax-result-{template}` (applies to `div` format only) | `default` |
 | `class` | For `div` format: additional CSS class on the container. For `ul`/`ol` format: CSS class added to each `<li>` element. | — |
@@ -81,7 +81,7 @@ Two shortcodes for displaying posts from the local search index. For fetching po
 
 **Pagination.** When results span more than one page, Previous / Next navigation is rendered inside `.htax-post-list-nav` directly below the post list. Clicking a navigation button fetches the requested page via AJAX and replaces the post list and nav within the same output block — no URL change or page reload occurs. Because pagination is self-contained within the output block, multiple shortcodes on the same page each paginate independently.
 
-**Relevance scoring:** each post-term relationship carries a strength score reflecting how centrally the post covers that term (based on how prominently the term name appears in the title, excerpt, and body). Direct assignments also receive a higher base contribution than indirect relationships such as inclusions and hierarchy, controlled by the per-taxonomy weights in [Settings → Search → Relevance Weights](plugin-settings.html#search-tab). Together, strength and relationship-type weights determine result ordering when `orderby` includes `relevance:desc`.
+**Relevance scoring:** each post-term relationship carries a strength score reflecting how centrally the post covers that term (based on how prominently the term name appears in the title, excerpt, and body). Direct assignments also receive a higher base contribution than indirect relationships such as inclusions and hierarchy, controlled by the per-taxonomy weights in [Settings&nbsp;→ Search&nbsp;→ Relevance Weights](plugin-settings.html#search-tab). Together, strength and relationship-type weights determine result ordering when `orderby` includes `relevance:desc`.
 
 ---
 
@@ -141,7 +141,7 @@ The **HT Post List** Gutenberg block is the block-editor equivalent of `[ht_post
 
 ![The HT Post List block in the editor: the block's preview pane open from the inserter, its live preview in the post, and its Term Source settings with a Term Group selected](../assets/images/screenshots/post-list-block.png)
 
-Find it in the block inserter under **HyperTaxonomy → HT Post List**, or search for "hypertaxonomy".
+Find it in the block inserter under **HyperTaxonomy&nbsp;→ HT Post List**, or search for "hypertaxonomy".
 
 The block has four inspector panels:
 
@@ -206,7 +206,7 @@ The **HT Related Posts** Gutenberg block is the block-editor equivalent of `[ht_
 
 ![The HT Related Posts block in the editor: the block's preview pane open from the inserter, its live preview in the post, and its Query settings with the date window](../assets/images/screenshots/related-posts-block.png)
 
-Find it in the block inserter under **HyperTaxonomy → HT Related Posts**, or search for "hypertaxonomy". To display related content from peer WordPress sites and RSS/Atom feeds alongside local posts, use TermConnect's [**Peer Posts** block](https://hypertaxonomy.org/termconnect/user-guide/displaying-peer-posts.html#blocks) instead.
+Find it in the block inserter under **HyperTaxonomy&nbsp;→ HT Related Posts**, or search for "hypertaxonomy". To display related content from peer WordPress sites and RSS/Atom feeds alongside local posts, use TermConnect's [**Peer Posts** block](https://hypertaxonomy.org/termconnect/user-guide/displaying-peer-posts.html#blocks) instead.
 
 The block has the same Query, Filters, and Display inspector panels as the Post List block, including the meta line template field. The Query panel has **Boost posts matching the current post's title** in place of Keyword search (on by default; see *Automatic title boosting* above). The **Term Source** panel shows only the taxonomy selector — include/exclude term and group controls are not present because the term set is derived automatically from the current post. The taxonomy selector offers an **— All taxonomies —** choice (the empty value) that pools the current post's terms across every taxonomy it belongs to; pick a single taxonomy to restrict matching to it. (For a fixed subset of taxonomies, use the shortcode with a comma-separated `taxonomy` list.) The Query panel also has **Only posts near this post's date**, which shows **Days before this post** and **Days after this post** (see *Posts near the current post's date* above).
 
@@ -214,4 +214,4 @@ The editor canvas shows a live server-side preview rendered for the post being e
 
 ## Posts from peer sites and feeds
 
-`[ht_post_list]` and `[ht_related_posts]` show only this site's posts. To show related posts from peer WordPress sites and RSS/Atom feeds — matched to the current post's terms, including shared identifiers and synonyms — use TermConnect's `[tc_peer_posts]` shortcode or **Peer Posts** block. With `scope="all"` it also blends in this site's own related posts, grouped by source. See [Displaying Peer Posts](https://hypertaxonomy.org/termconnect/user-guide/displaying-peer-posts.html) in the TermConnect documentation, and [Blending local and peer posts together](https://hypertaxonomy.org/termconnect/user-guide/displaying-peer-posts.html#blending-local-and-peer-posts-together) for the blended list.
+`[ht_post_list]` and `[ht_related_posts]` show only this site's posts. To show related posts from peer WordPress sites and RSS/Atom feeds — matched to the current post's terms, including shared identifiers and synonyms — use TermConnect's `[tconn_peer_posts]` shortcode or **Peer Posts** block. With `scope="all"` it also blends in this site's own related posts, grouped by source. See [Displaying Peer Posts](https://hypertaxonomy.org/termconnect/user-guide/displaying-peer-posts.html) in the TermConnect documentation, and [Blending local and peer posts together](https://hypertaxonomy.org/termconnect/user-guide/displaying-peer-posts.html#blending-local-and-peer-posts-together) for the blended list.

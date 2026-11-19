@@ -19,11 +19,11 @@ nav_order: 9
 
 When the **HyperTaxonomy Presence Header** setting is on (the default), HyperTaxonomy adds an `X-HyperTaxonomy: {version}` header to every WordPress REST API response. Peer sites use it to detect HyperTaxonomy (e.g. via `HEAD /wp-json/`) without a dedicated discovery endpoint.
 
-Can be disabled under **[Settings → HyperTaxonomy → Advanced](../user-guide/plugin-settings.html#advanced-tab) → HyperTaxonomy Presence Header**. Disabling opts this site out of peer discovery entirely — remote TermConnect installs will not detect HyperTaxonomy and will not attempt scored requests or vocabulary sync.
+Can be disabled under **[Settings&nbsp;→ HyperTaxonomy&nbsp;→ Advanced](../user-guide/plugin-settings.html#advanced-tab)&nbsp;→ HyperTaxonomy Presence Header**. Disabling opts this site out of peer discovery entirely — remote TermConnect installs will not detect HyperTaxonomy and will not attempt scored requests or vocabulary sync.
 
 ## Term endpoint enrichment
 
-HyperTaxonomy hooks `rest_prepare_{taxonomy}` for all public `show_in_rest` taxonomies. All HyperTaxonomy fields respect the standard WordPress REST `_fields` parameter — if a caller supplies `_fields`, only the requested fields are computed (unrequested fields are skipped, not just stripped). `htax_includes` and `htax_synonyms` can be disabled site-wide under **Settings → HyperTaxonomy → Advanced → Term Inclusion Relationships**. `htax_relationships` is additionally disabled when either **Term Inclusion Relationships** or **Custom Term Relationships and Relationship Types** is off.
+HyperTaxonomy hooks `rest_prepare_{taxonomy}` for all public `show_in_rest` taxonomies. All HyperTaxonomy fields respect the standard WordPress REST `_fields` parameter — if a caller supplies `_fields`, only the requested fields are computed (unrequested fields are skipped, not just stripped). `htax_includes` and `htax_synonyms` can be disabled site-wide under **Settings&nbsp;→ HyperTaxonomy&nbsp;→ Advanced&nbsp;→ Term Inclusion Relationships**. `htax_relationships` is additionally disabled when either **Term Inclusion Relationships** or **Custom Term Relationships and Relationship Types** is off.
 
 The following fields are available. All can be requested via `_fields`; availability on individual vs. peer collection responses is shown:
 
@@ -39,14 +39,14 @@ The following fields are available. All can be requested via `_fields`; availabi
 
 Collection endpoints (`GET /wp/v2/{taxonomy}?slug=…`) without the `X-HyperTaxonomy` header get none of these fields, and neither do individual requests sent with `_locale=user`, as the block editor sends them (the editor reads HyperTaxonomy data from its own endpoint).
 
-These fields are also how TermConnect reads relationships from peer sites (see its [relationship delegation](https://hypertaxonomy.org/termconnect/user-guide/shared-vocabularies.html#relationship-delegation)), matching terms by slug and using each included term's `strength` and `synonym` flag. Tools that read term meta rather than REST (GraphQL plugins, page builders) get largely the same relationships as term IDs from the [computed term meta keys](term-meta.html); see [how the two compare](term-meta.html#how-the-keys-compare-with-the-rest-fields). With **Settings → HyperTaxonomy → Advanced → Term Meta in REST** on, those keys are also in each term's `meta` object, in every term response, collections included, with or without the `X-HyperTaxonomy` header (see [In REST responses](term-meta.html#in-rest-responses)).
+These fields are also how TermConnect reads relationships from peer sites (see its [relationship delegation](https://hypertaxonomy.org/termconnect/user-guide/shared-vocabularies.html#relationship-delegation)), matching terms by slug and using each included term's `strength` and `synonym` flag. Tools that read term meta rather than REST (GraphQL plugins, page builders) get largely the same relationships as term IDs from the [computed term meta keys](term-meta.html); see [how the two compare](term-meta.html#how-the-keys-compare-with-the-rest-fields). With **Settings&nbsp;→ HyperTaxonomy&nbsp;→ Advanced&nbsp;→ Term Meta in REST** on, those keys are also in each term's `meta` object, in every term response, collections included, with or without the `X-HyperTaxonomy` header (see [In REST responses](term-meta.html#in-rest-responses)).
 
 ## Peer collection requests (`X-HyperTaxonomy` request header)
 
 When a request includes the `X-HyperTaxonomy` header, HyperTaxonomy treats it as a peer site request. All fields in the table above are available on peer collection responses when requested in `_fields`. Callers should include only the fields they need.
 
 TermConnect `_fields` per request type:
-- **Vocabulary sync** — `id,slug,name,parent,description,link,htax_redirect` (identifiers come from TermConnect's own `tc_links` field)
+- **Vocabulary sync** — `id,slug,name,parent,description,link,htax_redirect` (identifiers come from TermConnect's own `tconn_links` field)
 - **Relationship sync** — `id,slug,htax_includes,htax_relationships,htax_redirect`
 
 **`htax_includes`** in peer responses: WP children (hierarchical) + all inclusion-based relationships (built-in `includes` and custom `core_type = 'includes'`), as term stubs. Each stub carries a `strength` — the relationship's explicit weight (hierarchy weight for WP descendants, container weight for inclusions) — so consumers can weight included terms exactly as HyperTaxonomy's own index does. Gated by the **Term Inclusion Relationships** setting.
@@ -63,7 +63,7 @@ HyperTaxonomy extends the standard WordPress post collection endpoint with term-
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `htax_includes[{primary_id}]` | comma-separated int | — | Map of local primary term ID → comma-separated list of IDs to include. Keys are primary terms; values are the IDs that count as a match for that primary term (the term and its inclusions). Multiple primary terms = multiple keys. |
+| `htax_includes[{primary_id}]` | comma-separated int | — | Map of local primary term ID&nbsp;→ comma-separated list of IDs to include. Keys are primary terms; values are the IDs that count as a match for that primary term (the term and its inclusions). Multiple primary terms = multiple keys. |
 | `htax_match` | `any` \| `all` | `any` | `any`: return posts matching at least one primary term. `all`: return only posts that match at least one ID in every primary group (AND mode). |
 | `htax_term_weights[{term_id}]` | float | `1.0` | Per-term score weight, keyed by any term ID appearing in `htax_includes` (primary or included). The requester computes these from its own per-taxonomy relevance weights (e.g. direct, container) and sends them so the peer scores by the *requester's* weighting without knowing its relationship structure. Terms without an entry default to `1.0`. |
 | `htax_expand` | `0` \| `1` | `0` | When `1`, the peer also matches the requested terms through its *own* relationship graph (not just direct assignments), surfacing more of its content; non-direct matches to a primary term are discounted by `0.6`. When `0`, only direct term assignments count. |
@@ -77,7 +77,7 @@ HyperTaxonomy extends the standard WordPress post collection endpoint with term-
 | `htax_score` | float \| null | Relevance score 0–1, or null if this post was not scored. |
 | `htax_matched_term_slugs` | string[] \| null | Remote slugs of the primary terms that contributed to this post's score, or null if not scored. These are the slugs as they appear on the remote (peer) site. |
 | `htax_term_peers` | object \| null | Registered by TermConnect (when active). Per-term peer connection data for all terms on the returned posts; used by TermConnect for FOAF peer discovery without a separate term lookup round-trip. See [TermConnect's REST API](https://hypertaxonomy.org/termconnect/developer-reference/rest-api.html#post-endpoints). |
-| `htax_term_strengths` | object \| null | **Opt-in — request explicitly via `_fields`.** Map of the post's directly-assigned term IDs → association strength (0–1, how central each term is to the post, from the strength model selected in Settings → Search; terms that model hasn't scored are omitted). Keyed by the term IDs the post already lists natively, so it adds the strength without duplicating term data. Hidden terms are left out for everyone. `null` unless requested (the per-post index lookup runs only when the field is named in `_fields`). |
+| `htax_term_strengths` | object \| null | **Opt-in — request explicitly via `_fields`.** Map of the post's directly-assigned term IDs&nbsp;→ association strength (0–1, how central each term is to the post, from the strength model selected in Settings&nbsp;→ Search; terms that model hasn't scored are omitted). Keyed by the term IDs the post already lists natively, so it adds the strength without duplicating term data. Hidden terms are left out for everyone. `null` unless requested (the per-post index lookup runs only when the field is named in `_fields`). |
 
 **Example request** (two primary terms, any-match, per-term weights, peer expansion on):
 
@@ -145,9 +145,9 @@ Each entry:
 }
 ```
 
-**Privacy.** Mark a type private in **Terms → Term Relationship Types → Local Relationship Types → Edit → Private** to exclude it and all its relationship rows from both endpoints. Private types remain fully functional locally.
+**Privacy.** Mark a type private in **Terms&nbsp;→ Term Relationship Types&nbsp;→ Local Relationship Types&nbsp;→ Edit&nbsp;→ Private** to exclude it and all its relationship rows from both endpoints. Private types remain fully functional locally.
 
-Both endpoints can be disabled entirely under **Settings → HyperTaxonomy → Advanced → Custom Term Relationships and Relationship Types** — the routes are not registered when this is off.
+Both endpoints can be disabled entirely under **Settings&nbsp;→ HyperTaxonomy&nbsp;→ Advanced&nbsp;→ Custom Term Relationships and Relationship Types** — the routes are not registered when this is off.
 
 ## Hidden terms and REST
 

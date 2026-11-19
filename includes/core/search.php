@@ -536,11 +536,7 @@ function htax_handle_widget_post_search( $query ) {
     // Get field data from JSON, or build from individual POST fields (JS-disabled fallback)
     if ( ! empty( $data['htax_field_data'] ) ) {
         // POST submission with JSON field data
-        $field_data_json = wp_unslash( $data['htax_field_data'] );
-        $field_data = json_decode( $field_data_json, true );
-        if ( ! is_array( $field_data ) ) {
-            $field_data = array();
-        }
+        $field_data = htax_decode_json_request( wp_unslash( $data['htax_field_data'] ) ) ?? array();
     } else {
         // No JSON field data — build from individual POST fields (JS-disabled fallback)
         $field_data = array();

@@ -53,7 +53,7 @@ class HyperTaxonomy_ATCF_Integration {
         // contribute a normalized-address URI per term so peer/FOAF terms with
         // different slugs match by shared physical location. Harmless when
         // TermConnect is not active (the filter never fires; the action self-guards).
-        add_filter( 'tc_index_extra_uris', array( __CLASS__, 'add_location_uris' ), 10, 2 );
+        add_filter( 'tconn_index_extra_uris', array( __CLASS__, 'add_location_uris' ), 10, 2 );
         add_action( 'atcf_term_location_changed', array( __CLASS__, 'refresh_tc_uri_index' ) );
 
         // Re-fire under HyperTaxonomy's namespace, so that plugins using
@@ -123,8 +123,8 @@ class HyperTaxonomy_ATCF_Integration {
      * @param int $term_id Term ID.
      */
     public static function refresh_tc_uri_index( $term_id ): void {
-        if ( function_exists( 'tc_rebuild_uri_index' ) ) {
-            tc_rebuild_uri_index( (int) $term_id );
+        if ( function_exists( 'tconn_rebuild_uri_index' ) ) {
+            tconn_rebuild_uri_index( (int) $term_id );
         }
     }
 

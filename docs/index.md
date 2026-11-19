@@ -36,19 +36,6 @@ HyperTaxonomy adds term organization, relationships, and relevance-scored search
 - **Integration API** — Automatic inclusion expansion for third-party queries; REST endpoints; extra term fields in standard REST responses; term relationships, groups, pinned posts, identifiers, locations and icons readable as term meta for GraphQL plugins and page builders.
 - **Import / Export** — JSON-based data migration, with a Tag Groups migrator included.
 
-## Coming from Tag Groups?
-
-Tag Groups (rebranded "PublishPress Tag Groups" in October 2026) is a popular plugin for taxonomy term organization. For a side-by-side breakdown of how HyperTaxonomy compares — including what it adds beyond grouping — see **[HyperTaxonomy vs. Tag Groups](comparison.html)**.
-
-Switching away from Tag Groups and keeping it alongside HyperTaxonomy are both supported: the importer can migrate your group structure once, or sync it continuously while Tag Groups stays your group-management tool. See [Export, Import & Migration](user-guide/export-import-migration.html).
-
-## Documentation map
-
-- **[Why HyperTaxonomy](why-hypertaxonomy.html)** — the problem with tags and category trees, and how one term can belong to many structures.
-- **[User Guide](user-guide/)** — for site owners and editors: settings, roles, import and migration, concepts, relationships, per-term settings, display and search shortcodes, the post editor, and modeling guidance.
-- **[Developer Reference](developer-reference/)** — for theme and plugin developers: custom taxonomy integration, query expansion, relationship data, hidden terms, term icons, search ranking, cross-plugin data, sort and filter controls, actions, filters, REST endpoints, and locations and proximity search with As the Crow Flies.
-- **[Architecture](architecture/)** — for contributors: file structure, functions, hooks, data storage, caching, feature internals, search internals, and contributing guidelines.
-
 ## Requirements
 
 | Item | Version |
@@ -61,12 +48,25 @@ No other plugins are required.
 
 ## Getting started
 
-1. Install from the [WordPress.org plugin directory](https://wordpress.org/plugins/hypertaxonomy/), or download the zip from [GitHub Releases](https://github.com/HyperTaxonomy/hypertaxonomy/releases) and upload via **Plugins → Add New → Upload Plugin**, then activate it.
-2. Go to **Settings → HyperTaxonomy → Features**. On the **General** subtab, enable the taxonomies HyperTaxonomy should manage, such as Tags. On each taxonomy's own subtab, check the features you want, such as **Term Relationships**.
+1. Install from the [WordPress.org plugin directory](https://wordpress.org/plugins/hypertaxonomy/), or download the zip from [GitHub Releases](https://github.com/HyperTaxonomy/hypertaxonomy/releases) and upload via **Plugins&nbsp;→ Add New&nbsp;→ Upload Plugin**, then activate it.
+2. Go to **Settings&nbsp;→ HyperTaxonomy&nbsp;→ Features**. On the **General** subtab, enable the taxonomies HyperTaxonomy should manage, such as Tags. On each taxonomy's own subtab, check the features you want, such as **Term Relationships**.
 3. Edit a tag and, in its HyperTaxonomy section, add another tag in the **Included Tags** field. Save.
 4. Open the first tag's archive. Posts tagged with the included tag now appear there too, with no re-tagging.
 
 To learn what else relationships can do, read [Concepts](user-guide/concepts.html), [Term Groups](user-guide/term-groups.html) and [Term Relationships](user-guide/term-relationships.html). Every option is described in [Per-Term Settings](user-guide/per-term-settings.html) and [Plugin Settings](user-guide/plugin-settings.html). To turn the plugin off or remove it, see [Deactivation & Uninstall](user-guide/deactivation-uninstall.html).
+
+## Coming from Tag Groups?
+
+Tag Groups (rebranded "PublishPress Tag Groups" in October 2026) is a popular plugin for taxonomy term organization. For a side-by-side breakdown of how HyperTaxonomy compares — including what it adds beyond grouping — see **[HyperTaxonomy vs. Tag Groups](comparison.html)**.
+
+Switching away from Tag Groups and keeping it alongside HyperTaxonomy are both supported: the importer can migrate your group structure once, or sync it continuously while Tag Groups stays your group-management tool. See [Export, Import & Migration](user-guide/export-import-migration.html).
+
+## Documentation map
+
+- **[Why HyperTaxonomy](why-hypertaxonomy.html)** — the problem with tags and category trees, and how one term can belong to many structures.
+- **[User Guide](user-guide/)** — for site owners and editors: settings, roles, import and migration, concepts, relationships, per-term settings, display and search shortcodes, the post editor, and modeling guidance.
+- **[Developer Reference](developer-reference/)** — for theme and plugin developers: custom taxonomy integration, query expansion, relationship data, hidden terms, term icons, search ranking, cross-plugin data, sort and filter controls, actions, filters, REST endpoints, and locations and proximity search with As the Crow Flies.
+- **[Architecture](architecture/)** — for contributors: file structure, functions, hooks, data storage, caching, feature internals, search internals, and contributing guidelines.
 
 ## License
 

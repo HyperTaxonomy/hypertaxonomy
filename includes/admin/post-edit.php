@@ -619,7 +619,14 @@ function htax_remove_new_tags_from_post_request() {
         return;
     }
 
-    $tags = wp_unslash( $_POST['tax_input']['post_tag'] );
+    // Act only on a genuine save of this post: the nonce post.php itself verifies, and edit access.
+    $post_id = isset( $_POST['post_ID'] ) ? absint( $_POST['post_ID'] ) : 0;
+    $nonce   = isset( $_POST['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_POST['_wpnonce'] ) ) : '';
+    if ( ! $post_id || ! wp_verify_nonce( $nonce, 'update-post_' . $post_id ) || ! current_user_can( 'edit_post', $post_id ) ) {
+        return;
+    }
+
+    $tags = map_deep( wp_unslash( $_POST['tax_input']['post_tag'] ), 'sanitize_text_field' );
     if ( ! is_array( $tags ) ) {
         $delimiter = translate_with_gettext_context( ',', 'tag delimiter', 'default' );
         $tags      = explode( ',', str_replace( $delimiter, ',', (string) $tags ) );

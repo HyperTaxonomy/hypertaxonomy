@@ -597,14 +597,14 @@
     width: 1px;
 }
 
-.ui-autocomplete {
+.ui-autocomplete:where(.htax-ac-menu) {
     position: absolute;
     top: 0;
     left: 0;
     cursor: default;
 }
 
-.ui-autocomplete.ui-menu {
+.ui-autocomplete:where(.htax-ac-menu).ui-menu {
     list-style: none;
     padding: 0;
     margin: 0;
@@ -612,36 +612,36 @@
     outline: 0;
 }
 
-.ui-autocomplete.ui-widget {
+.ui-autocomplete:where(.htax-ac-menu).ui-widget {
     font-family: Arial, Helvetica, sans-serif;
     font-size: 1em;
 }
 
-.ui-autocomplete.ui-widget.ui-widget-content {
+.ui-autocomplete:where(.htax-ac-menu).ui-widget.ui-widget-content {
     border: 1px solid #c5c5c5;
 }
 
-.ui-autocomplete.ui-widget-content {
+.ui-autocomplete:where(.htax-ac-menu).ui-widget-content {
     background: #ffffff;
     color: #333333;
 }
 
-.ui-autocomplete .ui-menu-item {
+.ui-autocomplete:where(.htax-ac-menu) .ui-menu-item {
     margin: 0;
     cursor: pointer;
 }
 
-.ui-autocomplete .ui-menu-item-wrapper {
+.ui-autocomplete:where(.htax-ac-menu) .ui-menu-item-wrapper {
     position: relative;
     padding: 3px 1em 3px .4em;
 }
 
-.ui-autocomplete .ui-state-focus,
-.ui-autocomplete .ui-state-active {
+.ui-autocomplete:where(.htax-ac-menu) .ui-state-focus,
+.ui-autocomplete:where(.htax-ac-menu) .ui-state-active {
     margin: -1px;
 }
 
-.ui-autocomplete .ui-state-active {
+.ui-autocomplete:where(.htax-ac-menu) .ui-state-active {
     border: 1px solid #003eff;
     background: #007fff;
     font-weight: normal;
@@ -649,7 +649,7 @@
 }
 
 /* Suite styles for the autocomplete. */
-.ui-autocomplete {
+.ui-autocomplete:where(.htax-ac-menu) {
     max-height: none !important;
     overflow-x: hidden;
     background: #fff;
@@ -660,7 +660,7 @@
     z-index: 1000;
 }
 
-.ui-autocomplete li {
+.ui-autocomplete:where(.htax-ac-menu) li {
     list-style: none;
 }
 
@@ -675,7 +675,7 @@
     background: #fff;
 }
 
-.ui-autocomplete li:hover .htax-autocomplete-item {
+.ui-autocomplete:where(.htax-ac-menu) li:hover .htax-autocomplete-item {
     background: #0073aa;
     color: #fff;
 }
@@ -702,20 +702,20 @@
     flex: 1;
 }
 
-.ui-autocomplete .ui-state-focus {
+.ui-autocomplete:where(.htax-ac-menu) .ui-state-focus {
     background: transparent;
     border: none;
 }
 
-.ui-menu-item {
+:where(.htax-ac-menu) .ui-menu-item {
     padding: 0;
     cursor: pointer;
     font-size: 13px;
     transition: background-color 0.2s;
 }
 
-.ui-menu-item:hover,
-.ui-state-active {
+:where(.htax-ac-menu) .ui-menu-item:hover,
+:where(.htax-ac-menu) .ui-state-active {
     background: #0073aa;
     color: #fff;
 }
@@ -797,17 +797,17 @@
         color: #e0e0e0;
     }
     
-    .ui-autocomplete {
+    .ui-autocomplete:where(.htax-ac-menu) {
         background: #2a2a2a;
         border-color: #444;
     }
     
-    .ui-menu-item {
+    :where(.htax-ac-menu) .ui-menu-item {
         color: #e0e0e0;
     }
     
-    .ui-menu-item:hover,
-    .ui-state-active {
+    :where(.htax-ac-menu) .ui-menu-item:hover,
+    :where(.htax-ac-menu) .ui-state-active {
         background: #0073aa;
         color: #fff;
     }

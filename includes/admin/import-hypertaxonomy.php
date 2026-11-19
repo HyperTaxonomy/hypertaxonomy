@@ -14,6 +14,23 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
+ * Sanitize a string value of submitted import data (see htax_decode_json_request()).
+ *
+ * Term descriptions may contain HTML, as on the term edit screen, and are filtered
+ * with wp_kses_post(); every other value is plain text (names, slugs, taxonomy
+ * names, URLs, meta values, which are sanitized again per key when stored).
+ *
+ * @since 1.0.0
+ *
+ * @param string $value Value.
+ * @param string $key   Its key.
+ * @return string
+ */
+function htax_sanitize_import_string( string $value, string $key ): string {
+    return 'description' === $key ? wp_kses_post( $value ) : sanitize_text_field( $value );
+}
+
+/**
  * Validate import data structure
  *
  * @param array $data Import data to validate

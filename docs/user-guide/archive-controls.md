@@ -57,7 +57,7 @@ The **HT Sort Order Options** Gutenberg block is the block-editor equivalent of 
 
 ![The HT Sort Order Options block in the editor: the block's preview pane open from the inserter, the sort control as visitors see it, with the default sort as pills and the other offered fields in the open picker, below the context notice, and its Sort Fields and Display settings](../assets/images/screenshots/sort-order-options-block.png)
 
-Find it in the block inserter under **HyperTaxonomy → HT Sort Order Options**, or search for "hypertaxonomy".
+Find it in the block inserter under **HyperTaxonomy&nbsp;→ HT Sort Order Options**, or search for "hypertaxonomy".
 
 **When it renders:** The block only produces output on HyperTaxonomy-enabled taxonomy archives (category, tag, or custom taxonomy) and on WordPress search results pages — the two contexts where the `?htax_orderby=` URL parameter is consumed. On any other page type the block renders nothing.
 

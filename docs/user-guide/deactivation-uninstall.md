@@ -63,17 +63,17 @@ All previously configured relationships, redirects, group memberships, and setti
 
 ## Uninstall
 
-Uninstalling HyperTaxonomy (Plugins screen → Delete) always removes:
+Uninstalling HyperTaxonomy (Plugins screen&nbsp;→ Delete) always removes:
 
 - All HyperTaxonomy settings and internal state (`htax_settings`, the reindex queue, Tag Groups import/sync state)
 - Scheduled background tasks and cached data (transients, including stored search-results links)
 - Per-user state: dismissed admin notices, HyperTaxonomy's post-editor display preferences and sidebar panel positions, and the term edit screen's choice to hide indirect relationships
 - HyperTaxonomy's [capabilities](roles-permissions.html), from every role, including any you granted to roles other than Administrator and Editor
 
-When **Delete all HyperTaxonomy data when the plugin is deleted** ([Settings > HyperTaxonomy > Advanced](plugin-settings.html#advanced-tab)) is checked, it also removes:
+When **Delete all HyperTaxonomy data when the plugin is deleted** ([Settings&nbsp;→ HyperTaxonomy&nbsp;→ Advanced](plugin-settings.html#advanced-tab)) is checked, it also removes:
 
 - The `wp_htax_term_relationships` table (relationships, group memberships, redirects)
-- Custom relationship types created under **Terms → Term Relationship Types**
+- Custom relationship types created under **Terms&nbsp;→ Term Relationship Types**
 - The `wp_htax_search_terms` table (search index)
 - The `wp_htax_post_text` table (HTML-stripped post text for FULLTEXT search)
 - All HyperTaxonomy term meta on every taxonomy (`_htax_is_hidden`, `_htax_icon_id`, archive settings, etc.)

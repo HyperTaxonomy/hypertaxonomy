@@ -37,8 +37,8 @@ The practical test for any relationship you are considering:
 
 > **Is this relationship true for ALL posts with term X and ALL posts with term Y?**
 >
-> If yes → use HyperTaxonomy.
-> If no, or if it depends on the specific post → use post-level metadata (ACF, custom fields, post-to-post plugins).
+> If yes&nbsp;→ use HyperTaxonomy.
+> If no, or if it depends on the specific post&nbsp;→ use post-level metadata (ACF, custom fields, post-to-post plugins).
 
 ---
 
@@ -62,7 +62,7 @@ Non-transitive: React archive → React + Component Architecture                
 **Why non-transitive?** Transitive inclusion produces unbounded cascade — one connection deep in the graph can silently pull in large, unrelated portions of the corpus. Non-transitive inclusion keeps each archive focused: you decide exactly which content is relevant in each context, independent of what other relationships exist further along the chain.
 
 **When to use native hierarchy (transitive) instead:**
-If B is a narrower kind of A, and everything filed under B and its own subcategories, now and later, belongs in A, make B a child of A in a category tree. Native hierarchy is the right tool for universally accepted, stable organizational trees (Country → State → City, Family → Genus → Species).
+If B is a narrower kind of A, and everything filed under B and its own subcategories, now and later, belongs in A, make B a child of A in a category tree. Native hierarchy is the right tool for universally accepted, stable organizational trees (Country&nbsp;→ State&nbsp;→ City, Family&nbsp;→ Genus&nbsp;→ Species).
 
 **When to use HyperTaxonomy inclusions (non-transitive):**
 - Relationships that are selective or contextual ("React benefits from Component Architecture context, but not everything Component Architecture relates to")
@@ -113,7 +113,7 @@ A synonym is simply two inclusions pointing at each other. Each term retains its
 "USA" archive           → posts tagged USA + United States  (not American Politics)
 ```
 
-This is often intentional — the canonical form of a term can have a richer inclusion set than its alias. If you want truly interchangeable archives, ensure both terms have identical inclusion sets. The [Synonyms page](term-relationships.html#the-synonyms-page) (**Terms → Synonyms**) lists every pair, including pairs formed through groups, and its **Archives differ** filter shows the pairs whose archives aren't the same.
+This is often intentional — the canonical form of a term can have a richer inclusion set than its alias. If you want truly interchangeable archives, ensure both terms have identical inclusion sets. The [Synonyms page](term-relationships.html#the-synonyms-page) (**Terms&nbsp;→ Synonyms**) lists every pair, including pairs formed through groups, and its **Archives differ** filter shows the pairs whose archives aren't the same.
 
 **Design note:** Synonyms do not need to be grammatically identical. They can be abbreviation ↔ full form, formal ↔ informal, British ↔ American spelling, or slightly overlapping concepts you want to treat as equivalent for browsing purposes.
 
@@ -198,7 +198,7 @@ A 301 redirect is a statement that one term IS another term — the source term 
 Typical use cases:
 - **Merging duplicates:** "javascript" (tag) and "JavaScript" (tag) both exist due to inconsistent entry; redirect the less-used one to the canonical form, or [merge](merge-convert.html#merge-terms) them if you don't need to keep the duplicate.
 - **Cross-taxonomy synonym:** A "Machine Learning" category and a "machine-learning" tag should point to the same archive.
-- **Renaming a term:** The old "Big Data" tag is being replaced by "Data Engineering". Redirect Big Data → Data Engineering so old archive URLs and search engine links are preserved.
+- **Renaming a term:** The old "Big Data" tag is being replaced by "Data Engineering". Redirect Big Data&nbsp;→ Data Engineering so old archive URLs and search engine links are preserved.
 
 **Redirect vs. Inclusion:** A redirect completely replaces the source term's archive — there is no longer a separate browsable archive for the source. An inclusion keeps both archives alive. Use redirects when you want to consolidate; use inclusions when you want both terms to remain browsable.
 
@@ -316,7 +316,7 @@ Taxonomy: kb_content_type (flat: Tutorial, How-To, Concept, Reference)
 - "Troubleshooting" INCLUDES "Configuration" — config-related articles are contextually relevant when someone is troubleshooting
 - "Enterprise Edition" INCLUDES GROUP "Enterprise Add-ons" (other `kb_product` terms) — articles about each add-on automatically appear in the Enterprise Edition archive
 - "Deprecated API" redirects to "API Reference" — old API pages land in the current reference archive
-- Search widget with `kb_topic` + `kb_product` + `kb_content_type` facets lets users narrow to "Enterprise Edition → How-To" in two clicks
+- Search widget with `kb_topic` + `kb_product` + `kb_content_type` facets lets users narrow to "Enterprise Edition&nbsp;→ How-To" in two clicks
 
 **What HyperTaxonomy does NOT handle here:** tracking which specific article supersedes which other specific article, or modeling that a specific article applies to specific version numbers. Those are instance-level relationships — add ACF fields (`superseded_by`, `applies_to_versions`) for those.
 
@@ -350,15 +350,15 @@ Taxonomies: subject_area, research_method, degree_level
 
 This scenario illustrates the type-level / instance-level boundary most clearly.
 
-**Type-level relationships → HyperTaxonomy:**
+**Type-level relationships&nbsp;→ HyperTaxonomy:**
 - "Statistics" INCLUDES "Machine Learning" — courses about ML should surface in Statistics archives; the relationship holds for every ML course
 - "Master's" INCLUDES "PhD" — doctoral-level content is also relevant to master's students
-- GROUP "Quantitative Methods" → [Statistics, Econometrics, Machine Learning] — query posts in this group for any "methods" listing page
+- GROUP "Quantitative Methods"&nbsp;→ [Statistics, Econometrics, Machine Learning] — query posts in this group for any "methods" listing page
 
-**Instance-level relationships → post-level metadata (ACF/CPT UI):**
-- Professor Smith teaches Course 101 ← an individual faculty post is related to a specific course post
-- Course 101 requires Course 050 as a prerequisite ← a specific course-to-course relationship
-- Research Project X is led by Professor Y ← specific post-to-post link
+**Instance-level relationships&nbsp;→ post-level metadata (ACF/CPT UI):**
+- Professor Smith teaches Course 101&nbsp;← an individual faculty post is related to a specific course post
+- Course 101 requires Course 050 as a prerequisite&nbsp;← a specific course-to-course relationship
+- Research Project X is led by Professor Y&nbsp;← specific post-to-post link
 
 The correct architecture is layered: HyperTaxonomy governs the semantic structure of subjects and methods across the curriculum, while ACF post-to-post relationships govern specific faculty/course/project connections. They operate on different dimensions of the same content and do not conflict.
 
@@ -374,7 +374,7 @@ Taxonomies: product_category, product_brand, product_material, product_color
 ```
 
 **HyperTaxonomy setup:**
-- GROUP "Natural Fibers" → [Cotton, Linen, Wool, Silk, Hemp] — all natural-fiber products queryable as a group; new materials added to the group automatically appear
+- GROUP "Natural Fibers"&nbsp;→ [Cotton, Linen, Wool, Silk, Hemp] — all natural-fiber products queryable as a group; new materials added to the group automatically appear
 - "Summer" INCLUDES GROUP "Summer Essentials" (Swimwear, Sunscreen, Sandals, Hats) — the Summer archive shows all of them without cross-tagging, and picks up anything added to the group later
 - "Acme Corp" redirects to "Acme Group" — the old brand archive URL keeps working after a rename or acquisition
 - Hidden material terms for internal codes not surfaced to customers

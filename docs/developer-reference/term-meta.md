@@ -5,8 +5,17 @@ nav_order: 10
 ---
 
 # Term Meta
+{: .no_toc }
 
 [GraphQL plugins](../user-guide/other-plugins.html#graphql-plugins-wpgraphql-gato-graphql), page builders and themes can read term meta but not HyperTaxonomy's REST fields. So HyperTaxonomy answers `get_term_meta()` for the keys below with values computed from its own caches. Nothing is stored in the term meta table, and the values change as soon as a term's relationships do. They can also be added to REST term responses (see [In REST responses](#in-rest-responses)).
+
+## Table of contents
+{: .no_toc .text-delta }
+
+1. TOC
+{:toc}
+
+---
 
 ## Keys
 
@@ -51,7 +60,7 @@ The keys are registered with `register_term_meta()` for each enabled taxonomy, s
 
 ## In REST responses
 
-By default the keys stay out of the REST API, which already carries most of the same data in its own fields (below). To add them, turn on **[Settings → HyperTaxonomy → Advanced](../user-guide/plugin-settings.html#advanced-tab) → Term Meta in REST**. Each term in the `/wp/v2/tags`, `/wp/v2/categories` and other enabled taxonomies' endpoints then gets the keys in its `meta` object:
+By default the keys stay out of the REST API, which already carries most of the same data in its own fields (below). To add them, turn on **[Settings&nbsp;→ HyperTaxonomy&nbsp;→ Advanced](../user-guide/plugin-settings.html#advanced-tab)&nbsp;→ Term Meta in REST**. Each term in the `/wp/v2/tags`, `/wp/v2/categories` and other enabled taxonomies' endpoints then gets the keys in its `meta` object:
 
 ```json
 "meta": {
@@ -82,7 +91,7 @@ Several keys overlap with HyperTaxonomy's [REST fields](rest-api.html#term-endpo
 | `htax_redirect` | `htax_redirect` | REST gives the target's ID, name, slug and link; meta gives its ID, or `0`. |
 | `htax_icon_url`, `htax_icon_url_small` / `_medium` / `_large` | `htax_icon` | REST gives each size's URL, width and height in one object; meta gives one URL per key. |
 | `htax_locations` | `htax_locations` | Same locations and the same sharing setting. REST gives Schema.org `Place` objects with a nested address and coordinates; meta gives flat rows. |
-| `htax_containers`, `htax_groups`, `htax_archive_term_ids`, `htax_term_uris`, `htax_sticky_post_ids` | — | Term meta only. TermConnect adds its own [`tc_links`](https://hypertaxonomy.org/termconnect/developer-reference/rest-api.html#term-endpoints) REST field with each link's URL, platform and label. |
+| `htax_containers`, `htax_groups`, `htax_archive_term_ids`, `htax_term_uris`, `htax_sticky_post_ids` | — | Term meta only. TermConnect adds its own [`tconn_links`](https://hypertaxonomy.org/termconnect/developer-reference/rest-api.html#term-endpoints) REST field with each link's URL, platform and label. |
 | — | `htax_relationships`, `htax_is_hidden` | REST only. |
 
 Use the REST fields to get related terms' names and slugs in one request, as TermConnect does between peer sites. Use the meta keys from tools that can't read REST fields, or from PHP.

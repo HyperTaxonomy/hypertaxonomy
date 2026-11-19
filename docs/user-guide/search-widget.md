@@ -30,7 +30,7 @@ Build complex multi-field search forms with AJAX results, conditional logic, and
 
 ### [ht_search_form]
 
-Container for all search widget shortcodes.
+Container for all search widget shortcodes. Text and HTML between the shortcodes are allowed and filtered like post content, so headings, paragraphs and similar markup work, but scripts and form controls of your own don't: the form's controls come from the field and controller shortcodes. The same applies inside [`[ht_field_group]`](#ht_field_group).
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
@@ -39,7 +39,7 @@ Container for all search widget shortcodes.
 | `ajax` | Container ID for AJAX results (empty = POST) | — |
 | `action` | Form action URL for POST mode. Omit to POST to the current page; set to a URL (e.g. `/search`) to submit to a dedicated results page. See [POST mode results pages](search-overview.html#post-mode-results-pages). | — |
 | `orderby` | Comma-separated `field:order` pairs. Fields: `relevance`, `date`, `modified`, `title`, `author`, `comment_count`, `last_comment`, `last_activity`, `ID`. Order: `asc` or `desc` (desc assumed if omitted). Example: `relevance:desc,date:desc,title:asc`. Both POST and AJAX modes support all fields. | `relevance:desc,date:desc` |
-| `posts_per_page` | Results per page. Defaults to the WordPress **Blog pages show at most** setting (Settings → Reading). | WP setting |
+| `posts_per_page` | Results per page. Defaults to the WordPress **Blog pages show at most** setting (Settings&nbsp;→ Reading). | WP setting |
 | `max_results` | Hard cap on total results across all pages (0 = no cap). Set equal to `posts_per_page` to disable pagination. | `0` |
 | `min_score` | Minimum overall relevance (0–1) | auto |
 | `class` | Additional CSS classes | — |
@@ -112,7 +112,7 @@ Controllers share these same parameters — see [Controllers](#controllers--dyna
 | `remove_terms` | Term IDs to remove from the initial selection | — |
 | `remove_groups` | **post:** remove member terms of these groups. **term:** remove these group IDs. | — |
 | `remove_descendants` | **post:** remove member terms of all descendant groups (roots excluded). **term:** remove all descendant group IDs (roots excluded). | — |
-| `min_items` | Minimum selections required before the form can be submitted. When ≥ 1, the field label shows a `*` indicator (pills and checklist only — hidden fields have no label). | 0 |
+| `min_items` | Minimum selections required before the form can be submitted. When ≥&nbsp;1, the field label shows a `*` indicator (pills and checklist only — hidden fields have no label). | 0 |
 | `max_items` | Maximum selections allowed (0 = unlimited) | 0 |
 
 **`add_terms` and the option pool.** A term named by a field's own `add_terms` is part of its initial option pool, even if the declared pool doesn't cover it, and stays there. A term named by an `add_terms` action joins the pool when the action adds it, and leaves when a `remove_terms` action removes it or the option is deselected, unless it was in the initial pool. On a checklist, a term outside the rendered options appears as an extra option while it's in the pool: in name order among its siblings, under its parent if the parent is listed. The exceptions: a term in `exclude_term_options`, a deleted term, and a hidden term the visitor can't see are never added.
@@ -310,7 +310,7 @@ Controllers let users change what appears in other fields by making a selection.
 | `name` | Unique field name (used by `[ht_option_action]` `target`) | — |
 | `label` | Label shown above the controller | — |
 | `required` | Show a `*` indicator (radio and dropdown only; for checkbox/toggle use `min_items` instead) | `false` |
-| `min_items` | Minimum selections required (checkbox/toggle only); when ≥ 1 shows `*` automatically | 0 |
+| `min_items` | Minimum selections required (checkbox/toggle only); when ≥&nbsp;1 shows `*` automatically | 0 |
 | `max_items` | Maximum selections allowed (checkbox/toggle only; 0 = unlimited) | 0 |
 | `min_items_message` | Message shown when fewer than `min_items` options are selected (checkbox/toggle only) | — |
 | `max_items_message` | Message shown when `max_items` is reached (checkbox/toggle only) | — |

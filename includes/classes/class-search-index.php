@@ -2180,7 +2180,7 @@ class HyperTaxonomy_Search_Index_Manager {
             }
         }
 
-        $old_term_ids = htax_get_post_index_term_ids( $post_ids );
+        $old_rows = $this->get_index_row_signatures( $post_ids );
 
         htax_prewarm_redirect_cache();
         $post_text_map = htax_fetch_post_text_batch( $post_ids );
@@ -2189,8 +2189,52 @@ class HyperTaxonomy_Search_Index_Manager {
         }
 
         // Clear post lists now the index is current: anything cached since the change that
-        // queued these posts, or missed because the index was still empty, was built from old rows.
-        htax_invalidate_post_list_cache( array_merge( $old_term_ids, htax_get_post_index_term_ids( $post_ids ) ) );
+        // queued these posts, or missed because the index was still empty, was built from old
+        // rows. A term whose rows a post gained or lost (or whose hidden state changed) changes
+        // membership, so all its lists go; a changed strength only reorders relevance lists.
+        $new_rows   = $this->get_index_row_signatures( $post_ids );
+        $membership = array();
+        $strength   = array();
+        foreach ( array_keys( $old_rows + $new_rows ) as $pair ) {
+            $term_id = (int) substr( $pair, strpos( $pair, ':' ) + 1 );
+            if ( ! isset( $old_rows[ $pair ], $new_rows[ $pair ] ) || $old_rows[ $pair ]['h'] !== $new_rows[ $pair ]['h'] ) {
+                $membership[ $term_id ] = true;
+            } elseif ( $old_rows[ $pair ]['s'] !== $new_rows[ $pair ]['s'] ) {
+                $strength[ $term_id ] = true;
+            }
+        }
+        htax_invalidate_post_list_cache( array_keys( $membership ) );
+        htax_invalidate_post_list_cache( array_keys( array_diff_key( $strength, $membership ) ), 'r' );
+    }
+
+    /**
+     * Summarize the index rows of some posts, per post and term: summed strength (rounded)
+     * and whether any row is hidden. Compared before and after a reindex to tell which
+     * terms' post lists changed membership and which only changed relevance order.
+     *
+     * @since 1.0.0
+     *
+     * @param int[] $post_ids Post IDs.
+     * @return array<string, array{s: string, h: int}> Keyed "{post_id}:{term_id}".
+     */
+    private function get_index_row_signatures( array $post_ids ): array {
+        global $wpdb;
+        $post_ids = array_values( array_filter( array_map( 'intval', $post_ids ) ) );
+        if ( empty( $post_ids ) ) {
+            return array();
+        }
+        $rows = $wpdb->get_results( $wpdb->prepare(
+            "SELECT post_id, term_id, ROUND( SUM( strength ), 6 ) AS s, MAX( is_hidden ) AS h
+             FROM {$wpdb->prefix}htax_search_terms
+             WHERE post_id IN (" . htax_sql_placeholders( count( $post_ids ) ) . ')
+             GROUP BY post_id, term_id',
+            $post_ids
+        ) );
+        $out = array();
+        foreach ( (array) $rows as $row ) {
+            $out[ (int) $row->post_id . ':' . (int) $row->term_id ] = array( 's' => (string) $row->s, 'h' => (int) $row->h );
+        }
+        return $out;
     }
 
 }
@@ -2228,7 +2272,7 @@ function htax_create_search_term_index_table() {
         model varchar(64) NOT NULL DEFAULT '" . HTAX_DEFAULT_STRENGTH_MODEL . "',
         is_hidden tinyint(1) NOT NULL DEFAULT 0,
         strength float NOT NULL DEFAULT 1.0,
-        PRIMARY KEY (post_id, term_id, source_term_id, relationship_type, model),
+        PRIMARY KEY  (post_id, term_id, source_term_id, relationship_type, model),
         KEY idx_taxonomy (taxonomy),
         KEY idx_term_lookup (term_id),
         KEY idx_model (model, relationship_type, taxonomy),

@@ -39,7 +39,7 @@ For how PowerSearch and the Search Widget build their queries and score results,
 
 Used by both `[ht_search_form]` and `[ht_power_search]` in AJAX mode. Pagination, result count, and query scope are controlled by the form shortcode; this container controls display only.
 
-Place it anywhere on the page. Set `ajax="container-id"` on the form shortcode and `id="container-id"` here to link them. Display parameters such as `format`, `show_thumbnail` and `image_size` mean the same as in [Post Lists → Common Parameters](post-lists.html#common-parameters).
+Place it anywhere on the page. Set `ajax="container-id"` on the form shortcode and `id="container-id"` here to link them. Display parameters such as `format`, `show_thumbnail` and `image_size` mean the same as in [Post Lists&nbsp;→ Common Parameters](post-lists.html#common-parameters).
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
@@ -49,7 +49,7 @@ Place it anywhere on the page. Set `ajax="container-id"` on the form shortcode a
 | `show_excerpt` | Show post excerpts (`div` format only) | `true` |
 | `show_meta` | Show post metadata — date and author (`div` format only) | `true` |
 | `image_size` | WordPress registered image size for thumbnails | `medium` |
-| `columns` | Number of columns. `div` format: CSS grid. `ul`/`ol` format: CSS multi-column text flow. Collapses to 2 on tablet (≤ 768 px), 1 on mobile (≤ 480 px). | `1` |
+| `columns` | Number of columns. `div` format: CSS grid. `ul`/`ol` format: CSS multi-column text flow. Collapses to 2 on tablet (≤&nbsp;768 px), 1 on mobile (≤&nbsp;480 px). | `1` |
 | `format` | Output format: `div` (full article cards), `ul` (unordered title-link list), or `ol` (ordered title-link list) | `div` |
 | `prepend` | HTML template inserted before each result item. Supports post placeholders: `{id}`, `{title}`, `{url}`, `{date}`, `{modified}`, `{author}`, `{excerpt}`, `{comment_count}`, `{thumbnail}`, `{thumbnail:size}`. | — |
 | `append` | HTML template inserted after each result item. Same placeholders as `prepend`. | — |

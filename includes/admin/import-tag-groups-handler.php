@@ -310,7 +310,10 @@ function htax_get_tag_groups_parent_map(): array {
  * @return WP_Term[]
  */
 function htax_find_group_terms_by_label( string $label ): array {
-    $terms = get_terms( array( 'taxonomy' => 'group', 'hide_empty' => false ) );
+    $terms = get_terms( array(
+        'taxonomy' => 'group',
+        'hide_empty' => false,
+    ) );
     if ( is_wp_error( $terms ) ) {
         return array();
     }
@@ -425,7 +428,10 @@ function htax_resolve_or_create_tag_group( int $tg_group_id, string $label, ?str
     // Only groups not yet mapped to a Tag Groups group are candidates: a mapped group
     // already belongs to another Tag Groups ID, and taking it over would re-point its mapping.
     $by_name = null;
-    foreach ( get_terms( array( 'taxonomy' => 'group', 'hide_empty' => false ) ) as $candidate ) {
+    foreach ( get_terms( array(
+        'taxonomy' => 'group',
+        'hide_empty' => false,
+    ) ) as $candidate ) {
         if ( html_entity_decode( $candidate->name, ENT_QUOTES | ENT_HTML5, 'UTF-8' ) !== $label ) {
             continue;
         }
@@ -771,7 +777,7 @@ function htax_import_tag_groups_process_batch( array $group_mapping, int $offset
 
     foreach ( $rows as $row ) {
         // Parse the comma-delimited group ID list, e.g. ",2,5,".
-        $old_ids = array_filter( explode( ',', trim( $row->meta_value, ',' ) ), 'is_numeric' );
+        $old_ids           = array_filter( explode( ',', trim( $row->meta_value, ',' ) ), 'is_numeric' );
         $tg_mapped_new_ids = array();
         foreach ( $old_ids as $old_id ) {
             $old_id = (int) $old_id;

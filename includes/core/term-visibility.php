@@ -329,7 +329,7 @@ function htax_keep_hidden_terms_on_save( $object_id, $terms, $tt_ids, $taxonomy,
         "SELECT term_id FROM {$wpdb->term_taxonomy} WHERE term_taxonomy_id IN ($placeholders)",
         $removed
     ) ) );
-    $keep = array_values( array_intersect( $term_ids, array_map( 'intval', htax_get_all_hidden_term_ids() ) ) );
+    $keep         = array_values( array_intersect( $term_ids, array_map( 'intval', htax_get_all_hidden_term_ids() ) ) );
     if ( $keep ) {
         wp_add_object_terms( $object_id, $keep, $taxonomy );
     }

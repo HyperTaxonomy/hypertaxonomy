@@ -18,7 +18,7 @@ global $wpdb;
 
 // Tag Groups stores groups in WordPress options: term_groups, term_group_labels
 // Term assignments are stored in termmeta with key '_cm_term_group_array'
-$tag_groups_ids = array_filter( get_option( 'term_groups', array() ), function( $id ) {
+$tag_groups_ids = array_filter( get_option( 'term_groups', array() ), function ( $id ) {
     return $id > 0;
 } );
 

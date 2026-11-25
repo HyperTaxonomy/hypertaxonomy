@@ -129,7 +129,7 @@ class HyperTaxonomy_Term_List extends HyperTaxonomy_Term_Display_Base {
         $is_collapsible = in_array( $this->htax_atts['collapsible'], array( 'true', 'collapsed' ), true );
 
         // Build container classes
-        $classes = $this->build_container_classes( 'htax-term-list' );
+        $classes   = $this->build_container_classes( 'htax-term-list' );
         $classes[] = 'htax-flat';
 
         $output = '<div class="' . esc_attr( implode( ' ', $classes ) ) . '"' . $this->build_container_id_attr() . '>';
@@ -137,13 +137,13 @@ class HyperTaxonomy_Term_List extends HyperTaxonomy_Term_Display_Base {
         // Show header if header parameter is specified (but not if collapsible, handled by summary)
         if ( ! $is_collapsible && ! empty( $this->htax_atts['header'] ) ) {
             $header_text = $this->process_header_placeholders( $this->htax_atts['header'], $terms, $taxonomy );
-            $output .= '<h3>' . wp_kses_post( $header_text ) . '</h3>';
+            $output     .= '<h3>' . wp_kses_post( $header_text ) . '</h3>';
         }
 
         // Render terms
-        $output .= '<div class="htax-term-list-tags">';
+        $output   .= '<div class="htax-term-list-tags">';
         $separator = wp_kses_post( $this->htax_atts['separator'] );
-        $first = true;
+        $first     = true;
 
         foreach ( $terms as $term ) {
             if ( ! $first && ! empty( $separator ) ) {
@@ -236,7 +236,7 @@ class HyperTaxonomy_Term_List extends HyperTaxonomy_Term_Display_Base {
             $hierarchical[ $term->term_id ] = array(
                 'term' => $term,
                 'depth' => 0,
-                'children' => array()
+                'children' => array(),
             );
 
             // Get children if max_depth allows
@@ -259,13 +259,13 @@ class HyperTaxonomy_Term_List extends HyperTaxonomy_Term_Display_Base {
         $children = $this->children_map[ (int) $parent_array['term']->term_id ] ?? array();
 
         foreach ( $children as $child ) {
-            $this->term_depths[ $child->term_id ] = $current_depth;
+            $this->term_depths[ $child->term_id ]  = $current_depth;
             $this->term_anchors[ $child->term_id ] = 'htax-term-' . $child->term_id;
 
             $child_array = array(
                 'term' => $child,
                 'depth' => $current_depth,
-                'children' => array()
+                'children' => array(),
             );
 
             // Recursively add children
@@ -285,7 +285,7 @@ class HyperTaxonomy_Term_List extends HyperTaxonomy_Term_Display_Base {
         $is_collapsible = in_array( $this->htax_atts['collapsible'], array( 'true', 'collapsed' ), true );
 
         // Build container classes
-        $classes = $this->build_container_classes( 'htax-term-list' );
+        $classes   = $this->build_container_classes( 'htax-term-list' );
         $classes[] = 'htax-hierarchical';
 
         $output = '<div class="' . esc_attr( implode( ' ', $classes ) ) . '"' . $this->build_container_id_attr() . '>';
@@ -293,7 +293,7 @@ class HyperTaxonomy_Term_List extends HyperTaxonomy_Term_Display_Base {
         // Show header if header parameter is specified (but not if collapsible, handled by summary)
         if ( ! $is_collapsible && ! empty( $this->htax_atts['header'] ) ) {
             $header_text = $this->process_header_placeholders( $this->htax_atts['header'], $terms, $taxonomy );
-            $output .= '<h3>' . wp_kses_post( $header_text ) . '</h3>';
+            $output     .= '<h3>' . wp_kses_post( $header_text ) . '</h3>';
         }
 
         foreach ( $hierarchical_terms as $term_data ) {
@@ -318,7 +318,7 @@ class HyperTaxonomy_Term_List extends HyperTaxonomy_Term_Display_Base {
      * Render a single term with its children
      */
     private function render_term_with_children( $term_data ) {
-        $term = $term_data['term'];
+        $term  = $term_data['term'];
         $depth = $term_data['depth'];
 
         // Skip if already processed (to avoid duplicates)
@@ -348,7 +348,7 @@ class HyperTaxonomy_Term_List extends HyperTaxonomy_Term_Display_Base {
         $is_redirect = $this->is_term_redirect( $term );
 
         // Build classes
-        $classes = array( 'htax-term-item' );
+        $classes   = array( 'htax-term-item' );
         $classes[] = 'htax-depth-' . $depth;
 
         if ( $is_redirect ) {
@@ -361,7 +361,7 @@ class HyperTaxonomy_Term_List extends HyperTaxonomy_Term_Display_Base {
         // Build styles
         $styles = array();
         if ( $depth > 0 && $this->htax_atts['indent_style'] === 'padding' ) {
-            $indent = $depth * intval( $this->htax_atts['indent_size'] );
+            $indent   = $depth * intval( $this->htax_atts['indent_size'] );
             $styles[] = 'padding-left: ' . $indent . 'px';
         }
 
@@ -377,9 +377,9 @@ class HyperTaxonomy_Term_List extends HyperTaxonomy_Term_Display_Base {
 
         // Determine link behavior for redirects
         $link_attrs_result = $this->build_redirect_link_attributes( $term, $classes );
-        $link_tag = $link_attrs_result['link_tag'];
-        $link_href = $link_attrs_result['link_href'];
-        $link_attrs = $link_attrs_result['link_attrs'];
+        $link_tag          = $link_attrs_result['link_tag'];
+        $link_href         = $link_attrs_result['link_href'];
+        $link_attrs        = $link_attrs_result['link_attrs'];
 
         // Add redirect target name to attrs (term-list specific)
         if ( $is_redirect ) {
@@ -453,7 +453,7 @@ class HyperTaxonomy_Term_List extends HyperTaxonomy_Term_Display_Base {
      * Wrap content with collapsible details/summary if needed
      *
      * @param string $content The content to wrap
-     * @param array $terms Array of term objects (for header placeholders)
+     * @param array  $terms Array of term objects (for header placeholders)
      * @param string $taxonomy Taxonomy name
      * @return string Wrapped content or original content
      */
@@ -494,12 +494,7 @@ class HyperTaxonomy_Term_List extends HyperTaxonomy_Term_Display_Base {
 
         return $output;
     }
-
 }
 
 // Initialize class
 new HyperTaxonomy_Term_List();
-
-
-
-

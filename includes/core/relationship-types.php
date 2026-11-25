@@ -147,7 +147,7 @@ function htax_get_relationship_type_slugs( string $core_type_slug ): array {
  * @return string
  */
 function htax_relationship_type_sql_in( string $core_type_slug ): string {
-    $slugs  = htax_get_relationship_type_slugs( $core_type_slug );
+    $slugs = htax_get_relationship_type_slugs( $core_type_slug );
     if ( empty( $slugs ) ) {
         return '1=0';
     }
@@ -805,8 +805,8 @@ function htax_add_term_relationship( int $source_term_id, int $target_term_id, s
  * @param string $type_slug      Relationship type slug.
  */
 function htax_handle_term_relationship_change( int $source_term_id, int $target_term_id, string $type_slug ): void {
-    $source_term = get_term( $source_term_id );
-    $target_term = get_term( $target_term_id );
+    $source_term     = get_term( $source_term_id );
+    $target_term     = get_term( $target_term_id );
     $source_is_group = $source_term instanceof WP_Term && 'group' === $source_term->taxonomy;
     $target_is_group = $target_term instanceof WP_Term && 'group' === $target_term->taxonomy;
 
@@ -1021,7 +1021,7 @@ function htax_remove_invalid_term_relationships( string $slug ): int {
              WHERE r1.relationship_type = 'redirect'",
             ARRAY_A
         );
-        $chain_deleted = $wpdb->query(
+        $chain_deleted  = $wpdb->query(
             "DELETE r1 FROM `{$table}` r1
              INNER JOIN `{$table}` r2
                  ON r2.source_term_id = r1.target_term_id

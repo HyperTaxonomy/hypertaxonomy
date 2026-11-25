@@ -31,7 +31,6 @@ class HyperTaxonomy_Capabilities {
         // Hook to plugin activation
         register_activation_hook( HTAX_PLUGIN_BASENAME, array( __CLASS__, 'add_capabilities' ) );
         register_deactivation_hook( HTAX_PLUGIN_BASENAME, array( __CLASS__, 'remove_capabilities' ) );
-
     }
 
     /**

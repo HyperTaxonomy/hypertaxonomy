@@ -84,15 +84,15 @@ function htax_handle_bulk_actions( $redirect_to, $action, $term_ids ) {
                     if ( 'htax_make_visible' === $action && $is_hidden ) {
                         // Skip silently if any ancestor is still hidden at processing time.
                         // (When parent and child are both selected, WP processes them in list
-                        //  order so a parent above its child will be made visible first,
-                        //  letting the child pass this check on its own turn.)
+                        // order so a parent above its child will be made visible first,
+                        // letting the child pass this check on its own turn.)
                         if ( is_taxonomy_hierarchical( $taxonomy ) ) {
                             static $bulk_hidden_set = null;
                             if ( null === $bulk_hidden_set ) {
                                 $bulk_hidden_set = array_flip( htax_get_all_hidden_term_ids() );
                             }
-                            $term_obj = get_term( $term_id );
-                            $ancestor = ( $term_obj && ! is_wp_error( $term_obj ) ) ? (int) $term_obj->parent : 0;
+                            $term_obj            = get_term( $term_id );
+                            $ancestor            = ( $term_obj && ! is_wp_error( $term_obj ) ) ? (int) $term_obj->parent : 0;
                             $has_hidden_ancestor = false;
                             while ( $ancestor ) {
                                 if ( isset( $bulk_hidden_set[ $ancestor ] ) ) {
@@ -113,12 +113,12 @@ function htax_handle_bulk_actions( $redirect_to, $action, $term_ids ) {
                         if ( isset( $_POST['htax_cascade_visible'] ) && '1' === sanitize_text_field( wp_unslash( $_POST['htax_cascade_visible'] ) ) ) {
                             htax_set_descendant_visibility( $term_id, $taxonomy, false );
                         }
-                        $processed++;
+                        ++$processed;
                     } elseif ( 'htax_make_hidden' === $action && ! $is_hidden ) {
                         update_term_meta( $term_id, '_htax_is_hidden', '1' );
                         do_action( 'htax_term_visibility_changed', $term_id, $taxonomy );
                         htax_set_descendant_visibility( $term_id, $taxonomy, true );
-                        $processed++;
+                        ++$processed;
                     }
                 }
                 break;
@@ -147,12 +147,12 @@ function htax_handle_bulk_actions( $redirect_to, $action, $term_ids ) {
                         if ( method_exists( $icon_handler, 'clear_icon_cache' ) ) {
                             $icon_handler->clear_icon_cache( $term_id );
                         }
-                        $processed++;
+                        ++$processed;
                     }
                 }
                 break;
 
-            }
+        }
     }
 
     // Add query arg to show admin notice
@@ -180,7 +180,7 @@ function htax_bulk_action_admin_notice() {
         return;
     }
 
-    $action = sanitize_key( wp_unslash( $_GET['htax_bulk_action'] ) );
+    $action    = sanitize_key( wp_unslash( $_GET['htax_bulk_action'] ) );
     $processed = intval( $_GET['htax_processed'] );
 
     if ( 0 === $processed ) {
@@ -246,10 +246,10 @@ function htax_ajax_bulk_assign_groups() {
     }
 
     // Get parameters
-    $term_ids      = isset( $_POST['term_ids'] )      ? array_map( 'intval', wp_unslash( (array) $_POST['term_ids'] ) )      : array();
-    $add_groups    = isset( $_POST['add_groups'] )    ? array_map( 'intval', wp_unslash( (array) $_POST['add_groups'] ) )    : array();
+    $term_ids      = isset( $_POST['term_ids'] ) ? array_map( 'intval', wp_unslash( (array) $_POST['term_ids'] ) ) : array();
+    $add_groups    = isset( $_POST['add_groups'] ) ? array_map( 'intval', wp_unslash( (array) $_POST['add_groups'] ) ) : array();
     $remove_groups = isset( $_POST['remove_groups'] ) ? array_map( 'intval', wp_unslash( (array) $_POST['remove_groups'] ) ) : array();
-    $taxonomy      = isset( $_POST['taxonomy'] )      ? sanitize_key( wp_unslash( $_POST['taxonomy'] ) )       : '';
+    $taxonomy      = isset( $_POST['taxonomy'] ) ? sanitize_key( wp_unslash( $_POST['taxonomy'] ) ) : '';
 
     // Validate
     if ( empty( $term_ids ) || empty( $taxonomy ) ) {
@@ -288,9 +288,9 @@ function htax_ajax_bulk_assign_groups() {
             array_diff( $existing, $remove_groups ),
             $add_groups
         ) ) );
-        $result = htax_set_term_groups( $term_id, $new_groups );
+        $result     = htax_set_term_groups( $term_id, $new_groups );
         if ( ! is_wp_error( $result ) ) {
-            $processed++;
+            ++$processed;
         }
     }
 
@@ -300,7 +300,7 @@ function htax_ajax_bulk_assign_groups() {
             /* translators: %d: number of terms */
             _n( '%d term updated.', '%d terms updated.', $processed, 'hypertaxonomy' ),
             $processed
-        )
+        ),
     ) );
 }
 add_action( 'wp_ajax_htax_bulk_assign_groups', 'htax_ajax_bulk_assign_groups' );

@@ -52,7 +52,7 @@ function htax_check_term_edit_lock( int $term_id ) {
         return false;
     }
     [ $time, $user_id ] = array_pad( explode( ':', $lock, 2 ), 2, 0 );
-    $user_id = (int) $user_id;
+    $user_id            = (int) $user_id;
     if ( get_current_user_id() === $user_id ) {
         return false;
     }
@@ -94,7 +94,7 @@ function htax_check_rt_edit_lock( string $slug ) {
         return false;
     }
     [ $time, $user_id ] = array_pad( explode( ':', $lock, 2 ), 2, 0 );
-    $user_id = (int) $user_id;
+    $user_id            = (int) $user_id;
     if ( get_current_user_id() === $user_id ) {
         return false;
     }
@@ -238,21 +238,32 @@ function htax_enqueue_lock_script( array $config ): void {
 function htax_render_lock_dialog( $locked_by, string $back_url, string $take_url, string $kind = 'term' ): void {
     $is_rt = ( 'relationship_type' === $kind );
     ?>
-    <div id="htax-term-lock-dialog" class="notification-dialog-wrap"<?php if ( ! $locked_by ) : ?> style="display:none"<?php endif; ?>>
+    <div id="htax-term-lock-dialog" class="notification-dialog-wrap"
+    <?php
+    if ( ! $locked_by ) :
+        ?>
+        style="display:none"<?php endif; ?>>
         <div class="notification-dialog-background"></div>
         <div class="notification-dialog htax-lock-dialog">
 
-            <div id="htax-lock-message-editing"<?php if ( ! $locked_by ) : ?> style="display:none"<?php endif; ?>>
-                <h2 class="htax-lock-heading"><?php
+            <div id="htax-lock-message-editing"
+            <?php
+            if ( ! $locked_by ) :
+                ?>
+                style="display:none"<?php endif; ?>>
+                <h2 class="htax-lock-heading">
+                <?php
                     echo $is_rt
                         ? esc_html__( 'This relationship type is currently being edited', 'hypertaxonomy' )
                         : esc_html__( 'This term is currently being edited', 'hypertaxonomy' );
-                ?></h2>
+                ?>
+                </h2>
                 <div class="htax-lock-user">
                     <?php if ( $locked_by ) : ?>
                         <?php echo get_avatar( $locked_by->ID, 64 ); ?>
                         <div class="htax-lock-user-info">
-                            <p><?php
+                            <p>
+                            <?php
                                 $editor_name = '<strong>' . esc_html( $locked_by->display_name ) . '</strong>';
                                 /* translators: %s: editor display name */
                                 printf(
@@ -262,7 +273,9 @@ function htax_render_lock_dialog( $locked_by, string $back_url, string $take_url
                                         /* translators: %s: name of the user editing it */
                                         : esc_html__( '%s is currently editing this term, which means you cannot make changes unless you take over.', 'hypertaxonomy' ),
                                     esc_html( $editor_name )
-                                ); ?></p>
+                                );
+                            ?>
+                                </p>
                             <p><?php esc_html_e( 'If you take over, the other editor will lose access. Any unsaved changes they have will be lost.', 'hypertaxonomy' ); ?></p>
                         </div>
                     <?php endif; ?>

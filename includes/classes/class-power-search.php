@@ -146,7 +146,7 @@ class HyperTaxonomy_Power_Search {
         self::request_scripts();
 
         // Determine if AJAX mode
-        $is_ajax = ! empty( $atts['ajax'] );
+        $is_ajax    = ! empty( $atts['ajax'] );
         $results_id = $is_ajax ? $atts['ajax'] : '';
 
         $classes = array( 'htax-power-search-form' );
@@ -261,10 +261,10 @@ class HyperTaxonomy_Power_Search {
             return;
         }
 
-        $query = isset( $_POST['query'] ) ? sanitize_text_field( wp_unslash( $_POST['query'] ) ) : '';
-        $page = isset( $_POST['page'] ) ? intval( wp_unslash( $_POST['page'] ) ) : 1;
+        $query          = isset( $_POST['query'] ) ? sanitize_text_field( wp_unslash( $_POST['query'] ) ) : '';
+        $page           = isset( $_POST['page'] ) ? intval( wp_unslash( $_POST['page'] ) ) : 1;
         $posts_per_page = isset( $_POST['posts_per_page'] ) ? intval( wp_unslash( $_POST['posts_per_page'] ) ) : 10;
-        $max_results = isset( $_POST['max_results'] ) ? max( 0, intval( wp_unslash( $_POST['max_results'] ) ) ) : 0;
+        $max_results    = isset( $_POST['max_results'] ) ? max( 0, intval( wp_unslash( $_POST['max_results'] ) ) ) : 0;
         $orderby_string = isset( $_POST['orderby'] ) ? sanitize_text_field( wp_unslash( $_POST['orderby'] ) ) : 'relevance:desc,date:desc';
 
         // Validate minimum length
@@ -286,7 +286,7 @@ class HyperTaxonomy_Power_Search {
 
         // Build extra WHERE from filter state
         $extra_where = '';
-        $raw_filter = isset( $_POST['htax_filter'] ) ? htax_decode_json_request( wp_unslash( $_POST['htax_filter'] ) ) : null;
+        $raw_filter  = isset( $_POST['htax_filter'] ) ? htax_decode_json_request( wp_unslash( $_POST['htax_filter'] ) ) : null;
         if ( null !== $raw_filter ) {
             $filter_state = htax_parse_filter_state_ajax( $raw_filter );
             if ( ! empty( $filter_state ) ) {
@@ -318,7 +318,7 @@ class HyperTaxonomy_Power_Search {
         if ( ! is_array( $search_result ) || ! isset( $search_result['results'] ) || ! isset( $search_result['total'] ) ) {
             htax_log_error( 'PowerSearch returned invalid structure', array(
                 'search_result' => $search_result,
-                'query' => $query
+                'query' => $query,
             ) );
             wp_send_json_success( array(
                 'posts' => array(),
@@ -329,7 +329,7 @@ class HyperTaxonomy_Power_Search {
             return;
         }
 
-        $results = $search_result['results'];
+        $results     = $search_result['results'];
         $total_found = $search_result['total'];
 
         if ( empty( $results ) ) {
@@ -345,7 +345,7 @@ class HyperTaxonomy_Power_Search {
         // Validate results array structure
         if ( ! is_array( $results ) ) {
             htax_log_error( 'PowerSearch results is not an array', array(
-                'results' => $results
+                'results' => $results,
             ) );
             wp_send_json_success( array(
                 'posts' => array(),
@@ -363,7 +363,7 @@ class HyperTaxonomy_Power_Search {
             if ( ! is_array( $result ) || ! isset( $result['post_id'] ) ) {
                 htax_log_error( 'PowerSearch result element missing post_id', array(
                     'index' => $index,
-                    'result' => $result
+                    'result' => $result,
                 ) );
                 continue;
             }
@@ -407,27 +407,27 @@ class HyperTaxonomy_Power_Search {
      * with field-specific operators and tier-based relevance weights.
      *
      * Supports operators: title:, content:, excerpt:, tags:, categories:, terms:, {taxonomy_plural}:
-     * Example: title:wordpress photography categories:news colors:blue
+     * Example: title:WordPress photography categories:news colors:blue
      *
      * @param string $query Search query with optional field operators
-     * @param array $config Configuration array with keys:
-     *                      - orderby: Parsed orderby array
-     *                      - posts_per_page: Number of results per page
-     *                      - page: Current page number
-     *                      - min_score: Minimum overall relevance score (0-1, default: 0)
-     *                        Posts must achieve at least this total score to be included in results.
-     *                        Uses same 0-1 scale as relevance multipliers in settings.
-     *                      - min_title_score: Minimum score from title matches (0-1, default: 0)
-     *                        If >0, post must score at least this from title matches to be included.
-     *                      - min_content_score: Minimum score from content matches (0-1, default: 0)
-     *                      - min_excerpt_score: Minimum score from excerpt matches (0-1, default: 0)
-     *                      - min_tags_score: Minimum score from tag matches (0-1, default: 0)
-     *                      - min_categories_score: Minimum score from category matches (0-1, default: 0)
-     *                      - min_terms_score: Minimum score from term matches (0-1, default: 0)
-     *                      Note: Setting field min_score to 0 means that field is not required; >0 means
-     *                      the post MUST score at least that amount from that specific field type.
-     *                      All scores use the same 0-1 scale as relevance multipliers in settings.
-     *                      - near_country: ISO 3166-1 code for near: postal codes (default 'US')
+     * @param array  $config Configuration array with keys:
+     *                       - orderby: Parsed orderby array
+     *                       - posts_per_page: Number of results per page
+     *                       - page: Current page number
+     *                       - min_score: Minimum overall relevance score (0-1, default: 0)
+     *                         Posts must achieve at least this total score to be included in results.
+     *                         Uses same 0-1 scale as relevance multipliers in settings.
+     *                       - min_title_score: Minimum score from title matches (0-1, default: 0)
+     *                         If >0, post must score at least this from title matches to be included.
+     *                       - min_content_score: Minimum score from content matches (0-1, default: 0)
+     *                       - min_excerpt_score: Minimum score from excerpt matches (0-1, default: 0)
+     *                       - min_tags_score: Minimum score from tag matches (0-1, default: 0)
+     *                       - min_categories_score: Minimum score from category matches (0-1, default: 0)
+     *                       - min_terms_score: Minimum score from term matches (0-1, default: 0)
+     *                       Note: Setting field min_score to 0 means that field is not required; >0 means
+     *                       the post MUST score at least that amount from that specific field type.
+     *                       All scores use the same 0-1 scale as relevance multipliers in settings.
+     *                       - near_country: ISO 3166-1 code for near: postal codes (default 'US')
      * @return array{results: array<array{post_id: int, relevance: float}>, total: int}
      */
     public function perform_indexed_text_search( $query, $config = array() ) {
@@ -447,7 +447,7 @@ class HyperTaxonomy_Power_Search {
         // Parse search_in parameter to determine which fields are searchable
         // Default: 'all' (everything: title, content, excerpt, tags, categories, all configured taxonomies)
         // Valid values: 'all', 'title', 'content', 'excerpt', 'tags', 'categories', 'terms', or specific taxonomy slugs
-        $search_in_raw = isset( $config['search_in'] ) ? $config['search_in'] : 'all';
+        $search_in_raw    = isset( $config['search_in'] ) ? $config['search_in'] : 'all';
         $search_in_values = is_array( $search_in_raw ) ? $search_in_raw : array_map( 'trim', explode( ',', $search_in_raw ) );
 
         // Get enabled taxonomies with search enhancement
@@ -458,12 +458,12 @@ class HyperTaxonomy_Power_Search {
 
         if ( in_array( 'all', $search_in_values, true ) ) {
             // Search everything
-            $allowed_fields['title'] = true;
-            $allowed_fields['content'] = true;
-            $allowed_fields['excerpt'] = true;
-            $allowed_fields['tags'] = in_array( 'post_tag', $enabled_taxonomies, true );
+            $allowed_fields['title']      = true;
+            $allowed_fields['content']    = true;
+            $allowed_fields['excerpt']    = true;
+            $allowed_fields['tags']       = in_array( 'post_tag', $enabled_taxonomies, true );
             $allowed_fields['categories'] = in_array( 'category', $enabled_taxonomies, true );
-            $allowed_fields['terms'] = ! empty( $enabled_taxonomies );
+            $allowed_fields['terms']      = ! empty( $enabled_taxonomies );
             foreach ( $enabled_taxonomies as $taxonomy ) {
                 $allowed_fields[ $taxonomy ] = true;
             }
@@ -592,16 +592,37 @@ class HyperTaxonomy_Power_Search {
             'taxonomies' => array(
                 'post_tag' => array(
                     'use_description' => false,
-                    'direct'    => array( 'text' => 0.6,  'description' => 0.4  ),
-                    'container' => array( 'text' => 0.5,  'description' => 0.35 ),
-                    'redirect'  => array( 'text' => 0.35, 'description' => 0.25 ),
+                    'direct'    => array(
+                        'text' => 0.6,
+                        'description' => 0.4,
+                    ),
+                    'container' => array(
+                        'text' => 0.5,
+                        'description' => 0.35,
+                    ),
+                    'redirect'  => array(
+                        'text' => 0.35,
+                        'description' => 0.25,
+                    ),
                 ),
                 'category' => array(
                     'use_description' => false,
-                    'direct'    => array( 'text' => 0.5,  'description' => 0.35 ),
-                    'hierarchy' => array( 'text' => 0.4,  'description' => 0.3  ),
-                    'container' => array( 'text' => 0.35, 'description' => 0.25 ),
-                    'redirect'  => array( 'text' => 0.3,  'description' => 0.2  ),
+                    'direct'    => array(
+                        'text' => 0.5,
+                        'description' => 0.35,
+                    ),
+                    'hierarchy' => array(
+                        'text' => 0.4,
+                        'description' => 0.3,
+                    ),
+                    'container' => array(
+                        'text' => 0.35,
+                        'description' => 0.25,
+                    ),
+                    'redirect'  => array(
+                        'text' => 0.3,
+                        'description' => 0.2,
+                    ),
                 ),
             ),
             'custom_taxonomies_text' => array(
@@ -670,15 +691,15 @@ class HyperTaxonomy_Power_Search {
         // Every enabled taxonomy now has an entry in taxonomies[] (either user-saved or
         // auto-populated above), so the lookup always succeeds for known taxonomies.
         $defaults_cache   = array();
-        $get_term_weights = function( $taxonomy, $rel_type ) use ( $multipliers, &$defaults_cache ) {
+        $get_term_weights = function ( $taxonomy, $rel_type ) use ( $multipliers, &$defaults_cache ) {
             if ( ! isset( $defaults_cache[ $taxonomy ] ) ) {
                 $defaults_cache[ $taxonomy ] = htax_get_default_relevance_weights( $taxonomy );
             }
-            $defaults     = $defaults_cache[ $taxonomy ];
-            $tax_data     = $multipliers['taxonomies'][ $taxonomy ] ?? array();
-            $text_weight  = floatval( $tax_data[ $rel_type ]['text']        ?? $defaults[ $rel_type ]['text']     ?? 0.5 );
-            $desc_weight  = floatval( $tax_data[ $rel_type ]['description'] ?? round( $text_weight * 0.7, 2 ) );
-            $expl_weight  = floatval( $tax_data[ $rel_type ]['explicit']    ?? $defaults[ $rel_type ]['explicit'] ?? 1.0 );
+            $defaults    = $defaults_cache[ $taxonomy ];
+            $tax_data    = $multipliers['taxonomies'][ $taxonomy ] ?? array();
+            $text_weight = floatval( $tax_data[ $rel_type ]['text'] ?? $defaults[ $rel_type ]['text'] ?? 0.5 );
+            $desc_weight = floatval( $tax_data[ $rel_type ]['description'] ?? round( $text_weight * 0.7, 2 ) );
+            $expl_weight = floatval( $tax_data[ $rel_type ]['explicit'] ?? $defaults[ $rel_type ]['explicit'] ?? 1.0 );
             return array(
                 'name'            => $text_weight,
                 'explicit'        => $expl_weight,
@@ -690,7 +711,7 @@ class HyperTaxonomy_Power_Search {
         // Extract and validate minimum score thresholds
         // Valid range: 0.0 to 1.0 (exact same scale as relevance multipliers in settings)
         // 0 = field not required, >0 = minimum points required from that field
-        $min_score = isset( $config['min_score'] ) ? floatval( $config['min_score'] ) : 0;
+        $min_score  = isset( $config['min_score'] ) ? floatval( $config['min_score'] ) : 0;
         $min_scores = array(
             'title' => isset( $config['min_title_score'] ) ? floatval( $config['min_title_score'] ) : 0,
             'content' => isset( $config['min_content_score'] ) ? floatval( $config['min_content_score'] ) : 0,
@@ -703,12 +724,21 @@ class HyperTaxonomy_Power_Search {
         // Validate score ranges (0-1, same as relevance multiplier settings)
         if ( $min_score < 0 || $min_score > 1 ) {
             htax_log_error( 'Invalid min_score value', array( 'min_score' => $min_score ) );
-            return array( 'results' => array(), 'total' => 0 );
+            return array(
+                'results' => array(),
+                'total' => 0,
+            );
         }
         foreach ( $min_scores as $field => $score ) {
             if ( $score < 0 || $score > 1 ) {
-                htax_log_error( 'Invalid minimum score threshold', array( 'field' => $field, 'score' => $score ) );
-                return array( 'results' => array(), 'total' => 0 );
+                htax_log_error( 'Invalid minimum score threshold', array(
+                    'field' => $field,
+                    'score' => $score,
+                ) );
+                return array(
+                    'results' => array(),
+                    'total' => 0,
+                );
             }
         }
 
@@ -720,8 +750,8 @@ class HyperTaxonomy_Power_Search {
         $query_params = array();
 
         // Process wp_posts fields - calculate weighted scores for each field
-        $has_title   = ! empty( $parsed_query['title'] )   || ( ! empty( $parsed_query['general'] ) && ! empty( $allowed_fields['title'] ) );
-        $has_content = ! empty( $parsed_query['body'] )    || ( ! empty( $parsed_query['general'] ) && ! empty( $allowed_fields['content'] ) );
+        $has_title   = ! empty( $parsed_query['title'] ) || ( ! empty( $parsed_query['general'] ) && ! empty( $allowed_fields['title'] ) );
+        $has_content = ! empty( $parsed_query['body'] ) || ( ! empty( $parsed_query['general'] ) && ! empty( $allowed_fields['content'] ) );
         $has_excerpt = ! empty( $parsed_query['excerpt'] ) || ( ! empty( $parsed_query['general'] ) && ! empty( $allowed_fields['excerpt'] ) );
 
         // Post text fields score with NATURAL LANGUAGE MODE so that IDF and document-length
@@ -780,15 +810,15 @@ class HyperTaxonomy_Power_Search {
         }
 
         // Process term fields - build separate subqueries for tags, categories, and all terms
-        $tags_subqueries = array();
-        $cats_subqueries = array();
+        $tags_subqueries      = array();
+        $cats_subqueries      = array();
         $all_terms_subqueries = array();
 
         // Check what term queries we have
-        $has_tags_query = ! empty( $parsed_query['tags'] );
-        $has_cats_query = ! empty( $parsed_query['categories'] );
+        $has_tags_query  = ! empty( $parsed_query['tags'] );
+        $has_cats_query  = ! empty( $parsed_query['categories'] );
         $has_terms_query = ! empty( $parsed_query['terms'] );
-        $has_general = ! empty( $parsed_query['general'] );
+        $has_general     = ! empty( $parsed_query['general'] );
 
         // Build WHERE clause early so the closures below can append required/excluded term
         // conditions to it during the field-specific path. Initializing here (before any
@@ -796,7 +826,7 @@ class HyperTaxonomy_Power_Search {
         // discarded when the variable is later assigned.
         $indexed_post_types = htax_get_indexed_post_types();
         $post_type_list     = implode( "','", array_map( 'esc_sql', $indexed_post_types ) );
-        $where_clause = "pt.post_type IN ('$post_type_list') AND pt.post_status = 'publish'";
+        $where_clause       = "pt.post_type IN ('$post_type_list') AND pt.post_status = 'publish'";
         $extra_where        = isset( $config['extra_where'] ) ? $config['extra_where'] : '';
         if ( '' !== $extra_where ) {
             $where_clause .= ' ' . $extra_where;
@@ -816,19 +846,19 @@ class HyperTaxonomy_Power_Search {
         // For excluded terms (- prefix), two enforcement layers are needed:
         //
         // 1. Taxonomy layer: a post that scores positively from one matching term and is also
-        //    tagged with an excluded term will still appear because FULLTEXT "-word" only zeroes
-        //    the excluded term's row score; other terms keep their positive score.  A WHERE
-        //    p.ID NOT IN (posts tagged with the excluded term) is required.
+        // tagged with an excluded term will still appear because FULLTEXT "-word" only zeroes
+        // the excluded term's row score; other terms keep their positive score.  A WHERE
+        // p.ID NOT IN (posts tagged with the excluded term) is required.
         //
         // 2. Text layer (general excluded terms only): a post may still score via one text field
-        //    even when another field contains the excluded word, because per-field FULLTEXT scoring
-        //    zeroes only that field's score while the others remain positive.  A second NOT IN
-        //    against MATCH(title, content, excerpt) AGAINST('+word') covers this case.
+        // even when another field contains the excluded word, because per-field FULLTEXT scoring
+        // zeroes only that field's score while the others remain positive.  A second NOT IN
+        // against MATCH(title, content, excerpt) AGAINST('+word') covers this case.
         //
         // Both subqueries use pre-prepared SQL so no %s placeholders are added to $where_clause,
         // avoiding any disruption to the existing $query_params ordering.
-        $add_excluded_term_where = function( array $field_terms, string $taxonomy, bool $include_text_layer = false )
-            use ( $wpdb, &$where_clause ) {
+        $add_excluded_term_where = function ( array $field_terms, string $taxonomy, bool $include_text_layer = false )
+ use ( $wpdb, &$where_clause ) {
             $hst_hidden = htax_get_hidden_term_filter_clause( 'hst.is_hidden' );
             $tax_sql    = $taxonomy !== '' ? " AND hst.taxonomy = '" . esc_sql( $taxonomy ) . "'" : '';
             foreach ( $field_terms as $td ) {
@@ -877,8 +907,8 @@ class HyperTaxonomy_Power_Search {
         // $field_terms  — parsed query array for one field (e.g. $parsed_query['tags'])
         // $taxonomy     — slug to restrict the htax_search_terms lookup, or '' for all
         // $where_clause is captured by reference; $query_params is NOT modified here.
-        $add_required_term_where = function( array $field_terms, string $taxonomy )
-            use ( $wpdb, &$where_clause ) {
+        $add_required_term_where = function ( array $field_terms, string $taxonomy )
+ use ( $wpdb, &$where_clause ) {
             $hst_hidden = htax_get_hidden_term_filter_clause( 'hst.is_hidden' );
             $tax_sql    = $taxonomy !== '' ? " AND hst.taxonomy = '" . esc_sql( $taxonomy ) . "'" : '';
             foreach ( $field_terms as $td ) {
@@ -905,8 +935,8 @@ class HyperTaxonomy_Power_Search {
         // With NATURAL LANGUAGE MODE scoring this can no longer be inferred from the score
         // being zero, so a pre-prepared WHERE OR condition is added explicitly.
         // Same pre-fetch pattern as $add_required_term_where — no %s added to $query_params.
-        $add_required_general_term_where = function( array $general_terms )
-            use ( $wpdb, &$where_clause ) {
+        $add_required_general_term_where = function ( array $general_terms )
+ use ( $wpdb, &$where_clause ) {
             $hst_hidden = htax_get_hidden_term_filter_clause( 'hst.is_hidden' );
             foreach ( $general_terms as $td ) {
                 if ( empty( $td['required'] ) ) {
@@ -935,7 +965,7 @@ class HyperTaxonomy_Power_Search {
 
         // Returns true if any term in a parsed field array carries required=true (+prefix).
         // Used by both the field-specific path and the custom taxonomy section.
-        $has_required = static function( array $field_terms ) {
+        $has_required = static function ( array $field_terms ) {
             foreach ( $field_terms as $td ) {
                 if ( ! empty( $td['required'] ) ) {
                     return true;
@@ -1034,7 +1064,7 @@ class HyperTaxonomy_Power_Search {
         // Collect exact-match IDs for one taxonomy (field-specific path and custom taxonomy fields):
         // field-specific terms always get exact matching; quoted general terms get it only when
         // the flag is set.
-        $get_field_exact_ids = function( array $field_terms, string $taxonomy, bool $include_general = true ) use ( $parsed_query ): array {
+        $get_field_exact_ids = function ( array $field_terms, string $taxonomy, bool $include_general = true ) use ( $parsed_query ): array {
             $ids = array();
             foreach ( $field_terms as $td ) {
                 if ( empty( $td['excluded'] ) ) {
@@ -1055,7 +1085,7 @@ class HyperTaxonomy_Power_Search {
 
         if ( $use_combined_tax_scan ) {
             // Build a single CASE-weighted LEFT JOIN across all taxonomies/rel_types.
-            $all_tax_query = htax_build_boolean_query_string( $parsed_query['general'] ?? array() );
+            $all_tax_query       = htax_build_boolean_query_string( $parsed_query['general'] ?? array() );
             $taxonomies_in_index = $this->get_indexed_taxonomies();
 
             $case_whens_name = array();
@@ -1084,7 +1114,7 @@ class HyperTaxonomy_Power_Search {
                 $case_sql_name = 'CASE ' . implode( ' ', $case_whens_name ) . ' ELSE 0 END';
                 // Appended to every hst branch below: visibility plus the strength model,
                 // since every branch scores by hst.strength.
-                $hst_hidden    = htax_get_hidden_term_filter_clause( 'hst.is_hidden' )
+                $hst_hidden = htax_get_hidden_term_filter_clause( 'hst.is_hidden' )
                                . htax_strength_model_sql( 'hst' );
                 // The exact-match branch has no CASE weight, so taxonomies scored in their own
                 // field are filtered out of every branch here.
@@ -1109,7 +1139,7 @@ class HyperTaxonomy_Power_Search {
                     $exact_id_list   = implode( ',', $general_exact_ids );
                     $exact_name_excl = " AND t.term_id NOT IN ({$exact_id_list})";
                     // Explicit weight is baked into strength; use hst.strength directly.
-                    $exact_branch    = "
+                    $exact_branch = "
                                      UNION ALL
                                      SELECT hst.post_id, hst.source_term_id,{$tax_col}
                                             hst.strength AS score
@@ -1236,7 +1266,6 @@ class HyperTaxonomy_Power_Search {
                 // No taxonomy is indexed for search, so no post can reach the threshold.
                 $having_parts[] = '1 = 0';
             }
-
         } else {
             // ── Separate per-field LEFT JOINs ────────────────────────────────────
 
@@ -1250,16 +1279,16 @@ class HyperTaxonomy_Power_Search {
                 // enforced per-term via WHERE subqueries so multiple required tags find posts that
                 // carry all required tags separately rather than requiring both words in one term name.
                 $tags_terms_or = self::fulltext_field_terms( $parsed_query['tags'] ?? array() );
-                $tags_query = htax_build_boolean_query_string( array_merge( $tags_terms_or, $parsed_query['general'] ?? array() ) );
+                $tags_query    = htax_build_boolean_query_string( array_merge( $tags_terms_or, $parsed_query['general'] ?? array() ) );
 
                 $tag_rel_types = htax_get_expand_types_for_taxonomy( 'post_tag' );
 
-                $tags_subqueries = $this->build_term_search_subqueries(
+                $tags_subqueries            = $this->build_term_search_subqueries(
                     $tags_query, 'post_tag', $tag_rel_types, $get_term_weights, $query_params,
                     $get_field_exact_ids( $parsed_query['tags'] ?? array(), 'post_tag' )
                 );
-                $tags_union = implode( ' UNION ALL ', $tags_subqueries );
-                $join_clauses[] = $this->sum_term_scores_sql( $tags_union, 'tags_score', 'htax_tags' );
+                $tags_union                 = implode( ' UNION ALL ', $tags_subqueries );
+                $join_clauses[]             = $this->sum_term_scores_sql( $tags_union, 'tags_score', 'htax_tags' );
                 $select_parts['tags_score'] = 'COALESCE(htax_tags.tags_score, 0)';
                 $add_required_term_where( $parsed_query['tags'] ?? array(), 'post_tag' );
                 $add_excluded_term_where( $parsed_query['tags'] ?? array(), 'post_tag' );
@@ -1276,16 +1305,16 @@ class HyperTaxonomy_Power_Search {
             // Categories - categories: queries + general queries
             if ( $has_cats_query || $has_general ) {
                 $cats_terms_or = self::fulltext_field_terms( $parsed_query['categories'] ?? array() );
-                $cats_query = htax_build_boolean_query_string( array_merge( $cats_terms_or, $parsed_query['general'] ?? array() ) );
+                $cats_query    = htax_build_boolean_query_string( array_merge( $cats_terms_or, $parsed_query['general'] ?? array() ) );
 
                 $cat_rel_types = htax_get_expand_types_for_taxonomy( 'category' );
 
-                $cats_subqueries = $this->build_term_search_subqueries(
+                $cats_subqueries                  = $this->build_term_search_subqueries(
                     $cats_query, 'category', $cat_rel_types, $get_term_weights, $query_params,
                     $get_field_exact_ids( $parsed_query['categories'] ?? array(), 'category' )
                 );
-                $cats_union = implode( ' UNION ALL ', $cats_subqueries );
-                $join_clauses[] = $this->sum_term_scores_sql( $cats_union, 'cats_score', 'htax_cats' );
+                $cats_union                       = implode( ' UNION ALL ', $cats_subqueries );
+                $join_clauses[]                   = $this->sum_term_scores_sql( $cats_union, 'cats_score', 'htax_cats' );
                 $select_parts['categories_score'] = 'COALESCE(htax_cats.cats_score, 0)';
                 $add_required_term_where( $parsed_query['categories'] ?? array(), 'category' );
                 $add_excluded_term_where( $parsed_query['categories'] ?? array(), 'category' );
@@ -1301,7 +1330,7 @@ class HyperTaxonomy_Power_Search {
 
             // All terms - terms: queries (and general as fallback)
             if ( $has_terms_query || $has_general ) {
-                $terms_terms_or = self::fulltext_field_terms( $parsed_query['terms'] ?? array() );
+                $terms_terms_or  = self::fulltext_field_terms( $parsed_query['terms'] ?? array() );
                 $all_terms_query = htax_build_boolean_query_string( array_merge( $terms_terms_or, $parsed_query['general'] ?? array() ) );
                 // Tags and categories always get their own field here when there are general
                 // words, so those words already score them; for these taxonomies terms_score
@@ -1326,15 +1355,15 @@ class HyperTaxonomy_Power_Search {
                     $all_terms_subqueries = array_merge(
                         $all_terms_subqueries,
                         $this->build_term_search_subqueries(
-                            $own_field ? $terms_only_query : $all_terms_query, $taxonomy, $rel_types, $get_term_weights, $query_params,
-                            $get_field_exact_ids( $parsed_query['terms'] ?? array(), $taxonomy, ! $own_field )
+                    $own_field ? $terms_only_query : $all_terms_query, $taxonomy, $rel_types, $get_term_weights, $query_params,
+                    $get_field_exact_ids( $parsed_query['terms'] ?? array(), $taxonomy, ! $own_field )
                         )
                     );
                 }
 
                 if ( $all_terms_subqueries ) {
-                    $all_terms_union = implode( ' UNION ALL ', $all_terms_subqueries );
-                    $join_clauses[] = $this->sum_term_scores_sql( $all_terms_union, 'terms_score', 'htax_terms' );
+                    $all_terms_union             = implode( ' UNION ALL ', $all_terms_subqueries );
+                    $join_clauses[]              = $this->sum_term_scores_sql( $all_terms_union, 'terms_score', 'htax_terms' );
                     $select_parts['terms_score'] = 'COALESCE(htax_terms.terms_score, 0)';
                 } else {
                     $select_parts['terms_score'] = '0';
@@ -1357,7 +1386,7 @@ class HyperTaxonomy_Power_Search {
         foreach ( $custom_taxonomy_fields as $taxonomy_slug => $terms ) {
             // Demote required terms to optional in the FULLTEXT query; presence is enforced via
             // WHERE subqueries so multiple required terms find posts carrying all of them separately.
-            $terms_or = self::fulltext_field_terms( $terms );
+            $terms_or       = self::fulltext_field_terms( $terms );
             $taxonomy_query = htax_build_boolean_query_string( array_merge( $terms_or, $parsed_query['general'] ?? array() ) );
 
             // Determine relationship types for this taxonomy
@@ -1379,10 +1408,10 @@ class HyperTaxonomy_Power_Search {
                 $get_field_exact_ids( $terms, $taxonomy_slug )
             );
 
-            $safe_slug    = esc_sql( $taxonomy_slug );
-            $score_column = $safe_slug . '_score';
-            $tax_union    = implode( ' UNION ALL ', $taxonomy_subqueries );
-            $join_clauses[] = $this->sum_term_scores_sql( $tax_union, $score_column, 'htax_' . $safe_slug );
+            $safe_slug                     = esc_sql( $taxonomy_slug );
+            $score_column                  = $safe_slug . '_score';
+            $tax_union                     = implode( ' UNION ALL ', $taxonomy_subqueries );
+            $join_clauses[]                = $this->sum_term_scores_sql( $tax_union, $score_column, 'htax_' . $safe_slug );
             $select_parts[ $score_column ] = "COALESCE(htax_{$safe_slug}.{$score_column}, 0)";
             $add_required_term_where( $terms, $taxonomy_slug );
             $add_excluded_term_where( $terms, $taxonomy_slug );
@@ -1410,7 +1439,7 @@ class HyperTaxonomy_Power_Search {
 
         // Check that we have at least one search criterion
         $has_custom_taxonomy = ! empty( $custom_taxonomy_fields );
-        $has_any_query = $has_title || $has_content || $has_excerpt || $has_tags_query || $has_cats_query || $has_terms_query || $has_general || $has_custom_taxonomy;
+        $has_any_query       = $has_title || $has_content || $has_excerpt || $has_tags_query || $has_cats_query || $has_terms_query || $has_general || $has_custom_taxonomy;
 
         // A search made only of near: tokens returns the posts with a location in range (the
         // condition is already in the WHERE clause), scored by distance so that relevance
@@ -1418,7 +1447,10 @@ class HyperTaxonomy_Power_Search {
         // ignored (the visitor is told), leaving every post.
         $near_only = ! $has_any_query && ! empty( $parsed_query['proximity'] );
         if ( ! $has_any_query && ! $near_only ) {
-            return array( 'results' => array(), 'total' => 0 ); // No search criteria
+            return array(
+                'results' => array(),
+                'total' => 0,
+            ); // No search criteria
         }
         if ( $near_only ) {
             $select_parts['proximity_score'] = (string) apply_filters( 'htax_search_proximity_relevance', '0', $parsed_query['proximity'], 'pt.post_id' );
@@ -1493,7 +1525,10 @@ class HyperTaxonomy_Power_Search {
 
         // Build ORDER BY clause
         // Note: Since we use a subquery, column references in ORDER BY should use subquery aliases (not p.)
-        $orderby = isset( $config['orderby'] ) ? $config['orderby'] : array( 'relevance' => 'DESC', 'date' => 'DESC' );
+        $orderby = isset( $config['orderby'] ) ? $config['orderby'] : array(
+            'relevance' => 'DESC',
+            'date' => 'DESC',
+        );
 
         $order_parts = array();
         $first_dir   = null;
@@ -1524,7 +1559,7 @@ class HyperTaxonomy_Power_Search {
         if ( ! empty( $order_parts ) && ! isset( $orderby['ID'] ) ) {
             $order_parts[] = 'post_id ' . ( $first_dir ?? 'DESC' );
         }
-        $order_clause = ! empty( $order_parts ) ? implode( ', ', $order_parts ) : "relevance DESC, post_id DESC";
+        $order_clause = ! empty( $order_parts ) ? implode( ', ', $order_parts ) : 'relevance DESC, post_id DESC';
 
         // Pagination
         $posts_per_page = isset( $config['posts_per_page'] ) ? intval( $config['posts_per_page'] ) : 10;
@@ -1536,7 +1571,10 @@ class HyperTaxonomy_Power_Search {
         $effective_limit = $posts_per_page;
         if ( $max_results > 0 ) {
             if ( $offset >= $max_results ) {
-                return array( 'results' => array(), 'total' => 0 );
+                return array(
+                    'results' => array(),
+                    'total' => 0,
+                );
             }
             $effective_limit = min( $posts_per_page, $max_results - $offset );
         }
@@ -1545,8 +1583,8 @@ class HyperTaxonomy_Power_Search {
         // runs once globally.  For rare/no-match words both branches return 0 rows instantly.
         // For common words the FT scan materialises once, GROUP BY aggregates, then joins.
         $join_sql = implode( "\n                 ", $join_clauses );
-        $ptt = $wpdb->prefix . 'htax_post_text';
-        $sql = sprintf(
+        $ptt      = $wpdb->prefix . 'htax_post_text';
+        $sql      = sprintf(
             "SELECT scored.*,
                     %s AS relevance
              FROM (
@@ -1588,7 +1626,7 @@ class HyperTaxonomy_Power_Search {
         // Those parts contain %%s which became %s after sprintf.
         // Now we need to safely inject the actual search terms using wpdb->prepare()
         $prepared_ps_sql = $wpdb->prepare( $sql, ...$query_params );
-        $results = $wpdb->get_results( $prepared_ps_sql );
+        $results         = $wpdb->get_results( $prepared_ps_sql );
 
         // Check for database errors — check null return first since last_error is not always populated
         if ( null === $results || $wpdb->last_error ) {
@@ -1600,9 +1638,12 @@ class HyperTaxonomy_Power_Search {
             htax_log_error( 'PowerSearch query failed', array(
                 'error' => $error_msg,
                 'is_fulltext_index_missing' => $is_fulltext_error,
-                'suggestion' => $is_fulltext_error ? 'Try deactivating and reactivating the plugin to create FULLTEXT indexes' : 'Check database query syntax'
+                'suggestion' => $is_fulltext_error ? 'Try deactivating and reactivating the plugin to create FULLTEXT indexes' : 'Check database query syntax',
             ) );
-            return array( 'results' => array(), 'total' => 0 );
+            return array(
+                'results' => array(),
+                'total' => 0,
+            );
         }
 
         // Format results
@@ -1623,7 +1664,10 @@ class HyperTaxonomy_Power_Search {
 
         // Skip count when the caller doesn't need pagination totals.
         if ( $skip_count ) {
-            $result = array( 'results' => $formatted, 'total' => -1 );
+            $result = array(
+                'results' => $formatted,
+                'total' => -1,
+            );
             htax_set_transient( $cache_key, $result, 60 );
             return $result;
         }
@@ -1745,7 +1789,7 @@ class HyperTaxonomy_Power_Search {
                 // Branches A+B+C (or B+C when no exact IDs).
                 // MAX per (post, source_term) prevents double-counting across branches.
                 // text_weight stays dynamic; strength adds per-post centrality signal.
-                $subqueries[] = sprintf(
+                $subqueries[]   = sprintf(
                     "(SELECT post_id, source_term_id, MAX(score) AS score FROM (%s
                               SELECT hst.post_id, hst.source_term_id,
                                      MATCH(t.name) AGAINST(%%s IN BOOLEAN MODE) * %f * hst.strength AS score
@@ -1773,7 +1817,7 @@ class HyperTaxonomy_Power_Search {
                 $query_params[] = $query; // branch C: MATCH(tt.description) in WHERE
             } elseif ( $has_exact ) {
                 // Branches A+B: exact + name FULLTEXT, no description.
-                $subqueries[] = sprintf(
+                $subqueries[]   = sprintf(
                     "(SELECT post_id, source_term_id, MAX(score) AS score FROM (%s
                               SELECT hst.post_id, hst.source_term_id,
                                      MATCH(t.name) AGAINST(%%s IN BOOLEAN MODE) * %f * hst.strength AS score
@@ -1790,7 +1834,7 @@ class HyperTaxonomy_Power_Search {
                 $query_params[] = $query; // branch B: MATCH WHERE
             } else {
                 // Branch B only: name FULLTEXT, no description, no exact IDs.
-                $subqueries[] = sprintf(
+                $subqueries[]   = sprintf(
                     "(SELECT hst.post_id AS post_id, hst.source_term_id,
                              MAX(MATCH(t.name) AGAINST(%%s IN BOOLEAN MODE) * %f * hst.strength) AS score
                       FROM {$wpdb->terms} t
@@ -1924,7 +1968,6 @@ class HyperTaxonomy_Power_Search {
             $ft_val
         ) );
     }
-
 }
 
 // Initialize

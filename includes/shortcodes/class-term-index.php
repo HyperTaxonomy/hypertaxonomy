@@ -145,7 +145,7 @@ class HyperTaxonomy_Term_Index extends HyperTaxonomy_Term_Display_Base {
                 $all_terms,
                 $this->htax_atts['taxonomy']
             );
-            $output .= '<h3 class="htax-index-header">' . wp_kses_post( $header_text ) . '</h3>';
+            $output     .= '<h3 class="htax-index-header">' . wp_kses_post( $header_text ) . '</h3>';
         }
 
         // Add navigation at top if requested
@@ -229,7 +229,7 @@ class HyperTaxonomy_Term_Index extends HyperTaxonomy_Term_Display_Base {
         // Add letter header
         if ( $this->htax_atts['show_letter_headers'] === 'true' ) {
             $display_letter = $this->htax_atts['uppercase_letters'] === 'true' ? $letter : strtolower( $letter );
-            $output .= '<h3 class="htax-letter-header">' . esc_html( $display_letter ) . '</h3>';
+            $output        .= '<h3 class="htax-letter-header">' . esc_html( $display_letter ) . '</h3>';
         }
 
         // Render terms
@@ -240,21 +240,21 @@ class HyperTaxonomy_Term_Index extends HyperTaxonomy_Term_Display_Base {
             foreach ( $terms as $term ) {
                 if ( ! isset( $this->processed_terms[ $term->term_id ] ) ) {
                     $this->processed_terms[ $term->term_id ] = true;
-                    $output .= '<li>' . $this->render_term( $term ) . '</li>';
+                    $output                                 .= '<li>' . $this->render_term( $term ) . '</li>';
                 }
             }
             $output .= '</' . $tag . '>';
         } else {
-            $output .= '<div class="htax-letter-terms">';
+            $output   .= '<div class="htax-letter-terms">';
             $separator = wp_kses_post( $this->htax_atts['separator'] );
-            $first = true;
+            $first     = true;
             foreach ( $terms as $term ) {
                 if ( ! isset( $this->processed_terms[ $term->term_id ] ) ) {
                     $this->processed_terms[ $term->term_id ] = true;
                     if ( ! $first && ! empty( $separator ) ) {
                         $output .= $separator;
                     }
-                    $first = false;
+                    $first   = false;
                     $output .= $this->render_term( $term );
                 }
             }
@@ -276,15 +276,15 @@ class HyperTaxonomy_Term_Index extends HyperTaxonomy_Term_Display_Base {
 
         // Determine link behavior for redirects
         $link_attrs_result = $this->build_redirect_link_attributes( $term, $classes );
-        $link_tag = $link_attrs_result['link_tag'];
-        $link_href = $link_attrs_result['link_href'];
-        $link_attrs = $link_attrs_result['link_attrs'];
+        $link_tag          = $link_attrs_result['link_tag'];
+        $link_href         = $link_attrs_result['link_href'];
+        $link_attrs        = $link_attrs_result['link_attrs'];
 
         // Process prepend/append content
         $prepend_content = ! empty( $this->htax_atts['prepend'] )
             ? $this->process_placeholders( $this->htax_atts['prepend'], $term )
             : '';
-        $append_content = ! empty( $this->htax_atts['append'] )
+        $append_content  = ! empty( $this->htax_atts['append'] )
             ? $this->process_placeholders( $this->htax_atts['append'], $term )
             : '';
 
@@ -325,7 +325,6 @@ class HyperTaxonomy_Term_Index extends HyperTaxonomy_Term_Display_Base {
 
         return $output;
     }
-
 }
 
 // Initialize class

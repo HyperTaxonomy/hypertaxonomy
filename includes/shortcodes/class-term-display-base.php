@@ -50,7 +50,7 @@ abstract class HyperTaxonomy_Term_Display_Base extends HyperTaxonomy_Shortcode_B
      * 4. Exclude individual terms (final override)
      *
      * @param string $taxonomy Taxonomy name
-     * @param array $additional_args Additional arguments to merge with defaults
+     * @param array  $additional_args Additional arguments to merge with defaults
      * @return array Array of term objects
      */
     protected function get_terms( $taxonomy, $additional_args = array() ) {

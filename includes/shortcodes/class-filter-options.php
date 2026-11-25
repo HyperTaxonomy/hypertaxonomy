@@ -225,7 +225,7 @@ function htax_filter_options_shortcode( $atts, $content = '' ) {
     // Activate collector, run children, collect configs
     $GLOBALS['htax_filter_collector'] = array();
     do_shortcode( $content );
-    $raw_configs = $GLOBALS['htax_filter_collector'];
+    $raw_configs                      = $GLOBALS['htax_filter_collector'];
     $GLOBALS['htax_filter_collector'] = null;
 
     if ( empty( $raw_configs ) ) {
@@ -237,11 +237,11 @@ function htax_filter_options_shortcode( $atts, $content = '' ) {
 
     // Resolve configs (term pools, initial selections, author pool)
     $archive_exclude_term = htax_get_archive_exclude_term();
-    $configs = htax_resolve_filter_configs( $raw_configs, $filter_state, $archive_exclude_term );
+    $configs              = htax_resolve_filter_configs( $raw_configs, $filter_state, $archive_exclude_term );
 
-    $label           = sanitize_text_field( $atts['label'] );
-    $text_collapsed  = ! empty( $atts['text_collapsed'] ) ? sanitize_text_field( $atts['text_collapsed'] ) : $label;
-    $text_expanded   = ! empty( $atts['text_expanded'] )  ? sanitize_text_field( $atts['text_expanded'] )  : $label;
+    $label          = sanitize_text_field( $atts['label'] );
+    $text_collapsed = ! empty( $atts['text_collapsed'] ) ? sanitize_text_field( $atts['text_collapsed'] ) : $label;
+    $text_expanded  = ! empty( $atts['text_expanded'] ) ? sanitize_text_field( $atts['text_expanded'] ) : $label;
 
     return htax_render_filter_options( $configs, array(
         'action'         => $atts['action'],
@@ -265,11 +265,11 @@ add_shortcode( 'ht_filter_options', 'htax_filter_options_shortcode' );
  * - Assigns default-primary to the first terms filter if none has primary=true.
  * - Fetches author pool for author filters.
  *
- * @param  array      $raw_configs       Collected raw configs from child shortcodes.
- * @param  array      $filter_state      Current filter state (from GET or AJAX).
- * @param  int|null   $archive_exclude_term  Term ID to exclude from pools (archive context) or null.
- * @param  array      $primary_seed_ids  Term IDs to seed into the primary filter (simplified form).
- * @param  string     $post_type         Post type(s) the author filter's pool comes from; empty = every indexed type.
+ * @param  array    $raw_configs       Collected raw configs from child shortcodes.
+ * @param  array    $filter_state      Current filter state (from GET or AJAX).
+ * @param  int|null $archive_exclude_term  Term ID to exclude from pools (archive context) or null.
+ * @param  array    $primary_seed_ids  Term IDs to seed into the primary filter (simplified form).
+ * @param  string   $post_type         Post type(s) the author filter's pool comes from; empty = every indexed type.
  * @return array      Resolved configs.
  */
 function htax_resolve_filter_configs( array $raw_configs, array $filter_state, $archive_exclude_term = null, array $primary_seed_ids = array(), string $post_type = '' ) {
@@ -347,7 +347,7 @@ function htax_resolve_filter_configs( array $raw_configs, array $filter_state, $
                     'number'                 => 500,
                     'update_term_meta_cache' => false,
                 ) );
-                $pool_ids = is_wp_error( $all_terms ) ? array() : array_map( 'intval', $all_terms );
+                $pool_ids  = is_wp_error( $all_terms ) ? array() : array_map( 'intval', $all_terms );
             }
 
             // Fetch WP_Term objects for the pool
@@ -393,9 +393,9 @@ function htax_resolve_filter_configs( array $raw_configs, array $filter_state, $
             );
 
         } elseif ( 'date_published' === $raw['type'] || 'date_modified' === $raw['type'] ) {
-            $is_modified   = ( 'date_modified' === $raw['type'] );
-            $from_key      = $is_modified ? 'date_modified_from' : 'date_from';
-            $to_key        = $is_modified ? 'date_modified_to'   : 'date_to';
+            $is_modified = ( 'date_modified' === $raw['type'] );
+            $from_key    = $is_modified ? 'date_modified_from' : 'date_from';
+            $to_key      = $is_modified ? 'date_modified_to' : 'date_to';
 
             $configs[] = array(
                 'type'      => $raw['type'],
@@ -404,7 +404,7 @@ function htax_resolve_filter_configs( array $raw_configs, array $filter_state, $
                 'from_key'  => $from_key,
                 'to_key'    => $to_key,
                 'from_val'  => isset( $filter_state[ $from_key ] ) ? $filter_state[ $from_key ] : '',
-                'to_val'    => isset( $filter_state[ $to_key ] )   ? $filter_state[ $to_key ]   : '',
+                'to_val'    => isset( $filter_state[ $to_key ] ) ? $filter_state[ $to_key ] : '',
             );
 
         } elseif ( 'author' === $raw['type'] ) {
@@ -443,8 +443,8 @@ function htax_resolve_filter_configs( array $raw_configs, array $filter_state, $
  * @return int[] Resolved term IDs.
  */
 function htax_resolve_filter_term_ids( array $raw, string $taxonomy, string $include_groups, string $exclude_groups, string $include_terms, string $exclude_terms ): array {
-    $include_ids = array();
-    $exclude_ids = array();
+    $include_ids       = array();
+    $exclude_ids       = array();
     $include_specified = false;
 
     if ( ! empty( $raw[ $include_groups ] ) ) {
@@ -473,7 +473,7 @@ function htax_resolve_filter_term_ids( array $raw, string $taxonomy, string $inc
     }
 
     if ( ! empty( $raw[ $exclude_terms ] ) ) {
-        $excl = array_map( 'intval', htax_parse_term_ids( $raw[ $exclude_terms ], $taxonomy ) );
+        $excl        = array_map( 'intval', htax_parse_term_ids( $raw[ $exclude_terms ], $taxonomy ) );
         $exclude_ids = array_merge( $exclude_ids, $excl );
     }
 
@@ -529,7 +529,7 @@ function htax_get_author_pool( string $post_type = '' ): array {
     ) );
 
     $authors = array();
-    foreach ($users as $user) {
+    foreach ( $users as $user ) {
         $authors[] = array(
             'id'   => (int) $user->ID,
             'name' => $user->display_name,
@@ -622,9 +622,9 @@ function htax_parse_filter_state_ajax( $raw ): array {
  * @return array             Sanitized filter state.
  */
 function htax_parse_filter_state_entries( array $raw, bool $structured ): array {
-    $state    = htax_empty_filter_state();
-    $dates    = array( 'date_from', 'date_to', 'date_modified_from', 'date_modified_to' );
-    $id_list  = static function ( $value ) use ( $structured ): array {
+    $state   = htax_empty_filter_state();
+    $dates   = array( 'date_from', 'date_to', 'date_modified_from', 'date_modified_to' );
+    $id_list = static function ( $value ) use ( $structured ): array {
         $ids = $structured ? (array) $value : explode( ',', (string) $value );
         return array_values( array_filter( array_map( 'intval', $ids ) ) );
     };
@@ -724,9 +724,9 @@ function htax_filter_state_is_active( array $state ): bool {
  * Empty term selections, empty date ranges, and empty author selections produce
  * no clause (no-op).
  *
- * @param  array  $filter_state  Sanitized filter state from htax_parse_filter_state_*.
- * @param  array  $filter_configs Resolved configs (from htax_resolve_filter_configs).
- *                                Used to look up match types for term filters.
+ * @param  array $filter_state  Sanitized filter state from htax_parse_filter_state_*.
+ * @param  array $filter_configs Resolved configs (from htax_resolve_filter_configs).
+ *                               Used to look up match types for term filters.
  * @return string SQL clause fragments (may be empty string).
  */
 function htax_build_filter_sql( array $filter_state, array $filter_configs = array() ): string {
@@ -796,18 +796,18 @@ function htax_build_filter_sql( array $filter_state, array $filter_configs = arr
 
     // --- Date published ---
     if ( $filter_state['date_from'] ) {
-        $clauses[] = $wpdb->prepare( "AND pt.post_date_gmt >= %s", $filter_state['date_from'] . ' 00:00:00' );
+        $clauses[] = $wpdb->prepare( 'AND pt.post_date_gmt >= %s', $filter_state['date_from'] . ' 00:00:00' );
     }
     if ( $filter_state['date_to'] ) {
-        $clauses[] = $wpdb->prepare( "AND pt.post_date_gmt <= %s", $filter_state['date_to'] . ' 23:59:59' );
+        $clauses[] = $wpdb->prepare( 'AND pt.post_date_gmt <= %s', $filter_state['date_to'] . ' 23:59:59' );
     }
 
     // --- Date modified ---
     if ( $filter_state['date_modified_from'] ) {
-        $clauses[] = $wpdb->prepare( "AND pt.post_modified_gmt >= %s", $filter_state['date_modified_from'] . ' 00:00:00' );
+        $clauses[] = $wpdb->prepare( 'AND pt.post_modified_gmt >= %s', $filter_state['date_modified_from'] . ' 00:00:00' );
     }
     if ( $filter_state['date_modified_to'] ) {
-        $clauses[] = $wpdb->prepare( "AND pt.post_modified_gmt <= %s", $filter_state['date_modified_to'] . ' 23:59:59' );
+        $clauses[] = $wpdb->prepare( 'AND pt.post_modified_gmt <= %s', $filter_state['date_modified_to'] . ' 23:59:59' );
     }
 
     // --- Author ---
@@ -844,7 +844,7 @@ function htax_build_archive_filter_mods( array $filter_state ): array {
         if ( ! taxonomy_exists( $taxonomy ) || empty( $term_ids ) ) {
             continue;
         }
-        $match = isset( $filter_state['term_match'][ $taxonomy ] )
+        $match    = isset( $filter_state['term_match'][ $taxonomy ] )
             ? $filter_state['term_match'][ $taxonomy ] : 'any';
         $operator = 'IN';
         if ( 'all' === $match ) {
@@ -1084,15 +1084,15 @@ function htax_parse_inline_filters( $filters_string, $filter_options_string = ''
 /**
  * Render a filter options panel.
  *
- * @param  array  $configs      Resolved filter configs (from htax_resolve_filter_configs).
- * @param  array  $args {
+ * @param  array $configs      Resolved filter configs (from htax_resolve_filter_configs).
+ * @param  array $args {
  *   @type string $action          'navigate' | 'submit' | ''. Default: 'navigate'.
  *   @type string $state           'expanded' | 'collapsed'. Default: 'expanded'.
  *   @type string $text_collapsed  Toggle label when collapsed. Default: 'Filter'.
  *   @type string $text_expanded   Toggle label when expanded. Default: 'Filter'.
  *   @type string $class           Extra CSS classes.
  * }
- * @param  array  $filter_state Current filter state (used to determine if clear button shows).
+ * @param  array $filter_state Current filter state (used to determine if clear button shows).
  * @return string HTML output.
  */
 function htax_render_filter_options( array $configs, array $args = array(), array $filter_state = array() ): string {
@@ -1200,16 +1200,16 @@ function htax_render_filter_group_terms( array $cfg, string $action ): string {
         $out .= '<div class="htax-filter-pills">';
         foreach ( $cfg['pool_terms'] as $term ) {
             $is_active = in_array( (int) $term->term_id, $current_ids, true );
-            $out .= '<button type="button" class="htax-filter-pill' . ( $is_active ? ' htax-active' : '' ) . '"';
-            $out .= ' data-term-id="' . (int) $term->term_id . '">';
-            $out .= esc_html( $term->name );
-            $out .= '</button>';
+            $out      .= '<button type="button" class="htax-filter-pill' . ( $is_active ? ' htax-active' : '' ) . '"';
+            $out      .= ' data-term-id="' . (int) $term->term_id . '">';
+            $out      .= esc_html( $term->name );
+            $out      .= '</button>';
         }
         $out .= '</div>';
 
         // Hidden input for navigate/submit action
         if ( $action ) {
-            $val = implode( ',', $current_ids );
+            $val  = implode( ',', $current_ids );
             $out .= '<input type="hidden" class="htax-filter-value-input"';
             $out .= ' name="htax_filter[' . $taxonomy . ']"';
             $out .= ' value="' . esc_attr( $val ) . '">';
@@ -1220,14 +1220,14 @@ function htax_render_filter_group_terms( array $cfg, string $action ): string {
         foreach ( $cfg['pool_terms'] as $term ) {
             $is_checked = in_array( (int) $term->term_id, $current_ids, true );
             $input_name = $action ? ' name="htax_filter[' . $taxonomy . '][]"' : '';
-            $out .= '<label class="htax-filter-checklist-item">';
-            $out .= '<input type="checkbox" class="htax-filter-checkbox"';
-            $out .= ' value="' . (int) $term->term_id . '"';
-            $out .= $input_name;
-            $out .= $is_checked ? ' checked' : '';
-            $out .= '>';
-            $out .= '<span class="htax-filter-term-name">' . esc_html( $term->name ) . '</span>';
-            $out .= '</label>';
+            $out       .= '<label class="htax-filter-checklist-item">';
+            $out       .= '<input type="checkbox" class="htax-filter-checkbox"';
+            $out       .= ' value="' . (int) $term->term_id . '"';
+            $out       .= $input_name;
+            $out       .= $is_checked ? ' checked' : '';
+            $out       .= '>';
+            $out       .= '<span class="htax-filter-term-name">' . esc_html( $term->name ) . '</span>';
+            $out       .= '</label>';
         }
         $out .= '</div>';
     }
@@ -1242,9 +1242,9 @@ function htax_render_filter_group_terms( array $cfg, string $action ): string {
  */
 function htax_render_filter_group_date( array $cfg, string $action ): string {
     $from_key = $cfg['from_key'];
-    $to_key      = $cfg['to_key'];
-    $from_val    = esc_attr( $cfg['from_val'] );
-    $to_val      = esc_attr( $cfg['to_val'] );
+    $to_key   = $cfg['to_key'];
+    $from_val = esc_attr( $cfg['from_val'] );
+    $to_val   = esc_attr( $cfg['to_val'] );
 
     $out  = '<div class="htax-filter-group htax-filter-date-group"';
     $out .= ' data-type="' . esc_attr( $cfg['type'] ) . '"';
@@ -1255,22 +1255,22 @@ function htax_render_filter_group_date( array $cfg, string $action ): string {
 
     if ( 'single' === $cfg['date_type'] ) {
         $name_attr = $action ? ' name="htax_filter[' . esc_attr( $from_key ) . ']"' : '';
-        $out .= '<input type="date" class="htax-filter-date-from"' . $name_attr;
-        $out .= ' id="htax-filter-date-' . esc_attr( $from_key ) . '"';
-        $out .= ' aria-label="' . esc_attr( $cfg['label'] ) . '"';
-        $out .= ' value="' . $from_val . '">';
+        $out      .= '<input type="date" class="htax-filter-date-from"' . $name_attr;
+        $out      .= ' id="htax-filter-date-' . esc_attr( $from_key ) . '"';
+        $out      .= ' aria-label="' . esc_attr( $cfg['label'] ) . '"';
+        $out      .= ' value="' . $from_val . '">';
     } else {
         $from_name = $action ? ' name="htax_filter[' . esc_attr( $from_key ) . ']"' : '';
         $to_name   = $action ? ' name="htax_filter[' . esc_attr( $to_key ) . ']"' : '';
-        $out .= '<input type="date" class="htax-filter-date-from"' . $from_name;
-        $out .= ' id="htax-filter-date-from-' . esc_attr( $from_key ) . '"';
-        $out .= ' aria-label="' . esc_attr( sprintf( '%s \u2014 %s', $cfg['label'], __( 'From', 'hypertaxonomy' ) ) ) . '"';
-        $out .= ' value="' . $from_val . '" placeholder="' . esc_attr__( 'From', 'hypertaxonomy' ) . '">';
-        $out .= '<span class="htax-filter-date-sep">' . esc_html__( '–', 'hypertaxonomy' ) . '</span>';
-        $out .= '<input type="date" class="htax-filter-date-to"' . $to_name;
-        $out .= ' id="htax-filter-date-to-' . esc_attr( $to_key ) . '"';
-        $out .= ' aria-label="' . esc_attr( sprintf( '%s \u2014 %s', $cfg['label'], __( 'To', 'hypertaxonomy' ) ) ) . '"';
-        $out .= ' value="' . $to_val . '" placeholder="' . esc_attr__( 'To', 'hypertaxonomy' ) . '">';
+        $out      .= '<input type="date" class="htax-filter-date-from"' . $from_name;
+        $out      .= ' id="htax-filter-date-from-' . esc_attr( $from_key ) . '"';
+        $out      .= ' aria-label="' . esc_attr( sprintf( '%s \u2014 %s', $cfg['label'], __( 'From', 'hypertaxonomy' ) ) ) . '"';
+        $out      .= ' value="' . $from_val . '" placeholder="' . esc_attr__( 'From', 'hypertaxonomy' ) . '">';
+        $out      .= '<span class="htax-filter-date-sep">' . esc_html__( '–', 'hypertaxonomy' ) . '</span>';
+        $out      .= '<input type="date" class="htax-filter-date-to"' . $to_name;
+        $out      .= ' id="htax-filter-date-to-' . esc_attr( $to_key ) . '"';
+        $out      .= ' aria-label="' . esc_attr( sprintf( '%s \u2014 %s', $cfg['label'], __( 'To', 'hypertaxonomy' ) ) ) . '"';
+        $out      .= ' value="' . $to_val . '" placeholder="' . esc_attr__( 'To', 'hypertaxonomy' ) . '">';
     }
 
     $out .= '</div>';
@@ -1296,14 +1296,14 @@ function htax_render_filter_group_author( array $cfg, string $action ): string {
     foreach ( $cfg['pool_authors'] as $author ) {
         $is_checked = in_array( (int) $author['id'], $current_authors, true );
         $input_name = $action ? ' name="htax_filter[author][]"' : '';
-        $out .= '<label class="htax-filter-checklist-item">';
-        $out .= '<input type="checkbox" class="htax-filter-checkbox"';
-        $out .= ' value="' . (int) $author['id'] . '"';
-        $out .= $input_name;
-        $out .= $is_checked ? ' checked' : '';
-        $out .= '>';
-        $out .= '<span class="htax-filter-author-name">' . esc_html( $author['name'] ) . '</span>';
-        $out .= '</label>';
+        $out       .= '<label class="htax-filter-checklist-item">';
+        $out       .= '<input type="checkbox" class="htax-filter-checkbox"';
+        $out       .= ' value="' . (int) $author['id'] . '"';
+        $out       .= $input_name;
+        $out       .= $is_checked ? ' checked' : '';
+        $out       .= '>';
+        $out       .= '<span class="htax-filter-author-name">' . esc_html( $author['name'] ) . '</span>';
+        $out       .= '</label>';
     }
 
     $out .= '</div>';
@@ -1324,7 +1324,7 @@ function htax_filter_state_to_js( array $configs, bool $initial ): array {
 
     foreach ( $configs as $cfg ) {
         if ( 'terms' === $cfg['type'] ) {
-            $ids = $initial ? $cfg['initial_ids'] : $cfg['current_ids'];
+            $ids                       = $initial ? $cfg['initial_ids'] : $cfg['current_ids'];
             $state[ $cfg['taxonomy'] ] = array(
                 'match' => $cfg['match'],
                 'terms' => array_values( array_map( 'intval', (array) $ids ) ),

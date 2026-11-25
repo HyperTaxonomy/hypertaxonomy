@@ -17,12 +17,12 @@ class HyperTaxonomy_Search_Widget {
      */
     private static $instance = null;
 
-    private static $instance_counter = 0;
-    private static $forms = array();
+    private static $instance_counter   = 0;
+    private static $forms              = array();
     private static $current_controller = null;
-    private static $current_option = null;
-    private static $current_group = null;
-    private static $current_form_id = null;
+    private static $current_option     = null;
+    private static $current_group      = null;
+    private static $current_form_id    = null;
 
     /** @var bool Whether assets should be printed in the footer via print_deferred_assets(). */
     private $should_load_assets = false;
@@ -46,10 +46,10 @@ class HyperTaxonomy_Search_Widget {
     private function __construct() {
         // Register shortcodes
         add_shortcode( 'ht_search_form', array( $this, 'form_shortcode' ) );
-        add_shortcode( 'ht_pills_field',     array( $this, 'pills_field_shortcode' ) );
+        add_shortcode( 'ht_pills_field', array( $this, 'pills_field_shortcode' ) );
         add_shortcode( 'ht_checklist_field', array( $this, 'checklist_field_shortcode' ) );
-        add_shortcode( 'ht_hidden_field',    array( $this, 'hidden_field_shortcode' ) );
-        add_shortcode( 'ht_text_field',      array( $this, 'text_field_shortcode' ) );
+        add_shortcode( 'ht_hidden_field', array( $this, 'hidden_field_shortcode' ) );
+        add_shortcode( 'ht_text_field', array( $this, 'text_field_shortcode' ) );
         add_shortcode( 'ht_field_group', array( $this, 'field_group_shortcode' ) );
         add_shortcode( 'ht_search_controller', array( $this, 'controller_shortcode' ) );
         add_shortcode( 'ht_search_option', array( $this, 'option_shortcode' ) );
@@ -57,7 +57,7 @@ class HyperTaxonomy_Search_Widget {
         add_shortcode( 'ht_search_submit', array( $this, 'submit_shortcode' ) );
         add_shortcode( 'ht_search_toggle', array( $this, 'toggle_shortcode' ) );
         add_shortcode( 'ht_search_results', array( $this, 'results_shortcode' ) );
-        
+
         // Frontend assets
         add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_frontend_scripts' ) );
         add_action( 'wp_footer', array( $this, 'print_deferred_assets' ), 999 );
@@ -92,7 +92,7 @@ class HyperTaxonomy_Search_Widget {
         // Determine if AJAX mode
         // ajax="" (empty) → POST submission
         // ajax="results-container-id" → AJAX with specific container
-        $is_ajax = ! empty( $atts['ajax'] );
+        $is_ajax    = ! empty( $atts['ajax'] );
         $results_id = $is_ajax ? $atts['ajax'] : '';
 
         // Ensure assets are enqueued when shortcode is rendered
@@ -110,13 +110,13 @@ class HyperTaxonomy_Search_Widget {
             'controllers' => array(),
         );
 
-        $classes = array( 'htax-search-form' );
+        $classes   = array( 'htax-search-form' );
         $classes[] = 'htax-state-' . $atts['state'];
         if ( ! empty( $atts['class'] ) ) {
             $classes[] = $atts['class'];
         }
 
-        $output = '<form class="' . esc_attr( implode( ' ', $classes ) ) . '" ';
+        $output  = '<form class="' . esc_attr( implode( ' ', $classes ) ) . '" ';
         $output .= 'id="' . esc_attr( $atts['id'] ) . '" ';
         $output .= 'data-state="' . esc_attr( $atts['state'] ) . '" ';
         $output .= 'data-ajax="' . esc_attr( $is_ajax ? 'true' : 'false' ) . '" ';
@@ -151,9 +151,9 @@ class HyperTaxonomy_Search_Widget {
             // Carry the submitted UI state forward, as validated by get_saved_ui_state().
             $ui_state = $this->get_saved_ui_state();
             $output  .= '<input type="hidden" name="htax_ui_state" value="' . esc_attr( empty( $ui_state ) ? '' : (string) wp_json_encode( $ui_state ) ) . '" />';
-            $output .= '<input type="hidden" name="htax_orderby" value="' . esc_attr( $atts['orderby'] ) . '" />';
-            $output .= '<input type="hidden" name="htax_posts_per_page" value="' . max( 1, intval( $atts['posts_per_page'] ) ) . '" />';
-            $output .= '<input type="hidden" name="htax_max_results" value="' . max( 0, intval( $atts['max_results'] ) ) . '" />';
+            $output  .= '<input type="hidden" name="htax_orderby" value="' . esc_attr( $atts['orderby'] ) . '" />';
+            $output  .= '<input type="hidden" name="htax_posts_per_page" value="' . max( 1, intval( $atts['posts_per_page'] ) ) . '" />';
+            $output  .= '<input type="hidden" name="htax_max_results" value="' . max( 0, intval( $atts['max_results'] ) ) . '" />';
             if ( '' !== $atts['min_score'] ) {
                 $output .= '<input type="hidden" name="htax_min_score" value="' . esc_attr( $atts['min_score'] ) . '" />';
             }
@@ -180,7 +180,7 @@ class HyperTaxonomy_Search_Widget {
 
         return $output;
     }
-    
+
     /**
      * Shortcode defaults shared by the pills and checklist fields.
      */
@@ -237,7 +237,7 @@ class HyperTaxonomy_Search_Widget {
     private function fold_group_selection_atts( array $atts ): array {
         // Terms named outright join the option pool; terms folded in from groups don't.
         $atts['_explicit_add_terms'] = $atts['add_terms'] ?? '';
-        $term_mode = 'term' === ( $atts['taxonomy_type'] ?? 'post' );
+        $term_mode                   = 'term' === ( $atts['taxonomy_type'] ?? 'post' );
         foreach ( array( 'add', 'remove' ) as $op ) {
             if ( empty( $atts[ $op . '_groups' ] ) ) {
                 continue;
@@ -303,7 +303,7 @@ class HyperTaxonomy_Search_Widget {
         $actions      = self::$forms[ $form_id ]['group_actions'] ?? array();
         $term_actions = self::$forms[ $form_id ]['term_actions'] ?? array();
         $fields       = self::$forms[ $form_id ]['fields'] ?? array();
-        $map     = array();
+        $map          = array();
 
         // Fields naming individual terms need those terms resolved up front too.
         $named_fields = array_filter(
@@ -328,14 +328,17 @@ class HyperTaxonomy_Search_Widget {
                 array_values( array_map( 'intval', $group_ids ) ),
                 $term_actions[ $target ] ?? array(),
             ) ) ) . ( htax_can_see_hidden_terms( $field['taxonomy'] ?? '' ) ? 'h' : '' );
-            $entry = htax_get_transient( $cache_key );
+            $entry     = htax_get_transient( $cache_key );
             if ( is_array( $entry ) ) {
                 $map[ $target ] = $this->add_initial_selection( $entry, $field, $form_id );
                 continue;
             }
 
             $term_mode = 'term' === ( $field['taxonomy_type'] ?? 'post' );
-            $entry     = array( 'groups' => array(), 'terms' => array() );
+            $entry     = array(
+                'groups' => array(),
+                'terms' => array(),
+            );
             $all_ids   = array();
             foreach ( array_unique( array_map( 'intval', $group_ids ) ) as $gid ) {
                 $ids = $term_mode
@@ -352,12 +355,12 @@ class HyperTaxonomy_Search_Widget {
 
             $excluded = ! empty( $field['exclude_term_options'] ) ? htax_parse_term_ids( $field['exclude_term_options'], $field['taxonomy'] ) : array();
             // Fields register either before or after folding groups in; before, add_terms is still explicit.
-            $own_add  = $field['_explicit_add_terms'] ?? $field['add_terms'] ?? '';
-            $implied  = array_diff(
+            $own_add = $field['_explicit_add_terms'] ?? $field['add_terms'] ?? '';
+            $implied = array_diff(
                 ! empty( $own_add ) ? array_map( 'intval', htax_parse_term_ids( $own_add, $field['taxonomy'] ) ) : array(),
                 array_map( 'intval', $excluded )
             );
-            $named    = array_merge(
+            $named   = array_merge(
                 $implied,
                 $term_actions[ $target ] ?? array(),
                 ( 'pills' === $field['type'] && ! empty( $field['include_term_options'] ) ) ? htax_parse_term_ids( $field['include_term_options'], $field['taxonomy'] ) : array()
@@ -365,7 +368,7 @@ class HyperTaxonomy_Search_Widget {
             if ( 'checklist' === $field['type'] ) {
                 $named = array_diff( array_map( 'intval', $named ), array_map( 'intval', $excluded ) );
             }
-            $all_ids = array_merge( $all_ids, htax_get_visible_term_ids( array_map( 'intval', array_values( $named ) ) ) );
+            $all_ids              = array_merge( $all_ids, htax_get_visible_term_ids( array_map( 'intval', array_values( $named ) ) ) );
             $entry['check_terms'] = ! empty( $term_actions[ $target ] );
 
             if ( $all_ids ) {
@@ -432,7 +435,7 @@ class HyperTaxonomy_Search_Widget {
      * Pills field shortcode [ht_pills_field]
      */
     public function pills_field_shortcode( $atts ) {
-        $defaults = array_merge( $this->term_options_field_defaults(), array(
+        $defaults     = array_merge( $this->term_options_field_defaults(), array(
             'prefetch'         => 'true',
             'suggest_on_focus' => 'true',
         ) );
@@ -447,7 +450,7 @@ class HyperTaxonomy_Search_Widget {
      * Checklist field shortcode [ht_checklist_field]
      */
     public function checklist_field_shortcode( $atts ) {
-        $defaults = array_merge( $this->term_options_field_defaults(), array(
+        $defaults     = array_merge( $this->term_options_field_defaults(), array(
             'hierarchical' => 'true',
             'max_depth'    => -1,
         ) );
@@ -462,7 +465,7 @@ class HyperTaxonomy_Search_Widget {
      * Hidden field shortcode [ht_hidden_field]
      */
     public function hidden_field_shortcode( $atts ) {
-        $defaults = array(
+        $defaults     = array(
             'id'                         => '',
             'name'                       => '',
             'taxonomy'                   => 'post_tag',
@@ -505,9 +508,9 @@ class HyperTaxonomy_Search_Widget {
             $atts['remove_groups'] = implode( ',', array_unique( array_merge( $existing, $desc_ids ) ) );
         }
         if ( ! empty( $atts['exclude_descendant_options'] ) ) {
-            $branch_ids                  = htax_parse_term_ids( $atts['exclude_descendant_options'], 'group' );
-            $desc_ids                    = array_values( array_diff( htax_get_group_hierarchy( $branch_ids ), $branch_ids ) );
-            $existing                    = ! empty( $atts['exclude_group_options'] ) ? htax_parse_term_ids( $atts['exclude_group_options'], 'group' ) : array();
+            $branch_ids                    = htax_parse_term_ids( $atts['exclude_descendant_options'], 'group' );
+            $desc_ids                      = array_values( array_diff( htax_get_group_hierarchy( $branch_ids ), $branch_ids ) );
+            $existing                      = ! empty( $atts['exclude_group_options'] ) ? htax_parse_term_ids( $atts['exclude_group_options'], 'group' ) : array();
             $atts['exclude_group_options'] = implode( ',', array_unique( array_merge( $existing, $desc_ids ) ) );
         }
 
@@ -546,9 +549,9 @@ class HyperTaxonomy_Search_Widget {
             }
         }
 
-        $atts['_group_ids']          = $pool_group_ids;
-        $atts['_groups_map']         = $groups_map;
-        $atts['_include_term_ids']   = ! empty( $atts['include_term_options'] )
+        $atts['_group_ids']        = $pool_group_ids;
+        $atts['_groups_map']       = $groups_map;
+        $atts['_include_term_ids'] = ! empty( $atts['include_term_options'] )
             ? htax_parse_term_ids( $atts['include_term_options'], $atts['taxonomy'] )
             : array();
 
@@ -559,7 +562,7 @@ class HyperTaxonomy_Search_Widget {
      * Text search field shortcode [ht_text_field]
      */
     public function text_field_shortcode( $atts ) {
-        $defaults = array(
+        $defaults     = array(
             'id'            => '',
             'name'          => '',
             'label'         => '',
@@ -606,10 +609,10 @@ class HyperTaxonomy_Search_Widget {
         }
 
         // Set current group context for nested controllers/fields
-        $previous_group = self::$current_group;
+        $previous_group      = self::$current_group;
         self::$current_group = ! empty( $atts['name'] ) ? $atts['name'] : null;
 
-        $output = '<div class="' . esc_attr( implode( ' ', $classes ) ) . '" ';
+        $output  = '<div class="' . esc_attr( implode( ' ', $classes ) ) . '" ';
         $output .= 'data-group-relation="' . esc_attr( $atts['relation'] ) . '" ';
         if ( ! empty( $atts['name'] ) ) {
             $output .= 'data-group-name="' . esc_attr( $atts['name'] ) . '" ';
@@ -649,8 +652,8 @@ class HyperTaxonomy_Search_Widget {
             'class' => '',
             'inline' => 'false',
         );
-        
-        $atts = shortcode_atts( $defaults, $atts );
+
+        $atts              = shortcode_atts( $defaults, $atts );
         $atts['show_when'] = $this->get_saved_show_when( 'controller', $atts['name'], $atts['show_when'] );
         $atts['enabled']   = $this->get_saved_enabled( 'controller', $atts['name'], $atts['enabled'] );
 
@@ -658,13 +661,13 @@ class HyperTaxonomy_Search_Widget {
         if ( empty( $atts['id'] ) ) {
             $atts['id'] = 'htax-controller-' . sanitize_key( $atts['name'] ) . '-' . self::$instance_counter;
         }
-        
+
         // Store controller configuration
         $form_id = $this->get_current_form_id();
         if ( $form_id ) {
             self::$forms[ $form_id ]['controllers'][ $atts['name'] ] = $atts;
         }
-        
+
         // Handle link and button types differently - just wrap the content
         if ( 'link' === $atts['type'] ) {
             return $this->render_wrapped_controller( $atts, $content, 'link' );
@@ -672,18 +675,18 @@ class HyperTaxonomy_Search_Widget {
         if ( 'button' === $atts['type'] ) {
             return $this->render_wrapped_controller( $atts, $content, 'button' );
         }
-        
+
         // For other types, process nested options
         self::$current_controller = array(
             'atts' => $atts,
-            'options' => array()
+            'options' => array(),
         );
-        
+
         // Process nested shortcodes (htax_search_option)
         if ( ! empty( $content ) ) {
             do_shortcode( $content );
         }
-        
+
         // Build output based on type with collected options
         $output = '';
         switch ( $atts['type'] ) {
@@ -698,13 +701,13 @@ class HyperTaxonomy_Search_Widget {
                 $output = $this->render_dropdown_controller( $atts, self::$current_controller['options'] );
                 break;
         }
-        
+
         // Clear controller context
         self::$current_controller = null;
-        
+
         return $output;
     }
-    
+
     /**
      * Controller option shortcode
      */
@@ -712,13 +715,13 @@ class HyperTaxonomy_Search_Widget {
         if ( ! self::$current_controller ) {
             return '<!-- htax_search_option must be inside htax_search_controller -->';
         }
-        
+
         $defaults = array(
             'value' => '',
             'label' => '',
             'default' => 'false',
         );
-        
+
         $atts = shortcode_atts( $defaults, $atts );
 
         if ( empty( $atts['value'] ) && ! empty( $atts['label'] ) ) {
@@ -730,27 +733,27 @@ class HyperTaxonomy_Search_Widget {
             'value' => $atts['value'],
             'label' => $atts['label'],
             'default' => 'true' === $atts['default'],
-            'actions' => array()
+            'actions' => array(),
         );
-        
+
         // Set current option context for nested actions
         self::$current_option = &$option;
-        
+
         // Process nested action shortcodes
         if ( ! empty( $content ) ) {
             do_shortcode( $content );
         }
-        
+
         // Add option to current controller
         self::$current_controller['options'][] = $option;
-        
+
         // Clear option context
         self::$current_option = null;
-        
+
         // No output - data is collected for parent controller
         return '';
     }
-    
+
     /**
      * Option action shortcode
      */
@@ -758,7 +761,7 @@ class HyperTaxonomy_Search_Widget {
         if ( ! self::$current_option ) {
             return '<!-- htax_option_action must be inside htax_search_option -->';
         }
-        
+
         $defaults = array(
             'type'              => '', // Multiple types - see validation below
             'target'            => '', // Target field or controller name
@@ -767,41 +770,48 @@ class HyperTaxonomy_Search_Widget {
             'value'             => '', // For set_min_items, set_max_items, set_show_when
             'not_found_message' => '', // Shown on the controller when requested terms are absent from the option pool
         );
-        
+
         $atts = shortcode_atts( $defaults, $atts );
-        
+
         // Validate action type
         $valid_types = array(
             // Option pool actions
-            'include_term_options', 'include_group_options',
-            'exclude_term_options', 'exclude_group_options',
+            'include_term_options',
+            'include_group_options',
+            'exclude_term_options',
+            'exclude_group_options',
             // Selection actions
-            'add_terms', 'add_groups',
-            'remove_terms', 'remove_groups',
-            'add_descendants', 'remove_descendants',
+            'add_terms',
+            'add_groups',
+            'remove_terms',
+            'remove_groups',
+            'add_descendants',
+            'remove_descendants',
             // Constraint actions
-            'set_min_items', 'set_max_items',
+            'set_min_items',
+            'set_max_items',
             // Visibility actions
             'set_show_when', // Sets to: always, expanded, collapsed, never
-            'enable', 'disable',
+            'enable',
+            'disable',
             // Clear/Reset actions
             'clear',          // Clear current selections (text, pills, checkboxes, hidden)
             'clearOptions',   // Remove all options from pills/checklist
             'resetOptions',   // Reset options to field's initial defaults
             'reset',          // Reset selection to default AND reset options (for fields) OR reset to default state (for controllers)
-            'resetAll'        // Reset all controllers and fields to their defaults (no target needed)
+            'resetAll',        // Reset all controllers and fields to their defaults (no target needed)
         );
-        
+
         if ( ! in_array( $atts['type'], $valid_types, true ) ) {
             return '<!-- Invalid action type: ' . esc_html( $atts['type'] ) . ' -->';
         }
-        
+
         // Build action structure
         $action = array(
             'type' => $atts['type'],
-            'target' => $atts['target']
+            'target' => $atts['target'],
         );
-        
+
         // Add parameters based on action type
         if ( in_array( $atts['type'], array( 'include_term_options', 'exclude_term_options', 'add_terms', 'remove_terms' ), true ) ) {
             $action['terms'] = $this->parse_id_list( $atts['terms'] );
@@ -810,11 +820,11 @@ class HyperTaxonomy_Search_Widget {
         if ( in_array( $atts['type'], array( 'include_group_options', 'exclude_group_options', 'add_groups', 'remove_groups', 'add_descendants', 'remove_descendants' ), true ) ) {
             $action['groups'] = $this->parse_id_list( $atts['groups'] );
         }
-        
+
         if ( in_array( $atts['type'], array( 'set_min_items', 'set_max_items' ), true ) ) {
             $action['value'] = intval( $atts['value'] );
         }
-        
+
         if ( 'set_show_when' === $atts['type'] ) {
             // Validate show_when values
             $valid_values = array( 'always', 'expanded', 'collapsed', 'never' );
@@ -824,7 +834,7 @@ class HyperTaxonomy_Search_Widget {
                 return '<!-- Invalid show_when value: ' . esc_html( $atts['value'] ) . ' -->';
             }
         }
-        
+
         // Emit notFoundMessage for selection actions that add terms/groups.
         $add_action_types = array( 'add_terms', 'add_groups', 'add_descendants' );
         if ( in_array( $atts['type'], $add_action_types, true ) && ! empty( $atts['not_found_message'] ) ) {
@@ -851,11 +861,11 @@ class HyperTaxonomy_Search_Widget {
 
         // Add action to current option
         self::$current_option['actions'][] = $action;
-        
+
         // No output - data is collected for parent option
         return '';
     }
-    
+
     /**
      * Parse comma-separated list of positive integer IDs.
      * Returns an array of unique positive integers.
@@ -875,7 +885,7 @@ class HyperTaxonomy_Search_Widget {
 
         return array_unique( $ids );
     }
-    
+
     /**
      * Render text field for search queries
      */
@@ -887,15 +897,15 @@ class HyperTaxonomy_Search_Widget {
 
         // Unified show_when handling
         $this->apply_show_when_classes( $classes, $atts['show_when'] );
-        
+
         if ( 'true' !== $atts['enabled'] ) {
             $classes[] = 'htax-disabled';
         }
         if ( ! empty( $atts['class'] ) ) {
             $classes[] = $atts['class'];
         }
-        
-        $output = '<div class="' . esc_attr( implode( ' ', $classes ) ) . '" ';
+
+        $output  = '<div class="' . esc_attr( implode( ' ', $classes ) ) . '" ';
         $output .= 'id="' . esc_attr( $atts['id'] ) . '-wrapper" ';
         $output .= 'data-field-name="' . esc_attr( $atts['name'] ) . '" ';
         $output .= 'data-field-type="text" ';
@@ -907,7 +917,7 @@ class HyperTaxonomy_Search_Widget {
             $output .= 'data-min-length-message="' . esc_attr( $atts['min_length_message'] ) . '" ';
         }
         $output .= '>';
-        
+
         // Label
         if ( ! empty( $atts['label'] ) ) {
             $output .= '<label class="htax-field-label" for="' . esc_attr( $atts['id'] ) . '">';
@@ -959,13 +969,13 @@ class HyperTaxonomy_Search_Widget {
             // 'always' needs no special class
         }
     }
-    
+
     /**
      * Render pills field (tag selector with autocomplete)
      */
     private function render_pills_field( $atts ) {
         // Get current form ID to make field names unique across multiple forms
-        $form_id = $this->get_current_form_id();
+        $form_id      = $this->get_current_form_id();
         $field_suffix = $form_id ? '_' . sanitize_key( $form_id ) : '';
 
         // Determine icon display setting
@@ -992,21 +1002,21 @@ class HyperTaxonomy_Search_Widget {
                 break;
             // 'always' needs no special class
         }
-        
+
         if ( 'true' !== $atts['enabled'] ) {
             $classes[] = 'htax-disabled';
         }
         if ( ! empty( $atts['class'] ) ) {
             $classes[] = $atts['class'];
         }
-        
-        $output = '<div class="' . esc_attr( implode( ' ', $classes ) ) . '" ';
+
+        $output  = '<div class="' . esc_attr( implode( ' ', $classes ) ) . '" ';
         $output .= 'id="' . esc_attr( $atts['id'] ) . '-wrapper" ';
         $output .= 'data-field-name="' . esc_attr( $atts['name'] ) . '" ';
         $output .= 'data-field-type="pills" ';
         $output .= 'data-taxonomy="' . esc_attr( $atts['taxonomy'] ) . '" ';
         $output .= 'data-show-when="' . esc_attr( $atts['show_when'] ) . '" ';
-        
+
         // Add option pool configuration
         foreach ( array( 'include_term_options', 'include_group_options', 'include_descendant_options', 'exclude_term_options', 'exclude_group_options', 'exclude_descendant_options', 'filterby' ) as $key ) {
             if ( ! empty( $atts[ $key ] ) ) {
@@ -1023,7 +1033,7 @@ class HyperTaxonomy_Search_Widget {
                 $output .= 'data-' . str_replace( '_', '-', $key ) . '="' . esc_attr( $atts[ $key ] ) . '" ';
             }
         }
-        
+
         // Add constraints
         $output .= 'data-min-items="' . intval( $atts['min_items'] ) . '" ';
         $output .= 'data-max-items="' . intval( $atts['max_items'] ) . '" ';
@@ -1088,7 +1098,7 @@ class HyperTaxonomy_Search_Widget {
         // Preserve value after POST submission
         // Use form-specific field names to prevent conflicts between multiple forms
         $pills_field_name = $atts['name'] . $field_suffix;
-        $pills_value = '';
+        $pills_value      = '';
         if ( isset( $_POST['htax_post_search'] ) && isset( $_POST[ $pills_field_name ] ) ) {
             $pills_value = sanitize_text_field( wp_unslash( $_POST[ $pills_field_name ] ) );
         }
@@ -1100,7 +1110,7 @@ class HyperTaxonomy_Search_Widget {
         $output .= 'value="' . esc_attr( $pills_value ) . '" />';
 
         // Hidden field to store available terms pool (for POST restoration)
-        $available_field_name = $atts['name'] . '_available' . $field_suffix;
+        $available_field_name  = $atts['name'] . '_available' . $field_suffix;
         $available_terms_value = '';
         if ( isset( $_POST['htax_post_search'] ) && isset( $_POST[ $available_field_name ] ) ) {
             $available_terms_value = sanitize_text_field( wp_unslash( $_POST[ $available_field_name ] ) );
@@ -1112,7 +1122,7 @@ class HyperTaxonomy_Search_Widget {
 
         // Hidden field to store term metadata (for POST restoration)
         $termdata_field_name = $atts['name'] . '_termdata' . $field_suffix;
-        $term_data_value = '';
+        $term_data_value     = '';
         if ( isset( $_POST['htax_post_search'] ) && isset( $_POST[ $termdata_field_name ] ) ) {
             // Labels of the submitted pills, as JSON; sanitized, then passed back to the form.
             $term_data       = htax_decode_json_request( wp_unslash( $_POST[ $termdata_field_name ] ) );
@@ -1139,7 +1149,7 @@ class HyperTaxonomy_Search_Widget {
 
         return $output;
     }
-    
+
     /**
      * Render checklist field (hierarchical checkboxes)
      */
@@ -1169,7 +1179,7 @@ class HyperTaxonomy_Search_Widget {
 
     private function render_checklist_field( $atts ) {
         // Get current form ID to make field names unique across multiple forms
-        $form_id = $this->get_current_form_id();
+        $form_id      = $this->get_current_form_id();
         $field_suffix = $form_id ? '_' . sanitize_key( $form_id ) : '';
 
         // Determine icon display setting
@@ -1222,11 +1232,11 @@ class HyperTaxonomy_Search_Widget {
                 }
                 $desc_ids = array_values( array_diff( $desc_ids, $subtree_remove ) );
             }
-            $existing               = ! empty( $atts['include_group_options'] ) ? htax_parse_term_ids( $atts['include_group_options'], 'group' ) : array();
+            $existing                      = ! empty( $atts['include_group_options'] ) ? htax_parse_term_ids( $atts['include_group_options'], 'group' ) : array();
             $atts['include_group_options'] = implode( ',', array_unique( array_merge( $existing, $desc_ids ) ) );
         }
 
-        $output = '<div class="' . esc_attr( implode( ' ', $classes ) ) . '" ';
+        $output  = '<div class="' . esc_attr( implode( ' ', $classes ) ) . '" ';
         $output .= 'id="' . esc_attr( $atts['id'] ) . '-wrapper" ';
         $output .= 'data-field-name="' . esc_attr( $atts['name'] ) . '" ';
         $output .= 'data-field-type="checklist" ';
@@ -1250,7 +1260,7 @@ class HyperTaxonomy_Search_Widget {
             $output .= 'data-remove-descendants="' . esc_attr( $atts['remove_descendants'] ) . '" ';
         }
         $output .= '>';
-        
+
         // A checklist is a group of checkboxes with no single target input, so the field
         // label is rendered as a <p> with an id rather than a <label> (which would trigger
         // "label not associated" browser warnings).  The checklist container uses
@@ -1268,7 +1278,7 @@ class HyperTaxonomy_Search_Widget {
         $terms = $this->get_field_terms( $atts );
 
         // Add icon display setting and field suffix to atts for sub-rendering
-        $atts['_show_icons'] = $show_icons;
+        $atts['_show_icons']   = $show_icons;
         $atts['_field_suffix'] = $field_suffix;
 
         if ( ! empty( $terms ) ) {
@@ -1277,8 +1287,8 @@ class HyperTaxonomy_Search_Widget {
             if ( ! empty( $atts['label'] ) ) {
                 $output .= 'aria-labelledby="' . esc_attr( $atts['id'] ) . '-label" ';
             }
-            $output .= 'data-min-items="' . intval( $atts['min_items'] ) . '" ';
-            $output .= 'data-max-items="' . intval( $atts['max_items'] ) . '" ';
+            $output                           .= 'data-min-items="' . intval( $atts['min_items'] ) . '" ';
+            $output                           .= 'data-max-items="' . intval( $atts['max_items'] ) . '" ';
             list( $min_message, $max_message ) = $this->items_messages( $atts );
             if ( '' !== $min_message ) {
                 $output .= 'data-min-items-message="' . esc_attr( $min_message ) . '" ';
@@ -1296,15 +1306,15 @@ class HyperTaxonomy_Search_Widget {
             } else {
                 $output .= $this->render_flat_checklist( $terms, $atts );
             }
-            
+
             $output .= '</div>';
         }
-        
+
         $output .= '</div>';
-        
+
         return $output;
     }
-    
+
     /**
      * Get the selected term IDs for a checklist field.
      *
@@ -1334,7 +1344,7 @@ class HyperTaxonomy_Search_Widget {
      * Render hierarchical checklist
      */
     private function render_hierarchical_checklist( $terms, $atts, $parent = 0, $depth = 0 ) {
-        $output = '';
+        $output    = '';
         $max_depth = intval( $atts['max_depth'] );
 
         // Check depth limit: -1 = unlimited, 0 = no subcategories, >0 = limited
@@ -1365,7 +1375,7 @@ class HyperTaxonomy_Search_Widget {
             }
 
             $checked = in_array( $term->term_id, $default_terms ) ? 'checked' : '';
-            $indent = $depth * 20;
+            $indent  = $depth * 20;
 
             $output .= '<div class="htax-checklist-item"';
             $output .= ' data-term-id="' . esc_attr( $term->term_id ) . '"';
@@ -1377,10 +1387,10 @@ class HyperTaxonomy_Search_Widget {
             // Render children (after closing parent div, not nested inside)
             $output .= $this->render_hierarchical_checklist( $terms, $atts, $term->term_id, $depth + 1 );
         }
-        
+
         return $output;
     }
-    
+
     /**
      * Render a checklist item's label: its checkbox, icon, name and optional count.
      *
@@ -1455,7 +1465,7 @@ class HyperTaxonomy_Search_Widget {
 
         // Prune branches: keep the specified nodes but remove everything below them
         if ( ! empty( $atts['exclude_descendant_options'] ) ) {
-            $branch_ids    = htax_parse_term_ids( $atts['exclude_descendant_options'], 'group' );
+            $branch_ids     = htax_parse_term_ids( $atts['exclude_descendant_options'], 'group' );
             $subtree_remove = array();
             foreach ( $branch_ids as $branch_id ) {
                 $branch_children = get_term_children( $branch_id, $atts['taxonomy'] );
@@ -1523,8 +1533,8 @@ class HyperTaxonomy_Search_Widget {
         if ( ! empty( $atts['label'] ) ) {
             $output .= ' aria-labelledby="' . esc_attr( $atts['id'] ) . '-label"';
         }
-        $output .= ' data-min-items="' . intval( $atts['min_items'] ) . '"';
-        $output .= ' data-max-items="' . intval( $atts['max_items'] ) . '"';
+        $output                           .= ' data-min-items="' . intval( $atts['min_items'] ) . '"';
+        $output                           .= ' data-max-items="' . intval( $atts['max_items'] ) . '"';
         list( $min_message, $max_message ) = $this->items_messages( $atts );
         if ( '' !== $min_message ) {
             $output .= ' data-min-items-message="' . esc_attr( $min_message ) . '"';
@@ -1541,7 +1551,7 @@ class HyperTaxonomy_Search_Widget {
             $all_id_set = array_flip( $all_ids );
             $by_parent  = array();
             foreach ( $group_terms as $g ) {
-                $parent_key = isset( $all_id_set[ $g->parent ] ) ? $g->parent : 0;
+                $parent_key                 = isset( $all_id_set[ $g->parent ] ) ? $g->parent : 0;
                 $by_parent[ $parent_key ][] = $g;
             }
             foreach ( isset( $by_parent[0] ) ? $by_parent[0] : array() as $g ) {
@@ -1676,7 +1686,7 @@ class HyperTaxonomy_Search_Widget {
         $min_items = intval( $atts['min_items'] );
         $max_items = intval( $atts['max_items'] );
 
-        $output = '<input type="hidden" ';
+        $output  = '<input type="hidden" ';
         $output .= 'id="' . esc_attr( $atts['id'] ) . '" ';
         $output .= 'name="' . esc_attr( $atts['name'] ) . '" ';
         $output .= 'value="" ';
@@ -1732,7 +1742,7 @@ class HyperTaxonomy_Search_Widget {
 
         return $output;
     }
-    
+
     /**
      * Render a link or button controller, which wraps content holding links or buttons with data-actions.
      *
@@ -1742,7 +1752,7 @@ class HyperTaxonomy_Search_Widget {
      * @return string HTML.
      */
     private function render_wrapped_controller( $atts, $content, $type ) {
-        $classes = array( 'htax-controller-wrapper', 'htax-controller-' . $type );
+        $classes   = array( 'htax-controller-wrapper', 'htax-controller-' . $type );
         $classes[] = 'htax-show-' . $atts['show_when'];
         if ( 'never' === $atts['show_when'] ) {
             $classes[] = 'htax-hidden';
@@ -1754,7 +1764,7 @@ class HyperTaxonomy_Search_Widget {
             $classes[] = $atts['class'];
         }
 
-        $output = '<div class="' . esc_attr( implode( ' ', $classes ) ) . '" ';
+        $output  = '<div class="' . esc_attr( implode( ' ', $classes ) ) . '" ';
         $output .= 'id="' . esc_attr( $atts['id'] ) . '-wrapper" ';
         $output .= 'data-controller-name="' . esc_attr( $atts['name'] ) . '" ';
         $output .= 'data-controller-type="' . esc_attr( $type ) . '" ';
@@ -1783,7 +1793,7 @@ class HyperTaxonomy_Search_Widget {
      * Render radio controller
      */
     private function render_radio_controller( $atts, $options ) {
-        $classes = array( 'htax-controller-wrapper', 'htax-controller-radio' );
+        $classes   = array( 'htax-controller-wrapper', 'htax-controller-radio' );
         $classes[] = 'htax-show-' . $atts['show_when'];
         if ( 'never' === $atts['show_when'] ) {
             $classes[] = 'htax-hidden';
@@ -1797,8 +1807,8 @@ class HyperTaxonomy_Search_Widget {
         if ( ! empty( $atts['class'] ) ) {
             $classes[] = $atts['class'];
         }
-        
-        $output = '<div class="' . esc_attr( implode( ' ', $classes ) ) . '" ';
+
+        $output  = '<div class="' . esc_attr( implode( ' ', $classes ) ) . '" ';
         $output .= 'id="' . esc_attr( $atts['id'] ) . '-wrapper" ';
         $output .= 'data-controller-name="' . esc_attr( $atts['name'] ) . '" ';
         $output .= 'data-controller-type="radio" ';
@@ -1814,13 +1824,13 @@ class HyperTaxonomy_Search_Widget {
             }
             $output .= '</div>';
         }
-        
+
         $output .= '<div class="htax-radio-group">';
-        
+
         foreach ( $options as $option ) {
             $option_id = $atts['id'] . '-' . sanitize_key( $option['value'] );
-            $checked = $option['default'] ? 'checked' : '';
-            
+            $checked   = $option['default'] ? 'checked' : '';
+
             $output .= '<div class="htax-radio-item">';
             $output .= '<label for="' . esc_attr( $option_id ) . '">';
             $output .= '<input type="radio" ';
@@ -1839,13 +1849,13 @@ class HyperTaxonomy_Search_Widget {
             $output .= '</label>';
             $output .= '</div>';
         }
-        
+
         $output .= '</div>';
         $output .= '</div>';
-        
+
         return $output;
     }
-    
+
     /**
      * Parse and cache the htax_ui_state JSON submitted with a POST search.
      * Returns the full decoded array, or an empty array when not a POST search or JSON is invalid.
@@ -1927,7 +1937,7 @@ class HyperTaxonomy_Search_Widget {
      * @return string HTML.
      */
     private function render_multi_choice_controller( $atts, $options, string $type ) {
-        $classes = array( 'htax-controller-wrapper', 'htax-controller-' . $type );
+        $classes   = array( 'htax-controller-wrapper', 'htax-controller-' . $type );
         $classes[] = 'htax-show-' . $atts['show_when'];
         if ( 'never' === $atts['show_when'] ) {
             $classes[] = 'htax-hidden';
@@ -1942,7 +1952,7 @@ class HyperTaxonomy_Search_Widget {
             $classes[] = $atts['class'];
         }
 
-        $output = '<div class="' . esc_attr( implode( ' ', $classes ) ) . '" ';
+        $output  = '<div class="' . esc_attr( implode( ' ', $classes ) ) . '" ';
         $output .= 'id="' . esc_attr( $atts['id'] ) . '-wrapper" ';
         $output .= 'data-controller-name="' . esc_attr( $atts['name'] ) . '" ';
         $output .= 'data-controller-type="' . esc_attr( $type ) . '" ';
@@ -2009,12 +2019,12 @@ class HyperTaxonomy_Search_Widget {
 
         return $output;
     }
-    
+
     /**
      * Render dropdown controller
      */
     private function render_dropdown_controller( $atts, $options ) {
-        $classes = array( 'htax-controller-wrapper', 'htax-controller-dropdown' );
+        $classes   = array( 'htax-controller-wrapper', 'htax-controller-dropdown' );
         $classes[] = 'htax-show-' . $atts['show_when'];
         if ( 'never' === $atts['show_when'] ) {
             $classes[] = 'htax-hidden';
@@ -2025,8 +2035,8 @@ class HyperTaxonomy_Search_Widget {
         if ( ! empty( $atts['class'] ) ) {
             $classes[] = $atts['class'];
         }
-        
-        $output = '<div class="' . esc_attr( implode( ' ', $classes ) ) . '" ';
+
+        $output  = '<div class="' . esc_attr( implode( ' ', $classes ) ) . '" ';
         $output .= 'id="' . esc_attr( $atts['id'] ) . '-wrapper" ';
         $output .= 'data-controller-name="' . esc_attr( $atts['name'] ) . '" ';
         $output .= 'data-controller-type="dropdown" ';
@@ -2042,7 +2052,7 @@ class HyperTaxonomy_Search_Widget {
             }
             $output .= '</label>';
         }
-        
+
         $output .= '<select id="' . esc_attr( $atts['id'] ) . '" ';
         $output .= 'name="' . esc_attr( $atts['name'] ) . '" ';
         $output .= 'class="htax-dropdown" ';
@@ -2050,7 +2060,7 @@ class HyperTaxonomy_Search_Widget {
             $output .= 'disabled ';
         }
         $output .= '>';
-        
+
         // Add default empty option if no option has default=true
         $has_default = false;
         foreach ( $options as $option ) {
@@ -2059,14 +2069,14 @@ class HyperTaxonomy_Search_Widget {
                 break;
             }
         }
-        
+
         if ( ! $has_default ) {
             $output .= '<option value="">' . esc_html__( 'Select...', 'hypertaxonomy' ) . '</option>';
         }
-        
+
         foreach ( $options as $option ) {
             $selected = $option['default'] ? 'selected' : '';
-            $output .= '<option value="' . esc_attr( $option['value'] ) . '" ';
+            $output  .= '<option value="' . esc_attr( $option['value'] ) . '" ';
             if ( ! empty( $option['actions'] ) ) {
                 $output .= 'data-actions=\'' . esc_attr( json_encode( array( 'actions' => $option['actions'] ) ) ) . '\' ';
             }
@@ -2074,13 +2084,13 @@ class HyperTaxonomy_Search_Widget {
             $output .= esc_html( $option['label'] );
             $output .= '</option>';
         }
-        
+
         $output .= '</select>';
         $output .= '</div>';
-        
+
         return $output;
     }
-    
+
     /**
      * Submit button shortcode
      */
@@ -2090,22 +2100,22 @@ class HyperTaxonomy_Search_Widget {
             'class' => '',
             'show_when' => 'always',
         );
-        
+
         $atts = shortcode_atts( $defaults, $atts );
-        
-        $classes = array( 'htax-submit-button' );
+
+        $classes   = array( 'htax-submit-button' );
         $classes[] = 'htax-show-' . $atts['show_when'];
         if ( ! empty( $atts['class'] ) ) {
             $classes[] = $atts['class'];
         }
-        
-        $output = '<button type="submit" class="' . esc_attr( implode( ' ', $classes ) ) . '">';
+
+        $output  = '<button type="submit" class="' . esc_attr( implode( ' ', $classes ) ) . '">';
         $output .= esc_html( $atts['text'] );
         $output .= '</button>';
-        
+
         return $output;
     }
-    
+
     /**
      * Toggle button shortcode
      */
@@ -2115,29 +2125,29 @@ class HyperTaxonomy_Search_Widget {
             'text_expanded' => __( 'Hide advanced options', 'hypertaxonomy' ),
             'class' => '',
         );
-        
+
         $atts = shortcode_atts( $defaults, $atts );
-        
+
         $classes = array( 'htax-toggle-button' );
         if ( ! empty( $atts['class'] ) ) {
             $classes[] = $atts['class'];
         }
-        
-        $output = '<button type="button" class="' . esc_attr( implode( ' ', $classes ) ) . '">';
+
+        $output  = '<button type="button" class="' . esc_attr( implode( ' ', $classes ) ) . '">';
         $output .= '<span class="htax-text-collapsed">' . esc_html( $atts['text_collapsed'] ) . '</span>';
         $output .= '<span class="htax-text-expanded">' . esc_html( $atts['text_expanded'] ) . '</span>';
         $output .= '</button>';
-        
+
         return $output;
     }
-    
+
     /**
      * Results container shortcode
      */
     public function results_shortcode( $atts ) {
         // Get form's orderby
         $form_orderby = 'relevance:desc,date:desc'; // Default
-        $form_id = $this->get_current_form_id();
+        $form_id      = $this->get_current_form_id();
         if ( $form_id && isset( self::$forms[ $form_id ]['atts']['orderby'] ) ) {
             $form_orderby = self::$forms[ $form_id ]['atts']['orderby'];
         }
@@ -2164,7 +2174,7 @@ class HyperTaxonomy_Search_Widget {
 
         $atts = shortcode_atts( $defaults, $atts );
 
-        $classes = array( 'htax-search-results' );
+        $classes   = array( 'htax-search-results' );
         $classes[] = 'htax-template-' . $atts['template'];
         if ( ! empty( $atts['class'] ) ) {
             $classes[] = $atts['class'];
@@ -2173,7 +2183,7 @@ class HyperTaxonomy_Search_Widget {
         $columns_int = max( 1, intval( $atts['columns'] ) );
         $col_style   = $columns_int > 1 ? ' style="--htax-columns:' . $columns_int . '"' : '';
 
-        $output = '<div class="' . esc_attr( implode( ' ', $classes ) ) . '" ';
+        $output  = '<div class="' . esc_attr( implode( ' ', $classes ) ) . '" ';
         $output .= 'id="' . esc_attr( $atts['id'] ) . '" ';
         $output .= 'data-orderby="' . esc_attr( $form_orderby ) . '" ';
         $output .= 'data-template="' . esc_attr( $atts['template'] ) . '" ';
@@ -2201,7 +2211,7 @@ class HyperTaxonomy_Search_Widget {
             $sort_class = ! empty( $atts['sort_order_align'] )
                 ? 'htax-align-' . sanitize_html_class( $atts['sort_order_align'] )
                 : '';
-            $sort_html = htax_render_sort_order_picker( array(
+            $sort_html  = htax_render_sort_order_picker( array(
                 'fields'        => trim( $atts['sort_order_options'] ),
                 'state'         => 'expanded',
                 'action'        => '',
@@ -2218,15 +2228,18 @@ class HyperTaxonomy_Search_Widget {
                 $filter_class = ! empty( $atts['filters_align'] )
                     ? 'htax-align-' . sanitize_html_class( $atts['filters_align'] )
                     : '';
-                $resolved    = htax_resolve_filter_configs( $raw_filter_configs, array(), null );
-                $filter_html = htax_render_filter_options( $resolved, array( 'action' => '', 'class' => $filter_class ), array() );
+                $resolved     = htax_resolve_filter_configs( $raw_filter_configs, array(), null );
+                $filter_html  = htax_render_filter_options( $resolved, array(
+                    'action' => '',
+                    'class' => $filter_class,
+                ), array() );
             }
         }
 
         // Wrap sort picker and/or filter panel in a controls bar above the results div.
         if ( $sort_html || $filter_html ) {
             $controls_bar = '<div class="htax-controls-bar">' . $filter_html . $sort_html . '</div>';
-            $output = '<div class="htax-search-results-block">' . $controls_bar . $output . '</div>';
+            $output       = '<div class="htax-search-results-block">' . $controls_bar . $output . '</div>';
         }
 
         return $output;
@@ -2250,16 +2263,16 @@ class HyperTaxonomy_Search_Widget {
         // Note: group exclusions are applied mid-way, so individual term includes (step 3) can
         // override group exclusions. Explicit term excludes (step 4) always win.
 
-        $include_ids = array();
-        $exclude_ids = array();
+        $include_ids              = array();
+        $exclude_ids              = array();
         $include_groups_specified = false;
-        $include_terms_specified = false;
+        $include_terms_specified  = false;
 
         // Step 1: Include groups (with hierarchy expansion)
         if ( ! empty( $atts['include_group_options'] ) ) {
             $include_groups_specified = true;
-            $group_ids = htax_parse_term_ids( $atts['include_group_options'], 'group' );
-            $group_terms = htax_get_terms_in_groups( $group_ids, $atts['taxonomy'] );
+            $group_ids                = htax_parse_term_ids( $atts['include_group_options'], 'group' );
+            $group_terms              = htax_get_terms_in_groups( $group_ids, $atts['taxonomy'] );
             if ( ! empty( $group_terms ) ) {
                 $include_ids = array_keys( $group_terms );
             }
@@ -2267,7 +2280,7 @@ class HyperTaxonomy_Search_Widget {
 
         // Step 2: Exclude groups (with hierarchy expansion)
         if ( ! empty( $atts['exclude_group_options'] ) ) {
-            $exclude_group_ids = htax_parse_term_ids( $atts['exclude_group_options'], 'group' );
+            $exclude_group_ids   = htax_parse_term_ids( $atts['exclude_group_options'], 'group' );
             $exclude_group_terms = htax_get_terms_in_groups( $exclude_group_ids, $atts['taxonomy'] );
             if ( ! empty( $exclude_group_terms ) ) {
                 $exclude_ids = array_merge( $exclude_ids, array_keys( $exclude_group_terms ) );
@@ -2282,7 +2295,7 @@ class HyperTaxonomy_Search_Widget {
         // Step 3: Include individual terms (overrides group exclusions)
         if ( ! empty( $atts['include_term_options'] ) ) {
             $include_terms_specified = true;
-            $individual_include_ids = htax_parse_term_ids( $atts['include_term_options'], $atts['taxonomy'] );
+            $individual_include_ids  = htax_parse_term_ids( $atts['include_term_options'], $atts['taxonomy'] );
             if ( ! empty( $individual_include_ids ) ) {
                 $include_ids = array_unique( array_merge( $include_ids, $individual_include_ids ) );
             }
@@ -2318,7 +2331,7 @@ class HyperTaxonomy_Search_Widget {
 
         // Hidden terms are options only for viewers who may see them (editors, by default).
         if ( ! is_wp_error( $terms ) && is_array( $terms ) && ! htax_can_see_hidden_terms( $atts['taxonomy'] ) ) {
-            $terms = array_filter( $terms, function( $term ) {
+            $terms = array_filter( $terms, function ( $term ) {
                 return ! htax_is_term_hidden( $term->term_id );
             });
         }
@@ -2362,7 +2375,7 @@ class HyperTaxonomy_Search_Widget {
                     continue;
                 }
 
-                $targets = ! empty( $field['filterby'] )
+                $targets   = ! empty( $field['filterby'] )
                     ? array_values( array_filter( array_map( 'sanitize_key', explode( ',', (string) $field['filterby'] ) ) ) )
                     : array_values( array_filter( htax_get_enabled_taxonomies(), function ( $tax ) {
                         $obj = get_taxonomy( $tax );
@@ -2373,7 +2386,11 @@ class HyperTaxonomy_Search_Widget {
 
                 if ( 'all' === ( $field['match'] ?? 'any' ) ) {
                     $field['match'] = 'any';
-                    $all            = array( 'relation' => 'AND', 'fields' => array(), 'groups' => array() );
+                    $all            = array(
+                        'relation' => 'AND',
+                        'fields' => array(),
+                        'groups' => array(),
+                    );
                     foreach ( $group_ids as $gid ) {
                         $all['groups'][] = $this->group_member_structure( $field, $field_name . '_g' . $gid, array( $gid ), $targets );
                     }
@@ -2432,14 +2449,24 @@ class HyperTaxonomy_Search_Widget {
                 'terms'    => array( 0 ),
             ) );
         } elseif ( 1 === count( $per_tax ) ) {
-            $fields[ $field_name ] = array_merge( $field, array( 'taxonomy' => key( $per_tax ), 'terms' => reset( $per_tax ) ) );
+            $fields[ $field_name ] = array_merge( $field, array(
+                'taxonomy' => key( $per_tax ),
+                'terms' => reset( $per_tax ),
+            ) );
         } else {
             foreach ( $per_tax as $tax => $members ) {
-                $fields[ $field_name . '_' . $tax ] = array_merge( $field, array( 'taxonomy' => $tax, 'terms' => $members ) );
+                $fields[ $field_name . '_' . $tax ] = array_merge( $field, array(
+                    'taxonomy' => $tax,
+                    'terms' => $members,
+                ) );
             }
         }
 
-        return array( 'relation' => 'OR', 'fields' => $fields, 'groups' => array() );
+        return array(
+            'relation' => 'OR',
+            'fields' => $fields,
+            'groups' => array(),
+        );
     }
 
     /**
@@ -2475,13 +2502,13 @@ class HyperTaxonomy_Search_Widget {
                 if ( 0 === $depth ) {
                     $open = array( $offset + strlen( $tag[0][0] ), $tag[2][0], $offset );
                 }
-                $depth++;
+                ++$depth;
                 continue;
             }
             if ( 0 === $depth ) {
                 continue; // Stray closing tag — left for do_shortcode().
             }
-            $depth--;
+            --$depth;
             if ( 0 === $depth ) {
                 $output .= do_shortcode( substr( $content, $cursor, $open[2] - $cursor ) );
                 $atts    = shortcode_parse_atts( trim( $open[1] ) );
@@ -2523,7 +2550,7 @@ class HyperTaxonomy_Search_Widget {
         if ( isset( $structure['groups'] ) && is_array( $structure['groups'] ) ) {
             foreach ( $structure['groups'] as $group ) {
                 $group_fields = $this->flatten_field_structure_for_scoring( $group, $include_exclusions );
-                $flat_fields = array_merge( $flat_fields, $group_fields );
+                $flat_fields  = array_merge( $flat_fields, $group_fields );
             }
         }
 
@@ -2554,7 +2581,7 @@ class HyperTaxonomy_Search_Widget {
      */
     private function build_having_clause_recursive( $structure ) {
         $conditions = array();
-        $relation = isset( $structure['relation'] ) ? strtoupper( $structure['relation'] ) : 'AND';
+        $relation   = isset( $structure['relation'] ) ? strtoupper( $structure['relation'] ) : 'AND';
 
         // Add conditions for direct fields at this level.
         // match='none' (exclusion) fields generate no HAVING condition — they are
@@ -2565,7 +2592,7 @@ class HyperTaxonomy_Search_Widget {
                 if ( ! empty( $field_data['terms'] ) && 'none' !== $match ) {
                     // Must match the identifier-safe alias built in get_posts_by_custom_sql().
                     $safe_field_name = $this->sanitize_field_identifier( $field_name );
-                    $conditions[] = sprintf( "%s_score > 0", $safe_field_name );
+                    $conditions[]    = sprintf( '%s_score > 0', $safe_field_name );
                 }
             }
         }
@@ -2613,7 +2640,11 @@ class HyperTaxonomy_Search_Widget {
         if ( 'none' === $str ) {
             return array( 'direct' );
         }
-        $map    = array( 'container' => 'container', 'hierarchy' => 'hierarchy', 'redirect' => 'redirect_target' );
+        $map    = array(
+            'container' => 'container',
+            'hierarchy' => 'hierarchy',
+            'redirect' => 'redirect_target',
+        );
         $tokens = array_map( 'trim', explode( ',', $str ) );
         if ( in_array( 'none', $tokens, true ) || in_array( 'all', $tokens, true ) ) {
             return null;
@@ -2637,12 +2668,12 @@ class HyperTaxonomy_Search_Widget {
      *
      * Supports dynamic ORDER BY for any combination of fields (relevance, date, title, etc.)
      *
-     * @param array $query Search query: hierarchical group spec {relation, fields, groups}
-     * @param array $orderby_parsed Parsed orderby parameters
-     * @param int $posts_per_page Results per page
-     * @param int $page Current page number
+     * @param array  $query Search query: hierarchical group spec {relation, fields, groups}
+     * @param array  $orderby_parsed Parsed orderby parameters
+     * @param int    $posts_per_page Results per page
+     * @param int    $page Current page number
      * @param string $text_search_query Optional text search query
-     * @param float $min_score Minimum overall relevance score (default 0)
+     * @param float  $min_score Minimum overall relevance score (default 0)
      * @param string $search_in   Comma-separated list of fields to search (title,content,excerpt or 'all')
      * @param string $extra_where Additional SQL WHERE fragment (with leading AND) appended to the query.
      * @param int    $max_results Hard cap on total results across all pages (0 = no cap).
@@ -2665,7 +2696,7 @@ class HyperTaxonomy_Search_Widget {
         $pt_table        = $wpdb->prefix . 'htax_post_text';
 
         // Helper: build the relationship_type IN list for a taxonomy, respecting site settings and feature flags.
-        $build_rel_list = function( $taxonomy ) {
+        $build_rel_list = function ( $taxonomy ) {
             $types = htax_get_expand_types_for_taxonomy( $taxonomy );
             return "'" . implode( "','", array_map( 'esc_sql', $types ) ) . "'";
         };
@@ -2674,9 +2705,9 @@ class HyperTaxonomy_Search_Widget {
             if ( empty( $field_data['terms'] ) || empty( $field_data['taxonomy'] ) ) {
                 continue;
             }
-            $match     = isset( $field_data['match'] ) ? $field_data['match'] : 'any';
-            $taxonomy  = sanitize_key( $field_data['taxonomy'] );
-            $term_ids  = array_map( 'intval', $field_data['terms'] );
+            $match    = isset( $field_data['match'] ) ? $field_data['match'] : 'any';
+            $taxonomy = sanitize_key( $field_data['taxonomy'] );
+            $term_ids = array_map( 'intval', $field_data['terms'] );
             if ( empty( $term_ids ) ) {
                 continue;
             }
@@ -2700,7 +2731,7 @@ class HyperTaxonomy_Search_Widget {
                 )";
             } elseif ( 'all' === $match ) {
                 // Required-all: post must be indexed with EVERY selected term individually.
-                $n = count( $term_ids );
+                $n                 = count( $term_ids );
                 $pre_where_parts[] = "pt.post_id IN (
                     SELECT post_id FROM {$wpdb->prefix}htax_search_terms
                     WHERE taxonomy = '{$esc_taxonomy}'
@@ -2777,31 +2808,38 @@ class HyperTaxonomy_Search_Widget {
                 $this->sanitize_field_identifier( $field_name ),
                 $hidden_clause . htax_strength_model_sql()
             );
-            $query_params[] = $taxonomy;
+            $query_params[]     = $taxonomy;
         }
 
         // If no taxonomy terms but has text search, we can still proceed
         // (will use text search filter in WHERE clause without relevance scoring)
         // (exclusion-only and filter-only queries also proceed: every post that passes them, newest first).
         if ( empty( $score_subqueries ) && empty( $text_search_query ) && empty( $pre_where_parts ) && empty( $extra_where ) ) {
-            return array( 'results' => array(), 'total' => 0, 'no_criteria' => true );
+            return array(
+                'results' => array(),
+                'total' => 0,
+                'no_criteria' => true,
+            );
         }
 
         // Union all field scores (may be empty if text-only search)
         $scores_union = ! empty( $score_subqueries ) ? implode( ' UNION ALL ', $score_subqueries ) : '';
 
         // Calculate pagination offset and effective page limit
-        $offset = ( $page - 1 ) * $posts_per_page;
+        $offset      = ( $page - 1 ) * $posts_per_page;
         $max_results = max( 0, (int) $max_results );
         if ( $max_results > 0 && $offset >= $max_results ) {
-            return array( 'results' => array(), 'total' => 0 );
+            return array(
+                'results' => array(),
+                'total' => 0,
+            );
         }
         $effective_limit = ( $max_results > 0 ) ? min( $posts_per_page, $max_results - $offset ) : $posts_per_page;
 
         // Build WHERE clause for post filtering
         $indexed_post_types = htax_get_indexed_post_types();
         $post_type_list     = implode( "','", array_map( 'esc_sql', $indexed_post_types ) );
-        $where_parts = array( "pt.post_type IN ('$post_type_list')", "pt.post_status = 'publish'" );
+        $where_parts        = array( "pt.post_type IN ('$post_type_list')", "pt.post_status = 'publish'" );
 
         // Add text search filter if present
         if ( ! empty( $text_search_query ) ) {
@@ -2850,7 +2888,7 @@ class HyperTaxonomy_Search_Widget {
                         unset( $term_data );
                     }
                 }
-                $all_terms  = array_merge(
+                $all_terms     = array_merge(
                     $parsed['general'],
                     $parsed['title'],
                     $parsed['body'],
@@ -2886,7 +2924,6 @@ class HyperTaxonomy_Search_Widget {
             $where_clause .= ' ' . $extra_where;
         }
 
-
         // Main query: sum all field scores per post, filter, order, paginate
         if ( ! empty( $scores_union ) ) {
             // Has taxonomy terms - use relevance scoring with per-field tracking
@@ -2908,9 +2945,9 @@ class HyperTaxonomy_Search_Widget {
                 );
             }
 
-            $main_sql = "
+            $main_sql = '
                 SELECT pt.post_id,
-                       " . implode( ",\n                       ", $field_score_selects ) . ",
+                       ' . implode( ",\n                       ", $field_score_selects ) . ",
                        COALESCE(SUM(scores.field_score), 0) as total_relevance
                 FROM {$pt_table} pt
                 LEFT JOIN ($scores_union) AS scores ON scores.post_id = pt.post_id
@@ -2922,16 +2959,16 @@ class HyperTaxonomy_Search_Widget {
             $having_condition = $this->build_having_clause_recursive( $query );
 
             if ( $min_score > 0 && ! empty( $having_condition ) ) {
-                $having_clause = sprintf( "total_relevance >= %f AND (%s)", floatval( $min_score ), $having_condition );
+                $having_clause = sprintf( 'total_relevance >= %f AND (%s)', floatval( $min_score ), $having_condition );
             } elseif ( $min_score > 0 ) {
-                $having_clause = sprintf( "total_relevance >= %f", floatval( $min_score ) );
+                $having_clause = sprintf( 'total_relevance >= %f', floatval( $min_score ) );
             } elseif ( ! empty( $having_condition ) ) {
                 $having_clause = $having_condition;
             } else {
                 $having_clause = '1=1'; // No filtering
             }
 
-            $main_sql .= " HAVING " . $having_clause;
+            $main_sql .= ' HAVING ' . $having_clause;
         } else {
             // Text-only search - no relevance scoring needed.
             $main_sql = "
@@ -2945,14 +2982,14 @@ class HyperTaxonomy_Search_Widget {
         // Build dynamic ORDER BY clause
         $relevance_column = ! empty( $scores_union ) ? 'total_relevance' : 'relevance';
         if ( ! empty( $orderby_parsed ) ) {
-            $main_sql .= " ORDER BY " . htax_build_orderby_sql( $orderby_parsed, 'pt', $relevance_column );
+            $main_sql .= ' ORDER BY ' . htax_build_orderby_sql( $orderby_parsed, 'pt', $relevance_column );
         } else {
             // No valid orderby: default to relevance first, then date
             $main_sql .= " ORDER BY $relevance_column DESC, pt.post_date_gmt DESC, pt.post_id DESC";
         }
 
         // Add pagination
-        $main_sql .= sprintf( " LIMIT %d OFFSET %d", $effective_limit, $offset );
+        $main_sql .= sprintf( ' LIMIT %d OFFSET %d', $effective_limit, $offset );
 
         // Execute main query
         $prepared_sql = ! empty( $query_params ) ? $wpdb->prepare( $main_sql, ...$query_params ) : $main_sql;
@@ -2967,11 +3004,11 @@ class HyperTaxonomy_Search_Widget {
             // otherwise AND-grouped fields produce a count larger than the actual result
             // set (ghost pages). The relevance column is named 'relevance' here, so the
             // overall min_score threshold uses that name.
-            $count_sql = "
+            $count_sql = '
                 SELECT COUNT(*) as total
                 FROM (
                     SELECT pt.post_id,
-                           " . implode( ",\n                           ", $field_score_selects ) . ",
+                           ' . implode( ",\n                           ", $field_score_selects ) . ",
                            COALESCE(SUM(scores.field_score), 0) as relevance
                     FROM {$pt_table} pt
                     LEFT JOIN ($scores_union) AS scores ON scores.post_id = pt.post_id
@@ -2984,25 +3021,25 @@ class HyperTaxonomy_Search_Widget {
             // applied even when a text search is present, or found_posts/max_pages would
             // overstate AND-grouped fields (ghost pages).
             if ( $min_score > 0 && ! empty( $having_condition ) ) {
-                $count_having = sprintf( "relevance >= %f AND (%s)", floatval( $min_score ), $having_condition );
+                $count_having = sprintf( 'relevance >= %f AND (%s)', floatval( $min_score ), $having_condition );
             } elseif ( $min_score > 0 ) {
-                $count_having = sprintf( "relevance >= %f", floatval( $min_score ) );
+                $count_having = sprintf( 'relevance >= %f', floatval( $min_score ) );
             } elseif ( ! empty( $having_condition ) ) {
                 $count_having = $having_condition;
             } elseif ( empty( $text_search_query ) ) {
                 // No per-field HAVING and no text search: the main query's default ORDER BY
                 // relevance with 1=1 returns 0-score rows last, so the count includes only
                 // scored rows to match.
-                $count_having = "relevance > 0";
+                $count_having = 'relevance > 0';
             } else {
                 $count_having = ''; // Text search only: WHERE already filters.
             }
 
             if ( '' !== $count_having ) {
-                $count_sql .= " HAVING " . $count_having;
+                $count_sql .= ' HAVING ' . $count_having;
             }
 
-            $count_sql .= ") AS filtered_posts";
+            $count_sql .= ') AS filtered_posts';
         } else {
             // Text-only search - simple count
             $count_sql = "
@@ -3015,7 +3052,7 @@ class HyperTaxonomy_Search_Widget {
         $total_count = $wpdb->get_var( ! empty( $query_params ) ? $wpdb->prepare( $count_sql, ...$query_params ) : $count_sql );
 
         // Format results
-        $post_ids = array_map( function( $row ) {
+        $post_ids = array_map( function ( $row ) {
             return (int) $row->post_id;
         }, $results );
 
@@ -3050,9 +3087,9 @@ class HyperTaxonomy_Search_Widget {
             return;
         }
 
-        $taxonomy      = isset( $_GET['taxonomy'] )      ? sanitize_key( wp_unslash( $_GET['taxonomy'] ) )      : 'post_tag';
+        $taxonomy      = isset( $_GET['taxonomy'] ) ? sanitize_key( wp_unslash( $_GET['taxonomy'] ) ) : 'post_tag';
         $taxonomy_type = isset( $_GET['taxonomy_type'] ) ? sanitize_key( wp_unslash( $_GET['taxonomy_type'] ) ) : 'post';
-        $show_icons    = isset( $_GET['show_icons'] )    ? sanitize_key( wp_unslash( $_GET['show_icons'] ) )    : 'never';
+        $show_icons    = isset( $_GET['show_icons'] ) ? sanitize_key( wp_unslash( $_GET['show_icons'] ) ) : 'never';
 
         if ( isset( $_GET['roots'] ) ) {
             // Descendant mode: roots[] drives which subtree to expand.
@@ -3072,7 +3109,10 @@ class HyperTaxonomy_Search_Widget {
         }
 
         if ( empty( $group_ids ) || ! taxonomy_exists( $taxonomy ) ) {
-            wp_send_json_success( array( 'terms' => new stdClass(), 'groups' => new stdClass() ) );
+            wp_send_json_success( array(
+                'terms' => new stdClass(),
+                'groups' => new stdClass(),
+            ) );
             return;
         }
 
@@ -3080,10 +3120,10 @@ class HyperTaxonomy_Search_Widget {
         $groups_map   = array();
 
         foreach ( $group_ids as $gid ) {
-            $members                = htax_get_terms_in_groups( array( $gid ), $taxonomy );
-            $member_ids             = array_keys( $members );
-            $groups_map[ $gid ]     = $member_ids;
-            $all_term_ids           = array_merge( $all_term_ids, $member_ids );
+            $members            = htax_get_terms_in_groups( array( $gid ), $taxonomy );
+            $member_ids         = array_keys( $members );
+            $groups_map[ $gid ] = $member_ids;
+            $all_term_ids       = array_merge( $all_term_ids, $member_ids );
         }
 
         $all_term_ids = array_unique( $all_term_ids );
@@ -3094,14 +3134,17 @@ class HyperTaxonomy_Search_Widget {
         // Propagate hidden-term removal into groups map
         $visible_set = array_flip( $all_term_ids );
         foreach ( $groups_map as &$member_ids ) {
-            $member_ids = array_values( array_filter( $member_ids, function( $id ) use ( $visible_set ) {
+            $member_ids = array_values( array_filter( $member_ids, function ( $id ) use ( $visible_set ) {
                 return isset( $visible_set[ $id ] );
             } ) );
         }
         unset( $member_ids );
 
         if ( empty( $all_term_ids ) ) {
-            wp_send_json_success( array( 'terms' => new stdClass(), 'groups' => $groups_map ) );
+            wp_send_json_success( array(
+                'terms' => new stdClass(),
+                'groups' => $groups_map,
+            ) );
             return;
         }
 
@@ -3131,7 +3174,10 @@ class HyperTaxonomy_Search_Widget {
      */
     private function send_prefetch_descendant_options( $taxonomy, $root_ids, $show_icons, $exclude_desc_ids = array(), $taxonomy_type = 'post' ) {
         if ( empty( $root_ids ) || ! taxonomy_exists( $taxonomy ) ) {
-            wp_send_json_success( array( 'terms' => new stdClass(), 'groups' => new stdClass() ) );
+            wp_send_json_success( array(
+                'terms' => new stdClass(),
+                'groups' => new stdClass(),
+            ) );
             return;
         }
 
@@ -3162,7 +3208,10 @@ class HyperTaxonomy_Search_Widget {
         $all_descendant_ids = $this->filter_visible_term_ids( $all_descendant_ids, $taxonomy );
 
         if ( empty( $all_descendant_ids ) ) {
-            wp_send_json_success( array( 'terms' => new stdClass(), 'groups' => new stdClass() ) );
+            wp_send_json_success( array(
+                'terms' => new stdClass(),
+                'groups' => new stdClass(),
+            ) );
             return;
         }
 
@@ -3173,7 +3222,7 @@ class HyperTaxonomy_Search_Widget {
             foreach ( array_merge( $root_ids, $all_descendant_ids ) as $gid ) {
                 $desc = get_term_children( $gid, $taxonomy );
                 if ( ! is_wp_error( $desc ) ) {
-                    $in_universe = array_values( array_filter( array_map( 'intval', $desc ), function( $id ) use ( $universe_set ) {
+                    $in_universe = array_values( array_filter( array_map( 'intval', $desc ), function ( $id ) use ( $universe_set ) {
                         return isset( $universe_set[ $id ] );
                     } ) );
                     if ( ! empty( $in_universe ) ) {
@@ -3203,9 +3252,9 @@ class HyperTaxonomy_Search_Widget {
 
             // Remove terms hidden from this viewer and propagate removal into groups_map.
             $all_term_ids = $this->filter_visible_term_ids( $all_term_ids, $taxonomy );
-            $visible_set = array_flip( $all_term_ids );
+            $visible_set  = array_flip( $all_term_ids );
             foreach ( $groups_map as &$member_ids ) {
-                $member_ids = array_values( array_filter( $member_ids, function( $id ) use ( $visible_set ) {
+                $member_ids = array_values( array_filter( $member_ids, function ( $id ) use ( $visible_set ) {
                     return isset( $visible_set[ $id ] );
                 } ) );
             }
@@ -3223,7 +3272,7 @@ class HyperTaxonomy_Search_Widget {
 
         wp_send_json_success( array(
             'terms'  => empty( $terms_data ) ? new stdClass() : $terms_data,
-            'groups' => empty( $groups_map )  ? new stdClass() : $groups_map,
+            'groups' => empty( $groups_map ) ? new stdClass() : $groups_map,
         ) );
     }
 
@@ -3236,13 +3285,19 @@ class HyperTaxonomy_Search_Widget {
      */
     private function send_prefetch_direct_options( $taxonomy, $group_ids, $show_icons ) {
         if ( empty( $group_ids ) || ! taxonomy_exists( $taxonomy ) ) {
-            wp_send_json_success( array( 'terms' => new stdClass(), 'groups' => new stdClass() ) );
+            wp_send_json_success( array(
+                'terms' => new stdClass(),
+                'groups' => new stdClass(),
+            ) );
             return;
         }
 
         $group_ids = $this->filter_visible_term_ids( $group_ids, $taxonomy );
         if ( empty( $group_ids ) ) {
-            wp_send_json_success( array( 'terms' => new stdClass(), 'groups' => new stdClass() ) );
+            wp_send_json_success( array(
+                'terms' => new stdClass(),
+                'groups' => new stdClass(),
+            ) );
             return;
         }
 
@@ -3261,7 +3316,7 @@ class HyperTaxonomy_Search_Widget {
 
         wp_send_json_success( array(
             'terms'  => empty( $terms_data ) ? new stdClass() : $terms_data,
-            'groups' => empty( $groups_map )  ? new stdClass() : $groups_map,
+            'groups' => empty( $groups_map ) ? new stdClass() : $groups_map,
         ) );
     }
 
@@ -3279,10 +3334,10 @@ class HyperTaxonomy_Search_Widget {
             return;
         }
 
-        $taxonomy   = isset( $_GET['taxonomy'] )   ? sanitize_key( wp_unslash( $_GET['taxonomy'] ) )           : 'post_tag';
-        $search     = isset( $_GET['search'] )     ? sanitize_text_field( wp_unslash( $_GET['search'] ) )       : '';
-        $show_icons = isset( $_GET['show_icons'] ) ? sanitize_key( wp_unslash( $_GET['show_icons'] ) )          : 'never';
-        $groups_raw = isset( $_GET['groups'] )     ? sanitize_text_field( wp_unslash( $_GET['groups'] ) )       : '';
+        $taxonomy   = isset( $_GET['taxonomy'] ) ? sanitize_key( wp_unslash( $_GET['taxonomy'] ) ) : 'post_tag';
+        $search     = isset( $_GET['search'] ) ? sanitize_text_field( wp_unslash( $_GET['search'] ) ) : '';
+        $show_icons = isset( $_GET['show_icons'] ) ? sanitize_key( wp_unslash( $_GET['show_icons'] ) ) : 'never';
+        $groups_raw = isset( $_GET['groups'] ) ? sanitize_text_field( wp_unslash( $_GET['groups'] ) ) : '';
         $terms_in   = isset( $_GET['include_terms'] ) ? array_filter( array_map( 'intval', explode( ',', sanitize_text_field( wp_unslash( $_GET['include_terms'] ) ) ) ) ) : array();
         $terms_out  = isset( $_GET['exclude_terms'] ) ? array_filter( array_map( 'intval', explode( ',', sanitize_text_field( wp_unslash( $_GET['exclude_terms'] ) ) ) ) ) : array();
 
@@ -3382,12 +3437,12 @@ class HyperTaxonomy_Search_Widget {
             wp_send_json_error( __( 'Invalid field type.', 'hypertaxonomy' ) );
             return;
         }
-        
-        $page           = isset( $_POST['page'] )           ? intval( $_POST['page'] )                        : 1;
-        $posts_per_page = isset( $_POST['posts_per_page'] ) ? intval( $_POST['posts_per_page'] )               : htax_get_search_results_per_page();
-        $max_results    = isset( $_POST['max_results'] )    ? max( 0, intval( $_POST['max_results'] ) )        : 0;
-        $min_score      = isset( $_POST['min_score'] )      ? max( 0.0, floatval( $_POST['min_score'] ) )      : 0.0;
-        $image_size     = isset( $_POST['image_size'] )     ? sanitize_key( wp_unslash( $_POST['image_size'] ) ) : 'medium';
+
+        $page           = isset( $_POST['page'] ) ? intval( $_POST['page'] ) : 1;
+        $posts_per_page = isset( $_POST['posts_per_page'] ) ? intval( $_POST['posts_per_page'] ) : htax_get_search_results_per_page();
+        $max_results    = isset( $_POST['max_results'] ) ? max( 0, intval( $_POST['max_results'] ) ) : 0;
+        $min_score      = isset( $_POST['min_score'] ) ? max( 0.0, floatval( $_POST['min_score'] ) ) : 0.0;
+        $image_size     = isset( $_POST['image_size'] ) ? sanitize_key( wp_unslash( $_POST['image_size'] ) ) : 'medium';
 
         // Parse orderby parameter early so it's available for text search
         $orderby_string = isset( $_POST['orderby'] ) ? sanitize_text_field( wp_unslash( $_POST['orderby'] ) ) : 'relevance:desc,date:desc';
@@ -3403,7 +3458,7 @@ class HyperTaxonomy_Search_Widget {
 
         // Build extra WHERE from filter state
         $extra_where = '';
-        $raw_filter = isset( $_POST['htax_filter'] ) ? htax_decode_json_request( wp_unslash( $_POST['htax_filter'] ) ) : null;
+        $raw_filter  = isset( $_POST['htax_filter'] ) ? htax_decode_json_request( wp_unslash( $_POST['htax_filter'] ) ) : null;
         if ( null !== $raw_filter ) {
             $filter_state = htax_parse_filter_state_ajax( $raw_filter );
             if ( ! empty( $filter_state ) ) {
@@ -3433,8 +3488,8 @@ class HyperTaxonomy_Search_Widget {
             $extra_where,
             $max_results
         );
-        $all_post_ids = $search_result['results'];
-        $total_found = $search_result['total'];
+        $all_post_ids  = $search_result['results'];
+        $total_found   = $search_result['total'];
 
         if ( empty( $all_post_ids ) ) {
             wp_send_json_success( array(
@@ -3477,7 +3532,6 @@ class HyperTaxonomy_Search_Widget {
         }
 
         wp_send_json_success( $results );
-
     }
 
     /**
@@ -3489,14 +3543,20 @@ class HyperTaxonomy_Search_Widget {
      */
     public function extract_text_search_from_fields( $query, $default_min_length = 3 ) {
         if ( empty( $query ) || ! isset( $query['text_search'] ) || ! is_array( $query['text_search'] ) ) {
-            return array( 'query' => '', 'search_in' => 'all' );
+            return array(
+                'query' => '',
+                'search_in' => 'all',
+            );
         }
 
         $ts         = $query['text_search'];
         $value      = isset( $ts['value'] ) ? trim( $ts['value'] ) : '';
         $min_length = isset( $ts['min_length'] ) ? intval( $ts['min_length'] ) : $default_min_length;
         if ( empty( $value ) || mb_strlen( $value ) < $min_length ) {
-            return array( 'query' => '', 'search_in' => 'all' );
+            return array(
+                'query' => '',
+                'search_in' => 'all',
+            );
         }
         return array(
             'query'     => sanitize_text_field( $value ),
@@ -3656,7 +3716,7 @@ class HyperTaxonomy_Search_Widget {
             ),
         ));
     }
-    
+
     /**
      * Enqueue frontend scripts and styles
      *
@@ -3707,7 +3767,7 @@ class HyperTaxonomy_Search_Widget {
         self::$forms[ self::$current_form_id ]['fields'][ $name ] = array(
             'type' => $type,
             'name' => $name,
-            'in_group' => ! empty( self::$current_group )
+            'in_group' => ! empty( self::$current_group ),
         );
     }
 
@@ -3739,7 +3799,7 @@ class HyperTaxonomy_Search_Widget {
         if ( ! empty( $text_fields ) ) {
             if ( count( $text_fields ) > 1 ) {
                 $field_names = array_column( $text_fields, 'name' );
-                $warnings[] = 'Multiple text fields detected (' . implode( ', ', $field_names ) . '). Only the first text field will be used. Consider using a single text field or the PowerSearch shortcode for multiple search inputs.';
+                $warnings[]  = 'Multiple text fields detected (' . implode( ', ', $field_names ) . '). Only the first text field will be used. Consider using a single text field or the PowerSearch shortcode for multiple search inputs.';
             }
         }
 

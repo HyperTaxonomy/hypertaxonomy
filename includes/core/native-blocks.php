@@ -207,7 +207,11 @@ function htax_rest_posts_group_filter( $args, $request ) {
 
     $args['tax_query'] = empty( $args['tax_query'] )
         ? $tax_query
-        : array( 'relation' => 'AND', $args['tax_query'], $tax_query );
+        : array(
+            'relation' => 'AND',
+            $args['tax_query'],
+            $tax_query,
+        );
 
     return $args;
 }

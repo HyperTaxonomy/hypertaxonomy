@@ -131,8 +131,8 @@ function htax_render_merge_terms_page() {
         wp_die( esc_html__( 'You do not have sufficient permissions to access this page.', 'hypertaxonomy' ) );
     }
 
-    $result  = null;
-    $errors  = array();
+    $result = null;
+    $errors = array();
 
     // Process form submission.
     if ( isset( $_POST['htax_do_merge'] ) && check_admin_referer( 'htax_merge_terms' ) ) {
@@ -161,7 +161,7 @@ function htax_render_merge_terms_page() {
     }
 
     // Build taxonomy options (all HT-enabled taxonomies except 'group').
-    $enabled = array_diff( htax_get_enabled_taxonomies(), array( 'group' ) );
+    $enabled          = array_diff( htax_get_enabled_taxonomies(), array( 'group' ) );
     $taxonomy_options = array();
     foreach ( $enabled as $slug ) {
         $tax_obj = get_taxonomy( $slug );
@@ -173,12 +173,15 @@ function htax_render_merge_terms_page() {
     // Pre-fill from a link (e.g. a row on the Synonyms page): ?taxonomy=&source=&target=.
     // Only on first load, and only for real terms in that taxonomy; the merge still needs
     // the form to be submitted.
-    $prefill = array( 'source' => null, 'target' => null );
+    $prefill = array(
+        'source' => null,
+        'target' => null,
+    );
     if ( empty( $_POST ) && isset( $_GET['taxonomy'] ) ) {
         $prefill_taxonomy = sanitize_key( wp_unslash( $_GET['taxonomy'] ) );
         if ( isset( $taxonomy_options[ $prefill_taxonomy ] ) ) {
             foreach ( array_keys( $prefill ) as $side ) {
-                $prefill_term = empty( $_GET[ $side ] ) ? null : get_term( absint( $_GET[ $side ] ), $prefill_taxonomy );
+                $prefill_term     = empty( $_GET[ $side ] ) ? null : get_term( absint( $_GET[ $side ] ), $prefill_taxonomy );
                 $prefill[ $side ] = $prefill_term instanceof WP_Term ? $prefill_term : null;
             }
             if ( $prefill['source'] && $prefill['target'] && $prefill['source']->term_id === $prefill['target']->term_id ) {
@@ -276,7 +279,10 @@ function htax_render_merge_terms_page() {
                             placeholder="<?php echo esc_attr( $prefill_source ? $prefill_source->name : __( 'Type a term name…', 'hypertaxonomy' ) ); ?>"
                             data-taxonomy-field="htax_merge_taxonomy"
                             data-id-field="htax_source_term_ids"
-                            <?php if ( $prefill_source ) : ?>data-htax-names="<?php echo esc_attr( wp_json_encode( array( $prefill_source->name ) ) ); ?>"<?php endif; ?>
+                            <?php
+                            if ( $prefill_source ) :
+                                ?>
+                                data-htax-names="<?php echo esc_attr( wp_json_encode( array( $prefill_source->name ) ) ); ?>"<?php endif; ?>
                             autocomplete="off" />
                         <input type="hidden" name="htax_source_term_ids" id="htax_source_term_ids" value="<?php echo $prefill_source ? (int) $prefill_source->term_id : ''; ?>" />
                         <p class="description"><?php esc_html_e( 'Add one or more terms to merge (type and select). Their posts and relationships will be moved to the target term.', 'hypertaxonomy' ); ?></p>

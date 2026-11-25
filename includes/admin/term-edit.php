@@ -75,7 +75,7 @@ function htax_enqueue_admin_assets( $hook ) {
                 : 0;
 
             // Determine whether any ancestor is hidden so the checkbox can be disabled.
-            $term_obj     = get_term( $term_id, $taxonomy );
+            $term_obj      = get_term( $term_id, $taxonomy );
             $parent_hidden = false;
             if ( $term_obj && ! is_wp_error( $term_obj ) && $term_obj->parent ) {
                 $ancestor = $term_obj->parent;
@@ -88,7 +88,7 @@ function htax_enqueue_admin_assets( $hook ) {
                     $ancestor = ( $anc_obj && ! is_wp_error( $anc_obj ) ) ? (int) $anc_obj->parent : 0;
                 }
             }
-            $localize_data['parentIsHidden'] = $parent_hidden;
+            $localize_data['parentIsHidden']  = $parent_hidden;
             $localize_data['parentHiddenMsg'] = __( 'Cannot make visible: a parent term is hidden. Make the parent term visible first.', 'hypertaxonomy' );
         }
 
@@ -106,10 +106,13 @@ function htax_enqueue_admin_assets( $hook ) {
                 $group_terms = array();
 
                 foreach ( $included_group_ids as $gid ) {
-                    $members = htax_get_terms_in_groups( array( $gid ), $taxonomy );
+                    $members             = htax_get_terms_in_groups( array( $gid ), $taxonomy );
                     $group_terms[ $gid ] = array_values( array_map(
                         function ( $t ) {
-                            return array( 'id' => $t->term_id, 'name' => $t->name );
+                            return array(
+                                'id' => $t->term_id,
+                                'name' => $t->name,
+                            );
                         },
                         $members
                     ) );
@@ -120,7 +123,11 @@ function htax_enqueue_admin_assets( $hook ) {
                 }
 
                 // Group names for tooltip rendering of dynamically created indirect pills.
-                $group_objs = get_terms( array( 'taxonomy' => 'group', 'include' => $included_group_ids, 'hide_empty' => false ) );
+                $group_objs = get_terms( array(
+                    'taxonomy' => 'group',
+                    'include' => $included_group_ids,
+                    'hide_empty' => false,
+                ) );
                 if ( ! is_wp_error( $group_objs ) ) {
                     $group_names = array();
                     foreach ( $group_objs as $g ) {
@@ -218,10 +225,11 @@ function htax_add_description_display_field( $term_or_taxonomy ) {
     }
 
     $show_description = $term_id ? get_term_meta( $term_id, '_htax_show_description', true ) : false;
-    $taxonomy_obj  = get_taxonomy( $taxonomy );
-    $taxonomy_name = $taxonomy_obj ? mb_strtolower( $taxonomy_obj->labels->singular_name, 'UTF-8' ) : __( 'term', 'hypertaxonomy' );
+    $taxonomy_obj     = get_taxonomy( $taxonomy );
+    $taxonomy_name    = $taxonomy_obj ? mb_strtolower( $taxonomy_obj->labels->singular_name, 'UTF-8' ) : __( 'term', 'hypertaxonomy' );
 
-    if ( $is_add_form ) : ?>
+    if ( $is_add_form ) :
+        ?>
     <div class="form-field htax-description-field">
         <label for="htax_show_description"><?php esc_html_e( 'Show Description', 'hypertaxonomy' ); ?></label>
     <?php else : ?>
@@ -250,7 +258,8 @@ function htax_add_description_display_field( $term_or_taxonomy ) {
     <?php else : ?>
         </td>
     </tr>
-    <?php endif;
+        <?php
+    endif;
 }
 
 /**
@@ -271,9 +280,9 @@ function htax_add_hidden_term_field( $term_or_taxonomy ) {
     // Determine whether an ancestor is hidden (edit form only; new terms have no parent yet).
     $parent_is_hidden = false;
     if ( ! $is_add_form && $term_id && is_taxonomy_hierarchical( $taxonomy ) ) {
-        $hidden_ids  = array_flip( htax_get_all_hidden_term_ids() );
-        $_t          = get_term( $term_id, $taxonomy );
-        $ancestor    = ( $_t && ! is_wp_error( $_t ) ) ? (int) $_t->parent : 0;
+        $hidden_ids = array_flip( htax_get_all_hidden_term_ids() );
+        $_t         = get_term( $term_id, $taxonomy );
+        $ancestor   = ( $_t && ! is_wp_error( $_t ) ) ? (int) $_t->parent : 0;
         while ( $ancestor ) {
             if ( isset( $hidden_ids[ $ancestor ] ) ) {
                 $parent_is_hidden = true;
@@ -284,7 +293,8 @@ function htax_add_hidden_term_field( $term_or_taxonomy ) {
         }
     }
 
-    if ( $is_add_form ) : ?>
+    if ( $is_add_form ) :
+        ?>
     <div class="form-field htax-hidden-field">
         <label for="htax_is_hidden"><?php esc_html_e( 'Visibility', 'hypertaxonomy' ); ?></label>
     <?php else : ?>
@@ -294,12 +304,20 @@ function htax_add_hidden_term_field( $term_or_taxonomy ) {
         </th>
         <td>
     <?php endif; ?>
-            <label for="htax_is_hidden"<?php if ( $parent_is_hidden ) echo ' title="' . esc_attr__( 'Cannot make visible: a parent term is hidden. Make the parent term visible first.', 'hypertaxonomy' ) . '"'; ?>>
+            <label for="htax_is_hidden"
+            <?php
+            if ( $parent_is_hidden ) {
+                echo ' title="' . esc_attr__( 'Cannot make visible: a parent term is hidden. Make the parent term visible first.', 'hypertaxonomy' ) . '"';}
+            ?>
+            >
                 <?php /* A disabled checkbox is not submitted; post "1" so the term stays hidden. */ ?>
                 <input type="hidden" name="htax_is_hidden" value="<?php echo $parent_is_hidden ? '1' : '0'; ?>" />
                 <input type="checkbox" id="htax_is_hidden" name="htax_is_hidden" value="1"
                     <?php checked( $is_hidden, '1' ); ?>
-                    <?php if ( $parent_is_hidden ) echo 'disabled="disabled"'; ?>
+                    <?php
+                    if ( $parent_is_hidden ) {
+                        echo 'disabled="disabled"';}
+                    ?>
                 />
                 <?php esc_html_e( 'Hide this term from public view', 'hypertaxonomy' ); ?>
             </label>
@@ -321,7 +339,8 @@ function htax_add_hidden_term_field( $term_or_taxonomy ) {
     <?php else : ?>
         </td>
     </tr>
-    <?php endif;
+        <?php
+    endif;
 }
 
 /**
@@ -393,17 +412,17 @@ function htax_add_redirect_field( $term_or_taxonomy ) {
     }
 
     // Get taxonomy object for proper labels
-    $tax_obj = get_taxonomy( $taxonomy );
+    $tax_obj       = get_taxonomy( $taxonomy );
     $taxonomy_name = $tax_obj ? mb_strtolower( $tax_obj->labels->singular_name, 'UTF-8' ) : $taxonomy;
 
     // Get redirect data from database with taxonomy info
-    $redirect_term = $term_id ? htax_get_redirect_target( $term_id ) : false;
-    $redirect_to = $redirect_term ? $redirect_term->term_id : false;
+    $redirect_term     = $term_id ? htax_get_redirect_target( $term_id ) : false;
+    $redirect_to       = $redirect_term ? $redirect_term->term_id : false;
     $redirect_taxonomy = $redirect_term ? $redirect_term->taxonomy : $taxonomy;
-    $is_redirect = ! empty( $redirect_to );
+    $is_redirect       = ! empty( $redirect_to );
 
     // Get all taxonomies with redirect feature enabled
-    $enabled_taxonomies = htax_get_enabled_taxonomies();
+    $enabled_taxonomies  = htax_get_enabled_taxonomies();
     $redirect_taxonomies = array();
     foreach ( $enabled_taxonomies as $tax_slug ) {
         if ( htax_taxonomy_has_feature( $tax_slug, 'redirects' ) ) {
@@ -452,9 +471,11 @@ function htax_add_redirect_field( $term_or_taxonomy ) {
                     </select>
                 </div>
                 <div class="htax-tag-container htax-redirect-container" data-current="<?php echo esc_attr( $term_id ); ?>" data-taxonomy="<?php echo esc_attr( $redirect_taxonomy ); ?>" data-source-taxonomy="<?php echo esc_attr( $taxonomy ); ?>">
-                    <?php if ( $redirect_to && $is_redirect ) :
+                    <?php
+                    if ( $redirect_to && $is_redirect ) :
                         $redirect_term = get_term( (int) $redirect_to, $redirect_taxonomy );
-                        if ( $redirect_term && ! is_wp_error( $redirect_term ) ) : ?>
+                        if ( $redirect_term && ! is_wp_error( $redirect_term ) ) :
+                            ?>
                             <span class="htax-pill" data-id="<?php echo esc_attr( $redirect_to ); ?>" tabindex="0">
                                 <?php echo esc_html( $redirect_term->name ); ?>
                                 <button type="button" class="htax-remove" aria-label="<?php esc_attr_e( 'Remove Redirect Target', 'hypertaxonomy' ); ?>" tabindex="-1">
@@ -462,7 +483,10 @@ function htax_add_redirect_field( $term_or_taxonomy ) {
                                     <span aria-hidden="true">×</span>
                                 </button>
                             </span>
-                        <?php endif; endif; ?>
+                            <?php
+                        endif;
+endif;
+                    ?>
                     <button type="button" class="htax-term-add-btn"
                             title="<?php esc_attr_e( 'Set redirect target', 'hypertaxonomy' ); ?>"
                             <?php echo $is_redirect ? 'style="display:none"' : ''; ?>>
@@ -506,9 +530,9 @@ function htax_add_archive_settings_field( $term_or_taxonomy ) {
     }
 
     // Get current values
-    $posts_per_page = $term_id ? get_term_meta( $term_id, '_htax_posts_per_page', true ) : '';
+    $posts_per_page   = $term_id ? get_term_meta( $term_id, '_htax_posts_per_page', true ) : '';
     $max_sticky_posts = $term_id ? get_term_meta( $term_id, '_htax_max_sticky_posts', true ) : '';
-    $sort_order = $term_id ? get_term_meta( $term_id, '_htax_sort_order', true ) : '';
+    $sort_order       = $term_id ? get_term_meta( $term_id, '_htax_sort_order', true ) : '';
 
     // Get global settings
     $global_max_sticky = intval( htax_get_setting( 'max_sticky_posts', 10 ) );
@@ -672,9 +696,9 @@ function htax_save_hidden_term( $term_id ) {
     // must remain hidden — revealing it would create a visible term inside a hidden
     // subtree, breaking the visibility invariant.
     if ( '' === $new_value && '1' === $old_value && is_taxonomy_hierarchical( $taxonomy ) ) {
-        $hidden_ids  = array_flip( htax_get_all_hidden_term_ids() );
-        $_t          = get_term( $term_id, $taxonomy );
-        $ancestor    = ( $_t && ! is_wp_error( $_t ) ) ? (int) $_t->parent : 0;
+        $hidden_ids = array_flip( htax_get_all_hidden_term_ids() );
+        $_t         = get_term( $term_id, $taxonomy );
+        $ancestor   = ( $_t && ! is_wp_error( $_t ) ) ? (int) $_t->parent : 0;
         while ( $ancestor ) {
             if ( isset( $hidden_ids[ $ancestor ] ) ) {
                 htax_add_admin_notice(
@@ -828,8 +852,8 @@ function htax_add_term_groups_field( $term_or_taxonomy ) {
     // Determine which groups to hide from this user.
     $hidden_group_ids = array();
     if ( ! htax_can_see_hidden_terms( 'group' ) ) {
-        $all_hidden     = htax_get_all_hidden_term_ids();
-        $hidden_set     = array_flip( $all_hidden );
+        $all_hidden       = htax_get_all_hidden_term_ids();
+        $hidden_set       = array_flip( $all_hidden );
         $hidden_group_ids = array_values( array_filter( $all_hidden, function ( $id ) use ( $hidden_set ) {
             $t = get_term( $id );
             return $t && ! is_wp_error( $t ) && 'group' === $t->taxonomy;
@@ -861,7 +885,9 @@ function htax_add_term_groups_field( $term_or_taxonomy ) {
             $hidden_group_set   = array_flip( $hidden_group_ids );
             $assigned_group_ids = array_values( array_filter(
                 $assigned_group_ids,
-                function ( $id ) use ( $hidden_group_set ) { return ! isset( $hidden_group_set[ $id ] ); }
+                function ( $id ) use ( $hidden_group_set ) {
+                    return ! isset( $hidden_group_set[ $id ] );
+                }
             ) );
         }
     }
@@ -910,11 +936,14 @@ function htax_add_term_groups_field( $term_or_taxonomy ) {
     // SHARED CONTENT FOR BOTH FORMS
     ?>
             <div class="htax-member-pills-container">
-                <?php foreach ( $assigned_group_ids as $gid ) :
+                <?php
+                foreach ( $assigned_group_ids as $gid ) :
                     $g = isset( $groups_by_id[ $gid ] ) ? $groups_by_id[ $gid ] : null;
-                    if ( ! $g ) : continue; endif;
+                    if ( ! $g ) :
+                        continue;
+endif;
                     $is_locked = isset( $locked_group_set[ $gid ] );
-                ?>
+                    ?>
                     <span class="htax-pill htax-member-group-pill<?php echo $is_locked ? ' htax-pill-locked' : ''; ?>" data-id="<?php echo esc_attr( $gid ); ?>" tabindex="0"
                         <?php if ( $is_locked ) : ?>
                             title="<?php esc_attr_e( 'Managed by Tag Groups — edit this group\'s membership there instead.', 'hypertaxonomy' ); ?>"
@@ -1022,7 +1051,7 @@ function htax_save_term_groups( $term_id ) {
 
     // Get submitted groups and filter out the hidden 0 value
     $submitted_groups = array_map( 'intval', wp_unslash( (array) $_POST['htax_groups'] ) );
-    $submitted_groups = array_filter( $submitted_groups, function( $group_id ) {
+    $submitted_groups = array_filter( $submitted_groups, function ( $group_id ) {
         return $group_id > 0; // Exclude the hidden 0 value
     } );
 
@@ -1034,8 +1063,8 @@ function htax_save_term_groups( $term_id ) {
     if ( function_exists( 'htax_tag_groups_taxonomy_is_managed' )
         && htax_tag_groups_taxonomy_is_managed( $taxonomy )
     ) {
-        $existing_split  = htax_split_term_groups_by_provenance( htax_get_term_group_ids( $term_id ) );
-        $submitted_split = htax_split_term_groups_by_provenance( $submitted_groups );
+        $existing_split   = htax_split_term_groups_by_provenance( htax_get_term_group_ids( $term_id ) );
+        $submitted_split  = htax_split_term_groups_by_provenance( $submitted_groups );
         $submitted_groups = array_values( array_unique( array_merge( $existing_split['mapped'], $submitted_split['ht_only'] ) ) );
     }
 
@@ -1048,21 +1077,21 @@ add_action( 'edited_term', 'htax_save_term_groups', 10, 1 );
 add_action( 'create_term', 'htax_save_term_groups', 4, 1 );
 
 function htax_render_merged_pill_container( array $args ): void {
-    $term_id       = (int) $args['term_id'];
-    $taxonomy      = $args['taxonomy'];
-    $field_terms   = $args['field_terms'];
-    $field_groups  = $args['field_groups'] ?? '';
-    $direct_ids    = $args['direct_term_ids'] ?? array();
-    $group_ids     = $args['group_ids'] ?? array();
+    $term_id             = (int) $args['term_id'];
+    $taxonomy            = $args['taxonomy'];
+    $field_terms         = $args['field_terms'];
+    $field_groups        = $args['field_groups'] ?? '';
+    $direct_ids          = $args['direct_term_ids'] ?? array();
+    $group_ids           = $args['group_ids'] ?? array();
     $via_group_map       = $args['via_group_map'] ?? array();
     $via_container_map   = $args['via_container_map'] ?? array();
     $custom_type_paths   = $args['custom_type_paths'] ?? array(); // [term_id => [['label', 'dir'], ...]]
     $redirected_term_ids = $args['redirected_term_ids'] ?? array();
     // Callers may override panel explicitly; otherwise derive from field_terms.
-    $panel_override      = $args['panel'] ?? null;
-    $placeholder        = $args['placeholder'] ?? __( 'Add…', 'hypertaxonomy' );
-    $disabled      = ! empty( $args['disabled'] );
-    $excluded_set  = array_flip( array_map( 'intval', (array) ( $args['excluded_ids'] ?? array() ) ) );
+    $panel_override = $args['panel'] ?? null;
+    $placeholder    = $args['placeholder'] ?? __( 'Add…', 'hypertaxonomy' );
+    $disabled       = ! empty( $args['disabled'] );
+    $excluded_set   = array_flip( array_map( 'intval', (array) ( $args['excluded_ids'] ?? array() ) ) );
 
     $tax_obj  = get_taxonomy( $taxonomy );
     $tax_name = $tax_obj ? mb_strtolower( $tax_obj->labels->singular_name, 'UTF-8' ) : $taxonomy;
@@ -1071,7 +1100,11 @@ function htax_render_merged_pill_container( array $args ): void {
     $all_term_ids = array_unique( array_merge( $direct_ids, array_keys( $via_group_map ), array_keys( $via_container_map ), array_keys( $custom_type_paths ) ) );
     $term_objects = array();
     if ( ! empty( $all_term_ids ) ) {
-        $fetched = get_terms( array( 'taxonomy' => $taxonomy, 'include' => $all_term_ids, 'hide_empty' => false ) );
+        $fetched = get_terms( array(
+            'taxonomy' => $taxonomy,
+            'include' => $all_term_ids,
+            'hide_empty' => false,
+        ) );
         if ( ! is_wp_error( $fetched ) ) {
             foreach ( $fetched as $t ) {
                 $term_objects[ $t->term_id ] = $t;
@@ -1082,7 +1115,11 @@ function htax_render_merged_pill_container( array $args ): void {
     // Batch-load group objects (direct groups rendered as editable pills).
     $group_objects = array();
     if ( ! empty( $group_ids ) ) {
-        $fetched_groups = get_terms( array( 'taxonomy' => 'group', 'include' => $group_ids, 'hide_empty' => false ) );
+        $fetched_groups = get_terms( array(
+            'taxonomy' => 'group',
+            'include' => $group_ids,
+            'hide_empty' => false,
+        ) );
         if ( ! is_wp_error( $fetched_groups ) ) {
             foreach ( $fetched_groups as $g ) {
                 $group_objects[ $g->term_id ] = $g;
@@ -1091,13 +1128,17 @@ function htax_render_merged_pill_container( array $args ): void {
     }
 
     // Batch-load group objects needed for tooltip names (via_group_map + via_container_map groups).
-    $indirect_group_ids = array_unique( array_merge(
+    $indirect_group_ids     = array_unique( array_merge(
         array_merge( ...( ! empty( $via_group_map ) ? array_values( $via_group_map ) : array( array() ) ) ),
         array_merge( ...( ! empty( $via_container_map ) ? array_values( $via_container_map ) : array( array() ) ) )
     ) );
     $indirect_group_objects = array();
     if ( ! empty( $indirect_group_ids ) ) {
-        $fetched_indirect = get_terms( array( 'taxonomy' => 'group', 'include' => $indirect_group_ids, 'hide_empty' => false ) );
+        $fetched_indirect = get_terms( array(
+            'taxonomy' => 'group',
+            'include' => $indirect_group_ids,
+            'hide_empty' => false,
+        ) );
         if ( ! is_wp_error( $fetched_indirect ) ) {
             foreach ( $fetched_indirect as $g ) {
                 $indirect_group_objects[ $g->term_id ] = $g;
@@ -1114,27 +1155,35 @@ function htax_render_merged_pill_container( array $args ): void {
         $all_group_name_map[ $gid ] = $g->name;
     }
 
-    $ajax_action    = 'htax_search_terms'; // Groups are added via checklist dropdown, not autocomplete
+    $ajax_action      = 'htax_search_terms'; // Groups are added via checklist dropdown, not autocomplete
     $extra_taxonomies = ! empty( $args['taxonomies'] ) ? array_values( array_unique( (array) $args['taxonomies'] ) ) : array( $taxonomy );
-    $panel          = $panel_override ?? ( ( 'htax_containers' === $field_terms ) ? 'containers' : 'includes' );
+    $panel            = $panel_override ?? ( ( 'htax_containers' === $field_terms ) ? 'containers' : 'includes' );
 
     // Build path map: term_id => { direct, via_groups, via_container_groups, via_custom }
-    $path_map = array();
-    $empty_entry = array( 'direct' => false, 'via_groups' => array(), 'via_container_groups' => array(), 'via_custom' => array() );
+    $path_map    = array();
+    $empty_entry = array(
+        'direct' => false,
+        'via_groups' => array(),
+        'via_container_groups' => array(),
+        'via_custom' => array(),
+    );
     foreach ( $direct_ids as $tid ) {
         $path_map[ $tid ] = array_merge( $empty_entry, array( 'direct' => true ) );
     }
     foreach ( $via_group_map as $tid => $gids ) {
-        if ( ! isset( $path_map[ $tid ] ) ) { $path_map[ $tid ] = $empty_entry; }
+        if ( ! isset( $path_map[ $tid ] ) ) {
+            $path_map[ $tid ] = $empty_entry; }
         $path_map[ $tid ]['via_groups'] = array_merge( $path_map[ $tid ]['via_groups'], $gids );
     }
     foreach ( $via_container_map as $tid => $gids ) {
-        if ( ! isset( $path_map[ $tid ] ) ) { $path_map[ $tid ] = $empty_entry; }
+        if ( ! isset( $path_map[ $tid ] ) ) {
+            $path_map[ $tid ] = $empty_entry; }
         $path_map[ $tid ]['via_container_groups'] = array_merge( $path_map[ $tid ]['via_container_groups'], $gids );
     }
     foreach ( $custom_type_paths as $tid => $entries ) {
         $tid = (int) $tid;
-        if ( ! isset( $path_map[ $tid ] ) ) { $path_map[ $tid ] = $empty_entry; }
+        if ( ! isset( $path_map[ $tid ] ) ) {
+            $path_map[ $tid ] = $empty_entry; }
         $path_map[ $tid ]['via_custom'] = array_merge( $path_map[ $tid ]['via_custom'], $entries );
     }
     ?>
@@ -1144,18 +1193,25 @@ function htax_render_merged_pill_container( array $args ): void {
          data-taxonomies="<?php echo esc_attr( implode( ',', array_map( 'sanitize_key', $extra_taxonomies ) ) ); ?>"
          data-action="<?php echo esc_attr( $ajax_action ); ?>"
          data-panel="<?php echo esc_attr( $panel ); ?>"
-         <?php if ( $disabled ) : ?>style="opacity:0.6;pointer-events:none;"<?php endif; ?>>
+         <?php
+            if ( $disabled ) :
+                ?>
+                style="opacity:0.6;pointer-events:none;"<?php endif; ?>>
 
         <?php
         $dropdown_id = 'htax-grp-dd-' . sanitize_key( $field_groups ?: $field_terms );
-        if ( ! empty( $group_ids ) || ! empty( $field_groups ) ) : ?>
+        if ( ! empty( $group_ids ) || ! empty( $field_groups ) ) :
+            ?>
         <span class="htax-section-label htax-section-groups">
             <?php esc_html_e( 'Groups:', 'hypertaxonomy' ); ?>
         </span>
-        <?php foreach ( $group_ids as $gid ) :
-            $g = $group_objects[ $gid ] ?? null;
-            if ( ! $g ) { continue; }
-        ?>
+            <?php
+            foreach ( $group_ids as $gid ) :
+                $g = $group_objects[ $gid ] ?? null;
+                if ( ! $g ) {
+                    continue;
+                }
+                ?>
             <span class="htax-pill htax-group-pill" data-id="<?php echo esc_attr( $gid ); ?>" tabindex="0">
                 <?php echo esc_html( $g->name ); ?>
                 <button type="button" class="htax-remove" aria-label="<?php /* translators: %s: group name */ echo esc_attr( sprintf( __( 'Remove group %s', 'hypertaxonomy' ), $g->name ) ); ?>" tabindex="-1">
@@ -1163,8 +1219,8 @@ function htax_render_merged_pill_container( array $args ): void {
                     <span aria-hidden="true">&times;</span>
                 </button>
             </span>
-        <?php endforeach; ?>
-        <?php if ( ! empty( $field_groups ) && ! $disabled ) : ?>
+            <?php endforeach; ?>
+            <?php if ( ! empty( $field_groups ) && ! $disabled ) : ?>
         <button type="button" class="htax-group-add-btn"
                 data-dropdown="<?php echo esc_attr( $dropdown_id ); ?>"
                 title="<?php esc_attr_e( 'Add group', 'hypertaxonomy' ); ?>">
@@ -1181,7 +1237,7 @@ function htax_render_merged_pill_container( array $args ): void {
 
         <?php
         // Split into direct (editable) and indirect-only (read-only), each sorted by name.
-        $direct_path_map   = array_filter( $path_map, fn( $p ) => $p['direct'] );
+        $direct_path_map = array_filter( $path_map, fn( $p ) => $p['direct'] );
         // Indirect pills for excluded terms are not shown — the term is not actually in the archive.
         $indirect_path_map = array_filter(
             $path_map,
@@ -1205,7 +1261,9 @@ function htax_render_merged_pill_container( array $args ): void {
         // Helper to render a single term pill.
         $render_pill = function ( int $tid, array $paths ) use ( $term_objects, $all_group_name_map, $tax_name, $excluded_set, $redirect_ids, $redirected_term_ids, $panel ) {
             $t = $term_objects[ $tid ] ?? null;
-            if ( ! $t ) { return; }
+            if ( ! $t ) {
+                return;
+            }
 
             $is_direct      = $paths['direct'];
             $via_gids       = $paths['via_groups'];
@@ -1243,14 +1301,18 @@ function htax_render_merged_pill_container( array $args ): void {
                     'name' => $all_group_name_map[ $gid ] ?? ( '#' . $gid ),
                     'dir'  => 'fwd',
                     'url'  => esc_url( add_query_arg(
-                        array( 'term_context' => $tid, 'context_dir' => $vgid_dir, 'context_rel' => 'member_of' ),
+                        array(
+                            'term_context' => $tid,
+                            'context_dir' => $vgid_dir,
+                            'context_rel' => 'member_of',
+                        ),
                         get_edit_term_link( $gid, 'group' )
                     ) ),
                 );
             }
             // via_cgids: includes-relationship path. The direction is known from the panel:
-            //   includes panel  → group includes the pill term  (context_rel=includes_fwd)
-            //   containers panel → pill term includes the group (context_rel=includes_rev)
+            // includes panel  → group includes the pill term  (context_rel=includes_fwd)
+            // containers panel → pill term includes the group (context_rel=includes_rev)
             $vcgid_rel = ( 'containers' === $panel ) ? 'includes_rev' : 'includes_fwd';
             foreach ( $via_cgids as $gid ) {
                 $tooltip_data[] = array(
@@ -1258,7 +1320,11 @@ function htax_render_merged_pill_container( array $args ): void {
                     'name' => $all_group_name_map[ $gid ] ?? ( '#' . $gid ),
                     'dir'  => 'rev',
                     'url'  => esc_url( add_query_arg(
-                        array( 'term_context' => $tid, 'context_dir' => 'ancestors', 'context_rel' => $vcgid_rel ),
+                        array(
+                            'term_context' => $tid,
+                            'context_dir' => 'ancestors',
+                            'context_rel' => $vcgid_rel,
+                        ),
                         get_edit_term_link( $gid, 'group' )
                     ) ),
                 );
@@ -1284,7 +1350,11 @@ function htax_render_merged_pill_container( array $args ): void {
             ?>
             <span class="htax-pill<?php echo $is_direct ? '' : ' htax-indirect'; ?><?php echo $is_custom_only ? ' htax-via-custom' : ''; ?><?php echo $is_overridden ? ' htax-overridden' : ''; ?><?php echo $dim_as_redirect ? ' is-redirect-term' : ''; ?>"
                   data-id="<?php echo esc_attr( $tid ); ?>"
-                  tabindex="0"<?php foreach ( $data_attrs as $attr_name => $attr_value ) { echo ' ' . esc_attr( $attr_name ) . '="' . esc_attr( $attr_value ) . '"'; } ?>
+                  tabindex="0"
+                  <?php
+                    foreach ( $data_attrs as $attr_name => $attr_value ) {
+                        echo ' ' . esc_attr( $attr_name ) . '="' . esc_attr( $attr_value ) . '"'; }
+                    ?>
                   <?php if ( ! empty( $tooltip_data ) ) : ?>
                   data-tooltip="<?php echo esc_attr( wp_json_encode( $tooltip_data ) ); ?>"
                   <?php endif ?>>
@@ -1309,12 +1379,13 @@ function htax_render_merged_pill_container( array $args ): void {
             <?php
         };
 
-        foreach ( $direct_path_map as $tid => $paths ) {
-            $render_pill( $tid, $paths );
-        }
+    foreach ( $direct_path_map as $tid => $paths ) {
+        $render_pill( $tid, $paths );
+    }
 
         // Term + button focuses the search input; sits at the end of the direct terms row.
-        if ( ! $disabled ) : ?>
+    if ( ! $disabled ) :
+        ?>
         <button type="button" class="htax-term-add-btn" title="<?php /* translators: %s: taxonomy name, lowercase */ echo esc_attr( sprintf( __( 'Add %s', 'hypertaxonomy' ), $tax_name ) ); ?>">
             <span class="dashicons dashicons-plus-alt2" aria-hidden="true"></span>
             <span class="screen-reader-text"><?php /* translators: %s: taxonomy name, lowercase */ echo esc_html( sprintf( __( 'Add %s', 'hypertaxonomy' ), $tax_name ) ); ?></span>
@@ -1335,13 +1406,16 @@ function htax_render_merged_pill_container( array $args ): void {
             <?php esc_html_e( 'via groups:', 'hypertaxonomy' ); ?>
         </span>
 
-        <?php foreach ( $indirect_path_map as $tid => $paths ) {
+        <?php
+        foreach ( $indirect_path_map as $tid => $paths ) {
             $render_pill( $tid, $paths );
-        } ?>
+        }
+        ?>
     </div>
     <?php if ( ! empty( $field_groups ) ) : ?>
     <div id="<?php echo esc_attr( $dropdown_id ); ?>" class="htax-group-dropdown">
-        <?php htax_hierarchical_checklist( array(
+        <?php
+        htax_hierarchical_checklist( array(
             'taxonomy'       => 'group',
             'selected_terms' => $group_ids,
             'name'           => '_htax_dd_' . $field_groups,
@@ -1351,7 +1425,8 @@ function htax_render_merged_pill_container( array $args ): void {
             'checked_ontop'  => true,
             'echo'           => true,
             'max_height'     => 220,
-        ) ); ?>
+        ) );
+        ?>
     </div>
     <?php endif; ?>
     <?php
@@ -1541,9 +1616,9 @@ function htax_add_inclusions_tabs_field( $term_or_taxonomy ): void {
     // Group-expanded members and reverse-path terms are purely indirect (read-only pills).
     $incl_direct_ids = htax_get_direct_rel_term_ids( $term_id, 'includes' );
     $cont_direct_ids = htax_get_reverse_rel_term_ids( $term_id, 'includes' );
-    $incl_group_ids  = $supports_groups ? htax_get_direct_rel_group_ids( $term_id, 'includes' )  : array();
+    $incl_group_ids  = $supports_groups ? htax_get_direct_rel_group_ids( $term_id, 'includes' ) : array();
     $cont_group_ids  = $supports_groups ? htax_get_reverse_rel_group_ids( $term_id, 'includes' ) : array();
-    $excl_ids        = $has_exclusions  ? htax_get_excluded_term_ids( $term_id, true )   : array();
+    $excl_ids        = $has_exclusions ? htax_get_excluded_term_ids( $term_id, true ) : array();
 
     // Via-group maps — only terms that are NOT already direct get a read-only pill.
     $incl_via_map = $supports_groups ? htax_build_via_group_map( $incl_group_ids, $taxonomy ) : array();
@@ -1551,10 +1626,10 @@ function htax_add_inclusions_tabs_field( $term_or_taxonomy ): void {
     $cont_via_map = $supports_groups ? htax_build_container_via_group_map( $cont_group_ids, $taxonomy ) : array();
 
     // Reverse-path attribution maps using this term's own group memberships:
-    //   Includes panel: terms that have this term's member groups as container groups
-    //                   (those terms reverse-include themselves into this term's archive).
-    //   Containers panel: terms that include this term's member groups
-    //                     (their archives expand to include members of those groups, i.e. this term).
+    // Includes panel: terms that have this term's member groups as container groups
+    // (those terms reverse-include themselves into this term's archive).
+    // Containers panel: terms that include this term's member groups
+    // (their archives expand to include members of those groups, i.e. this term).
     $member_group_ids  = $supports_groups ? htax_get_term_group_ids( $term_id ) : array();
     $expanded_members  = ! empty( $member_group_ids ) ? htax_get_group_hierarchy( $member_group_ids ) : array();
     $member_maps       = htax_build_member_group_attribution( $expanded_members, $taxonomy );
@@ -1588,9 +1663,11 @@ function htax_add_inclusions_tabs_field( $term_or_taxonomy ): void {
         $rev_groups = $ctype_supports_groups ? htax_get_reverse_rel_group_ids( $term_id, $cslug ) : array();
 
         $fwd_via_map = $ctype_supports_groups ? htax_build_via_group_map( $fwd_groups, $taxonomy ) : array();
-        $rev_via_map = $ctype_supports_groups ? htax_build_via_group_map( $rev_groups, $taxonomy )  : array();
-        foreach ( $fwd_direct as $id ) { unset( $fwd_via_map[ $id ] ); }
-        foreach ( $rev_direct as $id ) { unset( $rev_via_map[ $id ] ); }
+        $rev_via_map = $ctype_supports_groups ? htax_build_via_group_map( $rev_groups, $taxonomy ) : array();
+        foreach ( $fwd_direct as $id ) {
+            unset( $fwd_via_map[ $id ] ); }
+        foreach ( $rev_direct as $id ) {
+            unset( $rev_via_map[ $id ] ); }
 
         $cust_data[ $cslug ] = array(
             'fwd_direct'            => $fwd_direct,
@@ -1615,10 +1692,18 @@ function htax_add_inclusions_tabs_field( $term_or_taxonomy ): void {
         }
         $cd = $cust_data[ $cslug ];
         foreach ( array_unique( array_merge( $cd['fwd_direct'], array_keys( $cd['fwd_via_map'] ) ) ) as $tid ) {
-            $custom_incl_paths[ (int) $tid ][] = array( 'label' => $cdef['label'], 'dir' => 'fwd', 'slug' => $cslug );
+            $custom_incl_paths[ (int) $tid ][] = array(
+                'label' => $cdef['label'],
+                'dir' => 'fwd',
+                'slug' => $cslug,
+            );
         }
         foreach ( array_unique( array_merge( $cd['rev_direct'], array_keys( $cd['rev_via_map'] ) ) ) as $tid ) {
-            $custom_cont_paths[ (int) $tid ][] = array( 'label' => $cdef['inverse_label'], 'dir' => 'rev', 'slug' => $cslug );
+            $custom_cont_paths[ (int) $tid ][] = array(
+                'label' => $cdef['inverse_label'],
+                'dir' => 'rev',
+                'slug' => $cslug,
+            );
         }
     }
     $has_custom_incl_types = ! empty( array_intersect( array_keys( $custom_types ), $includes_slugs ) );
@@ -1687,7 +1772,8 @@ function htax_add_inclusions_tabs_field( $term_or_taxonomy ): void {
                 <h4 class="htax-container-heading">
                     <?php /* translators: %s: taxonomy name, plural */ printf( esc_html__( 'Container %s', 'hypertaxonomy' ), esc_html( ucfirst( $tax_plural ) ) ); ?>
                 </h4>
-                <?php htax_render_merged_pill_container( array(
+                <?php
+                htax_render_merged_pill_container( array(
                     'term_id'             => $term_id,
                     'taxonomy'            => $taxonomy,
                     'field_terms'         => 'htax_containers',
@@ -1699,18 +1785,21 @@ function htax_add_inclusions_tabs_field( $term_or_taxonomy ): void {
                     'custom_type_paths'   => $custom_cont_paths,
                     'redirected_term_ids' => $redirected_to_here,
                     'placeholder'       => $supports_groups
-                        /* translators: %s: taxonomy name, lowercase */
-                        ? sprintf( __( 'Add %s…', 'hypertaxonomy' ), $tax_name )
-                        /* translators: %s: taxonomy name, lowercase */
-                        : sprintf( __( 'Add %s…', 'hypertaxonomy' ), $tax_name ),
+                    /* translators: %s: taxonomy name, lowercase */
+                    ? sprintf( __( 'Add %s…', 'hypertaxonomy' ), $tax_name )
+                    /* translators: %s: taxonomy name, lowercase */
+                    : sprintf( __( 'Add %s…', 'hypertaxonomy' ), $tax_name ),
                     'disabled'       => false,
-                ) ); ?>
+                ) );
+                ?>
                 <p class="description">
-                    <?php printf(
+                    <?php
+                    printf(
                         /* translators: %1$s: taxonomy name, plural and lowercase, %2$s: taxonomy name, lowercase */
                         esc_html__( 'Archives of each of these %1$s will include posts with this %2$s.', 'hypertaxonomy' ),
                         esc_html( $tax_plural ), esc_html( $tax_name )
-                    ); ?>
+                    );
+                    ?>
                 </p>
             </div>
 
@@ -1718,7 +1807,8 @@ function htax_add_inclusions_tabs_field( $term_or_taxonomy ): void {
                 <h4 class="htax-container-heading">
                     <?php /* translators: %s: taxonomy name, plural */ printf( esc_html__( 'Included %s', 'hypertaxonomy' ), esc_html( ucfirst( $tax_plural ) ) ); ?>
                 </h4>
-                <?php htax_render_merged_pill_container( array(
+                <?php
+                htax_render_merged_pill_container( array(
                     'term_id'              => $term_id,
                     'taxonomy'             => $taxonomy,
                     'field_terms'          => 'htax_includes',
@@ -1731,18 +1821,21 @@ function htax_add_inclusions_tabs_field( $term_or_taxonomy ): void {
                     'redirected_term_ids'  => $redirected_to_here,
                     'excluded_ids'      => $excl_ids,
                     'placeholder'       => $supports_groups
-                        /* translators: %s: taxonomy name, lowercase */
-                        ? sprintf( __( 'Add %s…', 'hypertaxonomy' ), $tax_name )
-                        /* translators: %s: taxonomy name, lowercase */
-                        : sprintf( __( 'Add %s…', 'hypertaxonomy' ), $tax_name ),
+                    /* translators: %s: taxonomy name, lowercase */
+                    ? sprintf( __( 'Add %s…', 'hypertaxonomy' ), $tax_name )
+                    /* translators: %s: taxonomy name, lowercase */
+                    : sprintf( __( 'Add %s…', 'hypertaxonomy' ), $tax_name ),
                     'disabled'          => false,
-                ) ); ?>
+                ) );
+                ?>
                 <p class="description">
-                    <?php printf(
+                    <?php
+                    printf(
                         /* translators: %1$s: taxonomy name, lowercase, %2$s: taxonomy name, plural and lowercase */
                         esc_html__( 'This %1$s\'s archive will include posts with any of these %2$s.', 'hypertaxonomy' ),
                         esc_html( $tax_name ), esc_html( $tax_plural )
-                    ); ?>
+                    );
+                    ?>
                 </p>
             </div>
 
@@ -1755,7 +1848,11 @@ function htax_add_inclusions_tabs_field( $term_or_taxonomy ): void {
                 // Simple exclusions container — terms only, no groups.
                 $excl_term_objects = array();
                 if ( ! empty( $excl_ids ) ) {
-                    $fetched_excl = get_terms( array( 'taxonomy' => $taxonomy, 'include' => $excl_ids, 'hide_empty' => false ) );
+                    $fetched_excl = get_terms( array(
+                        'taxonomy' => $taxonomy,
+                        'include' => $excl_ids,
+                        'hide_empty' => false,
+                    ) );
                     if ( ! is_wp_error( $fetched_excl ) ) {
                         foreach ( $fetched_excl as $et ) {
                             $excl_term_objects[ $et->term_id ] = $et;
@@ -1767,10 +1864,13 @@ function htax_add_inclusions_tabs_field( $term_or_taxonomy ): void {
                      data-current="<?php echo esc_attr( $term_id ); ?>"
                      data-taxonomy="<?php echo esc_attr( $taxonomy ); ?>"
                      data-demand-search="1">
-                    <?php foreach ( $excl_ids as $eid ) :
+                    <?php
+                    foreach ( $excl_ids as $eid ) :
                         $et = $excl_term_objects[ $eid ] ?? null;
-                        if ( ! $et ) { continue; }
-                    ?>
+                        if ( ! $et ) {
+                            continue;
+                        }
+                        ?>
                         <span class="htax-pill" data-id="<?php echo esc_attr( $eid ); ?>" tabindex="0">
                             <?php echo esc_html( $et->name ); ?>
                             <button type="button" class="htax-remove"
@@ -1802,11 +1902,12 @@ function htax_add_inclusions_tabs_field( $term_or_taxonomy ): void {
 
         </div><?php /* end includes tab panel */ ?>
 
-        <?php /* ===== CUSTOM TYPE TAB PANELS ===== */
+        <?php
+        /* ===== CUSTOM TYPE TAB PANELS ===== */
         foreach ( $custom_types as $cslug => $cdef ) :
-            $cd                   = $cust_data[ $cslug ];
-            $ctype_sup_groups     = $cd['ctype_supports_groups'];
-            $fwd_placeholder      = $ctype_sup_groups
+            $cd               = $cust_data[ $cslug ];
+            $ctype_sup_groups = $cd['ctype_supports_groups'];
+            $fwd_placeholder  = $ctype_sup_groups
                 /* translators: %s: taxonomy name, lowercase */
                 ? sprintf( __( 'Add %s…', 'hypertaxonomy' ), $tax_name )
                 /* translators: %s: taxonomy name, lowercase */
@@ -1815,11 +1916,11 @@ function htax_add_inclusions_tabs_field( $term_or_taxonomy ): void {
 
             // Non-includes-mapped types can cross taxonomies: forward searches target_taxonomies and
             // reverse searches source_taxonomies, or every enabled taxonomy when the type sets none.
-            $all_non_group   = array_values( array_diff( htax_get_enabled_taxonomies(), array( 'group' ) ) );
-            $fwd_extra_taxes = $ctype_sup_groups ? array() : ( ! empty( $cdef['target_taxonomies'] ) ? $cdef['target_taxonomies'] : $all_non_group );
-            $rev_extra_taxes = $ctype_sup_groups ? array() : ( ! empty( $cdef['source_taxonomies'] ) ? $cdef['source_taxonomies'] : $all_non_group );
+            $all_non_group    = array_values( array_diff( htax_get_enabled_taxonomies(), array( 'group' ) ) );
+            $fwd_extra_taxes  = $ctype_sup_groups ? array() : ( ! empty( $cdef['target_taxonomies'] ) ? $cdef['target_taxonomies'] : $all_non_group );
+            $rev_extra_taxes  = $ctype_sup_groups ? array() : ( ! empty( $cdef['source_taxonomies'] ) ? $cdef['source_taxonomies'] : $all_non_group );
             $is_includes_type = in_array( $cslug, $includes_slugs, true );
-        ?>
+            ?>
         <div class="htax-rel-tab-panel" id="<?php echo esc_attr( 'htax-rel-' . $cslug ); ?>"
              data-panel="<?php echo esc_attr( $cslug ); ?>"
              <?php echo $use_tabs ? 'role="tabpanel" hidden' : ''; ?>>
@@ -1827,23 +1928,27 @@ function htax_add_inclusions_tabs_field( $term_or_taxonomy ): void {
             <?php $symmetric = ( ! $is_includes_type && $cdef['label'] === $cdef['inverse_label'] ); ?>
 
             <?php if ( $symmetric ) : ?>
-            <?php
-            // Symmetric storage-only type: one merged container shows both directions.
-            // Rev pills (← arrow) are rows where another term points to this one.
-            // Fwd pills (→ arrow) are rows where this term points to another.
-            // Adding via the + button always creates a fwd row.
-            $sym_all_ids   = array_values( array_unique( array_merge( $cd['rev_direct'], $cd['fwd_direct'] ) ) );
-            $sym_terms     = array();
-            if ( $sym_all_ids ) {
-                $sym_term_objs = get_terms( array( 'taxonomy' => $taxonomy, 'include' => $sym_all_ids, 'hide_empty' => false ) );
-                if ( ! is_wp_error( $sym_term_objs ) ) {
-                    foreach ( $sym_term_objs as $st ) {
-                        $sym_terms[ $st->term_id ] = $st;
+                <?php
+                // Symmetric storage-only type: one merged container shows both directions.
+                // Rev pills (← arrow) are rows where another term points to this one.
+                // Fwd pills (→ arrow) are rows where this term points to another.
+                // Adding via the + button always creates a fwd row.
+                $sym_all_ids = array_values( array_unique( array_merge( $cd['rev_direct'], $cd['fwd_direct'] ) ) );
+                $sym_terms   = array();
+                if ( $sym_all_ids ) {
+                    $sym_term_objs = get_terms( array(
+                        'taxonomy' => $taxonomy,
+                        'include' => $sym_all_ids,
+                        'hide_empty' => false,
+                    ) );
+                    if ( ! is_wp_error( $sym_term_objs ) ) {
+                        foreach ( $sym_term_objs as $st ) {
+                            $sym_terms[ $st->term_id ] = $st;
+                        }
                     }
                 }
-            }
-            $sym_taxes = implode( ',', ! empty( $fwd_extra_taxes ) ? array_unique( $fwd_extra_taxes ) : array( $taxonomy ) );
-            ?>
+                $sym_taxes = implode( ',', ! empty( $fwd_extra_taxes ) ? array_unique( $fwd_extra_taxes ) : array( $taxonomy ) );
+                ?>
             <div class="htax-inclusions-panel">
                 <h4 class="htax-container-heading"><?php echo esc_html( $cdef['label'] ); ?></h4>
                 <div class="htax-tag-container htax-merged-container htax-sym-container"
@@ -1852,10 +1957,13 @@ function htax_add_inclusions_tabs_field( $term_or_taxonomy ): void {
                      data-taxonomies="<?php echo esc_attr( $sym_taxes ); ?>"
                      data-action="htax_search_terms"
                      data-panel="sym">
-                    <?php foreach ( $cd['rev_direct'] as $rtid ) :
+                    <?php
+                    foreach ( $cd['rev_direct'] as $rtid ) :
                         $rt = $sym_terms[ $rtid ] ?? null;
-                        if ( ! $rt ) { continue; }
-                    ?>
+                        if ( ! $rt ) {
+                            continue;
+                        }
+                        ?>
                     <span class="htax-pill" data-id="<?php echo esc_attr( $rtid ); ?>" data-direct="1" data-dir="rev">
                         <?php echo esc_html( $rt->name ); ?><span class="htax-sym-arrow" aria-hidden="true">&larr;</span>
                         <button type="button" class="htax-remove" aria-label="<?php /* translators: %s: term name */ echo esc_attr( sprintf( __( 'Remove %s', 'hypertaxonomy' ), $rt->name ) ); ?>" tabindex="-1">
@@ -1863,10 +1971,13 @@ function htax_add_inclusions_tabs_field( $term_or_taxonomy ): void {
                         </button>
                     </span>
                     <?php endforeach; ?>
-                    <?php foreach ( $cd['fwd_direct'] as $ftid ) :
+                    <?php
+                    foreach ( $cd['fwd_direct'] as $ftid ) :
                         $ft = $sym_terms[ $ftid ] ?? null;
-                        if ( ! $ft ) { continue; }
-                    ?>
+                        if ( ! $ft ) {
+                            continue;
+                        }
+                        ?>
                     <span class="htax-pill" data-id="<?php echo esc_attr( $ftid ); ?>" data-direct="1" data-dir="fwd">
                         <?php echo esc_html( $ft->name ); ?><span class="htax-sym-arrow" aria-hidden="true">&rarr;</span>
                         <button type="button" class="htax-remove" aria-label="<?php /* translators: %s: term name */ echo esc_attr( sprintf( __( 'Remove %s', 'hypertaxonomy' ), $ft->name ) ); ?>" tabindex="-1">
@@ -1893,7 +2004,8 @@ function htax_add_inclusions_tabs_field( $term_or_taxonomy ): void {
 
             <div class="htax-inclusions-panel">
                 <h4 class="htax-container-heading"><?php echo esc_html( $cdef['inverse_label'] ); ?></h4>
-                <?php htax_render_merged_pill_container( array(
+                <?php
+                htax_render_merged_pill_container( array(
                     'term_id'             => $term_id,
                     'taxonomy'            => $taxonomy,
                     'taxonomies'          => $rev_extra_taxes,
@@ -1906,12 +2018,14 @@ function htax_add_inclusions_tabs_field( $term_or_taxonomy ): void {
                     'disabled'            => false,
                     'panel'               => $is_includes_type ? 'containers' : 'custom',
                     'redirected_term_ids' => $redirected_to_here,
-                ) ); ?>
+                ) );
+                ?>
             </div>
 
             <div class="htax-inclusions-panel"<?php echo $is_includes_type ? ' data-includes-fwd="1"' : ''; ?><?php echo ( $is_redirect && $is_includes_type ) ? ' style="display:none;"' : ''; ?>>
                 <h4 class="htax-container-heading"><?php echo esc_html( $cdef['label'] ); ?></h4>
-                <?php htax_render_merged_pill_container( array(
+                <?php
+                htax_render_merged_pill_container( array(
                     'term_id'             => $term_id,
                     'taxonomy'            => $taxonomy,
                     'taxonomies'          => $fwd_extra_taxes,
@@ -1925,13 +2039,17 @@ function htax_add_inclusions_tabs_field( $term_or_taxonomy ): void {
                     'disabled'            => false,
                     'panel'               => $is_includes_type ? 'includes' : 'custom',
                     'redirected_term_ids' => $redirected_to_here,
-                ) ); ?>
+                ) );
+                ?>
             </div>
 
             <?php endif; ?>
 
-        </div><?php /* end custom type tab panel */
-        endforeach; ?>
+        </div>
+            <?php
+            /* end custom type tab panel */
+        endforeach;
+        ?>
 
     <?php if ( $is_add_form ) : ?>
     </div>

@@ -21,7 +21,7 @@ class HyperTaxonomy_Search_Index_Manager {
     /** @var int[] Terms whose inclusion or container caches a group being deleted shapes. */
     private $group_delete_cache_affected = array();
 
-    
+
     /**
      * Instance
      */
@@ -51,7 +51,7 @@ class HyperTaxonomy_Search_Index_Manager {
         }
         return self::$instance;
     }
-    
+
     /**
      * Constructor
      */
@@ -108,7 +108,7 @@ class HyperTaxonomy_Search_Index_Manager {
         // Priority 20: after htax_sync_post_text_row (priority 10) refreshes the post text.
         add_action( 'save_post', array( $this, 'on_post_saved' ), 20, 2 );
     }
-    
+
     /**
      * When post is deleted
      */
@@ -195,8 +195,8 @@ class HyperTaxonomy_Search_Index_Manager {
      * Handles transitions between published and non-published states.
      * Only published posts should be in the search index.
      *
-     * @param string $new_status New post status
-     * @param string $old_status Old post status
+     * @param string  $new_status New post status
+     * @param string  $old_status Old post status
      * @param WP_Post $post Post object
      */
     public function on_post_status_change( $new_status, $old_status, $post ) {
@@ -286,7 +286,7 @@ class HyperTaxonomy_Search_Index_Manager {
         }
 
         // Calculate delta: what was added and what was removed
-        $added_terms = array_diff( $new_term_ids, $current_term_ids );
+        $added_terms   = array_diff( $new_term_ids, $current_term_ids );
         $removed_terms = array_diff( $current_term_ids, $new_term_ids );
 
         // Clear count cache for affected terms
@@ -298,7 +298,7 @@ class HyperTaxonomy_Search_Index_Manager {
         // Perform incremental update instead of full rebuild
         $this->incremental_index_update( $object_id, $added_terms, $removed_terms, $taxonomy );
     }
-    
+
     /**
      * When term relationships are removed
      */
@@ -312,7 +312,7 @@ class HyperTaxonomy_Search_Index_Manager {
         // remaining terms from the database).
         $this->on_term_relationships_added( $object_id, array(), $tt_ids, $taxonomy );
     }
-    
+
     /**
      * When a term is deleted
      */
@@ -384,8 +384,8 @@ class HyperTaxonomy_Search_Index_Manager {
         ) );
         // Terms including the group or a parent group, and members of the parent groups: their
         // inclusions change (the group's members, and its container rows, drop out).
-        $with_above = array_merge( array( (int) $term_id ), $above );
-        $includers  = $wpdb->get_col( $wpdb->prepare(
+        $with_above    = array_merge( array( (int) $term_id ), $above );
+        $includers     = $wpdb->get_col( $wpdb->prepare(
             "SELECT DISTINCT source_term_id FROM {$table}
              WHERE target_term_id IN ({$in( $with_above )}) AND target_taxonomy = 'group' AND source_taxonomy != 'group' AND {$includes_in}",
             ...$with_above
@@ -434,17 +434,17 @@ class HyperTaxonomy_Search_Index_Manager {
     /**
      * When a term's group membership changes
      *
-     * @param int $term_id Term ID that changed groups
+     * @param int    $term_id Term ID that changed groups
      * @param string $taxonomy Taxonomy name
-     * @param array $new_groups New group IDs
-     * @param array $old_groups Old group IDs
+     * @param array  $new_groups New group IDs
+     * @param array  $old_groups Old group IDs
      */
     public function on_term_groups_changed( $term_id, $taxonomy, $new_groups, $old_groups ) {
         // When Term A's group membership changes (joins/leaves Group X):
         // Effect 1: Posts with Term A - their container rows change: terms that include X now
-        //           include A, and X's container groups now apply to A (or no longer do)
+        // include A, and X's container groups now apply to A (or no longer do)
         // Effect 2: Terms with container_groups=X - A is now their container (or isn't anymore),
-        //           so their posts' container rows change
+        // so their posts' container rows change
         // Terms that include Group X gain or lose A, but their own posts' rows don't change:
         // the rows that do (A's posts) are Effect 1.
 
@@ -471,8 +471,8 @@ class HyperTaxonomy_Search_Index_Manager {
 
         // Effect 2: Find terms that have any of these groups as container_groups
         // These terms now container Term A (or stop containering it)
-        $includes_in     = htax_relationship_type_sql_in( 'includes' );
-        $cg_placeholders = htax_sql_placeholders( count( $groups_for_container_query ) );
+        $includes_in                 = htax_relationship_type_sql_in( 'includes' );
+        $cg_placeholders             = htax_sql_placeholders( count( $groups_for_container_query ) );
         $terms_with_container_groups = $wpdb->get_col( $wpdb->prepare(
             "SELECT DISTINCT target_term_id
              FROM {$wpdb->prefix}htax_term_relationships
@@ -488,7 +488,7 @@ class HyperTaxonomy_Search_Index_Manager {
         if ( ! empty( $terms_with_container_groups ) ) {
             // Batch query: Get posts with all these terms at once
             $post_ids_batch = $this->get_posts_directly_assigned_terms( $terms_with_container_groups, $taxonomy );
-            $post_ids = array_merge( $post_ids, $post_ids_batch );
+            $post_ids       = array_merge( $post_ids, $post_ids_batch );
         }
 
         if ( ! empty( $post_ids ) ) {
@@ -602,12 +602,12 @@ class HyperTaxonomy_Search_Index_Manager {
 
         // Collect all unique ancestor IDs across all affected terms, then batch-fetch
         // their term objects in one query to avoid one get_term() call per ancestor per source.
-        $ancestor_map = array(); // source_id => int[]
+        $ancestor_map     = array(); // source_id => int[]
         $all_ancestor_ids = array();
         foreach ( $affected_term_ids as $source_id ) {
-            $ancestors = get_ancestors( $source_id, $taxonomy, 'taxonomy' );
+            $ancestors                  = get_ancestors( $source_id, $taxonomy, 'taxonomy' );
             $ancestor_map[ $source_id ] = $ancestors;
-            $all_ancestor_ids = array_merge( $all_ancestor_ids, $ancestors );
+            $all_ancestor_ids           = array_merge( $all_ancestor_ids, $ancestors );
         }
 
         $ancestor_terms = array(); // ancestor_id => WP_Term
@@ -723,8 +723,8 @@ class HyperTaxonomy_Search_Index_Manager {
         }
 
         // The ancestors we need to restore entries for: $term_id itself plus its own ancestors.
-        $ancestors_of_term    = get_ancestors( $term_id, $taxonomy, 'taxonomy' );
-        $term_and_ancestors   = array_merge( array( $term_id ), $ancestors_of_term );
+        $ancestors_of_term  = get_ancestors( $term_id, $taxonomy, 'taxonomy' );
+        $term_and_ancestors = array_merge( array( $term_id ), $ancestors_of_term );
 
         // Delete stale entries: any hierarchy row whose source is a descendant of $term_id
         // and whose term_id is $term_id or higher (these were stripped when B became a redirect).
@@ -804,7 +804,7 @@ class HyperTaxonomy_Search_Index_Manager {
         }
 
         // Get old parent from cached data (cached before edit by htax_cache_term_taxonomy_before_edit)
-        $old_data = htax_get_transient( 'htax_term_data_' . $tt_id );
+        $old_data   = htax_get_transient( 'htax_term_data_' . $tt_id );
         $old_parent = isset( $old_data['parent'] ) ? (int) $old_data['parent'] : 0;
         $new_parent = (int) $group->parent;
 
@@ -849,22 +849,22 @@ class HyperTaxonomy_Search_Index_Manager {
         $post_ids = array();
         foreach ( $affected_terms_by_taxonomy as $taxonomy => $term_ids ) {
             if ( ! empty( $term_ids ) ) {
-                $term_ids = array_unique( $term_ids );
+                $term_ids       = array_unique( $term_ids );
                 $post_ids_batch = $this->get_posts_directly_assigned_terms( $term_ids, $taxonomy );
-                $post_ids = array_merge( $post_ids, $post_ids_batch );
+                $post_ids       = array_merge( $post_ids, $post_ids_batch );
             }
         }
 
         // "Terms including groups": Term B's stored include group W, expanded downward, reaches
         // members of this group iff W is this group or an ancestor. Expand upward (ancestor chain).
         $groups_for_includes_query = array( $group_id );
-        $new_ancestors = get_ancestors( $group_id, 'group', 'taxonomy' );
+        $new_ancestors             = get_ancestors( $group_id, 'group', 'taxonomy' );
         if ( ! empty( $new_ancestors ) ) {
             $groups_for_includes_query = array_merge( $groups_for_includes_query, $new_ancestors );
         }
         if ( $old_parent > 0 ) {
             $groups_for_includes_query[] = $old_parent;
-            $old_ancestors = get_ancestors( $old_parent, 'group', 'taxonomy' );
+            $old_ancestors               = get_ancestors( $old_parent, 'group', 'taxonomy' );
             if ( ! empty( $old_ancestors ) ) {
                 $groups_for_includes_query = array_merge( $groups_for_includes_query, $old_ancestors );
             }
@@ -942,10 +942,10 @@ class HyperTaxonomy_Search_Index_Manager {
      * Optimized handler that directly updates container rows instead of full reindex.
      * Updates all posts that have the source term assigned, changing their container relationships.
      *
-     * @param int $term_id Source term whose containers changed
+     * @param int    $term_id Source term whose containers changed
      * @param string $taxonomy Taxonomy of the source term
-     * @param array $new_containers New container term IDs
-     * @param array $old_containers Old container term IDs
+     * @param array  $new_containers New container term IDs
+     * @param array  $old_containers Old container term IDs
      */
     public function on_containers_changed( $term_id, $taxonomy, $new_containers, $old_containers ) {
         // Delegate to unified handler
@@ -958,10 +958,10 @@ class HyperTaxonomy_Search_Index_Manager {
      * Optimized handler that directly updates container rows instead of full reindex.
      * Updates all posts that have the source term assigned, changing their container relationships.
      *
-     * @param int $term_id Source term whose container groups changed
+     * @param int    $term_id Source term whose container groups changed
      * @param string $taxonomy Taxonomy of the source term
-     * @param array $new_groups New container group IDs
-     * @param array $old_groups Old container group IDs
+     * @param array  $new_groups New container group IDs
+     * @param array  $old_groups Old container group IDs
      */
     public function on_container_groups_changed( $term_id, $taxonomy, $new_groups, $old_groups ) {
         // Delegate to unified handler
@@ -998,7 +998,7 @@ class HyperTaxonomy_Search_Index_Manager {
         // 3. Get NEW container state from cache (lazy-loads if needed)
         // Returns WP_Term objects indexed by term_id
         // All containers guaranteed to match source term's taxonomy (filtered in query)
-        $container_terms = htax_get_container_terms( $term_id, true );
+        $container_terms   = htax_get_container_terms( $term_id, true );
         $new_container_ids = array_map( 'intval', array_keys( $container_terms ) );
 
         // Index rows cover each container plus its WP descendants in hierarchical
@@ -1019,7 +1019,7 @@ class HyperTaxonomy_Search_Index_Manager {
 
         // 5. Calculate delta (what changed)
         $removed = array_diff( $old_container_ids, $new_container_ids );
-        $added = array_diff( $new_container_ids, $old_container_ids );
+        $added   = array_diff( $new_container_ids, $old_container_ids );
 
         // 6. Delete removed containers (delta-based, surgical)
         if ( ! empty( $removed ) ) {
@@ -1035,7 +1035,7 @@ class HyperTaxonomy_Search_Index_Manager {
 
         // 7. Insert added containers (delta-based, surgical)
         if ( ! empty( $added ) ) {
-            $values = array();
+            $values              = array();
             $insert_placeholders = array();
 
             // Cache source term's hidden state once — constant across all inner iterations
@@ -1044,13 +1044,13 @@ class HyperTaxonomy_Search_Index_Manager {
             foreach ( $post_ids as $post_id ) {
                 foreach ( $added as $container_id ) {
                     // $added is already hierarchy-expanded (see step 3).
-                    $insert_placeholders[] = "(%d, %d, %d, %s, %s, %d)";
-                    $values[] = $post_id;
-                    $values[] = $container_id;
-                    $values[] = $term_id;
-                    $values[] = $taxonomy;
-                    $values[] = 'container';
-                    $values[] = ( $source_is_hidden || htax_is_term_hidden( $container_id ) ) ? 1 : 0;
+                    $insert_placeholders[] = '(%d, %d, %d, %s, %s, %d)';
+                    $values[]              = $post_id;
+                    $values[]              = $container_id;
+                    $values[]              = $term_id;
+                    $values[]              = $taxonomy;
+                    $values[]              = 'container';
+                    $values[]              = ( $source_is_hidden || htax_is_term_hidden( $container_id ) ) ? 1 : 0;
                 }
             }
 
@@ -1074,10 +1074,10 @@ class HyperTaxonomy_Search_Index_Manager {
      *
      * Note: This does NOT affect posts with Term A directly assigned - those are unaffected.
      *
-     * @param int $term_id Container term whose includes changed
+     * @param int    $term_id Container term whose includes changed
      * @param string $taxonomy Taxonomy of the container term
-     * @param array $new_included New included term IDs
-     * @param array $old_included Old included term IDs
+     * @param array  $new_included New included term IDs
+     * @param array  $old_included Old included term IDs
      */
     public function on_includes_changed( $term_id, $taxonomy, $new_included, $old_included ) {
         if ( null === $new_included || null === $old_included ) {
@@ -1091,13 +1091,13 @@ class HyperTaxonomy_Search_Index_Manager {
 
         // Get all affected source term IDs (terms that are no longer included or newly included)
         $removed_term_ids = array_diff( $old_included, $new_included );
-        $added_term_ids = array_diff( $new_included, $old_included );
+        $added_term_ids   = array_diff( $new_included, $old_included );
 
         // Step 1: DELETE old container rows
         // Remove Term A as container from posts with terms that are no longer included
         if ( ! empty( $removed_term_ids ) ) {
             $placeholders = htax_sql_placeholders( count( $removed_term_ids ) );
-            $query_args = array_merge(
+            $query_args   = array_merge(
                 array( $term_id, $taxonomy ),
                 $removed_term_ids
             );
@@ -1132,7 +1132,7 @@ class HyperTaxonomy_Search_Index_Manager {
             $is_container_hidden = htax_is_term_hidden( $term_id );
 
             // Build values for batch INSERT
-            $values = array();
+            $values           = array();
             $placeholders_arr = array();
             $reindex_post_ids = array();
 
@@ -1142,12 +1142,12 @@ class HyperTaxonomy_Search_Index_Manager {
             // For each newly included term, find posts with that term and add container relationship
             foreach ( $added_term_ids as $included_term_id ) {
                 // Get posts that have this included term directly assigned
-                $post_ids = $this->get_posts_directly_assigned_terms( $included_term_id, $taxonomy );
+                $post_ids         = $this->get_posts_directly_assigned_terms( $included_term_id, $taxonomy );
                 $reindex_post_ids = array_merge( $reindex_post_ids, $post_ids );
 
                 // Get whether source term is hidden (hits object cache primed above)
                 $is_source_hidden = htax_is_term_hidden( $included_term_id );
-                $is_hidden = $is_source_hidden || $is_container_hidden ? 1 : 0;
+                $is_hidden        = $is_source_hidden || $is_container_hidden ? 1 : 0;
 
                 foreach ( $post_ids as $post_id ) {
                     $values[] = $post_id;
@@ -1212,10 +1212,10 @@ class HyperTaxonomy_Search_Index_Manager {
      * When Term A's included groups change, posts with members of those groups need reindexing
      * because they now have (or no longer have) Term A as a container (via Path 3).
      *
-     * @param int $term_id Container term whose included groups changed
+     * @param int    $term_id Container term whose included groups changed
      * @param string $taxonomy Taxonomy of the container term
-     * @param array $new_groups New included group IDs
-     * @param array $old_groups Old included group IDs
+     * @param array  $new_groups New included group IDs
+     * @param array  $old_groups Old included group IDs
      */
     public function on_included_groups_changed( $term_id, $taxonomy, $new_groups, $old_groups ) {
         // Get all affected groups (both added and removed)
@@ -1242,7 +1242,7 @@ class HyperTaxonomy_Search_Index_Manager {
 
         // Reindex posts with any of these terms (batched query)
         $affected_term_ids = array_unique( $affected_term_ids );
-        $post_ids = $this->get_posts_directly_assigned_terms( $affected_term_ids, $taxonomy );
+        $post_ids          = $this->get_posts_directly_assigned_terms( $affected_term_ids, $taxonomy );
 
         $this->queue_post_reindex( $post_ids );
     }
@@ -1272,7 +1272,7 @@ class HyperTaxonomy_Search_Index_Manager {
      * indexed. When a term becomes hidden or unhidden, we need to reindex all posts
      * that might be affected by this term's relationships.
      *
-     * @param int $term_id Term ID
+     * @param int    $term_id Term ID
      * @param string $taxonomy Taxonomy name
      */
     public function on_term_visibility_changed( $term_id, $taxonomy ) {
@@ -1340,7 +1340,7 @@ class HyperTaxonomy_Search_Index_Manager {
 
         if ( $wpdb->last_error ) {
             htax_log_error( 'Failed to truncate index tables', array(
-                'error' => $wpdb->last_error
+                'error' => $wpdb->last_error,
             ) );
             wp_send_json_error( array( 'message' => __( 'Database error. Check logs.', 'hypertaxonomy' ) ) );
             return;
@@ -1354,13 +1354,13 @@ class HyperTaxonomy_Search_Index_Manager {
         }
 
         htax_log_debug( 'Search index truncated, starting rebuild', array(
-            'total_posts' => $count
+            'total_posts' => $count,
         ) );
 
         wp_send_json_success( array(
             /* translators: %d: number of posts */
             'message' => sprintf( __( 'Index cleared. Rebuilding %d posts...', 'hypertaxonomy' ), $count ),
-            'total' => $count
+            'total' => $count,
         ) );
     }
 
@@ -1396,13 +1396,13 @@ class HyperTaxonomy_Search_Index_Manager {
     public function ajax_bulk_rebuild() {
         check_ajax_referer( 'htax-rebuild-index', 'nonce' );
 
-        if (!current_user_can('manage_hypertaxonomy_settings')) {
+        if ( ! current_user_can('manage_hypertaxonomy_settings') ) {
             wp_die( esc_html__( 'Unauthorized access.', 'hypertaxonomy' ), 403 );
         }
 
         set_time_limit( 300 );
 
-        $offset = isset( $_POST['offset'] ) ? intval( wp_unslash( $_POST['offset'] ) ) : 0;
+        $offset     = isset( $_POST['offset'] ) ? intval( wp_unslash( $_POST['offset'] ) ) : 0;
         $batch_size = 50;
 
         $post_ids = $this->get_indexable_post_ids( array( 'publish' ), $batch_size, $offset );
@@ -1526,9 +1526,9 @@ class HyperTaxonomy_Search_Index_Manager {
 
         $sql = $wpdb->prepare(
             "SELECT ID FROM {$wpdb->posts}
-             WHERE post_type IN (" . htax_sql_placeholders( count( $post_types ), 's' ) . ")
-               AND post_status IN (" . htax_sql_placeholders( count( $statuses ), 's' ) . ")
-             ORDER BY ID ASC",
+             WHERE post_type IN (" . htax_sql_placeholders( count( $post_types ), 's' ) . ')
+               AND post_status IN (' . htax_sql_placeholders( count( $statuses ), 's' ) . ')
+             ORDER BY ID ASC',
             array_merge( $post_types, $statuses )
         );
         if ( $limit > 0 ) {
@@ -1540,7 +1540,7 @@ class HyperTaxonomy_Search_Index_Manager {
 
         return array_map( 'intval', (array) $ids );
     }
-    
+
     /**
      * Get posts that have these terms (by term_id)
      *
@@ -1605,7 +1605,7 @@ class HyperTaxonomy_Search_Index_Manager {
         }
 
         $placeholders = htax_sql_placeholders( count( $term_ids ) );
-        $query_args = array_merge( $term_ids, array( $taxonomy ) );
+        $query_args   = array_merge( $term_ids, array( $taxonomy ) );
 
         $post_ids = $wpdb->get_col(
             $wpdb->prepare(
@@ -1629,7 +1629,7 @@ class HyperTaxonomy_Search_Index_Manager {
      * Returns the list of directly assigned terms (where relationship_type = 'direct')
      * that are currently in the index for this post.
      *
-     * @param int $post_id Post ID
+     * @param int    $post_id Post ID
      * @param string $taxonomy Taxonomy name
      * @return array Array of term IDs
      */
@@ -1660,8 +1660,8 @@ class HyperTaxonomy_Search_Index_Manager {
      * Adds direct relationship plus all indirect relationships (containers, hierarchy, redirects, etc.)
      * for a single term assigned to a post.
      *
-     * @param int $post_id Post ID
-     * @param int $term_id Term ID to add
+     * @param int    $post_id Post ID
+     * @param int    $term_id Term ID to add
      * @param string $taxonomy Taxonomy name
      * @return array Array of relationship data to be inserted
      */
@@ -1669,7 +1669,7 @@ class HyperTaxonomy_Search_Index_Manager {
         $term_relationships = array();
 
         // Helper closure to add term relationship
-        $add_term_rel = function( $tid, $source_tid, $tax, $rel_type ) use ( &$term_relationships ) {
+        $add_term_rel = function ( $tid, $source_tid, $tax, $rel_type ) use ( &$term_relationships ) {
             $term_relationships[] = array(
                 'term_id'           => $tid,
                 'source_term_id'    => $source_tid,
@@ -1684,9 +1684,9 @@ class HyperTaxonomy_Search_Index_Manager {
 
         // 1. Add direct relationship (source = itself)
         $pair_key = $term_id . ':' . $term_id . ':direct';
-        if ( ! isset( $indexed_pairs[$pair_key] ) ) {
+        if ( ! isset( $indexed_pairs[ $pair_key ] ) ) {
             $add_term_rel( $term_id, $term_id, $taxonomy, 'direct' );
-            $indexed_pairs[$pair_key] = true;
+            $indexed_pairs[ $pair_key ] = true;
         }
 
         // 2. Add indirect relationships based on taxonomy capabilities.
@@ -1704,9 +1704,9 @@ class HyperTaxonomy_Search_Index_Manager {
                 }
                 $pair_key = $parent_id . ':' . $term_id . ':hierarchy';
 
-                if ( ! isset( $indexed_pairs[$pair_key] ) ) {
+                if ( ! isset( $indexed_pairs[ $pair_key ] ) ) {
                     $add_term_rel( $parent_id, $term_id, $taxonomy, 'hierarchy' );
-                    $indexed_pairs[$pair_key] = true;
+                    $indexed_pairs[ $pair_key ] = true;
                 }
             }
         }
@@ -1717,20 +1717,20 @@ class HyperTaxonomy_Search_Index_Manager {
         // descendants, so a search on a container's child term also matches these posts.
         $containers = array_keys( htax_get_container_terms( $term_id, true ) );
 
-            foreach ( $containers as $container_id ) {
-                $container_ids = $is_hierarchical
-                    ? htax_expand_term_hierarchy( array( $container_id ), $taxonomy )
-                    : array( $container_id );
+        foreach ( $containers as $container_id ) {
+            $container_ids = $is_hierarchical
+                ? htax_expand_term_hierarchy( array( $container_id ), $taxonomy )
+                : array( $container_id );
 
-                foreach ( $container_ids as $hier_id ) {
-                    $pair_key = $hier_id . ':' . $term_id . ':container';
+            foreach ( $container_ids as $hier_id ) {
+                $pair_key = $hier_id . ':' . $term_id . ':container';
 
-                    if ( ! isset( $indexed_pairs[$pair_key] ) ) {
-                        $add_term_rel( $hier_id, $term_id, $taxonomy, 'container' );
-                        $indexed_pairs[$pair_key] = true;
-                    }
+                if ( ! isset( $indexed_pairs[ $pair_key ] ) ) {
+                    $add_term_rel( $hier_id, $term_id, $taxonomy, 'container' );
+                    $indexed_pairs[ $pair_key ] = true;
                 }
             }
+        }
 
         // 3. Add redirect_target relationship. Always indexed regardless of whether the
         // redirects feature is currently enabled — feature gates happen at query time.
@@ -1739,7 +1739,7 @@ class HyperTaxonomy_Search_Index_Manager {
         if ( $redirect_target ) {
             $pair_key = $redirect_target->term_id . ':' . $term_id . ':redirect_target';
 
-            if ( ! isset( $indexed_pairs[$pair_key] ) ) {
+            if ( ! isset( $indexed_pairs[ $pair_key ] ) ) {
                 // When term X redirects to term Y, posts with X directly assigned
                 // should be found when searching for Y
                 // term_id = redirect target (what user searches for)
@@ -1749,7 +1749,7 @@ class HyperTaxonomy_Search_Index_Manager {
                 // Mark as hidden if EITHER redirecting term OR target is hidden
                 self::mark_redirect_as_hidden_if_needed( $term_relationships, $redirect_target, $term_id );
 
-                $indexed_pairs[$pair_key] = true;
+                $indexed_pairs[ $pair_key ] = true;
             }
         }
 
@@ -1786,9 +1786,9 @@ class HyperTaxonomy_Search_Index_Manager {
      * for terms that were added or removed. This is much faster for typical
      * small changes (1-3 terms).
      *
-     * @param int $post_id Post ID
-     * @param array $added_terms Term IDs that were added
-     * @param array $removed_terms Term IDs that were removed
+     * @param int    $post_id Post ID
+     * @param array  $added_terms Term IDs that were added
+     * @param array  $removed_terms Term IDs that were removed
      * @param string $taxonomy Taxonomy name
      */
     private function incremental_index_update( $post_id, $added_terms, $removed_terms, $taxonomy ) {
@@ -2241,13 +2241,15 @@ class HyperTaxonomy_Search_Index_Manager {
              GROUP BY post_id, term_id',
             $post_ids
         ) );
-        $out = array();
+        $out  = array();
         foreach ( (array) $rows as $row ) {
-            $out[ (int) $row->post_id . ':' . (int) $row->term_id ] = array( 's' => (string) $row->s, 'h' => (int) $row->h );
+            $out[ (int) $row->post_id . ':' . (int) $row->term_id ] = array(
+                's' => (string) $row->s,
+                'h' => (int) $row->h,
+            );
         }
         return $out;
     }
-
 }
 
 // Initialize the index manager
@@ -2271,7 +2273,7 @@ HyperTaxonomy_Search_Index_Manager::get_instance();
 function htax_create_search_term_index_table() {
     global $wpdb;
 
-    $table_name = $wpdb->prefix . 'htax_search_terms';
+    $table_name      = $wpdb->prefix . 'htax_search_terms';
     $charset_collate = $wpdb->get_charset_collate();
 
     $sql = "CREATE TABLE $table_name (
@@ -2292,7 +2294,7 @@ function htax_create_search_term_index_table() {
         KEY idx_source_term (source_term_id)
     ) $charset_collate ENGINE=InnoDB;";
 
-    require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+    require_once ABSPATH . 'wp-admin/includes/upgrade.php';
     dbDelta( $sql );
 }
 
@@ -2321,9 +2323,9 @@ function htax_calculate_direct_term_strength( int $term_id, array $post_text, ar
     }
 
     $name    = strtolower( $term->name );
-    $title   = strtolower( $post_text['title']   ?? '' );
+    $title   = strtolower( $post_text['title'] ?? '' );
     $excerpt = strtolower( $post_text['excerpt'] ?? '' );
-    $body    = strtolower( $post_text['body']    ?? '' );
+    $body    = strtolower( $post_text['body'] ?? '' );
 
     $body_words = str_word_count( $body );
     $body_tf    = $body_words > 0
@@ -2333,7 +2335,7 @@ function htax_calculate_direct_term_strength( int $term_id, array $post_text, ar
     $score = $field_weights['floor']
            + $body_tf * $field_weights['body']
            + ( str_contains( $excerpt, $name ) ? $field_weights['excerpt'] : 0.0 )
-           + ( str_contains( $title,   $name ) ? $field_weights['title']   : 0.0 );
+           + ( str_contains( $title, $name ) ? $field_weights['title'] : 0.0 );
 
     return (float) min( 1.0, $score );
 }
@@ -2353,7 +2355,7 @@ function htax_calculate_direct_term_strength( int $term_id, array $post_text, ar
  * @param array $relationships Array of arrays, each containing: ['term_id' => int, 'source_term_id' => int, 'taxonomy' => string, 'relationship_type' => string, 'is_hidden' => bool].
  * @param array $post_text     Plain-text post fields ('title', 'body', 'excerpt') from wp_htax_post_text. Empty array falls back to neutral strength 1.0.
  */
-function htax_index_post_terms( $post_id, $relationships, array $post_text = [] ) {
+function htax_index_post_terms( $post_id, $relationships, array $post_text = array() ) {
     global $wpdb;
     $table_name = $wpdb->prefix . 'htax_search_terms';
     $post_id    = (int) $post_id;
@@ -2485,22 +2487,22 @@ function htax_fetch_post_text_batch( array $post_ids ): array {
  * @param string   $error_context Passed to htax_handle_db_error(); omit to skip error check.
  */
 function htax_upsert_search_rows( string $table_name, array $placeholders, array $values, string $error_context = '' ): void {
-	global $wpdb;
-	if ( empty( $placeholders ) ) {
-		return;
-	}
-	$wpdb->query(
-		$wpdb->prepare(
-			"INSERT INTO {$table_name}
+    global $wpdb;
+    if ( empty( $placeholders ) ) {
+        return;
+    }
+    $wpdb->query(
+        $wpdb->prepare(
+            "INSERT INTO {$table_name}
 			 (post_id, term_id, source_term_id, taxonomy, relationship_type, is_hidden)
-			 VALUES " . implode( ', ', $placeholders ) . "
-			 ON DUPLICATE KEY UPDATE is_hidden = VALUES(is_hidden)",
-			$values
-		)
-	);
-	if ( '' !== $error_context ) {
-		htax_handle_db_error( $error_context );
-	}
+			 VALUES " . implode( ', ', $placeholders ) . '
+			 ON DUPLICATE KEY UPDATE is_hidden = VALUES(is_hidden)',
+            $values
+        )
+    );
+    if ( '' !== $error_context ) {
+        htax_handle_db_error( $error_context );
+    }
 }
 
 /**
@@ -2607,7 +2609,7 @@ function htax_index_post_taxonomy_terms(
  * Feature gates (redirects disabled, inclusions disabled) are enforced at query time,
  * not at index time, so the index stays correct across settings changes without a rebuild.
  */
-function htax_build_post_search_index( $post_id, array $post_text = [] ) {
+function htax_build_post_search_index( $post_id, array $post_text = array() ) {
     global $wpdb;
 
     $post = get_post( $post_id );
@@ -2624,7 +2626,7 @@ function htax_build_post_search_index( $post_id, array $post_text = [] ) {
     $indexed_pairs      = array();
 
     // Appends one relationship row to $term_relationships.
-    $add_term_rel = function( $term_id, $source_term_id, $taxonomy, $relationship_type ) use ( &$term_relationships ) {
+    $add_term_rel = function ( $term_id, $source_term_id, $taxonomy, $relationship_type ) use ( &$term_relationships ) {
         $term_relationships[] = array(
             'term_id'           => $term_id,
             'source_term_id'    => $source_term_id,
@@ -2671,7 +2673,7 @@ function htax_expand_term_hierarchy( $term_ids, $taxonomy ) {
 
     foreach ( $term_ids as $term_id ) {
         $all_ids[] = $term_id;
-        $children = get_term_children( $term_id, $taxonomy );
+        $children  = get_term_children( $term_id, $taxonomy );
         if ( ! is_wp_error( $children ) && ! empty( $children ) ) {
             $all_ids = array_merge( $all_ids, $children );
         }
@@ -2688,7 +2690,7 @@ function htax_get_search_index() {
 }
 
 // Hook to reindex when redirect changes
-add_action( 'htax_redirect_changed', function( $term_id, $term_taxonomy, $new_target_id, $new_target_taxonomy, $old_target ) {
+add_action( 'htax_redirect_changed', function ( $term_id, $term_taxonomy, $new_target_id, $new_target_taxonomy, $old_target ) {
     global $wpdb;
     $table_name = $wpdb->prefix . 'htax_search_terms';
 
@@ -2713,14 +2715,14 @@ add_action( 'htax_redirect_changed', function( $term_id, $term_taxonomy, $new_ta
         if ( ! empty( $post_ids ) ) {
             $is_target_hidden = get_term_meta( $new_target_id, '_htax_is_hidden', true ) ? 1 : 0;
 
-            $values = array();
+            $values       = array();
             $placeholders = array();
             foreach ( $post_ids as $post_id ) {
-                $values[] = $post_id;
-                $values[] = $new_target_id;
-                $values[] = $term_id;
-                $values[] = $new_target_taxonomy;
-                $values[] = $is_target_hidden;
+                $values[]       = $post_id;
+                $values[]       = $new_target_id;
+                $values[]       = $term_id;
+                $values[]       = $new_target_taxonomy;
+                $values[]       = $is_target_hidden;
                 $placeholders[] = '(%d, %d, %d, %s, \'redirect_target\', %d)';
             }
 
@@ -2733,7 +2735,7 @@ add_action( 'htax_redirect_changed', function( $term_id, $term_taxonomy, $new_ta
 }, 10, 5 );
 
 // Hook to reindex when redirect is removed
-add_action( 'htax_redirect_removed', function( $term_id, $term_taxonomy, $old_target_id, $old_target_taxonomy ) {
+add_action( 'htax_redirect_removed', function ( $term_id, $term_taxonomy, $old_target_id, $old_target_taxonomy ) {
     global $wpdb;
     $table_name = $wpdb->prefix . 'htax_search_terms';
 
@@ -2755,7 +2757,7 @@ add_action( 'htax_redirect_removed', function( $term_id, $term_taxonomy, $old_ta
 // A redirect term has no archive of its own, so it must not appear in search as a container or
 // as a hierarchy ancestor. If the term was already a redirect ($old_target is set), these entries
 // are already absent.
-add_action( 'htax_redirect_changed', function( $term_id, $term_taxonomy, $new_target_id, $new_target_taxonomy, $old_target ) {
+add_action( 'htax_redirect_changed', function ( $term_id, $term_taxonomy, $new_target_id, $new_target_taxonomy, $old_target ) {
     if ( $old_target ) {
         return; // Already a redirect — entries were removed when redirect was first set.
     }
@@ -2800,7 +2802,7 @@ add_action( 'htax_redirect_changed', function( $term_id, $term_taxonomy, $new_ta
 
 // When a redirect is removed, restore container entries for any inclusions the term has.
 // The inclusions were preserved in the DB while the term was a redirect; this rebuilds the index.
-add_action( 'htax_redirect_removed', function( $term_id, $term_taxonomy, $old_target_id, $old_target_taxonomy ) {
+add_action( 'htax_redirect_removed', function ( $term_id, $term_taxonomy, $old_target_id, $old_target_taxonomy ) {
     $included_ids = array_keys( htax_get_included_terms( $term_id, false, true ) );
     if ( empty( $included_ids ) ) {
         return;
@@ -2811,7 +2813,7 @@ add_action( 'htax_redirect_removed', function( $term_id, $term_taxonomy, $old_ta
 // When a redirect is removed from a hierarchical term, restore its hierarchy entries.
 // Posts in descendants that were blocked by the redirect chain are reconnected to this term
 // and its ancestors.
-add_action( 'htax_redirect_removed', function( $term_id, $term_taxonomy, $old_target_id, $old_target_taxonomy ) {
+add_action( 'htax_redirect_removed', function ( $term_id, $term_taxonomy, $old_target_id, $old_target_taxonomy ) {
     if ( ! is_taxonomy_hierarchical( $term_taxonomy ) ) {
         return;
     }
@@ -2835,16 +2837,16 @@ add_action( 'htax_custom_inclusions_changed', array( HyperTaxonomy_Search_Index_
 
 // Cache reload handler for relationship changes
 // Reload caches for terms that were added or removed from relationships
-$htax_relationship_cache_invalidation_handler = function( $term_id, $taxonomy, $new_relations = null, $old_relations = null ) {
+$htax_relationship_cache_invalidation_handler = function ( $term_id, $taxonomy, $new_relations = null, $old_relations = null ) {
     // Which side of the changed relationship each action concerns: inclusions (the term's own
     // archive changes) or containers (only its container list changes).
     $action        = current_filter();
     $term_includes = in_array( $action, array( 'htax_includes_changed', 'htax_excludes_changed', 'htax_included_groups_changed' ), true );
 
     // 1. The changed term. The callers that change rows clear the raw row caches of the types
-    //    they changed; its redirect and groups are unaffected. The term edit save and the API
-    //    relationship functions clear the term's caches themselves just before firing and mark
-    //    them fresh, so they aren't cleared again for each action fired.
+    // they changed; its redirect and groups are unaffected. The term edit save and the API
+    // relationship functions clear the term's caches themselves just before firing and mark
+    // them fresh, so they aren't cleared again for each action fired.
     $fresh = &htax_request_cache( 'term_caches_fresh' );
     if ( empty( $fresh[ (int) $term_id ] ) ) {
         if ( $term_includes ) {
@@ -2858,9 +2860,9 @@ $htax_relationship_cache_invalidation_handler = function( $term_id, $taxonomy, $
     }
 
     // 2. Terms on the other side whose relationship to this one was added or removed (terms in
-    //    both lists kept theirs). A term this one includes or excludes has a changed container
-    //    list; a container of this one has changed inclusions and archive. For group fields the
-    //    other side is groups, whose members the save itself clears.
+    // both lists kept theirs). A term this one includes or excludes has a changed container
+    // list; a container of this one has changed inclusions and archive. For group fields the
+    // other side is groups, whose members the save itself clears.
     if ( in_array( $action, array( 'htax_included_groups_changed', 'htax_container_groups_changed' ), true ) ) {
         return;
     }

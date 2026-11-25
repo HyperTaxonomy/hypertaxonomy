@@ -17,14 +17,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 add_action( 'init', 'htax_load_textdomain' );
 add_action( 'plugins_loaded', 'htax_check_version' );
 
-add_action( 'plugins_loaded', function() {
+add_action( 'plugins_loaded', function () {
     htax_get_search_index();
 }, 10 );
 
 // Health check
-add_action( 'admin_init', function() {
+add_action( 'admin_init', function () {
     $current_screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
-    $check_screens = array( 'edit-tags', 'term', 'settings_page_hypertaxonomy' );
+    $check_screens  = array( 'edit-tags', 'term', 'settings_page_hypertaxonomy' );
     if ( $current_screen && in_array( $current_screen->base, $check_screens, true ) ) {
         static $health_checked = false;
         if ( ! $health_checked ) {
@@ -134,7 +134,7 @@ add_action( 'deactivated_plugin', 'htax_clear_tag_groups_notice_dismissal_on_dea
 // ==============================================================================
 
 // Register hooks dynamically for all enabled taxonomies on init
-add_action( 'init', function() {
+add_action( 'init', function () {
     $enabled_taxonomies = htax_get_enabled_taxonomies();
 
     foreach ( $enabled_taxonomies as $taxonomy ) {
@@ -164,7 +164,7 @@ add_action( 'init', function() {
 
         // Priority 17: Single unified tabbed inclusions/relationships field — handles both
         // add and edit forms. For new terms (add form) all panels start empty.
-        add_action( "{$taxonomy}_add_form_fields",  'htax_add_inclusions_tabs_field', 17 );
+        add_action( "{$taxonomy}_add_form_fields", 'htax_add_inclusions_tabs_field', 17 );
         add_action( "{$taxonomy}_edit_form_fields", 'htax_add_inclusions_tabs_field', 17 );
 
         // Add/edit form collapsibles and Term Groups are not applicable to the group
@@ -225,7 +225,7 @@ add_action( 'edited_term', 'htax_handle_term_rename', 10, 3 );
 add_action( 'delete_term', 'htax_invalidate_term_caches_on_delete', 10, 3 );
 
 // Clear site-wide hidden terms cache only when visibility meta actually changes.
-add_action( 'added_term_meta',   'htax_clear_hidden_terms_cache_on_meta', 10, 3 );
+add_action( 'added_term_meta', 'htax_clear_hidden_terms_cache_on_meta', 10, 3 );
 add_action( 'updated_term_meta', 'htax_clear_hidden_terms_cache_on_meta', 10, 3 );
 add_action( 'deleted_term_meta', 'htax_clear_hidden_terms_cache_on_meta', 10, 3 );
 
@@ -242,13 +242,13 @@ add_action( 'htax_async_group_propagate', 'htax_invalidate_group_relationship_ca
 
 // Post list shortcode cache invalidation on post-term assignment changes.
 // set_object_terms receives 6 args so we can diff old vs new term taxonomy IDs in one call.
-add_action( 'set_object_terms',          'htax_post_list_cache_on_object_terms_set',          10, 6 );
+add_action( 'set_object_terms', 'htax_post_list_cache_on_object_terms_set', 10, 6 );
 add_action( 'deleted_term_relationships', 'htax_post_list_cache_on_term_relationships_deleted', 10, 3 );
-add_action( 'transition_post_status',    'htax_post_list_cache_on_post_status_change',          10, 3 );
-add_action( 'wp_update_comment_count',   'htax_post_list_cache_on_comment_count',               10, 1 );
-add_action( 'post_updated',              'htax_post_list_cache_on_post_updated',                10, 3 );
-add_action( 'htax_term_visibility_changed', 'htax_post_list_cache_on_visibility_change',        20, 1 );
-add_action( 'htax_term_visibility_changed', 'htax_invalidate_archives_on_visibility_change',   20, 2 );
+add_action( 'transition_post_status', 'htax_post_list_cache_on_post_status_change', 10, 3 );
+add_action( 'wp_update_comment_count', 'htax_post_list_cache_on_comment_count', 10, 1 );
+add_action( 'post_updated', 'htax_post_list_cache_on_post_updated', 10, 3 );
+add_action( 'htax_term_visibility_changed', 'htax_post_list_cache_on_visibility_change', 20, 1 );
+add_action( 'htax_term_visibility_changed', 'htax_invalidate_archives_on_visibility_change', 20, 2 );
 
 // Clear AJAX caches (priority 15)
 add_action( 'edited_term', 'htax_clear_ajax_caches', 15, 1 );
@@ -439,7 +439,7 @@ add_action( 'htax_container_groups_changed', 'htax_fire_archive_changed_for_cont
 add_action( 'htax_included_groups_changed', 'htax_fire_term_archive_changed', 10, 2 );
 // Only fire when T first becomes a redirect; changing an existing redirect's target has no
 // archive effect (T's archive was already gone), and the target's archive is never affected.
-add_action( 'htax_redirect_changed', function( $term_id, $taxonomy, $new_target_id, $new_target_taxonomy, $old_target ) {
+add_action( 'htax_redirect_changed', function ( $term_id, $taxonomy, $new_target_id, $new_target_taxonomy, $old_target ) {
     if ( false === $old_target ) {
         do_action( 'htax_term_archive_changed', (int) $term_id, $taxonomy );
     }

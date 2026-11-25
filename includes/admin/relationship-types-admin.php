@@ -333,7 +333,10 @@ function htax_ajax_sync_remote_relationship_type(): void {
         wp_send_json_error( array( 'message' => __( 'No source site specified.', 'hypertaxonomy' ) ) );
     }
 
-    $result = apply_filters( 'htax_sync_remote_relationship_types', array( 'success' => false, 'message' => __( 'No sync handler active — TermConnect may not be installed.', 'hypertaxonomy' ) ), $source_site );
+    $result = apply_filters( 'htax_sync_remote_relationship_types', array(
+        'success' => false,
+        'message' => __( 'No sync handler active — TermConnect may not be installed.', 'hypertaxonomy' ),
+    ), $source_site );
 
     if ( ! empty( $result['success'] ) ) {
         wp_send_json_success( $result );
@@ -425,9 +428,10 @@ function htax_render_term_relationships_page(): void {
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ( $remote_types as $slug => $type ) :
+                <?php
+                foreach ( $remote_types as $slug => $type ) :
                     $desc = $type['description'] ?? '';
-                ?>
+                    ?>
                 <tr>
                     <td>
                         <code<?php echo $desc ? ' title="' . esc_attr( $desc ) . '"' : ''; ?>>
@@ -447,7 +451,14 @@ function htax_render_term_relationships_page(): void {
                             <?php esc_html_e( 'Sync', 'hypertaxonomy' ); ?>
                         </button>
                         &nbsp;|&nbsp;
-                        <a href="<?php echo esc_url( wp_nonce_url( add_query_arg( array( 'action' => 'htax_make_relationship_type_local', 'slug' => $slug ), admin_url( 'admin-post.php' ) ), 'htax_make_relationship_type_local' ) ); ?>"
+                        <a href="
+                        <?php
+                        echo esc_url( wp_nonce_url( add_query_arg( array(
+                            'action' => 'htax_make_relationship_type_local',
+                            'slug' => $slug,
+                        ), admin_url( 'admin-post.php' ) ), 'htax_make_relationship_type_local' ) );
+                        ?>
+                                    "
                            onclick="return confirm('<?php echo esc_js( __( 'Make this type local? This cannot be undone. The type definition will become editable and its namespace will change to this site. It will no longer be updated from the source.', 'hypertaxonomy' ) ); ?>')">
                             <?php esc_html_e( 'Make local', 'hypertaxonomy' ); ?>
                         </a>
@@ -481,7 +492,8 @@ function htax_render_term_relationships_page(): void {
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ( $local_types as $slug => $type ) :
+                <?php
+                foreach ( $local_types as $slug => $type ) :
                     $bound_taxes    = array_merge( $type['source_taxonomies'] ?? array(), $type['target_taxonomies'] ?? array() );
                     $inactive_taxes = array_filter( array_unique( $bound_taxes ), fn( $t ) => ! taxonomy_exists( $t ) );
                     $row_title      = $inactive_taxes
@@ -503,8 +515,12 @@ function htax_render_term_relationships_page(): void {
                         'source_taxonomies' => $type['source_taxonomies'] ?? array(),
                         'target_taxonomies' => $type['target_taxonomies'] ?? array(),
                     ) );
-                ?>
-                <tr<?php if ( $inactive_taxes ) : ?> style="opacity:0.6" title="<?php echo esc_attr( $row_title ); ?>"<?php endif; ?>>
+                    ?>
+                <tr
+                    <?php
+                    if ( $inactive_taxes ) :
+                        ?>
+                    style="opacity:0.6" title="<?php echo esc_attr( $row_title ); ?>"<?php endif; ?>>
                     <td><code><?php echo esc_html( $slug ); ?></code></td>
                     <td><?php echo esc_html( $type['label'] ); ?></td>
                     <td><?php echo esc_html( $type['inverse_label'] ?: '—' ); ?></td>

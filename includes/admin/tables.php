@@ -210,14 +210,14 @@ function htax_enqueue_table_assets( $hook ) {
     }
 
     $current_screen = get_current_screen();
-    $taxonomy = $current_screen ? $current_screen->taxonomy : '';
+    $taxonomy       = $current_screen ? $current_screen->taxonomy : '';
 
     if ( ! htax_is_taxonomy_enabled( $taxonomy ) ) {
         return;
     }
 
     // Check if redirect feature is enabled for this taxonomy
-    $has_redirects = htax_taxonomy_has_feature( $taxonomy, 'redirects' );
+    $has_redirects        = htax_taxonomy_has_feature( $taxonomy, 'redirects' );
     $show_redirect_column = $has_redirects;
 
     // Check if icons are enabled for this taxonomy
@@ -245,8 +245,8 @@ function htax_enqueue_table_assets( $hook ) {
     wp_set_script_translations( 'htax-tables-js', 'hypertaxonomy', HTAX_PLUGIN_DIR . 'languages' );
 
     // Get current filter values and sanitize
-    $redirect_filter = isset( $_GET['htax_redirect_filter'] ) ? sanitize_text_field( wp_unslash( $_GET['htax_redirect_filter'] ) ) : '';
-    $icon_filter = isset( $_GET['htax_icon_filter'] ) ? sanitize_text_field( wp_unslash( $_GET['htax_icon_filter'] ) ) : '';
+    $redirect_filter   = isset( $_GET['htax_redirect_filter'] ) ? sanitize_text_field( wp_unslash( $_GET['htax_redirect_filter'] ) ) : '';
+    $icon_filter       = isset( $_GET['htax_icon_filter'] ) ? sanitize_text_field( wp_unslash( $_GET['htax_icon_filter'] ) ) : '';
     $visibility_filter = isset( $_GET['htax_visibility_filter'] ) ? sanitize_text_field( wp_unslash( $_GET['htax_visibility_filter'] ) ) : '';
 
     // Build config for JavaScript
@@ -386,7 +386,7 @@ function htax_get_group_display_tree( $groups, $parent = 0, $depth = 0 ) {
     foreach ( $groups as $group ) {
         if ( $group->parent == $parent ) {
             $group->depth = $depth;
-            $result[] = $group;
+            $result[]     = $group;
 
             // Recursively add children
             $children = htax_get_group_display_tree( $groups, $group->term_id, $depth + 1 );
@@ -460,7 +460,7 @@ function htax_render_icon_column( $content, $column_name, $term_id ) {
     }
 
     $current_screen = get_current_screen();
-    $taxonomy = $current_screen ? $current_screen->taxonomy : '';
+    $taxonomy       = $current_screen ? $current_screen->taxonomy : '';
 
     $icon_html = htax_get_term_icon_html( $term_id, 'small' );
 
@@ -507,8 +507,8 @@ function htax_display_hidden_column( $content, $column_name, $term_id ) {
     // Check whether any ancestor is hidden so Quick Edit can disable the checkbox.
     // Use a static cache to avoid repeated array_flip() across rows on the same page load.
     static $hidden_set = null;
-    $parent_hidden = false;
-    $term_obj      = get_term( $term_id );
+    $parent_hidden     = false;
+    $term_obj          = get_term( $term_id );
     if ( $term_obj && ! is_wp_error( $term_obj ) && $term_obj->parent && is_taxonomy_hierarchical( $term_obj->taxonomy ) ) {
         if ( null === $hidden_set ) {
             $hidden_set = array_flip( htax_get_all_hidden_term_ids() );
@@ -561,7 +561,7 @@ function htax_add_redirect_column( $columns ) {
 
     // Check if our HyperTaxonomy Term Groups column or the Tag Groups plugin's column exists
     // (Tag Groups was rebranded "PublishPress Tag Groups" in Oct 2026; its column key is unchanged)
-    $groups_column_key = null;
+    $groups_column_key   = null;
     $groups_column_names = array( 'htax_term_groups', 'term_group', 'tag_groups', 'term-group' );
 
     foreach ( $groups_column_names as $column_name ) {
@@ -610,7 +610,7 @@ function htax_display_redirect_column( $content, $column_name, $term_id ) {
     }
 
     $redirect_term = htax_get_redirect_target( $term_id );
-    $is_redirect = (bool) $redirect_term;
+    $is_redirect   = (bool) $redirect_term;
 
     if ( $is_redirect ) {
         // Check if this is an auto-redirect
@@ -781,7 +781,7 @@ function htax_term_groups_column_content( $content, $column_name, $term_id ) {
 
     // Hidden span carries current group IDs for Quick Edit JS to read.
     $group_ids_str = empty( $groups ) ? '' : implode( ',', wp_list_pluck( $groups, 'term_id' ) );
-    $data_span = '<span class="htax-qe-grp-data" data-group-ids="' . esc_attr( $group_ids_str ) . '" style="display:none;"></span>';
+    $data_span     = '<span class="htax-qe-grp-data" data-group-ids="' . esc_attr( $group_ids_str ) . '" style="display:none;"></span>';
 
     if ( empty( $groups ) ) {
         return '—' . $data_span;
@@ -864,7 +864,7 @@ add_action( 'quick_edit_custom_box', 'htax_quick_edit_fields', 10, 3 );
 // Hook into enabled taxonomies dynamically
 add_action(
     'init',
-    function() {
+    function () {
         $enabled_taxonomies = htax_get_enabled_taxonomies();
 
         foreach ( $enabled_taxonomies as $taxonomy ) {

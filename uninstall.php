@@ -72,7 +72,11 @@ function htax_uninstall_cleanup() {
     // under the site's table prefix.
     $prefs_key = $wpdb->get_blog_prefix() . 'persisted_preferences';
     // blog_id 0: every user holding the key, including network admins who aren't site members.
-    foreach ( get_users( array( 'fields' => 'ID', 'meta_key' => $prefs_key, 'blog_id' => 0 ) ) as $user_id ) {
+    foreach ( get_users( array(
+        'fields' => 'ID',
+        'meta_key' => $prefs_key,
+        'blog_id' => 0,
+    ) ) as $user_id ) {
         $prefs = get_user_meta( $user_id, $prefs_key, true );
         if ( ! is_array( $prefs ) ) {
             continue;
@@ -151,7 +155,10 @@ function htax_uninstall_cleanup() {
 }
 
 if ( is_multisite() ) {
-    foreach ( get_sites( array( 'number' => 0, 'fields' => 'ids' ) ) as $htax_site_id ) {
+    foreach ( get_sites( array(
+        'number' => 0,
+        'fields' => 'ids',
+    ) ) as $htax_site_id ) {
         switch_to_blog( $htax_site_id );
         htax_uninstall_cleanup();
         restore_current_blog();

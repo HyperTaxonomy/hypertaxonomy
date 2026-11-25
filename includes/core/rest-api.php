@@ -155,12 +155,12 @@ function htax_rest_build_icon_data( WP_Term $term ): ?array {
     // Read configured dimensions once per taxonomy per request.
     static $dims_cache = array();
     if ( ! isset( $dims_cache[ $taxonomy ] ) ) {
-        $icon_settings = htax_get_setting( 'icon_settings', array() )[ $taxonomy ] ?? array();
+        $icon_settings           = htax_get_setting( 'icon_settings', array() )[ $taxonomy ] ?? array();
         $dims_cache[ $taxonomy ] = array(
-            'base_width'  => isset( $icon_settings['width'] )      ? (int) $icon_settings['width']      : 0,
-            'base_height' => isset( $icon_settings['height'] )     ? (int) $icon_settings['height']     : 0,
+            'base_width'  => isset( $icon_settings['width'] ) ? (int) $icon_settings['width'] : 0,
+            'base_height' => isset( $icon_settings['height'] ) ? (int) $icon_settings['height'] : 0,
             'medium_pct'  => isset( $icon_settings['medium_pct'] ) ? (int) $icon_settings['medium_pct'] : 50,
-            'small_pct'   => isset( $icon_settings['small_pct'] )  ? (int) $icon_settings['small_pct']  : 25,
+            'small_pct'   => isset( $icon_settings['small_pct'] ) ? (int) $icon_settings['small_pct'] : 25,
         );
     }
     $base_width  = $dims_cache[ $taxonomy ]['base_width'];
@@ -234,9 +234,9 @@ function htax_rest_build_redirect_data( WP_Term $term ): ?array {
  * @return array Array of extended term stubs.
  */
 function htax_rest_build_includes_data( WP_Term $term ): array {
-    $taxonomy       = $term->taxonomy;
-    $term_id        = $term->term_id;
-    $items          = array();
+    $taxonomy = $term->taxonomy;
+    $term_id  = $term->term_id;
+    $items    = array();
 
     // Explicit relationship weights for this taxonomy, exposed per entry as the
     // strength by which each included term relates (the same weights baked into the
@@ -439,7 +439,7 @@ function htax_filter_rest_prepare_term( $response, $term, $request = null ) {
     // Memoize capability check per taxonomy for the lifetime of this request: the
     // result never changes mid-request, and the filter fires once per term in a collection.
     static $can_see_cache = array();
-    $taxonomy = $term->taxonomy;
+    $taxonomy             = $term->taxonomy;
     if ( ! isset( $can_see_cache[ $taxonomy ] ) ) {
         $can_see_cache[ $taxonomy ] = htax_can_see_hidden_terms( $taxonomy );
     }
@@ -605,10 +605,13 @@ function htax_filter_rest_prepare_term( $response, $term, $request = null ) {
  * @since 1.0.0
  */
 function htax_register_rest_term_filters() {
-    $taxonomies = get_taxonomies( array( 'public' => true, 'show_in_rest' => true ), 'names' );
+    $taxonomies = get_taxonomies( array(
+        'public' => true,
+        'show_in_rest' => true,
+    ), 'names' );
 
     foreach ( $taxonomies as $taxonomy ) {
-        add_filter( "rest_{$taxonomy}_query",   'htax_filter_rest_terms_query',  10, 2 );
+        add_filter( "rest_{$taxonomy}_query", 'htax_filter_rest_terms_query', 10, 2 );
         add_filter( "rest_prepare_{$taxonomy}", 'htax_filter_rest_prepare_term', 10, 3 );
     }
     // Term Groups ('group') is public and in REST, so the loop above already covers it.
@@ -751,7 +754,6 @@ function htax_rest_register_post_extensions(): void {
             ),
         )
     );
-
 }
 
 /**
@@ -769,12 +771,12 @@ function htax_rest_register_post_htax_params( array $params, $post_type ): array
         return $params;
     }
 
-    $params['htax_includes'] = array(
+    $params['htax_includes']     = array(
         'description' => 'Term structure: { primary_term_id: "include_id1,include_id2" }. Keys are primary term IDs; values are CSV of semantically included term IDs. Defines which terms count and the AND groups; weights come from htax_term_weights.',
         'type'        => 'object',
         'default'     => array(),
     );
-    $params['htax_match']    = array(
+    $params['htax_match']        = array(
         'description' => 'Match mode: any (OR) or all (AND) — each primary term in htax_includes must have at least one match.',
         'type'        => 'string',
         'enum'        => array( 'any', 'all' ),
@@ -785,7 +787,7 @@ function htax_rest_register_post_htax_params( array $params, $post_type ): array
         'type'        => 'object',
         'default'     => array(),
     );
-    $params['htax_expand'] = array(
+    $params['htax_expand']       = array(
         'description' => 'When true, also match each primary term via this site\'s own relationship graph (not just direct assignments), with non-direct matches discounted. Off by default.',
         'type'        => 'boolean',
         'default'     => false,
@@ -832,8 +834,8 @@ function htax_rest_apply_htax_post_query( array $args, WP_REST_Request $request 
         return $args;
     }
 
-    $raw_match    = $request->get_param( 'htax_match' );
-    $htax_match   = $raw_match ? $raw_match : 'any';
+    $raw_match  = $request->get_param( 'htax_match' );
+    $htax_match = $raw_match ? $raw_match : 'any';
     // Per-term weight map supplied by the requester (it has already applied its
     // own relationship weighting). This is the sole weight source; any requested
     // term not listed here defaults to 1.0.
@@ -873,7 +875,10 @@ function htax_rest_apply_htax_post_query( array $args, WP_REST_Request $request 
         }
         $term_weight_map[ $primary_id ] = $weight_of( $primary_id );
         $primary_ids[ $primary_id ]     = true;
-        $raw_groups[]                   = array( 'primary_id' => $primary_id, 'csv' => (string) $includes_csv );
+        $raw_groups[]                   = array(
+            'primary_id' => $primary_id,
+            'csv' => (string) $includes_csv,
+        );
     }
 
     // Pass 2: included term IDs not already registered as primaries.
@@ -1171,5 +1176,3 @@ function htax_filter_sitemap_terms_query( $args, $taxonomy ) {
 
     return $args;
 }
-
-

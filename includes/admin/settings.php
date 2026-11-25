@@ -40,7 +40,7 @@ class HyperTaxonomy_Settings {
         // Clear cache when options are updated
         add_action( 'update_option_htax_settings', array( $this, 'clear_options_cache' ) );
     }
-    
+
     /**
      * Get default settings
      */
@@ -49,7 +49,10 @@ class HyperTaxonomy_Settings {
 
         return array(
             // General
-            'enabled_taxonomies' => array( 'post_tag' => true, 'category' => true ),
+            'enabled_taxonomies' => array(
+                'post_tag' => true,
+                'category' => true,
+            ),
             'taxonomy_features' => array(
                 'post_tag' => array(
                     'redirects'          => true,
@@ -179,7 +182,7 @@ class HyperTaxonomy_Settings {
                     ),
                 ),
             ),
-            
+
             // Performance
             'cache_settings' => array(
                 'search_cache_duration'       => 30 * MINUTE_IN_SECONDS,
@@ -203,7 +206,7 @@ class HyperTaxonomy_Settings {
             'rest_expose_term_meta'           => false,
         );
     }
-    
+
     /**
      * Get plugin options with caching
      */
@@ -219,7 +222,7 @@ class HyperTaxonomy_Settings {
             // taxonomy_features['group'] was never written to the DB.
             if ( isset( $defaults['taxonomy_features'] ) ) {
                 foreach ( $defaults['taxonomy_features'] as $taxonomy => $default_features ) {
-                    $saved_tax = isset( $merged['taxonomy_features'][ $taxonomy ] )
+                    $saved_tax                                = isset( $merged['taxonomy_features'][ $taxonomy ] )
                         ? $merged['taxonomy_features'][ $taxonomy ]
                         : array();
                     $merged['taxonomy_features'][ $taxonomy ] = wp_parse_args(
@@ -241,7 +244,7 @@ class HyperTaxonomy_Settings {
             // Deep-merge icon_settings: per-taxonomy → then border_radius within each.
             if ( isset( $defaults['icon_settings'] ) ) {
                 foreach ( $defaults['icon_settings'] as $taxonomy => $default_tax_icons ) {
-                    $saved_tax = isset( $merged['icon_settings'][ $taxonomy ] )
+                    $saved_tax  = isset( $merged['icon_settings'][ $taxonomy ] )
                         ? $merged['icon_settings'][ $taxonomy ]
                         : array();
                     $merged_tax = wp_parse_args( $saved_tax, $default_tax_icons );
@@ -261,7 +264,7 @@ class HyperTaxonomy_Settings {
             // Deep-merge relevance_multipliers so new match types (e.g. 'redirect'
             // added after a site's first save) are filled in from defaults.
             if ( isset( $defaults['relevance_multipliers'] ) ) {
-                $def_mults  = $defaults['relevance_multipliers'];
+                $def_mults   = $defaults['relevance_multipliers'];
                 $saved_mults = isset( $merged['relevance_multipliers'] )
                     ? $merged['relevance_multipliers']
                     : array();
@@ -272,14 +275,14 @@ class HyperTaxonomy_Settings {
                 // Deep-merge per-taxonomy match types.
                 if ( isset( $def_mults['taxonomies'] ) ) {
                     foreach ( $def_mults['taxonomies'] as $taxonomy => $def_tax ) {
-                        $saved_tax   = isset( $saved_mults['taxonomies'][ $taxonomy ] )
+                        $saved_tax  = isset( $saved_mults['taxonomies'][ $taxonomy ] )
                             ? $saved_mults['taxonomies'][ $taxonomy ]
                             : array();
-                        $merged_tax  = wp_parse_args( $saved_tax, $def_tax );
+                        $merged_tax = wp_parse_args( $saved_tax, $def_tax );
 
                         // Merge explicit/text within each match type.
                         foreach ( $def_tax as $match_type => $def_sources ) {
-                            $saved_sources = isset( $saved_tax[ $match_type ] )
+                            $saved_sources             = isset( $saved_tax[ $match_type ] )
                                 ? $saved_tax[ $match_type ]
                                 : array();
                             $merged_tax[ $match_type ] = wp_parse_args( $saved_sources, $def_sources );
@@ -292,7 +295,7 @@ class HyperTaxonomy_Settings {
                 // Deep-merge custom_taxonomies_text (flat/hierarchical).
                 if ( isset( $def_mults['custom_taxonomies_text'] ) ) {
                     foreach ( $def_mults['custom_taxonomies_text'] as $kind => $def_kind ) {
-                        $saved_kind = isset( $saved_mults['custom_taxonomies_text'][ $kind ] )
+                        $saved_kind                                      = isset( $saved_mults['custom_taxonomies_text'][ $kind ] )
                             ? $saved_mults['custom_taxonomies_text'][ $kind ]
                             : array();
                         $merged_mults['custom_taxonomies_text'][ $kind ] = wp_parse_args( $saved_kind, $def_kind );
@@ -307,7 +310,7 @@ class HyperTaxonomy_Settings {
 
         return self::$cached_options;
     }
-    
+
     /**
      * Clear options cache and process any queued icon thumbnail regenerations.
      * Fires on update_option_htax_settings so new settings are already in the DB.
@@ -347,7 +350,7 @@ class HyperTaxonomy_Settings {
             }
         }
     }
-    
+
     /**
      * Add settings page to WordPress admin
      */
@@ -360,13 +363,13 @@ class HyperTaxonomy_Settings {
             array( $this, 'render_settings_page' )
         );
     }
-    
+
     /**
      * Render settings page with tabs
      */
     public function render_settings_page() {
         // Get current tab
-        $valid_tabs = array( 'features', 'display', 'icons', 'search', 'cache', 'export-import', 'advanced' );
+        $valid_tabs    = array( 'features', 'display', 'icons', 'search', 'cache', 'export-import', 'advanced' );
         $requested_tab = isset( $_GET['tab'] ) ? sanitize_key( wp_unslash( $_GET['tab'] ) ) : '';
         $active_tab    = in_array( $requested_tab, $valid_tabs, true ) ? $requested_tab : 'features';
 
@@ -401,8 +404,8 @@ class HyperTaxonomy_Settings {
                 echo '<input type="hidden" name="htax_current_tab" value="' . esc_attr( $active_tab ) . '" />';
 
                 $general_subtab = isset( $_GET['general_subtab'] ) ? sanitize_key( wp_unslash( $_GET['general_subtab'] ) ) : '';
-                $search_subtab = isset( $_GET['search_subtab'] ) ? sanitize_key( wp_unslash( $_GET['search_subtab'] ) ) : '';
-                $icons_subtab = isset( $_GET['icons_subtab'] ) ? sanitize_key( wp_unslash( $_GET['icons_subtab'] ) ) : '';
+                $search_subtab  = isset( $_GET['search_subtab'] ) ? sanitize_key( wp_unslash( $_GET['search_subtab'] ) ) : '';
+                $icons_subtab   = isset( $_GET['icons_subtab'] ) ? sanitize_key( wp_unslash( $_GET['icons_subtab'] ) ) : '';
 
                 if ( $general_subtab ) {
                     echo '<input type="hidden" name="htax_current_subtab" value="general_subtab=' . esc_attr( $general_subtab ) . '" />';
@@ -452,19 +455,19 @@ class HyperTaxonomy_Settings {
         </div>
         <?php
     }
-    
+
     /**
      * Render General tab
      */
     private function render_features_tab() {
-        $options = $this->get_options();
+        $options              = $this->get_options();
         $available_taxonomies = htax_get_available_taxonomies();
 
         // Get current sub-tab - default to 'overview'
         $general_subtab = isset( $_GET['general_subtab'] ) ? sanitize_key( wp_unslash( $_GET['general_subtab'] ) ) : 'overview';
 
         // Build subtabs list - Overview first, then only enabled taxonomies
-        $subtabs = array();
+        $subtabs             = array();
         $subtabs['overview'] = __( 'General', 'hypertaxonomy' );
 
         // Add Term Groups first (always present as it's built-in and always enabled)
@@ -489,9 +492,9 @@ class HyperTaxonomy_Settings {
         // Add custom taxonomies individually if enabled
         foreach ( $available_taxonomies as $tax_slug => $tax_obj ) {
             if ( ! in_array( $tax_slug, array( 'post_tag', 'category', 'group' ), true ) ) {
-                $is_enabled = isset( $options['enabled_taxonomies'][$tax_slug] ) && $options['enabled_taxonomies'][$tax_slug];
+                $is_enabled = isset( $options['enabled_taxonomies'][ $tax_slug ] ) && $options['enabled_taxonomies'][ $tax_slug ];
                 if ( $is_enabled ) {
-                    $subtabs[$tax_slug] = $tax_obj->label;
+                    $subtabs[ $tax_slug ] = $tax_obj->label;
                 }
             }
         }
@@ -515,7 +518,7 @@ class HyperTaxonomy_Settings {
         // Validate that the requested subtab is valid and enabled
         if ( 'overview' === $general_subtab ) {
             $this->render_general_overview( $available_taxonomies );
-        } elseif ( isset( $subtabs[$general_subtab] ) ) {
+        } elseif ( isset( $subtabs[ $general_subtab ] ) ) {
             // Subtab exists and taxonomy is enabled, render it
             $this->render_general_taxonomy_settings( $general_subtab, $available_taxonomies );
         } else {
@@ -687,7 +690,7 @@ class HyperTaxonomy_Settings {
                                    name="htax_settings[taxonomy_features][<?php echo esc_attr( $tax_slug ); ?>][<?php echo esc_attr( $feature ); ?>]"
                                    value="1"
                                    <?php foreach ( $attrs as $attr => $value ) : ?>
-                                   <?php echo esc_attr( $attr ); ?>="<?php echo esc_attr( $value ); ?>"
+                                        <?php echo esc_attr( $attr ); ?>="<?php echo esc_attr( $value ); ?>"
                                    <?php endforeach; ?>
                                    <?php checked( ! empty( $features[ $feature ] ) ); ?> />
                             <?php echo esc_html( $label ); ?>
@@ -711,10 +714,10 @@ class HyperTaxonomy_Settings {
                 return;
             }
         } else {
-            if ( ! isset( $available_taxonomies[$tax_slug] ) ) {
+            if ( ! isset( $available_taxonomies[ $tax_slug ] ) ) {
                 return;
             }
-            $tax_obj = $available_taxonomies[$tax_slug];
+            $tax_obj = $available_taxonomies[ $tax_slug ];
         }
 
         $info = htax_get_taxonomy_info( $tax_slug );
@@ -722,7 +725,7 @@ class HyperTaxonomy_Settings {
             return;
         }
 
-        $features = isset( $options['taxonomy_features'][$tax_slug] ) ? $options['taxonomy_features'][$tax_slug] : array();
+        $features = isset( $options['taxonomy_features'][ $tax_slug ] ) ? $options['taxonomy_features'][ $tax_slug ] : array();
 
         // Get rewrite slug
         $rewrite_slug = '';
@@ -781,7 +784,10 @@ class HyperTaxonomy_Settings {
                     <td>
                         <?php
                         $this->render_feature_checkbox( 'group', 'icons', $features, __( 'Enable Term Group icons', 'hypertaxonomy' ), __( 'Allow setting custom icons for term groups (used in group archives and in displaying Term Groups if supported by your theme).', 'hypertaxonomy' ) );
-                        $this->render_feature_checkbox( 'group', 'redirects', $features, __( 'Allow Term Group redirects', 'hypertaxonomy' ), __( 'Term Group archive pages can redirect to other term groups\' archives - this allows to consolidate content, reorganize group hierarchies or rename groups without invalidating the original URLs.', 'hypertaxonomy' ), array( 'class' => 'htax-enable-redirects', 'data-taxonomy' => 'group' ) );
+                        $this->render_feature_checkbox( 'group', 'redirects', $features, __( 'Allow Term Group redirects', 'hypertaxonomy' ), __( 'Term Group archive pages can redirect to other term groups\' archives - this allows to consolidate content, reorganize group hierarchies or rename groups without invalidating the original URLs.', 'hypertaxonomy' ), array(
+                            'class' => 'htax-enable-redirects',
+                            'data-taxonomy' => 'group',
+                        ) );
                         $this->render_feature_checkbox( 'group', 'visibility', $features, __( 'Enable Term Group visibility options', 'hypertaxonomy' ), __( 'Allow hiding individual groups and their subgroups from public view. Hidden group archives return 404 to unauthorized users and are excluded from REST API responses and sitemaps. Does not affect which posts appear in term archives that include the group — group expansion behavior is unchanged.', 'hypertaxonomy' ) );
                         $this->render_feature_checkbox( 'group', 'customize_archives', $features, __( 'Archive customization', 'hypertaxonomy' ), __( 'Per-group archive description display, sticky posts, posts per page, and sort order.', 'hypertaxonomy' ) );
                         ?>
@@ -872,7 +878,7 @@ class HyperTaxonomy_Settings {
         <?php
     }
 
-    
+
     /**
      * Render Display tab
      */
@@ -1058,7 +1064,7 @@ class HyperTaxonomy_Settings {
         // Get taxonomies with icons feature enabled, using already-loaded $options
         // so defaults (e.g. group icons=true) are applied even before a first save.
         $enabled_taxonomies = htax_get_enabled_taxonomies();
-        $icon_taxonomies = array();
+        $icon_taxonomies    = array();
         foreach ( $enabled_taxonomies as $tax ) {
             $tax_features = isset( $options['taxonomy_features'][ $tax ] ) ? $options['taxonomy_features'][ $tax ] : array();
             if ( ! empty( $tax_features['icons'] ) ) {
@@ -1113,10 +1119,13 @@ class HyperTaxonomy_Settings {
                     <?php esc_html_e( 'General', 'hypertaxonomy' ); ?>
                 </a>
             </li>
-            <?php foreach ( $sorted_taxonomies as $taxonomy ) :
+            <?php
+            foreach ( $sorted_taxonomies as $taxonomy ) :
                 $tax_obj = get_taxonomy( $taxonomy );
-                if ( ! $tax_obj ) continue;
-            ?>
+                if ( ! $tax_obj ) {
+                    continue;
+                }
+                ?>
             <li>
                 <a href="?page=hypertaxonomy&tab=icons&icons_subtab=<?php echo esc_attr( $taxonomy ); ?>"
                    class="<?php echo $icons_subtab === $taxonomy ? 'current' : ''; ?>">
@@ -1180,18 +1189,19 @@ if ( function_exists( 'htax_the_archive_icon' ) ) {
             <h4><?php esc_html_e( 'Styling Pills', 'hypertaxonomy' ); ?></h4>
             <p><?php esc_html_e( 'Pills automatically inherit border-radius from your icon settings. The border-radius applies to both the icon and the pill container, creating a cohesive visual style. Icons and placeholders have a 1px border that matches their shape.', 'hypertaxonomy' ); ?></p>
 
-        <?php elseif ( in_array( $icons_subtab, $sorted_taxonomies, true ) ) :
+            <?php
+        elseif ( in_array( $icons_subtab, $sorted_taxonomies, true ) ) :
             // Per-taxonomy icon settings
             $taxonomy = $icons_subtab;
-            $tax_obj = get_taxonomy( $taxonomy );
+            $tax_obj  = get_taxonomy( $taxonomy );
             if ( ! $tax_obj ) {
                 echo '<p>' . esc_html__( 'Invalid taxonomy.', 'hypertaxonomy' ) . '</p>';
                 return;
             }
 
             // Get current settings for this taxonomy
-            $icon_settings = isset( $options['icon_settings'][$taxonomy] )
-                ? $options['icon_settings'][$taxonomy]
+            $icon_settings = isset( $options['icon_settings'][ $taxonomy ] )
+                ? $options['icon_settings'][ $taxonomy ]
                 : array(
                     'enabled' => true,
                     'display' => 'when_available',
@@ -1204,12 +1214,12 @@ if ( function_exists( 'htax_the_archive_icon' ) ) {
                     ),
                 );
 
-            $enabled    = isset( $icon_settings['enabled'] ) ? $icon_settings['enabled'] : true;
-            $display    = isset( $icon_settings['display'] ) ? $icon_settings['display'] : 'when_available';
-            $width      = isset( $icon_settings['width'] ) ? $icon_settings['width'] : 96;
-            $height     = isset( $icon_settings['height'] ) ? $icon_settings['height'] : 96;
-            $small_pct  = isset( $icon_settings['small_pct'] ) ? $icon_settings['small_pct'] : 25;
-            $medium_pct = isset( $icon_settings['medium_pct'] ) ? $icon_settings['medium_pct'] : 50;
+            $enabled       = isset( $icon_settings['enabled'] ) ? $icon_settings['enabled'] : true;
+            $display       = isset( $icon_settings['display'] ) ? $icon_settings['display'] : 'when_available';
+            $width         = isset( $icon_settings['width'] ) ? $icon_settings['width'] : 96;
+            $height        = isset( $icon_settings['height'] ) ? $icon_settings['height'] : 96;
+            $small_pct     = isset( $icon_settings['small_pct'] ) ? $icon_settings['small_pct'] : 25;
+            $medium_pct    = isset( $icon_settings['medium_pct'] ) ? $icon_settings['medium_pct'] : 50;
             $border_radius = isset( $icon_settings['border_radius'] ) ? $icon_settings['border_radius'] : array(
                 'style' => 'rounded',
                 'top_left' => 20,
@@ -1231,11 +1241,13 @@ if ( function_exists( 'htax_the_archive_icon' ) ) {
                         <?php esc_html_e( 'Enable icon uploads', 'hypertaxonomy' ); ?>
                     </label>
                     <p class="description">
-                        <?php printf(
+                        <?php
+                        printf(
                             /* translators: %s: taxonomy name, plural and lowercase */
                             esc_html__( 'Allow uploading custom icons for %s.', 'hypertaxonomy' ),
                             esc_html( mb_strtolower( $tax_obj->labels->name, 'UTF-8' ) )
-                        ); ?>
+                        );
+                        ?>
                     </p>
                 </td>
             </tr>
@@ -1336,7 +1348,7 @@ if ( function_exists( 'htax_the_archive_icon' ) ) {
                         );
                         foreach ( $corner_styles as $style_value => $style_label ) :
                             $style_mb = 'custom' === $style_value ? '12px' : '8px';
-                        ?>
+                            ?>
                         <label style="display: block; margin-bottom: <?php echo esc_attr( $style_mb ); ?>;">
                             <input type="radio"
                                    name="htax_settings[icon_settings][<?php echo esc_attr( $icons_subtab ); ?>][border_radius][style]"
@@ -1350,10 +1362,22 @@ if ( function_exists( 'htax_the_archive_icon' ) ) {
                         <div id="htax-custom-corners" style="margin-left: 24px; <?php echo 'custom' !== $border_radius['style'] ? 'display:none;' : ''; ?>">
                             <?php
                             $corner_fields = array(
-                                'top_left'     => array( 'label' => __( 'Top Left:', 'hypertaxonomy' ),    'id' => 'tl' ),
-                                'top_right'    => array( 'label' => __( 'Top Right:', 'hypertaxonomy' ),   'id' => 'tr' ),
-                                'bottom_left'  => array( 'label' => __( 'Bottom Left:', 'hypertaxonomy' ),  'id' => 'bl' ),
-                                'bottom_right' => array( 'label' => __( 'Bottom Right:', 'hypertaxonomy' ), 'id' => 'br' ),
+                                'top_left'     => array(
+                                    'label' => __( 'Top Left:', 'hypertaxonomy' ),
+                                    'id' => 'tl',
+                                ),
+                                'top_right'    => array(
+                                    'label' => __( 'Top Right:', 'hypertaxonomy' ),
+                                    'id' => 'tr',
+                                ),
+                                'bottom_left'  => array(
+                                    'label' => __( 'Bottom Left:', 'hypertaxonomy' ),
+                                    'id' => 'bl',
+                                ),
+                                'bottom_right' => array(
+                                    'label' => __( 'Bottom Right:', 'hypertaxonomy' ),
+                                    'id' => 'br',
+                                ),
                             );
                             ?>
                             <table class="htax-corners-table">
@@ -1390,11 +1414,11 @@ if ( function_exists( 'htax_the_archive_icon' ) ) {
                         // Small: 0.5x, Medium: 1x (actual), Large: 2x
                         // Preserves aspect ratio - no artificial minimums/maximums
 
-                        $small_width  = (int) round( $width  * $small_pct  / 100 );
-                        $small_height = (int) round( $height * $small_pct  / 100 );
-                        $medium_width  = (int) round( $width  * $medium_pct / 100 );
+                        $small_width   = (int) round( $width * $small_pct / 100 );
+                        $small_height  = (int) round( $height * $small_pct / 100 );
+                        $medium_width  = (int) round( $width * $medium_pct / 100 );
                         $medium_height = (int) round( $height * $medium_pct / 100 );
-                        $preview_br = htax_resolve_border_radius_css( $border_radius );
+                        $preview_br    = htax_resolve_border_radius_css( $border_radius );
                         ?>
                         <div id="htax-icon-preview-box" style="margin-top: 20px; padding: 20px; background: #f5f5f5; border-radius: 4px; display: inline-block;">
                             <p style="margin: 0 0 12px 0; font-weight: 600;">
@@ -1463,7 +1487,7 @@ if ( function_exists( 'htax_the_archive_icon' ) ) {
                             <?php
                             $colors = array( '#e53935', '#1e88e5', '#43a047', '#fdd835', '#6d4c41' );
                             foreach ( $colors as $color ) :
-                            ?>
+                                ?>
                                 <div class="htax-placeholder-square" style="width: <?php echo esc_attr( $small_width ); ?>px; height: <?php echo esc_attr( $small_height ); ?>px; background: <?php echo esc_attr( $color ); ?>; border-radius: <?php echo esc_attr( $preview_br ); ?>;"></div>
                             <?php endforeach; ?>
                             <span style="line-height: <?php echo esc_attr( $small_height ); ?>px; margin-left: 5px;">
@@ -1528,7 +1552,7 @@ if ( function_exists( 'htax_the_archive_icon' ) ) {
         $search_taxonomies = htax_get_enabled_taxonomies_with_search();
 
         // Check if we have custom taxonomies with search enhancement
-        $has_custom_flat_search = false;
+        $has_custom_flat_search         = false;
         $has_custom_hierarchical_search = false;
         foreach ( $search_taxonomies as $taxonomy ) {
             if ( ! in_array( $taxonomy, array( 'post_tag', 'category' ), true ) ) {
@@ -1568,10 +1592,13 @@ if ( function_exists( 'htax_the_archive_icon' ) ) {
                     <?php esc_html_e( 'General', 'hypertaxonomy' ); ?>
                 </a>
             </li>
-            <?php foreach ( $search_taxonomies as $taxonomy ) :
+            <?php
+            foreach ( $search_taxonomies as $taxonomy ) :
                 $tax_obj = get_taxonomy( $taxonomy );
-                if ( ! $tax_obj ) continue;
-            ?>
+                if ( ! $tax_obj ) {
+                    continue;
+                }
+                ?>
             <li>
                 <a href="?page=hypertaxonomy&tab=search&search_subtab=<?php echo esc_attr( $taxonomy ); ?>"
                    class="<?php echo $search_subtab === $taxonomy ? 'current' : ''; ?>">
@@ -1605,9 +1632,9 @@ if ( function_exists( 'htax_the_archive_icon' ) ) {
                 <th scope="row"><?php esc_html_e( 'Indexed Post Types', 'hypertaxonomy' ); ?></th>
                 <td>
                     <?php
-                    $indexed     = isset( $options['indexed_post_types'] ) ? (array) $options['indexed_post_types'] : array( 'post', 'page' );
-                    $post_types  = get_post_types( array( 'public' => true ), 'objects' );
-                    $skip_types  = array( 'attachment' );
+                    $indexed    = isset( $options['indexed_post_types'] ) ? (array) $options['indexed_post_types'] : array( 'post', 'page' );
+                    $post_types = get_post_types( array( 'public' => true ), 'objects' );
+                    $skip_types = array( 'attachment' );
                     foreach ( $post_types as $pt_slug => $pt_obj ) :
                         if ( in_array( $pt_slug, $skip_types, true ) ) {
                             continue;
@@ -1813,7 +1840,7 @@ if ( function_exists( 'htax_the_archive_icon' ) ) {
                 if ( HTAX_DEFAULT_STRENGTH_MODEL === $model_key ) {
                     continue;
                 }
-                $by_taxonomy = htax_get_strength_model_coverage( $model_key );
+                $by_taxonomy                     = htax_get_strength_model_coverage( $model_key );
                 $external_coverage[ $model_key ] = array(
                     'by_taxonomy' => $by_taxonomy,
                     'scored'      => (int) array_sum( wp_list_pluck( $by_taxonomy, 'scored' ) ),
@@ -1823,12 +1850,13 @@ if ( function_exists( 'htax_the_archive_icon' ) ) {
             $panel_style = function ( $model_key ) use ( $selected_model ) {
                 return $model_key === $selected_model ? '' : 'display:none;';
             };
-            ?>
+    ?>
             <tr>
                 <th scope="row"><label for="htax-strength-model"><?php esc_html_e( 'Strength Model', 'hypertaxonomy' ); ?></label></th>
                 <td>
                     <select name="htax_settings[strength_model]" id="htax-strength-model" <?php disabled( count( $strength_models ) < 2 ); ?>>
-                        <?php foreach ( $strength_models as $model_key => $model_args ) :
+                        <?php
+                        foreach ( $strength_models as $model_key => $model_args ) :
                             $label = $model_args['label'];
                             if ( ! empty( $model_args['inactive'] ) ) {
                                 $label = sprintf(
@@ -1853,11 +1881,13 @@ if ( function_exists( 'htax_the_archive_icon' ) ) {
                     <input type="hidden" name="htax_settings[strength_model_changed]" id="htax-strength-model-changed" value="0" />
                     <?php if ( $saved_model !== $selected_model ) : ?>
                         <p class="description" style="color:#996800;">
-                            <?php echo esc_html( sprintf(
+                            <?php
+                            echo esc_html( sprintf(
                                 /* translators: %s: strength model key */
                                 __( 'The selected model "%s" is inactive (its plugin may be deactivated), so the built-in model is in use. It takes effect again when its plugin is reactivated.', 'hypertaxonomy' ),
                                 $saved_model
-                            ) ); ?>
+                            ) );
+                            ?>
                         </p>
                     <?php endif; ?>
                     <p class="description">
@@ -1905,71 +1935,86 @@ if ( function_exists( 'htax_the_archive_icon' ) ) {
                         <?php /* translators: %d: percentage of posts indexed */ echo esc_html( sprintf( __( 'posts indexed (%d%%)', 'hypertaxonomy' ), $pct ) ); ?>
                     </span>
                     <br><span style="font-weight:600;">
-                        <?php echo esc_html( sprintf(
+                        <?php
+                        echo esc_html( sprintf(
                             /* translators: 1: number of post-term pairs, 2: number of rows in the term relationship index */
                             _n( '%1$s post–term pair (%2$s index rows)', '%1$s post–term pairs (%2$s index rows)', $total_pairs, 'hypertaxonomy' ),
                             number_format_i18n( $total_pairs ),
                             number_format_i18n( $term_rows )
-                        ) ); ?>
+                        ) );
+                        ?>
                     </span>
-                    <?php foreach ( (array) $pairs_by_taxonomy as $pairs_row ) :
+                    <?php
+                    foreach ( (array) $pairs_by_taxonomy as $pairs_row ) :
                         $pairs_tax_obj = get_taxonomy( $pairs_row->taxonomy );
                         ?>
                         <br><span style="color:#666;font-size:12px;">
-                            <?php echo esc_html( sprintf(
+                            <?php
+                            echo esc_html( sprintf(
                                 /* translators: 1: taxonomy name, 2: number of post-term pairs */
                                 __( '%1$s: %2$s', 'hypertaxonomy' ),
                                 $pairs_tax_obj ? $pairs_tax_obj->labels->name : $pairs_row->taxonomy,
                                 number_format_i18n( (int) $pairs_row->pairs )
-                            ) ); ?>
+                            ) );
+                            ?>
                         </span>
                     <?php endforeach; ?>
                     <?php if ( $missing > 0 ) : ?>
                         <br><span style="color:#d63638;">
-                            <?php echo esc_html( sprintf(
+                            <?php
+                            echo esc_html( sprintf(
                                 /* translators: %d: number of posts */
                                 _n( '%d post is missing from the index — rebuild to include it.', '%d posts are missing from the index — rebuild to include them.', $missing, 'hypertaxonomy' ),
                                 $missing
-                            ) ); ?>
+                            ) );
+                            ?>
                         </span>
                     <?php endif; ?>
                     </div>
 
-                    <?php foreach ( $external_coverage as $model_key => $cov ) :
+                    <?php
+                    foreach ( $external_coverage as $model_key => $cov ) :
                         $unscored  = max( 0, $cov['total'] - $cov['scored'] );
                         $model_pct = $cov['total'] > 0 ? (int) floor( $cov['scored'] / $cov['total'] * 100 ) : 0;
                         $color     = 0 === $unscored && $cov['total'] > 0 ? '#46b450' : '#d63638';
                         ?>
                         <div class="htax-strength-model-panel" data-model="<?php echo esc_attr( $model_key ); ?>" style="<?php echo esc_attr( $panel_style( $model_key ) ); ?>">
                             <span style="color:<?php echo esc_attr( $color ); ?>; font-weight:600;">
-                                <?php echo esc_html( sprintf(
+                                <?php
+                                echo esc_html( sprintf(
                                     /* translators: 1: scored post-term pairs, 2: total post-term pairs, 3: percentage */
                                     __( '%1$s / %2$s post–term pairs scored (%3$d%%)', 'hypertaxonomy' ),
                                     number_format_i18n( $cov['scored'] ),
                                     number_format_i18n( $cov['total'] ),
                                     $model_pct
-                                ) ); ?>
+                                ) );
+                                ?>
                             </span>
-                            <?php foreach ( $cov['by_taxonomy'] as $cov_taxonomy => $counts ) :
+                            <?php
+                            foreach ( $cov['by_taxonomy'] as $cov_taxonomy => $counts ) :
                                 $cov_tax_obj = get_taxonomy( $cov_taxonomy );
                                 ?>
                                 <br><span style="color:#666;font-size:12px;">
-                                    <?php echo esc_html( sprintf(
+                                    <?php
+                                    echo esc_html( sprintf(
                                         /* translators: 1: taxonomy name, 2: scored pairs, 3: total pairs */
                                         __( '%1$s: %2$s / %3$s', 'hypertaxonomy' ),
                                         $cov_tax_obj ? $cov_tax_obj->labels->name : $cov_taxonomy,
                                         number_format_i18n( $counts['scored'] ),
                                         number_format_i18n( $counts['total'] )
-                                    ) ); ?>
+                                    ) );
+                                    ?>
                                 </span>
                             <?php endforeach; ?>
                             <?php if ( $unscored > 0 ) : ?>
                                 <br><span style="color:#d63638;">
-                                    <?php echo esc_html( sprintf(
+                                    <?php
+                                    echo esc_html( sprintf(
                                         /* translators: %s: number of unscored post-term pairs */
                                         _n( '%s post–term pair is not scored yet.', '%s post–term pairs are not scored yet.', $unscored, 'hypertaxonomy' ),
                                         number_format_i18n( $unscored )
-                                    ) ); ?>
+                                    ) );
+                                    ?>
                                     <?php if ( ! empty( $strength_models[ $model_key ]['inactive'] ) ) : ?>
                                         <?php esc_html_e( 'This model is inactive and can\'t be selected.', 'hypertaxonomy' ); ?>
                                     <?php elseif ( $model_key !== $selected_model ) : ?>
@@ -2009,11 +2054,13 @@ if ( function_exists( 'htax_the_archive_icon' ) ) {
                             </button>
                             <span class="htax-clear-strength-model-status" style="margin-left:8px;"></span>
                             <p class="description">
-                                <?php echo esc_html( sprintf(
+                                <?php
+                                echo esc_html( sprintf(
                                     /* translators: %s: strength model name */
                                     __( 'Scores for "%s" are produced by the plugin that provides this model, so HyperTaxonomy can\'t rebuild them — to rescore posts, use that plugin\'s own tools. Clear Scores removes every score stored for this model; if it is the selected strength model, the selection switches back to the built-in model.', 'hypertaxonomy' ),
                                     $strength_models[ $model_key ]['label']
-                                ) ); ?>
+                                ) );
+                                ?>
                             </p>
                         </div>
                     <?php endforeach; ?>
@@ -2021,43 +2068,50 @@ if ( function_exists( 'htax_the_archive_icon' ) ) {
             </tr>
         </table>
 
-        <?php elseif ( in_array( $search_subtab, $search_taxonomies, true ) ) :
+            <?php
+        elseif ( in_array( $search_subtab, $search_taxonomies, true ) ) :
             // Per-taxonomy relevance weights sub-tab
             $taxonomy = $search_subtab;
-            $tax_obj = get_taxonomy( $taxonomy );
+            $tax_obj  = get_taxonomy( $taxonomy );
             if ( ! $tax_obj ) {
                 echo '<p>' . esc_html__( 'Invalid taxonomy.', 'hypertaxonomy' ) . '</p>';
                 return;
             }
 
             // Get current weights for this taxonomy
-            $tax_weights = isset( $options['relevance_multipliers']['taxonomies'][$taxonomy] )
-                ? $options['relevance_multipliers']['taxonomies'][$taxonomy]
-                : array( 'text_match' => 0.6, 'widget_selected' => 1.2 );
+            $tax_weights = isset( $options['relevance_multipliers']['taxonomies'][ $taxonomy ] )
+                ? $options['relevance_multipliers']['taxonomies'][ $taxonomy ]
+                : array(
+                    'text_match' => 0.6,
+                    'widget_selected' => 1.2,
+                );
             ?>
 
         <table class="form-table" role="presentation">
-            <?php if ( htax_taxonomy_has_feature( $taxonomy, 'redirects' ) && htax_taxonomy_has_feature( $taxonomy, 'search_enhancement' ) ) :
-            ?>
+            <?php
+            if ( htax_taxonomy_has_feature( $taxonomy, 'redirects' ) && htax_taxonomy_has_feature( $taxonomy, 'search_enhancement' ) ) :
+                ?>
 
             <tr>
                 <th scope="row"><?php esc_html_e( 'Relevance Weights', 'hypertaxonomy' ); ?></th>
                 <td>
                     <p class="description" style="margin-top: 0;">
-                        <?php printf(
+                        <?php
+                        printf(
                             /* translators: %s: taxonomy name, plural and lowercase */
                             esc_html__( 'Configure how much weight to give to %s matches in search results.', 'hypertaxonomy' ),
                             esc_html( mb_strtolower( $tax_obj->labels->name, 'UTF-8' ) )
-                        ); ?>
+                        );
+                        ?>
                     </p>
                     <?php
                     // Get weights with proper defaults
-                    $is_hierarchical = is_taxonomy_hierarchical( $taxonomy );
+                    $is_hierarchical        = is_taxonomy_hierarchical( $taxonomy );
                     $has_term_relationships = htax_taxonomy_has_feature( $taxonomy, 'term_relationships' );
-                    $has_term_groups = htax_taxonomy_has_feature( $taxonomy, 'group_assignment' );
-                    $has_redirects = htax_taxonomy_has_feature( $taxonomy, 'redirects' );
-                    $is_core_taxonomy = in_array( $taxonomy, array( 'post_tag', 'category' ), true );
-                    $show_text_column = $is_core_taxonomy; // Only show name/description weight columns for core taxonomies
+                    $has_term_groups        = htax_taxonomy_has_feature( $taxonomy, 'group_assignment' );
+                    $has_redirects          = htax_taxonomy_has_feature( $taxonomy, 'redirects' );
+                    $is_core_taxonomy       = in_array( $taxonomy, array( 'post_tag', 'category' ), true );
+                    $show_text_column       = $is_core_taxonomy; // Only show name/description weight columns for core taxonomies
 
                     $use_description = isset( $tax_weights['use_description'] ) ? (bool) $tax_weights['use_description'] : false;
 
@@ -2068,7 +2122,7 @@ if ( function_exists( 'htax_the_archive_icon' ) ) {
                         $hierarchy_weights = isset( $tax_weights['hierarchy'] ) ? $tax_weights['hierarchy'] : $default_weights['hierarchy'];
                     }
                     $container_weights = isset( $tax_weights['container'] ) ? $tax_weights['container'] : $default_weights['container'];
-                    $redirect_weights  = isset( $tax_weights['redirect'] )  ? $tax_weights['redirect']  : $default_weights['redirect'];
+                    $redirect_weights  = isset( $tax_weights['redirect'] ) ? $tax_weights['redirect'] : $default_weights['redirect'];
                     // Ensure description key exists in loaded weights (upgrade path for saved settings without it).
                     foreach ( array( 'direct_weights', 'container_weights', 'redirect_weights' ) as $wvar ) {
                         if ( ! isset( $$wvar['description'] ) ) {
@@ -2249,7 +2303,7 @@ if ( function_exists( 'htax_the_archive_icon' ) ) {
                         <strong><?php esc_html_e( 'Text Search Matching:', 'hypertaxonomy' ); ?></strong> <?php esc_html_e( 'Posts are indexed with all their associated terms (direct assignments, hierarchy, inclusions, redirects). When a user searches for text, MySQL\'s FULLTEXT engine matches against all indexed term names and automatically scores higher when the search term appears in multiple places. Our tier weights then multiply these base scores to calculate final relevance.', 'hypertaxonomy' ); ?>
                     </p>
                     <?php if ( $show_text_column ) : ?>
-                    <?php ob_start(); ?>
+                        <?php ob_start(); ?>
                     (function() {
                         var cb = document.getElementById('htax-use-desc-<?php echo esc_js( $taxonomy ); ?>');
                         if ( ! cb ) { return; }
@@ -2260,7 +2314,7 @@ if ( function_exists( 'htax_the_archive_icon' ) ) {
                             }
                         });
                     })();
-                    <?php htax_add_inline_script( 'settings', ob_get_clean() ); ?>
+                        <?php htax_add_inline_script( 'settings', ob_get_clean() ); ?>
                     <?php endif; ?>
                     <button type="button"
                             class="button htax-reset-weights"
@@ -2279,22 +2333,23 @@ if ( function_exists( 'htax_the_archive_icon' ) ) {
             <?php endif; ?>
         </table>
 
-        <?php elseif ( 'custom_flat' === $search_subtab ) :
+            <?php
+        elseif ( 'custom_flat' === $search_subtab ) :
             // Custom flat taxonomies text match weights
-            $cft = isset( $options['relevance_multipliers']['custom_taxonomies_text']['flat'] )
+            $cft                      = isset( $options['relevance_multipliers']['custom_taxonomies_text']['flat'] )
                 ? $options['relevance_multipliers']['custom_taxonomies_text']['flat']
                 : array();
-            $custom_flat_use_desc = isset( $cft['use_description'] ) ? (bool) $cft['use_description'] : false;
-            $custom_flat_weights  = array(
-                'direct'    => $cft['direct']    ?? 0.6,
+            $custom_flat_use_desc     = isset( $cft['use_description'] ) ? (bool) $cft['use_description'] : false;
+            $custom_flat_weights      = array(
+                'direct'    => $cft['direct'] ?? 0.6,
                 'container' => $cft['container'] ?? 0.5,
-                'redirect'  => $cft['redirect']  ?? 0.35,
+                'redirect'  => $cft['redirect'] ?? 0.35,
             );
-            $custom_flat_desc = isset( $cft['description'] ) ? $cft['description'] : array();
+            $custom_flat_desc         = isset( $cft['description'] ) ? $cft['description'] : array();
             $custom_flat_desc_weights = array(
-                'direct'    => $custom_flat_desc['direct']    ?? round( $custom_flat_weights['direct']    * 0.7, 2 ),
+                'direct'    => $custom_flat_desc['direct'] ?? round( $custom_flat_weights['direct'] * 0.7, 2 ),
                 'container' => $custom_flat_desc['container'] ?? round( $custom_flat_weights['container'] * 0.7, 2 ),
-                'redirect'  => $custom_flat_desc['redirect']  ?? round( $custom_flat_weights['redirect']  * 0.7, 2 ),
+                'redirect'  => $custom_flat_desc['redirect'] ?? round( $custom_flat_weights['redirect'] * 0.7, 2 ),
             );
             ?>
 
@@ -2400,24 +2455,25 @@ if ( function_exists( 'htax_the_archive_icon' ) ) {
             </tr>
         </table>
 
-        <?php elseif ( 'custom_hierarchical' === $search_subtab ) :
+            <?php
+        elseif ( 'custom_hierarchical' === $search_subtab ) :
             // Custom hierarchical taxonomies text match weights
-            $cht = isset( $options['relevance_multipliers']['custom_taxonomies_text']['hierarchical'] )
+            $cht                      = isset( $options['relevance_multipliers']['custom_taxonomies_text']['hierarchical'] )
                 ? $options['relevance_multipliers']['custom_taxonomies_text']['hierarchical']
                 : array();
-            $custom_hier_use_desc = isset( $cht['use_description'] ) ? (bool) $cht['use_description'] : false;
-            $custom_hier_weights  = array(
-                'direct'    => $cht['direct']    ?? 0.5,
+            $custom_hier_use_desc     = isset( $cht['use_description'] ) ? (bool) $cht['use_description'] : false;
+            $custom_hier_weights      = array(
+                'direct'    => $cht['direct'] ?? 0.5,
                 'hierarchy' => $cht['hierarchy'] ?? 0.4,
                 'container' => $cht['container'] ?? 0.35,
-                'redirect'  => $cht['redirect']  ?? 0.3,
+                'redirect'  => $cht['redirect'] ?? 0.3,
             );
-            $custom_hier_desc = isset( $cht['description'] ) ? $cht['description'] : array();
+            $custom_hier_desc         = isset( $cht['description'] ) ? $cht['description'] : array();
             $custom_hier_desc_weights = array(
-                'direct'    => $custom_hier_desc['direct']    ?? round( $custom_hier_weights['direct']    * 0.7, 2 ),
+                'direct'    => $custom_hier_desc['direct'] ?? round( $custom_hier_weights['direct'] * 0.7, 2 ),
                 'hierarchy' => $custom_hier_desc['hierarchy'] ?? round( $custom_hier_weights['hierarchy'] * 0.7, 2 ),
                 'container' => $custom_hier_desc['container'] ?? round( $custom_hier_weights['container'] * 0.7, 2 ),
-                'redirect'  => $custom_hier_desc['redirect']  ?? round( $custom_hier_weights['redirect']  * 0.7, 2 ),
+                'redirect'  => $custom_hier_desc['redirect'] ?? round( $custom_hier_weights['redirect'] * 0.7, 2 ),
             );
             ?>
 
@@ -2552,7 +2608,7 @@ if ( function_exists( 'htax_the_archive_icon' ) ) {
 
 
     private function render_cache_tab() {
-        $options = $this->get_options();
+        $options        = $this->get_options();
         $cache_settings = $options['cache_settings'];
         ?>
         <input type="hidden" name="htax_settings[_cache_tab_present]" value="1" />
@@ -2995,10 +3051,10 @@ if ( function_exists( 'htax_the_archive_icon' ) ) {
 
         // Get existing options first to preserve unchanged values
         $existing = $this->get_options();
-        
+
         // Start with existing values
         $sanitized = $existing;
-        
+
         // Sanitize taxonomy settings - only update fields that were actually submitted
         if ( ! empty( $input['_general_tab_present'] ) ) {
             // Only update settings for taxonomies that are present in the form submission
@@ -3035,7 +3091,7 @@ if ( function_exists( 'htax_the_archive_icon' ) ) {
             if ( $is_overview ) {
                 foreach ( $editing_taxonomies as $taxonomy ) {
                     // If checkbox is present in input, it's checked; otherwise it's unchecked
-                    $sanitized['enabled_taxonomies'][$taxonomy] = isset( $input['enabled_taxonomies'][$taxonomy] ) && ! empty( $input['enabled_taxonomies'][$taxonomy] );
+                    $sanitized['enabled_taxonomies'][ $taxonomy ] = isset( $input['enabled_taxonomies'][ $taxonomy ] ) && ! empty( $input['enabled_taxonomies'][ $taxonomy ] );
                 }
             }
 
@@ -3043,29 +3099,29 @@ if ( function_exists( 'htax_the_archive_icon' ) ) {
             // Overview subtab doesn't have feature checkboxes, only enable/disable checkboxes
             if ( ! $is_overview ) {
                 foreach ( $editing_taxonomies as $taxonomy ) {
-                // Get submitted features for this taxonomy (might be empty if all unchecked)
-                $features = isset( $input['taxonomy_features'][$taxonomy] ) && is_array( $input['taxonomy_features'][$taxonomy] )
-                    ? $input['taxonomy_features'][$taxonomy]
+                    // Get submitted features for this taxonomy (might be empty if all unchecked)
+                    $features = isset( $input['taxonomy_features'][ $taxonomy ] ) && is_array( $input['taxonomy_features'][ $taxonomy ] )
+                    ? $input['taxonomy_features'][ $taxonomy ]
                     : array();
 
-				// Get feature states (checkboxes not submitted = false)
-				$search_enhancement = ! empty( $features['search_enhancement'] );
-				$icons              = ! empty( $features['icons'] );
-				$visibility         = ! empty( $features['visibility'] );
-				$term_relationships = ! empty( $features['term_relationships'] );
-				$group_assignment   = ! empty( $features['group_assignment'] );
-				$redirects          = ! empty( $features['redirects'] );
-				$customize_archives = ! empty( $features['customize_archives'] );
+                    // Get feature states (checkboxes not submitted = false)
+                    $search_enhancement = ! empty( $features['search_enhancement'] );
+                    $icons              = ! empty( $features['icons'] );
+                    $visibility         = ! empty( $features['visibility'] );
+                    $term_relationships = ! empty( $features['term_relationships'] );
+                    $group_assignment   = ! empty( $features['group_assignment'] );
+                    $redirects          = ! empty( $features['redirects'] );
+                    $customize_archives = ! empty( $features['customize_archives'] );
 
-				// Check if term_relationships is being re-enabled and has non-zero container weights.
-				$old_term_relationships = isset( $existing['taxonomy_features'][$taxonomy]['term_relationships'] ) ? $existing['taxonomy_features'][$taxonomy]['term_relationships'] : false;
-				if ( ! $old_term_relationships && $term_relationships ) {
-					$multipliers = isset( $existing['relevance_multipliers']['taxonomies'][$taxonomy] ) ? $existing['relevance_multipliers']['taxonomies'][$taxonomy] : array();
-                    $has_container_weight = ( isset( $multipliers['container']['explicit'] ) && $multipliers['container']['explicit'] > 0 ) ||
+                    // Check if term_relationships is being re-enabled and has non-zero container weights.
+                    $old_term_relationships = isset( $existing['taxonomy_features'][ $taxonomy ]['term_relationships'] ) ? $existing['taxonomy_features'][ $taxonomy ]['term_relationships'] : false;
+                    if ( ! $old_term_relationships && $term_relationships ) {
+                        $multipliers          = isset( $existing['relevance_multipliers']['taxonomies'][ $taxonomy ] ) ? $existing['relevance_multipliers']['taxonomies'][ $taxonomy ] : array();
+                        $has_container_weight = ( isset( $multipliers['container']['explicit'] ) && $multipliers['container']['explicit'] > 0 ) ||
                                            ( isset( $multipliers['container']['text'] ) && $multipliers['container']['text'] > 0 );
 
-                    if ( $has_container_weight ) {
-                        add_settings_error(
+                        if ( $has_container_weight ) {
+                            add_settings_error(
                             'htax_settings',
                             'htax_term_relationships_reindex_needed',
                             sprintf(
@@ -3074,36 +3130,35 @@ if ( function_exists( 'htax_the_archive_icon' ) ) {
                                 mb_strtolower( get_taxonomy( $taxonomy )->labels->name, 'UTF-8' )
                             ),
                             'warning'
-                        );
+                            );
+                        }
                     }
-                }
 
-				// Groups cannot participate in term relationships or be assigned to other groups.
-				if ( 'group' === $taxonomy ) {
-					$term_relationships = false;
-					$group_assignment   = false;
-					// Note: Groups CAN have redirects, icons, visibility, and archive customization.
-				}
+                    // Groups cannot participate in term relationships or be assigned to other groups.
+                    if ( 'group' === $taxonomy ) {
+                        $term_relationships = false;
+                        $group_assignment   = false;
+                        // Note: Groups CAN have redirects, icons, visibility, and archive customization.
+                    }
 
-				$sanitized['taxonomy_features'][$taxonomy] = array(
-					'search_enhancement' => $search_enhancement,
-					'icons'              => $icons,
-					'visibility'         => $visibility,
-					'term_relationships' => $term_relationships,
-					'group_assignment'   => $group_assignment,
-					'redirects'          => $redirects,
-					'customize_archives' => $customize_archives,
-					'share_locations'    => ! empty( $features['share_locations'] ),
-				);
+                    $sanitized['taxonomy_features'][ $taxonomy ] = array(
+                        'search_enhancement' => $search_enhancement,
+                        'icons'              => $icons,
+                        'visibility'         => $visibility,
+                        'term_relationships' => $term_relationships,
+                        'group_assignment'   => $group_assignment,
+                        'redirects'          => $redirects,
+                        'customize_archives' => $customize_archives,
+                        'share_locations'    => ! empty( $features['share_locations'] ),
+                    );
                 } // end foreach editing_taxonomies
             } // end if not overview
-
         }
-        
+
         // Sanitize display settings
         if ( ! empty( $input['_display_tab_present'] ) ) {
             $sanitized['show_contributing_terms'] = ! empty( $input['show_contributing_terms'] );
-            
+
             // Sanitize template - ensure it contains %s
             // The template is appended directly to the archive title, so a leading space is
             // significant; sanitize_text_field() trims it, so restore one when present.
@@ -3118,7 +3173,7 @@ if ( function_exists( 'htax_the_archive_icon' ) ) {
             }
             $sanitized['contributing_terms_template'] = $template;
 
-            $valid_visibility = array( 'all', 'post_editors', 'none' );
+            $valid_visibility                     = array( 'all', 'post_editors', 'none' );
             $sanitized['hidden_terms_visibility'] = isset( $input['hidden_terms_visibility'] ) &&
                 in_array( $input['hidden_terms_visibility'], $valid_visibility ) ?
                 $input['hidden_terms_visibility'] : 'post_editors';
@@ -3126,17 +3181,17 @@ if ( function_exists( 'htax_the_archive_icon' ) ) {
             $sanitized['disable_sticky_styles'] = ! empty( $input['disable_sticky_styles'] );
 
             // Sanitize max sticky posts - must be between 1 and 100
-            $max_sticky = isset( $input['max_sticky_posts'] ) ? intval( $input['max_sticky_posts'] ) : 10;
-            $max_sticky = max( 1, min( 100, $max_sticky ) );
+            $max_sticky                            = isset( $input['max_sticky_posts'] ) ? intval( $input['max_sticky_posts'] ) : 10;
+            $max_sticky                            = max( 1, min( 100, $max_sticky ) );
             $sanitized['max_sticky_posts']         = $max_sticky;
-            $sanitized['disable_shortcode_styles']   = ! empty( $input['disable_shortcode_styles'] );
-            $sanitized['show_archive_description']   = ! empty( $input['show_archive_description'] );
-            $sanitized['show_sticky_posts']          = ! empty( $input['show_sticky_posts'] );
+            $sanitized['disable_shortcode_styles'] = ! empty( $input['disable_shortcode_styles'] );
+            $sanitized['show_archive_description'] = ! empty( $input['show_archive_description'] );
+            $sanitized['show_sticky_posts']        = ! empty( $input['show_sticky_posts'] );
         }
 
         // Sanitize icons - per-taxonomy structure
         if ( ! empty( $input['_icons_tab_present'] ) ) {
-            $valid_styles = array( 'square', 'rounded', 'extra_rounded', 'circular', 'custom' );
+            $valid_styles  = array( 'square', 'rounded', 'extra_rounded', 'circular', 'custom' );
             $valid_display = array( 'always', 'when_available', 'never' );
 
             if ( ! isset( $sanitized['icon_settings'] ) ) {
@@ -3156,37 +3211,37 @@ if ( function_exists( 'htax_the_archive_icon' ) ) {
                     }
 
                     // Initialize taxonomy settings array
-                    $sanitized['icon_settings'][$taxonomy] = array();
+                    $sanitized['icon_settings'][ $taxonomy ] = array();
 
                     // Sanitize enabled checkbox
-                    $sanitized['icon_settings'][$taxonomy]['enabled'] = ! empty( $settings['enabled'] );
+                    $sanitized['icon_settings'][ $taxonomy ]['enabled'] = ! empty( $settings['enabled'] );
 
                     // Sanitize display setting
                     if ( isset( $settings['display'] ) && in_array( $settings['display'], $valid_display, true ) ) {
-                        $sanitized['icon_settings'][$taxonomy]['display'] = $settings['display'];
+                        $sanitized['icon_settings'][ $taxonomy ]['display'] = $settings['display'];
                     } else {
-                        $sanitized['icon_settings'][$taxonomy]['display'] = 'when_available';
+                        $sanitized['icon_settings'][ $taxonomy ]['display'] = 'when_available';
                     }
 
                     // Sanitize width and height (min: 16px, max: 512px)
-                    $new_width  = isset( $settings['width'] )  ? max( 16, min( 512, intval( $settings['width'] ) ) )  : 96;
+                    $new_width  = isset( $settings['width'] ) ? max( 16, min( 512, intval( $settings['width'] ) ) ) : 96;
                     $new_height = isset( $settings['height'] ) ? max( 16, min( 512, intval( $settings['height'] ) ) ) : 96;
 
-                    $sanitized['icon_settings'][$taxonomy]['width']  = $new_width;
-                    $sanitized['icon_settings'][$taxonomy]['height'] = $new_height;
+                    $sanitized['icon_settings'][ $taxonomy ]['width']  = $new_width;
+                    $sanitized['icon_settings'][ $taxonomy ]['height'] = $new_height;
 
                     // Sanitize small/medium size percentages (1–99)
                     $new_medium_pct = isset( $settings['medium_pct'] ) ? max( 1, min( 99, intval( $settings['medium_pct'] ) ) ) : 50;
-                    $new_small_pct  = isset( $settings['small_pct'] )  ? max( 1, min( 99, intval( $settings['small_pct'] ) ) )  : 25;
+                    $new_small_pct  = isset( $settings['small_pct'] ) ? max( 1, min( 99, intval( $settings['small_pct'] ) ) ) : 25;
 
-                    $sanitized['icon_settings'][$taxonomy]['medium_pct'] = $new_medium_pct;
-                    $sanitized['icon_settings'][$taxonomy]['small_pct']  = $new_small_pct;
+                    $sanitized['icon_settings'][ $taxonomy ]['medium_pct'] = $new_medium_pct;
+                    $sanitized['icon_settings'][ $taxonomy ]['small_pct']  = $new_small_pct;
 
                     // Check if dimensions changed — clear all icon assignments for this taxonomy
                     $dimensions_changed = false;
-                    if ( isset( $old_icon_settings[$taxonomy] ) ) {
-                        $old_width  = isset( $old_icon_settings[$taxonomy]['width'] )  ? $old_icon_settings[$taxonomy]['width']  : 96;
-                        $old_height = isset( $old_icon_settings[$taxonomy]['height'] ) ? $old_icon_settings[$taxonomy]['height'] : 96;
+                    if ( isset( $old_icon_settings[ $taxonomy ] ) ) {
+                        $old_width  = isset( $old_icon_settings[ $taxonomy ]['width'] ) ? $old_icon_settings[ $taxonomy ]['width'] : 96;
+                        $old_height = isset( $old_icon_settings[ $taxonomy ]['height'] ) ? $old_icon_settings[ $taxonomy ]['height'] : 96;
 
                         if ( $old_width !== $new_width || $old_height !== $new_height ) {
                             $dimensions_changed = true;
@@ -3206,9 +3261,9 @@ if ( function_exists( 'htax_the_archive_icon' ) ) {
                     }
 
                     // Check if only percentages changed — queue thumbnail regeneration
-                    if ( ! $dimensions_changed && isset( $old_icon_settings[$taxonomy] ) ) {
-                        $old_medium_pct = isset( $old_icon_settings[$taxonomy]['medium_pct'] ) ? $old_icon_settings[$taxonomy]['medium_pct'] : 50;
-                        $old_small_pct  = isset( $old_icon_settings[$taxonomy]['small_pct'] )  ? $old_icon_settings[$taxonomy]['small_pct']  : 25;
+                    if ( ! $dimensions_changed && isset( $old_icon_settings[ $taxonomy ] ) ) {
+                        $old_medium_pct = isset( $old_icon_settings[ $taxonomy ]['medium_pct'] ) ? $old_icon_settings[ $taxonomy ]['medium_pct'] : 50;
+                        $old_small_pct  = isset( $old_icon_settings[ $taxonomy ]['small_pct'] ) ? $old_icon_settings[ $taxonomy ]['small_pct'] : 25;
 
                         if ( $old_medium_pct !== $new_medium_pct || $old_small_pct !== $new_small_pct ) {
                             $pending   = htax_get_transient( 'htax_icon_regen_pending' );
@@ -3219,7 +3274,7 @@ if ( function_exists( 'htax_the_archive_icon' ) ) {
                     }
 
                     // Sanitize border radius
-                    $sanitized['icon_settings'][$taxonomy]['border_radius'] = array(
+                    $sanitized['icon_settings'][ $taxonomy ]['border_radius'] = array(
                         'style' => isset( $settings['border_radius']['style'] ) &&
                                    in_array( $settings['border_radius']['style'], $valid_styles, true ) ?
                                    $settings['border_radius']['style'] : 'rounded',
@@ -3235,7 +3290,7 @@ if ( function_exists( 'htax_the_archive_icon' ) ) {
                 }
             }
         }
-        
+
         // Strength model — validated whenever submitted, not only from the Search tab,
         // so code can switch it back with update_option() (e.g. after clearing a model).
         // A provider's model is accepted only once it has full coverage, unless it is
@@ -3281,7 +3336,7 @@ if ( function_exists( 'htax_the_archive_icon' ) ) {
             }
             $sanitized['indexed_post_types'] = ! empty( $new_indexed ) ? $new_indexed : array( 'post', 'page' );
 
-            $sanitized['always_enhance_search'] = ! empty( $input['always_enhance_search'] );
+            $sanitized['always_enhance_search']    = ! empty( $input['always_enhance_search'] );
             $sanitized['expand_secondary_queries'] = ! empty( $input['expand_secondary_queries'] );
 
             $sanitized['default_match_mode'] = ( isset( $input['default_match_mode'] ) && 'all' === $input['default_match_mode'] ) ? 'all' : 'any';
@@ -3337,9 +3392,9 @@ if ( function_exists( 'htax_the_archive_icon' ) ) {
 
             // Sanitize content field relevance weights (title, content, excerpt)
             foreach ( array( 'title', 'content', 'excerpt' ) as $field ) {
-                if ( isset( $input['relevance_multipliers'][$field] ) ) {
-                    $value = floatval( $input['relevance_multipliers'][$field] );
-                    $sanitized['relevance_multipliers'][$field] = max( 0, min( 1.0, $value ) );
+                if ( isset( $input['relevance_multipliers'][ $field ] ) ) {
+                    $value                                        = floatval( $input['relevance_multipliers'][ $field ] );
+                    $sanitized['relevance_multipliers'][ $field ] = max( 0, min( 1.0, $value ) );
                 }
             }
 
@@ -3402,11 +3457,11 @@ if ( function_exists( 'htax_the_archive_icon' ) ) {
 
         // Sanitize advanced settings
         if ( ! empty( $input['_advanced_tab_present'] ) ) {
-            $sanitized['preload_editor_terms']         = ! empty( $input['preload_editor_terms'] );
-            $sanitized['edit_lock_enabled']           = ! empty( $input['edit_lock_enabled'] );
-            $sanitized['prevent_tag_creation']        = ! empty( $input['prevent_tag_creation'] );
-            $sanitized['content_tag_suggestions']     = ! empty( $input['content_tag_suggestions'] );
-            $sanitized['tag_suggestion_ignore_words'] = isset( $input['tag_suggestion_ignore_words'] )
+            $sanitized['preload_editor_terms']           = ! empty( $input['preload_editor_terms'] );
+            $sanitized['edit_lock_enabled']              = ! empty( $input['edit_lock_enabled'] );
+            $sanitized['prevent_tag_creation']           = ! empty( $input['prevent_tag_creation'] );
+            $sanitized['content_tag_suggestions']        = ! empty( $input['content_tag_suggestions'] );
+            $sanitized['tag_suggestion_ignore_words']    = isset( $input['tag_suggestion_ignore_words'] )
                 ? sanitize_text_field( $input['tag_suggestion_ignore_words'] )
                 : '';
             $sanitized['delete_on_uninstall']            = ! empty( $input['delete_on_uninstall'] );
@@ -3492,10 +3547,10 @@ if ( function_exists( 'htax_the_archive_icon' ) ) {
             'meta_query' => array(
                 array(
                     'key' => '_htax_icon_id',
-                    'compare' => 'EXISTS'
-                )
+                    'compare' => 'EXISTS',
+                ),
             ),
-            'fields' => 'ids'
+            'fields' => 'ids',
         ) );
 
         if ( ! empty( $terms ) && ! is_wp_error( $terms ) ) {
@@ -3508,13 +3563,12 @@ if ( function_exists( 'htax_the_archive_icon' ) ) {
             }
         }
     }
-
 }
 
 HyperTaxonomy_Settings::get_instance();
 
 // Handle cache clearing
-add_action( 'admin_init', function() {
+add_action( 'admin_init', function () {
     if ( isset( $_GET['page'] ) && 'hypertaxonomy' === $_GET['page'] &&
          isset( $_GET['action'] ) && 'clear_cache' === $_GET['action'] ) {
 
@@ -3546,11 +3600,21 @@ add_action( 'admin_init', function() {
 
         $type = isset( $_GET['cache_type'] ) ? sanitize_key( $_GET['cache_type'] ) : '';
         switch ( $type ) {
-            case 'relationship':  htax_clear_relationship_caches();  break;
-            case 'search':        htax_clear_search_caches();         break;
-            case 'autocomplete':  htax_clear_autocomplete_caches();   break;
-            case 'sticky':        htax_clear_sticky_caches();         break;
-            case 'shortcode':     htax_clear_shortcode_caches();      break;
+            case 'relationship':
+                htax_clear_relationship_caches();
+                break;
+            case 'search':
+                htax_clear_search_caches();
+                break;
+            case 'autocomplete':
+                htax_clear_autocomplete_caches();
+                break;
+            case 'sticky':
+                htax_clear_sticky_caches();
+                break;
+            case 'shortcode':
+                htax_clear_shortcode_caches();
+                break;
         }
 
         wp_safe_redirect( admin_url( 'options-general.php?page=hypertaxonomy&tab=cache&cache_cleared=1' ) );
@@ -3559,7 +3623,7 @@ add_action( 'admin_init', function() {
 });
 
 // Show cache cleared notice
-add_action( 'admin_notices', function() {
+add_action( 'admin_notices', function () {
     $screen = get_current_screen();
     if ( $screen && 'settings_page_hypertaxonomy' === $screen->id && isset( $_GET['cache_cleared'] ) && '1' === $_GET['cache_cleared'] ) {
         ?>

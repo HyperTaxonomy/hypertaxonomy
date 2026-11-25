@@ -23,7 +23,7 @@ class HyperTaxonomy_Term_Groups extends HyperTaxonomy_Shortcode_Base {
     private $groups_by_parent = null;
 
 
-    private $processed_terms = array();
+    private $processed_terms   = array();
     private $group_terms_cache = array();
 
     /**
@@ -173,7 +173,7 @@ class HyperTaxonomy_Term_Groups extends HyperTaxonomy_Shortcode_Base {
 
         // Handle include_groups parameter
         if ( ! empty( $this->htax_atts['include_groups'] ) ) {
-            $include_ids = htax_parse_term_ids( $this->htax_atts['include_groups'], 'group' );
+            $include_ids     = htax_parse_term_ids( $this->htax_atts['include_groups'], 'group' );
             $args['include'] = $include_ids;
         } else {
             // Get only root-level groups (parent = 0)
@@ -182,7 +182,7 @@ class HyperTaxonomy_Term_Groups extends HyperTaxonomy_Shortcode_Base {
 
         // Handle exclude_groups parameter
         if ( ! empty( $this->htax_atts['exclude_groups'] ) ) {
-            $exclude_ids = htax_parse_term_ids( $this->htax_atts['exclude_groups'], 'group' );
+            $exclude_ids     = htax_parse_term_ids( $this->htax_atts['exclude_groups'], 'group' );
             $args['exclude'] = $exclude_ids;
         }
 
@@ -210,7 +210,7 @@ class HyperTaxonomy_Term_Groups extends HyperTaxonomy_Shortcode_Base {
 
             // Handle exclude_groups parameter
             if ( ! empty( $this->htax_atts['exclude_groups'] ) ) {
-                $exclude_ids = htax_parse_term_ids( $this->htax_atts['exclude_groups'], 'group' );
+                $exclude_ids     = htax_parse_term_ids( $this->htax_atts['exclude_groups'], 'group' );
                 $args['exclude'] = $exclude_ids;
             }
 
@@ -313,7 +313,7 @@ class HyperTaxonomy_Term_Groups extends HyperTaxonomy_Shortcode_Base {
             return '';
         }
 
-        $output = '';
+        $output         = '';
         $is_collapsible = in_array( $this->htax_atts['collapsible'], array( 'true', 'collapsed' ), true );
 
         if ( $is_collapsible ) {
@@ -333,7 +333,7 @@ class HyperTaxonomy_Term_Groups extends HyperTaxonomy_Shortcode_Base {
 
             if ( $this->htax_atts['show_group_count'] === 'true' ) {
                 $term_count = count( $terms );
-                $output .= ' <span class="htax-group-count">(' . $term_count . ')</span>';
+                $output    .= ' <span class="htax-group-count">(' . $term_count . ')</span>';
             }
 
             $output .= '</summary>';
@@ -351,7 +351,7 @@ class HyperTaxonomy_Term_Groups extends HyperTaxonomy_Shortcode_Base {
 
             if ( $this->htax_atts['show_group_count'] === 'true' ) {
                 $term_count = count( $terms );
-                $output .= ' <span class="htax-group-count">(' . $term_count . ')</span>';
+                $output    .= ' <span class="htax-group-count">(' . $term_count . ')</span>';
             }
 
             $output .= '</div>';
@@ -381,7 +381,7 @@ class HyperTaxonomy_Term_Groups extends HyperTaxonomy_Shortcode_Base {
         foreach ( $terms as $term ) {
             if ( ! isset( $shown_in_subtree[ $term->term_id ] ) ) {
                 $shown_in_subtree[ $term->term_id ] = true;
-                $terms_output .= $this->render_term( $term, $depth );
+                $terms_output                      .= $this->render_term( $term, $depth );
             }
         }
         $this->processed_terms = $shown_in_subtree;
@@ -411,15 +411,15 @@ class HyperTaxonomy_Term_Groups extends HyperTaxonomy_Shortcode_Base {
 
         // Determine link behavior for redirects
         $link_attrs_result = $this->build_redirect_link_attributes( $term, $classes );
-        $link_tag = $link_attrs_result['link_tag'];
-        $link_href = $link_attrs_result['link_href'];
-        $link_attrs = $link_attrs_result['link_attrs'];
+        $link_tag          = $link_attrs_result['link_tag'];
+        $link_href         = $link_attrs_result['link_href'];
+        $link_attrs        = $link_attrs_result['link_attrs'];
 
         // Process prepend/append content
         $prepend_content = ! empty( $this->htax_atts['prepend'] )
             ? $this->process_placeholders( $this->htax_atts['prepend'], $term, $depth )
             : '';
-        $append_content = ! empty( $this->htax_atts['append'] )
+        $append_content  = ! empty( $this->htax_atts['append'] )
             ? $this->process_placeholders( $this->htax_atts['append'], $term, $depth )
             : '';
 
@@ -536,7 +536,6 @@ class HyperTaxonomy_Term_Groups extends HyperTaxonomy_Shortcode_Base {
         wp_add_inline_script( 'htax-term-groups-collapse', $script );
         $enqueued = true;
     }
-
 }
 
 // Initialize class

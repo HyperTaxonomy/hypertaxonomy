@@ -117,7 +117,7 @@ function htax_update_group_term_count( $terms, $taxonomy ) {
             htax_get_enabled_taxonomies(),
             static fn( $tax ) => 'group' !== $tax && htax_taxonomy_has_feature( $tax, 'group_assignment' )
         ) );
-        $count = ! $group_taxes ? 0 : $wpdb->get_var(
+        $count       = ! $group_taxes ? 0 : $wpdb->get_var(
             $wpdb->prepare(
                 "SELECT COUNT(DISTINCT source_term_id)
                 FROM {$table_name}

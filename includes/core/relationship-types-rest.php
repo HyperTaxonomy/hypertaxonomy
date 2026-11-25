@@ -150,7 +150,7 @@ function htax_rest_get_term_relationships( WP_REST_Request $request ) {
 
     $custom_slugs = array_keys( array_filter(
         htax_get_registered_relationship_types(),
-        static function( $def ) use ( $include_inclusion_based ) {
+        static function ( $def ) use ( $include_inclusion_based ) {
             if ( ! empty( $def['is_core'] ) || ! empty( $def['is_private'] ) ) {
                 return false;
             }

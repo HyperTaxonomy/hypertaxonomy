@@ -76,7 +76,7 @@ class HyperTaxonomy_Walker_Checklist extends Walker {
 
         // Add popular class if this is a popular term
         $args['popular_terms'] = ! empty( $args['popular_terms'] ) ? array_map( 'intval', $args['popular_terms'] ) : array();
-        $class = in_array( $term->term_id, $args['popular_terms'], true ) ? ' class="popular-term"' : '';
+        $class                 = in_array( $term->term_id, $args['popular_terms'], true ) ? ' class="popular-term"' : '';
 
         // Get selected terms
         $args['selected_terms'] = ! empty( $args['selected_terms'] ) ? array_map( 'intval', $args['selected_terms'] ) : array();
@@ -319,7 +319,7 @@ function htax_render_checklist_terms( $terms, $args = array() ) {
 
     // Filter to only popular if requested
     if ( $args['filter_popular'] && ! empty( $args['popular_terms'] ) ) {
-        $terms = array_filter( $terms, function( $term ) use ( $args ) {
+        $terms = array_filter( $terms, function ( $term ) use ( $args ) {
             return in_array( $term->term_id, $args['popular_terms'], true );
         } );
     }

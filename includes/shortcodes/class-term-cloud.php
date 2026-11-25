@@ -98,7 +98,7 @@ class HyperTaxonomy_Cloud extends HyperTaxonomy_Term_Display_Base {
 
         // Get font size range
         $smallest = floatval( $this->htax_atts['smallest'] );
-        $largest = floatval( $this->htax_atts['largest'] );
+        $largest  = floatval( $this->htax_atts['largest'] );
 
         // Calculate font size for each term
         foreach ( $terms as $term ) {
@@ -119,9 +119,9 @@ class HyperTaxonomy_Cloud extends HyperTaxonomy_Term_Display_Base {
      * Render the cloud
      */
     private function render_cloud( $terms ) {
-        $unit = esc_attr( $this->htax_atts['unit'] );
+        $unit      = esc_attr( $this->htax_atts['unit'] );
         $separator = wp_kses_post( $this->htax_atts['separator'] );
-        $taxonomy = $this->htax_atts['taxonomy'];
+        $taxonomy  = $this->htax_atts['taxonomy'];
 
         // Build container classes
         $classes = $this->build_container_classes( 'htax-cloud', false );
@@ -132,12 +132,12 @@ class HyperTaxonomy_Cloud extends HyperTaxonomy_Term_Display_Base {
         // Show header if header parameter is specified
         if ( ! empty( $this->htax_atts['header'] ) ) {
             $header_text = $this->process_header_placeholders( $this->htax_atts['header'], $terms, $taxonomy );
-            $output .= '<h3>' . wp_kses_post( $header_text ) . '</h3>';
+            $output     .= '<h3>' . wp_kses_post( $header_text ) . '</h3>';
         }
 
         // Render terms
         $output .= '<div class="htax-cloud-tags">';
-        $first = true;
+        $first   = true;
 
         foreach ( $terms as $term ) {
             // Add separator
@@ -166,20 +166,20 @@ class HyperTaxonomy_Cloud extends HyperTaxonomy_Term_Display_Base {
 
         // Determine link behavior for redirects
         $link_attrs_result = $this->build_redirect_link_attributes( $term, $classes );
-        $link_tag = $link_attrs_result['link_tag'];
-        $link_href = $link_attrs_result['link_href'];
-        $link_attrs = $link_attrs_result['link_attrs'];
+        $link_tag          = $link_attrs_result['link_tag'];
+        $link_href         = $link_attrs_result['link_href'];
+        $link_attrs        = $link_attrs_result['link_attrs'];
 
         // Process prepend/append content
         $prepend_content = ! empty( $this->htax_atts['prepend'] )
             ? $this->process_placeholders( $this->htax_atts['prepend'], $term )
             : '';
-        $append_content = ! empty( $this->htax_atts['append'] )
+        $append_content  = ! empty( $this->htax_atts['append'] )
             ? $this->process_placeholders( $this->htax_atts['append'], $term )
             : '';
 
         // Build output
-        $output = '<span class="' . esc_attr( implode( ' ', $classes ) ) . '"';
+        $output  = '<span class="' . esc_attr( implode( ' ', $classes ) ) . '"';
         $output .= ' style="' . esc_attr( implode( '; ', $styles ) ) . '">';
 
         if ( ! empty( $prepend_content ) ) {
@@ -206,9 +206,7 @@ class HyperTaxonomy_Cloud extends HyperTaxonomy_Term_Display_Base {
 
         return $output;
     }
-
 }
 
 // Initialize class
 new HyperTaxonomy_Cloud();
-

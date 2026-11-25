@@ -124,11 +124,11 @@ function htax_ajax_get_group_terms() {
     }
 
     $group_ids = isset( $_GET['group_ids'] ) && is_array( $_GET['group_ids'] ) ? array_map( 'intval', wp_unslash( $_GET['group_ids'] ) ) : array();
-    $taxonomy = isset( $_GET['taxonomy'] ) ? sanitize_key( wp_unslash( $_GET['taxonomy'] ) ) : 'post_tag';
+    $taxonomy  = isset( $_GET['taxonomy'] ) ? sanitize_key( wp_unslash( $_GET['taxonomy'] ) ) : 'post_tag';
 
     htax_log_debug( 'AJAX get group terms', array(
         'group_ids' => $group_ids,
-        'taxonomy' => $taxonomy
+        'taxonomy' => $taxonomy,
     ) );
 
     $result = array();
@@ -229,29 +229,29 @@ function htax_run_term_autocomplete_search( $taxonomy, $search, $exclude, $inclu
         $found        = false;
 
         if ( 0 === strpos( $name_lower, $search_lower ) ) {
-            $buckets['name_starts'][] = array(
+            $buckets['name_starts'][]        = array(
                 'id'    => $term->term_id,
                 'value' => $name_display,
                 'label' => htax_highlight_match( $name_display, $search_decoded, 0 ),
             );
             $processed_ids[ $term->term_id ] = true;
-            $found = true;
+            $found                           = true;
         } elseif ( $pos = htax_find_after_non_letter( $name_lower, $search_lower ) ) {
-            $buckets['name_boundary'][] = array(
+            $buckets['name_boundary'][]      = array(
                 'id'    => $term->term_id,
                 'value' => $name_display,
                 'label' => htax_highlight_match( $name_display, $search_decoded, $pos ),
             );
             $processed_ids[ $term->term_id ] = true;
-            $found = true;
+            $found                           = true;
         } elseif ( ( $pos = stripos( $name_lower, $search_lower ) ) !== false ) {
-            $buckets['name_contains'][] = array(
+            $buckets['name_contains'][]      = array(
                 'id'    => $term->term_id,
                 'value' => $name_display,
                 'label' => htax_highlight_match( $name_display, $search_decoded, $pos ),
             );
             $processed_ids[ $term->term_id ] = true;
-            $found = true;
+            $found                           = true;
         }
 
         if ( ! $found && ! empty( $term->description ) ) {
@@ -261,7 +261,7 @@ function htax_run_term_autocomplete_search( $taxonomy, $search, $exclude, $inclu
                 $desc_suffix    = esc_html( '(' . htax_truncate_text( $fragment, 30 ) . ')' );
 
                 if ( 0 === strpos( $fragment_lower, $search_lower ) ) {
-                    $buckets['desc_starts'][] = array(
+                    $buckets['desc_starts'][]        = array(
                         'id'    => $term->term_id,
                         'value' => $name_display,
                         'label' => esc_html( $name_display ) . ' <span class="htax-desc-match">' . $desc_suffix . '</span>',
@@ -269,7 +269,7 @@ function htax_run_term_autocomplete_search( $taxonomy, $search, $exclude, $inclu
                     $processed_ids[ $term->term_id ] = true;
                     break;
                 } elseif ( htax_find_after_non_letter( $fragment_lower, $search_lower ) ) {
-                    $buckets['desc_boundary'][] = array(
+                    $buckets['desc_boundary'][]      = array(
                         'id'    => $term->term_id,
                         'value' => $name_display,
                         'label' => esc_html( $name_display ) . ' <span class="htax-desc-match">' . $desc_suffix . '</span>',
@@ -277,7 +277,7 @@ function htax_run_term_autocomplete_search( $taxonomy, $search, $exclude, $inclu
                     $processed_ids[ $term->term_id ] = true;
                     break;
                 } elseif ( stripos( $fragment_lower, $search_lower ) !== false ) {
-                    $buckets['desc_contains'][] = array(
+                    $buckets['desc_contains'][]      = array(
                         'id'    => $term->term_id,
                         'value' => $name_display,
                         'label' => esc_html( $name_display ) . ' <span class="htax-desc-match">' . $desc_suffix . '</span>',
@@ -303,7 +303,7 @@ function htax_run_term_autocomplete_search( $taxonomy, $search, $exclude, $inclu
         }
         $remaining = $max_results - count( $results );
         if ( $remaining > 0 ) {
-            usort( $bucket, function( $a, $b ) {
+            usort( $bucket, function ( $a, $b ) {
                 return strcasecmp( $a['value'], $b['value'] );
             } );
             $results = array_merge( $results, array_slice( $bucket, 0, $remaining ) );
@@ -390,7 +390,7 @@ function htax_ajax_search_terms() {
 
     // SHORT-LIVED CACHE FOR IDENTICAL REQUESTS
     $cache_key = htax_generate_transient_key( 'htax_ac_', md5( implode( ',', $taxonomies ) . '|' . $search . '|' . implode( ',', $exclude ) . '|' . $current_id . '|' . implode( ',', $include_ids ) ) );
-    $cached = htax_get_transient( $cache_key );
+    $cached    = htax_get_transient( $cache_key );
     if ( false !== $cached ) {
         wp_send_json( $cached );
         return;
@@ -405,7 +405,7 @@ function htax_ajax_search_terms() {
         // This applies equally to the include, container, and exclude autocomplete contexts.
         $current_term = get_term( $current_id );
         if ( $current_term && ! is_wp_error( $current_term ) && is_taxonomy_hierarchical( $current_term->taxonomy ) ) {
-            $exclude = array_merge( $exclude, get_ancestors( $current_id, $current_term->taxonomy, 'taxonomy' ) );
+            $exclude        = array_merge( $exclude, get_ancestors( $current_id, $current_term->taxonomy, 'taxonomy' ) );
             $descendant_ids = get_term_children( $current_id, $current_term->taxonomy );
             if ( ! is_wp_error( $descendant_ids ) ) {
                 $exclude = array_merge( $exclude, $descendant_ids );
@@ -422,14 +422,16 @@ function htax_ajax_search_terms() {
 
         // Filter out hidden terms if user doesn't have permission to see them
         if ( ! $can_see ) {
-            $tax_results = array_values( array_filter( $tax_results, function( $item ) {
+            $tax_results = array_values( array_filter( $tax_results, function ( $item ) {
                 return ! htax_is_term_hidden( $item['id'] );
             } ) );
         }
 
         if ( ! empty( $tax_results ) && HyperTaxonomy_Term_Icons::are_icons_enabled( $taxonomy ) ) {
             $icons         = HyperTaxonomy_Term_Icons::get_instance();
-            $term_ids      = array_map( function( $item ) { return $item['id']; }, $tax_results );
+            $term_ids      = array_map( function ( $item ) {
+                return $item['id'];
+            }, $tax_results );
             $all_icon_data = $icons->get_batch_term_icon_data( $term_ids, 'htax-icon-small', $taxonomy );
 
             foreach ( $tax_results as &$result ) {
@@ -492,7 +494,7 @@ function htax_find_after_non_letter( $haystack, $needle ) {
         if ( ! preg_match( '/^\p{L}$/u', $prev_char ) ) {
             return $pos;
         }
-        $pos++;
+        ++$pos;
     }
 
     return false;
@@ -504,7 +506,7 @@ function htax_find_after_non_letter( $haystack, $needle ) {
  * @since 1.0.0
  * @param string $text The text to highlight in
  * @param string $search The search term to highlight
- * @param int $position Position where the match starts
+ * @param int    $position Position where the match starts
  * @return string HTML string with highlighted match
  */
 function htax_highlight_match( $text, $search, $position ) {
@@ -679,8 +681,8 @@ function htax_ajax_export() {
     require_once HTAX_PLUGIN_DIR . 'includes/admin/export-hypertaxonomy.php';
 
     // Get taxonomies from POST (sent as JSON.stringify'd array by the export form).
-    $taxonomies = isset( $_POST['taxonomies'] ) ? htax_decode_json_request( wp_unslash( $_POST['taxonomies'] ) ) : array();
-    $taxonomies = is_array( $taxonomies ) ? array_map( 'sanitize_key', array_filter( $taxonomies, 'is_string' ) ) : array();
+    $taxonomies         = isset( $_POST['taxonomies'] ) ? htax_decode_json_request( wp_unslash( $_POST['taxonomies'] ) ) : array();
+    $taxonomies         = is_array( $taxonomies ) ? array_map( 'sanitize_key', array_filter( $taxonomies, 'is_string' ) ) : array();
     $include_term_posts = isset( $_POST['include_term_posts'] ) && '1' === sanitize_text_field( wp_unslash( $_POST['include_term_posts'] ) );
 
     // Validate taxonomies
@@ -766,8 +768,8 @@ function htax_ajax_import() {
     require_once HTAX_PLUGIN_DIR . 'includes/admin/import-hypertaxonomy.php';
 
     // Get import data and options from POST
-    $import_data = isset( $_POST['import_data'] ) ? htax_decode_json_request( wp_unslash( $_POST['import_data'] ), 'htax_sanitize_import_string' ) : null;
-    $update_existing = isset( $_POST['update_existing'] ) && '1' === $_POST['update_existing'];
+    $import_data       = isset( $_POST['import_data'] ) ? htax_decode_json_request( wp_unslash( $_POST['import_data'] ), 'htax_sanitize_import_string' ) : null;
+    $update_existing   = isset( $_POST['update_existing'] ) && '1' === $_POST['update_existing'];
     $import_term_posts = isset( $_POST['import_term_posts'] ) && '1' === $_POST['import_term_posts'];
 
     if ( empty( $import_data ) ) {

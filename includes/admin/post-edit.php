@@ -100,7 +100,12 @@ function htax_enqueue_post_editor_assets( $hook ) {
     $script_deps = array( 'jquery' );
     if ( $is_block_editor ) {
         $script_deps = array_merge( $script_deps, array(
-            'wp-plugins', 'wp-edit-post', 'wp-data', 'wp-element', 'wp-components', 'wp-i18n',
+            'wp-plugins',
+            'wp-edit-post',
+            'wp-data',
+            'wp-element',
+            'wp-components',
+            'wp-i18n',
         ) );
         if ( $suggestions_enabled ) {
             $script_deps[] = 'htax-tag-suggestions-js';

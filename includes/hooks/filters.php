@@ -23,12 +23,12 @@ add_filter( 'plugin_row_meta', 'htax_add_plugin_meta_links', 10, 2 );
 
 // Register filters dynamically for all enabled taxonomies.
 // Deferred to init so custom taxonomies registered on init are included.
-add_action( 'init', function() {
+add_action( 'init', function () {
     $enabled_taxonomies = htax_get_enabled_taxonomies();
 
     // Filter term links to hide hidden terms.
     foreach ( $enabled_taxonomies as $taxonomy ) {
-        add_filter( "term_links-{$taxonomy}", function( $term_links ) use ( $taxonomy ) {
+        add_filter( "term_links-{$taxonomy}", function ( $term_links ) use ( $taxonomy ) {
             return htax_filter_term_links( $term_links, $taxonomy );
         }, 10, 1 );
     }
@@ -50,7 +50,7 @@ add_filter( 'wp_tag_cloud', 'htax_filter_tag_cloud', 10, 2 );
 
 // Register columns on admin_init to ensure correct priority order
 // (Term Groups column is registered in tables.php on admin_init priority 999)
-add_action( 'admin_init', function() {
+add_action( 'admin_init', function () {
     $enabled_taxonomies = htax_get_enabled_taxonomies();
 
     foreach ( $enabled_taxonomies as $taxonomy ) {
@@ -68,7 +68,7 @@ add_action( 'admin_init', function() {
         add_filter( "manage_{$taxonomy}_custom_column", 'htax_display_hidden_column', 10, 3 );
 
         // Hide Icon and Visibility columns by default.
-        add_filter( 'default_hidden_columns', function( $hidden, $screen ) use ( $taxonomy ) {
+        add_filter( 'default_hidden_columns', function ( $hidden, $screen ) use ( $taxonomy ) {
             if ( $screen && "edit-{$taxonomy}" === $screen->id ) {
                 $hidden[] = 'htax_icon';
                 $hidden[] = 'htax_hidden';
@@ -144,10 +144,10 @@ add_filter( 'render_block_core/search', 'htax_track_search_form_rendering' );
 
 // Add sticky indicators to term links in admin for all enabled taxonomies.
 // Deferred to admin_init so custom taxonomies registered on init are included.
-add_action( 'admin_init', function() {
+add_action( 'admin_init', function () {
     $enabled_taxonomies = htax_get_enabled_taxonomies();
     foreach ( $enabled_taxonomies as $taxonomy ) {
-        add_filter( "term_links-{$taxonomy}", function( $term_links ) use ( $taxonomy ) {
+        add_filter( "term_links-{$taxonomy}", function ( $term_links ) use ( $taxonomy ) {
             global $post;
             if ( ! $post ) {
                 return $term_links;

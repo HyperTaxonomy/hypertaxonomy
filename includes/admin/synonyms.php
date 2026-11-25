@@ -92,7 +92,7 @@ function htax_get_synonym_candidate_ids( string $taxonomy ): array {
         "SELECT DISTINCT source_term_id FROM {$table} WHERE {$includes_in} AND source_taxonomy = 'group' AND target_taxonomy = %s",
         $taxonomy
     ) );
-    $members = array();
+    $members          = array();
     if ( $container_groups && htax_taxonomy_has_feature( $taxonomy, 'group_assignment' ) ) {
         htax_prime_all_group_terms();
         $groups       = array_map( 'intval', htax_get_group_ancestors( array_map( 'intval', $container_groups ) ) );
@@ -114,7 +114,7 @@ function htax_get_synonym_candidate_ids( string $taxonomy ): array {
     // A synonym is also included by something: the target of a term-to-term row, a target of
     // a container group, or a member of an included group or its subgroups. Only terms on
     // both sides need their caches loaded.
-    $targets = $wpdb->get_col( $wpdb->prepare(
+    $targets          = $wpdb->get_col( $wpdb->prepare(
         "SELECT DISTINCT target_term_id FROM {$table} WHERE {$includes_in} AND target_taxonomy = %s",
         $taxonomy
     ) );
@@ -173,7 +173,10 @@ function htax_get_inclusion_paths( WP_Term $term, WP_Term $included ): array {
     foreach ( htax_get_relationship_type_slugs( 'includes' ) as $slug ) {
         // Term → term row.
         if ( in_array( (int) $included->term_id, htax_get_direct_rel_term_ids( (int) $term->term_id, $slug ), true ) ) {
-            $paths[] = array( 'kind' => 'direct', 'slug' => $slug );
+            $paths[] = array(
+                'kind' => 'direct',
+                'slug' => $slug,
+            );
         }
         if ( ! $groups ) {
             continue;
@@ -187,7 +190,12 @@ function htax_get_inclusion_paths( WP_Term $term, WP_Term $included ): array {
             foreach ( htax_get_term_group_ids( (int) $included->term_id ) as $member_group ) {
                 $up = htax_group_chain_up( (int) $member_group, (int) $group_id );
                 if ( $up ) {
-                    $paths[] = array( 'kind' => 'group', 'slug' => $slug, 'group' => get_term( (int) $group_id, 'group' ), 'chain' => array_reverse( $up ) );
+                    $paths[] = array(
+                        'kind' => 'group',
+                        'slug' => $slug,
+                        'group' => get_term( (int) $group_id, 'group' ),
+                        'chain' => array_reverse( $up ),
+                    );
                 }
             }
         }
@@ -198,7 +206,12 @@ function htax_get_inclusion_paths( WP_Term $term, WP_Term $included ): array {
             foreach ( $term_groups as $member_group ) {
                 $up = htax_group_chain_up( (int) $group_id, (int) $member_group );
                 if ( $up ) {
-                    $paths[] = array( 'kind' => 'container_group', 'slug' => $slug, 'group' => get_term( (int) $group_id, 'group' ), 'chain' => $up );
+                    $paths[] = array(
+                        'kind' => 'container_group',
+                        'slug' => $slug,
+                        'group' => get_term( (int) $group_id, 'group' ),
+                        'chain' => $up,
+                    );
                 }
             }
         }
@@ -331,12 +344,12 @@ function htax_add_synonym_paths( array $rows ): array {
         htax_prime_transients( $keys );
     }
     foreach ( $rows as &$row ) {
-        $forward  = $row['term']->term_id . '>' . $row['synonym']->term_id;
-        $backward = $row['synonym']->term_id . '>' . $row['term']->term_id;
+        $forward              = $row['term']->term_id . '>' . $row['synonym']->term_id;
+        $backward             = $row['synonym']->term_id . '>' . $row['term']->term_id;
         $paths[ $forward ]  ??= htax_get_inclusion_paths( $row['term'], $row['synonym'] );
         $paths[ $backward ] ??= htax_get_inclusion_paths( $row['synonym'], $row['term'] );
-        $row['forward']  = $paths[ $forward ];
-        $row['backward'] = $paths[ $backward ];
+        $row['forward']       = $paths[ $forward ];
+        $row['backward']      = $paths[ $backward ];
     }
     unset( $row );
     return $rows;
@@ -593,7 +606,7 @@ class HyperTaxonomy_Synonyms_Table extends WP_List_Table {
         $html .= ' <span class="count">' . esc_html( sprintf( __( '(%s)', 'hypertaxonomy' ), number_format_i18n( (int) $term->count ) ) ) . '</span>';
         // The cached list of hidden IDs, rather than each term's meta, one query per term.
         static $hidden = null;
-        $hidden ??= array_flip( array_map( 'intval', htax_get_all_hidden_term_ids() ) );
+        $hidden      ??= array_flip( array_map( 'intval', htax_get_all_hidden_term_ids() ) );
         if ( isset( $hidden[ (int) $term->term_id ] ) ) {
             $html .= ' — <span class="post-state">' . esc_html_x( 'Hidden', 'term state', 'hypertaxonomy' ) . '</span>';
         }
@@ -622,7 +635,7 @@ class HyperTaxonomy_Synonyms_Table extends WP_List_Table {
         $entries = array();
 
         if ( current_user_can( 'manage_options' ) ) {
-            $url = add_query_arg( array(
+            $url       = add_query_arg( array(
                 'page'     => 'htax-merge-terms',
                 'taxonomy' => $item['taxonomy'],
                 'source'   => $term->term_id,
@@ -728,7 +741,7 @@ class HyperTaxonomy_Synonyms_Table extends WP_List_Table {
 
         // The other direction is the reverse row's own line: link to it.
         if ( ! empty( $item['reverse_page'] ) ) {
-            $url   = add_query_arg( 'paged', $item['reverse_page'] ) . '#' . self::row_id( $item['synonym'], $item['term'] );
+            $url = add_query_arg( 'paged', $item['reverse_page'] ) . '#' . self::row_id( $item['synonym'], $item['term'] );
             /* translators: 1: synonym, 2: term */
             $label = sprintf( __( 'How %1$s includes %2$s', 'hypertaxonomy' ), $item['synonym']->name, $item['term']->name );
             $html .= '<p class="htax-synonym-path"><a class="htax-synonym-reverse" href="' . esc_url( $url ) . '" title="' . esc_attr( $label ) . '">'

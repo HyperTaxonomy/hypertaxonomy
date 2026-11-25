@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 class HyperTaxonomy_Upgrader {
-    
+
     /**
      * Check and run upgrades if needed
      */
@@ -47,7 +47,10 @@ class HyperTaxonomy_Upgrader {
 
         global $wpdb;
         $prefs_key = $wpdb->get_blog_prefix() . 'persisted_preferences';
-        $users     = get_users( array( 'fields' => 'ID', 'meta_key' => $prefs_key ) );
+        $users     = get_users( array(
+            'fields' => 'ID',
+            'meta_key' => $prefs_key,
+        ) );
         foreach ( $users as $user_id ) {
             $prefs = get_user_meta( $user_id, $prefs_key, true );
             if ( ! is_array( $prefs ) || empty( $prefs['core']['openPanels'] ) ) {
@@ -73,6 +76,4 @@ class HyperTaxonomy_Upgrader {
     private static function upgrade_to_1_0_0() {
         HyperTaxonomy_Activator::install_schema();
     }
-    
-    
 }

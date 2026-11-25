@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @param string $prefix Transient prefix
  * @param string $unique Unique identifier
- * @param int $max_length Maximum key length (default 172 for transients)
+ * @param int    $max_length Maximum key length (default 172 for transients)
  * @return string Safe transient key
  */
 function htax_generate_transient_key( $prefix, $unique, $max_length = 172 ) {
@@ -31,9 +31,9 @@ function htax_generate_transient_key( $prefix, $unique, $max_length = 172 ) {
             $key = $prefix . substr( hash( 'sha256', $unique ), 0, $max_length - strlen( $prefix ) );
         } else {
             // Use partial original + hash (16 chars from SHA-256 = 2^64 possibilities)
-            $hash = substr( hash( 'sha256', $unique ), 0, 16 );
+            $hash      = substr( hash( 'sha256', $unique ), 0, 16 );
             $remaining = $max_unique_length - strlen( $hash ) - 1;
-            $key = $prefix . substr( $unique, 0, $remaining ) . '_' . $hash;
+            $key       = $prefix . substr( $unique, 0, $remaining ) . '_' . $hash;
         }
     }
 
@@ -130,7 +130,7 @@ function htax_upgrade( $old_version, $new_version ) {
 
     htax_log_debug( 'Plugin upgraded', array(
         'old_version' => $old_version,
-        'new_version' => $new_version
+        'new_version' => $new_version,
     ) );
 
     // Clear any cached data on upgrade
@@ -175,8 +175,11 @@ function htax_is_taxonomy_enabled( $taxonomy ) {
         return false;
     }
 
-    $defaults = array( 'post_tag' => true, 'category' => true );
-    $enabled = htax_get_setting( 'enabled_taxonomies', $defaults );
+    $defaults = array(
+        'post_tag' => true,
+        'category' => true,
+    );
+    $enabled  = htax_get_setting( 'enabled_taxonomies', $defaults );
 
     $cache[ $taxonomy ] = ! empty( $enabled[ $taxonomy ] );
     return $cache[ $taxonomy ];
@@ -200,7 +203,7 @@ function htax_get_indexed_post_types() {
     }
 
     $indexed_post_types = htax_get_setting( 'indexed_post_types' );
-    $cache['types'] = ( is_array( $indexed_post_types ) && ! empty( $indexed_post_types ) )
+    $cache['types']     = ( is_array( $indexed_post_types ) && ! empty( $indexed_post_types ) )
         ? $indexed_post_types
         : array( 'post', 'page' );
 
@@ -228,7 +231,7 @@ add_action( 'update_option_htax_settings', 'htax_clear_settings_request_caches',
 function htax_get_available_taxonomies() {
     $taxonomies = get_taxonomies( array(
         'public' => true,
-        'show_ui' => true
+        'show_ui' => true,
     ), 'objects' );
 
     // Filter out nav_menu, link_category, post_format, etc.
@@ -354,7 +357,7 @@ function htax_get_taxonomy_features( $taxonomy ) {
  */
 function htax_taxonomy_has_feature( $taxonomy, $feature ) {
     $features = htax_get_taxonomy_features( $taxonomy );
-    return isset( $features[$feature] ) && $features[$feature];
+    return isset( $features[ $feature ] ) && $features[ $feature ];
 }
 
 /**
@@ -366,13 +369,13 @@ function htax_get_cache_duration( $type = 'default' ) {
     switch ( $type ) {
         case 'term':
             return isset( $cache_settings['term_cache_duration'] ) ?
-                   intval( $cache_settings['term_cache_duration'] ) : (2 * HOUR_IN_SECONDS);
+                   intval( $cache_settings['term_cache_duration'] ) : ( 2 * HOUR_IN_SECONDS );
         case 'search':
             return isset( $cache_settings['search_cache_duration'] ) ?
-                   intval( $cache_settings['search_cache_duration'] ) : (30 * MINUTE_IN_SECONDS);
+                   intval( $cache_settings['search_cache_duration'] ) : ( 30 * MINUTE_IN_SECONDS );
         case 'autocomplete':
             return isset( $cache_settings['autocomplete_cache_duration'] ) ?
-                   intval( $cache_settings['autocomplete_cache_duration'] ) : (5 * MINUTE_IN_SECONDS);
+                   intval( $cache_settings['autocomplete_cache_duration'] ) : ( 5 * MINUTE_IN_SECONDS );
         case 'relationship':
             return isset( $cache_settings['relationship_cache_duration'] ) ?
                    intval( $cache_settings['relationship_cache_duration'] ) : 0;
@@ -440,7 +443,7 @@ function htax_debug_info() {
         echo '<p><strong>Contributing terms on current page:</strong> ' . ( empty( $contributing ) ? 'None' : esc_html( implode( ', ', $contributing ) ) ) . '</p>';
 
         // Show sticky posts
-        $sticky_posts = htax_get_sticky_posts_for_term( $term_id );
+        $sticky_posts    = htax_get_sticky_posts_for_term( $term_id );
         $sticky_post_ids = ! empty( $sticky_posts ) ? wp_list_pluck( $sticky_posts, 'ID' ) : array();
         echo '<p><strong>Sticky post IDs:</strong> ' . ( empty( $sticky_post_ids ) ? 'None' : esc_html( implode( ', ', $sticky_post_ids ) ) ) . '</p>';
 
@@ -566,4 +569,3 @@ function htax_maybe_prevent_tag_creation( $response, $handler, $request ) {
         array( 'status' => 403 )
     );
 }
-

@@ -40,15 +40,15 @@ class HyperTaxonomy_Term_Icons {
 
     private static function get_icon_sizes_for_taxonomy( $taxonomy ) {
         $options       = self::get_settings();
-        $icon_settings = $options['icon_settings'][$taxonomy] ?? array();
+        $icon_settings = $options['icon_settings'][ $taxonomy ] ?? array();
 
-        $large_width   = isset( $icon_settings['width'] )      ? intval( $icon_settings['width'] )      : 96;
-        $large_height  = isset( $icon_settings['height'] )     ? intval( $icon_settings['height'] )     : 96;
-        $medium_pct    = isset( $icon_settings['medium_pct'] ) ? intval( $icon_settings['medium_pct'] ) : 50;
-        $small_pct     = isset( $icon_settings['small_pct'] )  ? intval( $icon_settings['small_pct'] )  : 25;
+        $large_width  = isset( $icon_settings['width'] ) ? intval( $icon_settings['width'] ) : 96;
+        $large_height = isset( $icon_settings['height'] ) ? intval( $icon_settings['height'] ) : 96;
+        $medium_pct   = isset( $icon_settings['medium_pct'] ) ? intval( $icon_settings['medium_pct'] ) : 50;
+        $small_pct    = isset( $icon_settings['small_pct'] ) ? intval( $icon_settings['small_pct'] ) : 25;
 
         return array(
-            "htax-icon-small-{$taxonomy}"  => array( (int) round( $large_width * $small_pct / 100 ),  (int) round( $large_height * $small_pct / 100 ),  true ),
+            "htax-icon-small-{$taxonomy}"  => array( (int) round( $large_width * $small_pct / 100 ), (int) round( $large_height * $small_pct / 100 ), true ),
             "htax-icon-medium-{$taxonomy}" => array( (int) round( $large_width * $medium_pct / 100 ), (int) round( $large_height * $medium_pct / 100 ), true ),
             "htax-icon-large-{$taxonomy}"  => array( $large_width, $large_height, true ),
         );
@@ -58,7 +58,7 @@ class HyperTaxonomy_Term_Icons {
      * Get all icon sizes for all enabled taxonomies
      */
     private static function get_all_icon_sizes() {
-        $all_sizes = array();
+        $all_sizes          = array();
         $enabled_taxonomies = htax_get_enabled_taxonomies();
 
         foreach ( $enabled_taxonomies as $taxonomy ) {
@@ -107,31 +107,55 @@ class HyperTaxonomy_Term_Icons {
      */
     public static function get_icon_dimensions( $taxonomy, $size_type = 'small' ) {
         $options       = self::get_settings();
-        $icon_settings = $options['icon_settings'][$taxonomy] ?? array();
+        $icon_settings = $options['icon_settings'][ $taxonomy ] ?? array();
 
-        $large_width  = isset( $icon_settings['width'] )      ? intval( $icon_settings['width'] )      : 96;
-        $large_height = isset( $icon_settings['height'] )     ? intval( $icon_settings['height'] )     : 96;
+        $large_width  = isset( $icon_settings['width'] ) ? intval( $icon_settings['width'] ) : 96;
+        $large_height = isset( $icon_settings['height'] ) ? intval( $icon_settings['height'] ) : 96;
         $medium_pct   = isset( $icon_settings['medium_pct'] ) ? intval( $icon_settings['medium_pct'] ) : 50;
-        $small_pct    = isset( $icon_settings['small_pct'] )  ? intval( $icon_settings['small_pct'] )  : 25;
+        $small_pct    = isset( $icon_settings['small_pct'] ) ? intval( $icon_settings['small_pct'] ) : 25;
 
         if ( 'large' === $size_type ) {
-            return array( 'width' => $large_width, 'height' => $large_height );
+            return array(
+                'width' => $large_width,
+                'height' => $large_height,
+            );
         } elseif ( 'medium' === $size_type ) {
-            return array( 'width' => (int) round( $large_width * $medium_pct / 100 ), 'height' => (int) round( $large_height * $medium_pct / 100 ) );
+            return array(
+                'width' => (int) round( $large_width * $medium_pct / 100 ),
+                'height' => (int) round( $large_height * $medium_pct / 100 ),
+            );
         }
         // 'small' default
-        return array( 'width' => (int) round( $large_width * $small_pct / 100 ), 'height' => (int) round( $large_height * $small_pct / 100 ) );
+        return array(
+            'width' => (int) round( $large_width * $small_pct / 100 ),
+            'height' => (int) round( $large_height * $small_pct / 100 ),
+        );
     }
 
     /**
      * Color palette for icon-shaped placeholders
      */
     private static $color_palette = array(
-        '#e53935', '#d81b60', '#8e24aa', '#5e35b1',
-        '#3949ab', '#1e88e5', '#039be5', '#00acc1',
-        '#00897b', '#43a047', '#7cb342', '#c0ca33',
-        '#fdd835', '#ffb300', '#fb8c00', '#f4511e',
-        '#6d4c41', '#757575', '#546e7a', '#424242'
+        '#e53935',
+        '#d81b60',
+        '#8e24aa',
+        '#5e35b1',
+        '#3949ab',
+        '#1e88e5',
+        '#039be5',
+        '#00acc1',
+        '#00897b',
+        '#43a047',
+        '#7cb342',
+        '#c0ca33',
+        '#fdd835',
+        '#ffb300',
+        '#fb8c00',
+        '#f4511e',
+        '#6d4c41',
+        '#757575',
+        '#546e7a',
+        '#424242',
     );
 
     /**
@@ -162,12 +186,12 @@ class HyperTaxonomy_Term_Icons {
         if ( ! self::are_icons_enabled() ) {
             return;
         }
-        
+
         // Register custom image sizes
         add_action( 'init', array( $this, 'register_image_sizes' ) );
-        
+
         // Admin UI - register for all enabled taxonomies dynamically (priority 13)
-        add_action( 'init', function() {
+        add_action( 'init', function () {
             $enabled_taxonomies = htax_get_enabled_taxonomies();
             foreach ( $enabled_taxonomies as $taxonomy ) {
                 add_action( "{$taxonomy}_edit_form_fields", array( $this, 'add_icon_field' ), 13 );
@@ -180,10 +204,10 @@ class HyperTaxonomy_Term_Icons {
 
         // Admin scripts
         add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_scripts' ) );
-        
+
         // AJAX handlers
         add_action( 'wp_ajax_htax_delete_all_icons', array( $this, 'ajax_delete_all_icons' ) );
-        add_action( 'wp_ajax_htax_crop_term_icon',   array( $this, 'ajax_crop_term_icon' ) );
+        add_action( 'wp_ajax_htax_crop_term_icon', array( $this, 'ajax_crop_term_icon' ) );
 
         // Handle slug changes - rename icon attachment to match
         add_action( 'edit_terms', array( $this, 'remember_slug_before_edit' ), 10, 1 );
@@ -192,9 +216,9 @@ class HyperTaxonomy_Term_Icons {
         // Cleanup on term deletion
         add_action( 'delete_term', array( $this, 'htax_cleanup_term_icon' ), 10, 3 );
     }
-    
+
     public static function are_icons_enabled( $taxonomy = '' ) {
-        $options = self::get_settings();
+        $options       = self::get_settings();
         $icon_settings = $options['icon_settings'] ?? array();
 
         // If specific taxonomy requested, check just that one
@@ -215,7 +239,7 @@ class HyperTaxonomy_Term_Icons {
         }
         return $any_enabled;
     }
-    
+
     /**
      * Register custom image sizes
      */
@@ -225,13 +249,13 @@ class HyperTaxonomy_Term_Icons {
             add_image_size( $name, $size[0], $size[1], $size[2] );
         }
     }
-    
+
     /**
      * Add icon field to term edit form
      */
     public function add_icon_field( $term ) {
         $current_screen = get_current_screen();
-        $taxonomy = $current_screen ? $current_screen->taxonomy : '';
+        $taxonomy       = $current_screen ? $current_screen->taxonomy : '';
 
         if ( ! htax_is_taxonomy_enabled( $taxonomy ) ) {
             return;
@@ -241,12 +265,12 @@ class HyperTaxonomy_Term_Icons {
         if ( ! htax_taxonomy_has_feature( $taxonomy, 'icons' ) ) {
             return;
         }
-        
-        $term_id = is_object( $term ) ? $term->term_id : 0;
+
+        $term_id   = is_object( $term ) ? $term->term_id : 0;
         $term_slug = is_object( $term ) ? $term->slug : '';
-        $icon_id = get_term_meta( $term_id, '_htax_icon_id', true );
-        $icon_url = '';
-        
+        $icon_id   = get_term_meta( $term_id, '_htax_icon_id', true );
+        $icon_url  = '';
+
         if ( $icon_id ) {
             $icon_url = wp_get_attachment_image_url( $icon_id, "htax-icon-medium-{$taxonomy}" );
         }
@@ -289,7 +313,7 @@ class HyperTaxonomy_Term_Icons {
         </tr>
         <?php
     }
-    
+
     /**
      * Add icon field to new term form
      */
@@ -328,11 +352,11 @@ class HyperTaxonomy_Term_Icons {
         </div>
         <?php
     }
-    
+
     /**
      * Get icon data for multiple terms in a single query with caching
-     * 
-     * @param array $term_ids Array of term IDs
+     *
+     * @param array  $term_ids Array of term IDs
      * @param string $size Image size
      * @return array Keyed by term_id with icon data
      */
@@ -340,17 +364,17 @@ class HyperTaxonomy_Term_Icons {
         if ( empty( $term_ids ) ) {
             return array();
         }
-        
+
         // Sanitize and ensure unique term IDs
         $term_ids = htax_sanitize_term_ids( $term_ids );
-        
+
         // Try to get as many as possible from individual caches first
-        $results = array();
+        $results           = array();
         $uncached_term_ids = array();
-        
+
         foreach ( $term_ids as $term_id ) {
             $individual_cache_key = 'htax_icon_' . $term_id . '_' . $size;
-            $cached_data = wp_cache_get( $individual_cache_key, 'hypertaxonomy' );
+            $cached_data          = wp_cache_get( $individual_cache_key, 'hypertaxonomy' );
 
             if ( false !== $cached_data ) {
                 // Ensure taxonomy is set (for old cached data)
@@ -362,32 +386,32 @@ class HyperTaxonomy_Term_Icons {
                 $uncached_term_ids[] = $term_id;
             }
         }
-        
+
         // If all were cached, return early
         if ( empty( $uncached_term_ids ) ) {
             return $results;
         }
-        
+
         // Check batch cache for uncached items.
         // Fold the icons version into the key so clear_icon_cache() invalidation applies.
-        $icons_version   = wp_cache_get( 'htax_icons_version', 'hypertaxonomy' );
+        $icons_version = wp_cache_get( 'htax_icons_version', 'hypertaxonomy' );
         if ( false === $icons_version ) {
             $icons_version = 1;
         }
         $batch_cache_key = 'htax_icons_batch_' . md5( implode( '_', $uncached_term_ids ) . '_' . $size . '_v' . $icons_version );
-        $batch_cached = wp_cache_get( $batch_cache_key, 'hypertaxonomy' );
-        
+        $batch_cached    = wp_cache_get( $batch_cache_key, 'hypertaxonomy' );
+
         if ( false !== $batch_cached ) {
             // Merge batch cache with individual cache results
             return array_merge( $results, $batch_cached );
         }
-        
+
         // Fetch uncached data from database
         global $wpdb;
-        
+
         // Build placeholders for SQL IN clause
         $placeholders = htax_sql_placeholders( count( $uncached_term_ids ) );
-        
+
         // Fetch all icon meta and term slugs in one query
         $term_data = $wpdb->get_results( $wpdb->prepare(
             "SELECT t.term_id, t.slug, tm.meta_value as icon_id
@@ -397,23 +421,23 @@ class HyperTaxonomy_Term_Icons {
              WHERE t.term_id IN ($placeholders)",
             ...$uncached_term_ids
         ) );
-        
+
         // Build maps for quick lookup
-        $term_slugs = array();
+        $term_slugs          = array();
         $term_attachment_map = array();
-        $attachment_ids = array();
-        
+        $attachment_ids      = array();
+
         foreach ( $term_data as $row ) {
-            $term_id = intval( $row->term_id );
+            $term_id                = intval( $row->term_id );
             $term_slugs[ $term_id ] = $row->slug;
-            
+
             if ( ! empty( $row->icon_id ) ) {
-                $attachment_id = intval( $row->icon_id );
+                $attachment_id                   = intval( $row->icon_id );
                 $term_attachment_map[ $term_id ] = $attachment_id;
-                $attachment_ids[] = $attachment_id;
+                $attachment_ids[]                = $attachment_id;
             }
         }
-        
+
         // Handle any term IDs that weren't found (shouldn't happen, but be safe)
         foreach ( $uncached_term_ids as $term_id ) {
             if ( ! isset( $term_slugs[ $term_id ] ) ) {
@@ -427,25 +451,25 @@ class HyperTaxonomy_Term_Icons {
                 }
             }
         }
-        
+
         // Batch fetch all attachment URLs if we have any
         $attachment_urls = array();
         if ( ! empty( $attachment_ids ) ) {
             $attachment_ids = array_unique( $attachment_ids );
-            
+
             // Try to get attachments from cache first
             $uncached_attachments = array();
             foreach ( $attachment_ids as $attachment_id ) {
                 $attach_cache_key = 'htax_attach_url_' . $attachment_id . '_' . $size;
-                $cached_url = wp_cache_get( $attach_cache_key, 'hypertaxonomy' );
-                
+                $cached_url       = wp_cache_get( $attach_cache_key, 'hypertaxonomy' );
+
                 if ( false !== $cached_url ) {
                     $attachment_urls[ $attachment_id ] = $cached_url;
                 } else {
                     $uncached_attachments[] = $attachment_id;
                 }
             }
-            
+
             // Fetch uncached attachments
             if ( ! empty( $uncached_attachments ) ) {
                 $attachments = get_posts( array(
@@ -463,9 +487,9 @@ class HyperTaxonomy_Term_Icons {
                 foreach ( $attachments as $attachment_id ) {
                     $image = wp_get_attachment_image_src( $attachment_id, $size );
                     if ( $image && ! empty( $image[0] ) ) {
-                        $url = $image[0];
+                        $url                               = $image[0];
                         $attachment_urls[ $attachment_id ] = $url;
-                        
+
                         // Cache individual attachment URL
                         $attach_cache_key = 'htax_attach_url_' . $attachment_id . '_' . $size;
                         wp_cache_set( $attach_cache_key, $url, 'hypertaxonomy', 7200 ); // 2 hours
@@ -473,16 +497,16 @@ class HyperTaxonomy_Term_Icons {
                 }
             }
         }
-        
+
         // Build results for uncached terms
         $batch_results = array();
-        
+
         foreach ( $uncached_term_ids as $term_id ) {
             $icon_data = array(
                 'has_icon' => false,
                 'url' => '',
                 'placeholder_color' => '',
-                'taxonomy' => $taxonomy
+                'taxonomy' => $taxonomy,
             );
 
             // Check if this term has an icon
@@ -491,7 +515,7 @@ class HyperTaxonomy_Term_Icons {
 
                 if ( isset( $attachment_urls[ $attachment_id ] ) ) {
                     $icon_data['has_icon'] = true;
-                    $icon_data['url'] = $attachment_urls[ $attachment_id ];
+                    $icon_data['url']      = $attachment_urls[ $attachment_id ];
                 }
             }
 
@@ -501,23 +525,23 @@ class HyperTaxonomy_Term_Icons {
             }
 
             $batch_results[ $term_id ] = $icon_data;
-            
+
             // Cache individual term icon data
             $individual_cache_key = 'htax_icon_' . $term_id . '_' . $size;
             wp_cache_set( $individual_cache_key, $icon_data, 'hypertaxonomy', 3600 ); // 1 hour
         }
-        
+
         // Cache the batch result
         wp_cache_set( $batch_cache_key, $batch_results, 'hypertaxonomy', 1800 ); // 30 minutes
-        
+
         // Merge and return all results
         return array_merge( $results, $batch_results );
     }
-    
+
     /**
      * Get placeholder color for a term (deterministic based on term SLUG for consistency)
-     * 
-     * @param int $term_id Term ID
+     *
+     * @param int    $term_id Term ID
      * @param string $slug Optional slug if already known (for optimization)
      * @return string Hex color code
      */
@@ -532,10 +556,10 @@ class HyperTaxonomy_Term_Icons {
                 $slug = $term->slug;
             }
         }
-        
+
         return self::get_color_for_slug( $slug );
     }
-    
+
     /**
      * Clear attachment URL cache for all icon sizes of a taxonomy.
      *
@@ -570,15 +594,15 @@ class HyperTaxonomy_Term_Icons {
         // Also clear any batch caches that might contain this term
         // This is harder to do precisely, so we use a version key approach
         $version_key = 'htax_icons_version';
-        $version = wp_cache_get( $version_key, 'hypertaxonomy' );
+        $version     = wp_cache_get( $version_key, 'hypertaxonomy' );
         if ( false === $version ) {
             $version = 1;
         } else {
-            $version++;
+            ++$version;
         }
         wp_cache_set( $version_key, $version, 'hypertaxonomy', 86400 ); // 24 hours
     }
-    
+
     /**
      * Save term icon with strict validation
      */
@@ -601,7 +625,7 @@ class HyperTaxonomy_Term_Icons {
             return;
         }
 
-        $attachment_id = intval( wp_unslash( $_POST['htax_icon_id'] ) );
+        $attachment_id     = intval( wp_unslash( $_POST['htax_icon_id'] ) );
         $old_attachment_id = (int) get_term_meta( $term_id, '_htax_icon_id', true );
 
         // Early return when icon hasn't changed — avoids image validation, resize, rename,
@@ -613,13 +637,13 @@ class HyperTaxonomy_Term_Icons {
         if ( $attachment_id ) {
             // Validate that it's an image
             if ( ! wp_attachment_is_image( $attachment_id ) ) {
-                htax_add_admin_notice( 
+                htax_add_admin_notice(
                     __( 'Invalid file format. Please upload an image file in one of the supported formats.', 'hypertaxonomy' ),
-                    'error' 
+                    'error'
                 );
                 return;
             }
-            
+
             // Validate exact dimensions - check against taxonomy-specific dimensions
             if ( ! $this->validate_image_dimensions( $attachment_id, $taxonomy ) ) {
                 // Don't save the icon if dimensions don't match
@@ -636,7 +660,7 @@ class HyperTaxonomy_Term_Icons {
                 );
                 return;
             }
-            
+
             // Process the icon
             $this->process_uploaded_icon( $attachment_id, $term_id );
 
@@ -650,11 +674,11 @@ class HyperTaxonomy_Term_Icons {
         }
         $this->clear_icon_cache( $term_id );
     }
-    
+
     /**
      * Validate that image dimensions exactly match taxonomy settings
      *
-     * @param int $attachment_id Attachment ID
+     * @param int    $attachment_id Attachment ID
      * @param string $taxonomy Taxonomy name
      * @return bool True if dimensions match exactly, false otherwise
      */
@@ -670,7 +694,7 @@ class HyperTaxonomy_Term_Icons {
             return false;
         }
 
-        $img_width = $metadata['width'];
+        $img_width  = $metadata['width'];
         $img_height = $metadata['height'];
 
         // Validate against the large (uploaded) size — the configured dimensions
@@ -679,7 +703,7 @@ class HyperTaxonomy_Term_Icons {
         // Require at least the configured (large) dimensions; larger is accepted and cropped.
         return ( (int) $img_width >= (int) $dimensions['width'] && (int) $img_height >= (int) $dimensions['height'] );
     }
-    
+
     /**
      * Process uploaded icon - regenerate thumbnails for taxonomy-specific sizes
      *
@@ -798,10 +822,10 @@ class HyperTaxonomy_Term_Icons {
 
     /**
      * Get term icon data
-     * 
-     * @param int $term_id Term ID
+     *
+     * @param int    $term_id Term ID
      * @param string $size Size name
-     * @param bool $include_placeholder Whether to generate placeholder color
+     * @param bool   $include_placeholder Whether to generate placeholder color
      * @return array Icon data
      */
     public function get_term_icon_data( $term_id, $size = 'htax-icon-small', $include_placeholder = false, $taxonomy = '' ) {
@@ -810,14 +834,13 @@ class HyperTaxonomy_Term_Icons {
                 'has_icon' => false,
                 'url' => '',
                 'placeholder_color' => $include_placeholder ? $this->get_placeholder_color( 'default' ) : '',
-                'taxonomy' => $taxonomy
+                'taxonomy' => $taxonomy,
             );
         }
 
         // Check cache first
         $cache_key = 'htax_icon_' . $term_id . '_' . $size;
-        $cached = wp_cache_get( $cache_key, 'hypertaxonomy' );
-
+        $cached    = wp_cache_get( $cache_key, 'hypertaxonomy' );
 
         if ( false !== $cached ) {
             // Ensure taxonomy is set (for old cached data)
@@ -834,15 +857,15 @@ class HyperTaxonomy_Term_Icons {
             'has_icon' => false,
             'url' => '',
             'placeholder_color' => '',
-            'taxonomy' => $taxonomy
+            'taxonomy' => $taxonomy,
         );
 
         if ( $attachment_id ) {
             $url = wp_get_attachment_image_url( $attachment_id, $size );
             if ( $url ) {
-                $data['has_icon'] = true;
+                $data['has_icon']      = true;
                 $data['attachment_id'] = $attachment_id;
-                $data['url'] = $url;
+                $data['url']           = $url;
             }
         }
 
@@ -869,7 +892,7 @@ class HyperTaxonomy_Term_Icons {
         return self::$color_palette[ $index ];
     }
 
-    
+
     /**
      * Cleanup icon when term is deleted
      */
@@ -881,7 +904,7 @@ class HyperTaxonomy_Term_Icons {
             htax_log_debug( 'Starting term icon cleanup', array(
                 'term_id' => $term_id,
                 'taxonomy' => $taxonomy,
-                'attachment_id' => $attachment_id
+                'attachment_id' => $attachment_id,
             ) );
 
             $other_users = get_terms( array(
@@ -932,11 +955,11 @@ class HyperTaxonomy_Term_Icons {
             wp_send_json_error( array( 'message' => __( 'Permission denied.', 'hypertaxonomy' ) ) );
         }
 
-        $attachment_id = absint( wp_unslash( $_POST['id']    ?? 0 ) );
-        $x             = absint( wp_unslash( $_POST['x']     ?? 0 ) );
-        $y             = absint( wp_unslash( $_POST['y']     ?? 0 ) );
-        $w             = absint( wp_unslash( $_POST['w']     ?? 0 ) );
-        $h             = absint( wp_unslash( $_POST['h']     ?? 0 ) );
+        $attachment_id = absint( wp_unslash( $_POST['id'] ?? 0 ) );
+        $x             = absint( wp_unslash( $_POST['x'] ?? 0 ) );
+        $y             = absint( wp_unslash( $_POST['y'] ?? 0 ) );
+        $w             = absint( wp_unslash( $_POST['w'] ?? 0 ) );
+        $h             = absint( wp_unslash( $_POST['h'] ?? 0 ) );
         $dst_w         = absint( wp_unslash( $_POST['dst_w'] ?? 0 ) );
         $dst_h         = absint( wp_unslash( $_POST['dst_h'] ?? 0 ) );
 
@@ -1039,21 +1062,21 @@ class HyperTaxonomy_Term_Icons {
             'meta_query' => array(
                 array(
                     'key' => '_htax_icon_id',
-                    'compare' => 'EXISTS'
-                )
-            )
+                    'compare' => 'EXISTS',
+                ),
+            ),
         ) );
 
         if ( is_wp_error( $terms ) ) {
             htax_log_error( 'Failed to get terms for icon deletion', array(
                 'taxonomy' => $taxonomy,
-                'error' => $terms->get_error_message()
+                'error' => $terms->get_error_message(),
             ) );
             wp_send_json_error( array( 'message' => __( 'Failed to retrieve terms.', 'hypertaxonomy' ) ) );
             return;
         }
 
-        $deleted_count = 0;
+        $deleted_count    = 0;
         $attachment_count = 0;
 
         // Prime the WP object cache so each get_term_meta() below is a cache hit.
@@ -1077,7 +1100,7 @@ class HyperTaxonomy_Term_Icons {
                 } else {
                     $deleted = wp_delete_attachment( $attachment_id, true );
                     if ( $deleted ) {
-                        $attachment_count++;
+                        ++$attachment_count;
                     }
                 }
 
@@ -1091,13 +1114,13 @@ class HyperTaxonomy_Term_Icons {
             // Clear term icon cache
             $this->clear_icon_cache( $term->term_id );
 
-            $deleted_count++;
+            ++$deleted_count;
         }
 
         htax_log_debug( 'Completed bulk icon deletion', array(
             'taxonomy' => $taxonomy,
             'terms_processed' => $deleted_count,
-            'attachments_deleted' => $attachment_count
+            'attachments_deleted' => $attachment_count,
         ) );
 
         wp_send_json_success( array(
@@ -1106,7 +1129,7 @@ class HyperTaxonomy_Term_Icons {
                 _n( 'Successfully deleted %d icon.', 'Successfully deleted %d icons.', $deleted_count, 'hypertaxonomy' ),
                 $deleted_count
             ),
-            'deleted_count' => $deleted_count
+            'deleted_count' => $deleted_count,
         ) );
     }
 
@@ -1125,12 +1148,12 @@ class HyperTaxonomy_Term_Icons {
      */
     public static function generate_unique_icon_filename( $slug, $taxonomy, $extension ) {
         // Sanitize inputs
-        $slug = sanitize_file_name( $slug );
+        $slug      = sanitize_file_name( $slug );
         $extension = strtolower( preg_replace( '/[^A-Za-z0-9]/', '', $extension ) );
 
         // Get uploads directory
         $upload_dir = wp_upload_dir();
-        $base_dir = $upload_dir['basedir'];
+        $base_dir   = $upload_dir['basedir'];
 
         // Try 1: slug.ext
         $filename = $slug . '.' . $extension;
@@ -1139,7 +1162,7 @@ class HyperTaxonomy_Term_Icons {
         }
 
         // Try 2: slug-taxonomy.ext (use taxonomy singular label)
-        $tax_obj = get_taxonomy( $taxonomy );
+        $tax_obj    = get_taxonomy( $taxonomy );
         $tax_suffix = $tax_obj && isset( $tax_obj->labels->singular_name )
             ? sanitize_file_name( strtolower( $tax_obj->labels->singular_name ) )
             : sanitize_file_name( $taxonomy );
@@ -1156,7 +1179,7 @@ class HyperTaxonomy_Term_Icons {
             if ( ! self::file_exists_in_uploads( $filename, $base_dir ) ) {
                 return $filename;
             }
-            $counter++;
+            ++$counter;
         }
 
         // Fallback: append timestamp if we somehow hit the limit
@@ -1279,8 +1302,8 @@ class HyperTaxonomy_Term_Icons {
         }
 
         // Get file info
-        $path_info = pathinfo( $old_file_path );
-        $extension = isset( $path_info['extension'] ) ? $path_info['extension'] : 'png';
+        $path_info  = pathinfo( $old_file_path );
+        $extension  = isset( $path_info['extension'] ) ? $path_info['extension'] : 'png';
         $upload_dir = wp_upload_dir();
 
         // Generate new unique filename
@@ -1315,11 +1338,11 @@ class HyperTaxonomy_Term_Icons {
                 // Generate new size filename (preserves dimension suffix)
                 // e.g., "old-24x24.png" → "new-24x24.png"
                 $size_path_info = pathinfo( $size_data['file'] );
-                $size_basename = $size_path_info['filename'];
+                $size_basename  = $size_path_info['filename'];
 
                 // Extract dimension suffix if present (e.g., "-24x24")
                 if ( preg_match( '/-(\d+x\d+)$/', $size_basename, $matches ) ) {
-                    $dimension_suffix = '-' . $matches[1];
+                    $dimension_suffix  = '-' . $matches[1];
                     $new_size_filename = str_replace( '.' . $extension, '', $new_filename ) . $dimension_suffix . '.' . $extension;
                 } else {
                     $new_size_filename = $new_filename;

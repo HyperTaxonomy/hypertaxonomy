@@ -362,8 +362,8 @@ function htax_count_expanded_term_posts( string $taxonomy, array $entries ): arr
 
     // Like WordPress's own term counts: published posts of the post types the taxonomy is
     // registered for, not drafts or other statuses.
-    $tax_object    = get_taxonomy( $taxonomy );
-    $post_types    = $tax_object ? array_values( (array) $tax_object->object_type ) : array();
+    $tax_object = get_taxonomy( $taxonomy );
+    $post_types = $tax_object ? array_values( (array) $tax_object->object_type ) : array();
     if ( ! $post_types ) {
         return array_fill_keys( array_keys( $entries ), 0 );
     }
@@ -507,7 +507,7 @@ function htax_get_term_locations( int $term_id ): array {
  * The optional `$args` bag is forwarded opaquely to providers as scope hints —
  * HyperTaxonomy does not interpret it. TermConnect understands:
  *   - 'platforms'  string[]|string  Peer platform types to include (e.g.
- *                                   'wordpress', 'feed'); default: all supported.
+ *                                   'WordPress', 'feed'); default: all supported.
  *   - 'foaf_depth' int              FOAF traversal depth; 0 = direct peers only.
  *   - 'peers'      string|string[]  Restrict to specific peer link-type slugs
  *                                   (omit for all). Consumers that should not
@@ -547,7 +547,7 @@ function htax_get_term_external_posts( int $term_id, array $args = array() ): ar
  * Each entry is an associative array keyed by slug:
  *   - 'slug'     string  Stable identifier (the provider's link-type slug).
  *   - 'label'    string  Human-readable name.
- *   - 'platform' string  Peer platform type (e.g. 'wordpress', 'feed').
+ *   - 'platform' string  Peer platform type (e.g. 'WordPress', 'feed').
  *   - 'origin'   string  Site origin (scheme://host) or feed URL, when known.
  *
  * @since 1.0.0
@@ -600,7 +600,7 @@ function htax_get_local_post_scores( array $term_ids, array $args = array() ): a
     $hidden_clause = htax_get_hidden_term_filter_clause( 'st.is_hidden' );
     $model_clause  = htax_strength_model_sql( 'st', 'related' );
 
-    $exclude = array_values( array_filter( array_map( 'intval', (array) ( $args['exclude'] ?? array() ) ) ) );
+    $exclude        = array_values( array_filter( array_map( 'intval', (array) ( $args['exclude'] ?? array() ) ) ) );
     $exclude_clause = ! empty( $exclude ) ? ' AND st.post_id NOT IN (' . implode( ',', $exclude ) . ')' : '';
 
     // Optional per-term query weights (e.g. source-post centrality): each term's

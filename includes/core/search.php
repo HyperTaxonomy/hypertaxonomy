@@ -65,7 +65,7 @@ function htax_get_term_sort_order( $term_id ) {
  * @return array Array of field=>order pairs, e.g. ['relevance' => 'DESC', 'date' => 'DESC']
  */
 function htax_parse_orderby( $orderby ) {
-    $parsed = array();
+    $parsed       = array();
     $valid_fields = array( 'relevance', 'date', 'modified', 'title', 'author', 'comment_count', 'last_comment', 'last_activity', 'ID' );
 
     // Split by comma
@@ -117,7 +117,7 @@ function htax_build_orderby_sql( $orderby_parsed, $post_alias = 'pt', $relevance
     $order_parts = array();
     $first_dir   = null;
     foreach ( $orderby_parsed as $field => $dir ) {
-        $dir       = ( 'ASC' === $dir ) ? 'ASC' : 'DESC';
+        $dir = ( 'ASC' === $dir ) ? 'ASC' : 'DESC';
         if ( null === $first_dir ) {
             $first_dir = $dir;
         }
@@ -206,16 +206,37 @@ function htax_get_default_relevance_weights( $taxonomy ) {
     // ranks the same before and after its first save of the Search tab.
     if ( is_taxonomy_hierarchical( $taxonomy ) ) {
         return array(
-            'direct'    => array( 'explicit' => 1.0, 'text' => 0.5  ),
-            'hierarchy' => array( 'explicit' => 0.7, 'text' => 0.4  ),
-            'container' => array( 'explicit' => 0.6, 'text' => 0.35 ),
-            'redirect'  => array( 'explicit' => 0.5, 'text' => 0.3  ),
+            'direct'    => array(
+                'explicit' => 1.0,
+                'text' => 0.5,
+            ),
+            'hierarchy' => array(
+                'explicit' => 0.7,
+                'text' => 0.4,
+            ),
+            'container' => array(
+                'explicit' => 0.6,
+                'text' => 0.35,
+            ),
+            'redirect'  => array(
+                'explicit' => 0.5,
+                'text' => 0.3,
+            ),
         );
     }
     return array(
-        'direct'    => array( 'explicit' => 1.0,  'text' => 0.6  ),
-        'container' => array( 'explicit' => 0.75, 'text' => 0.5  ),
-        'redirect'  => array( 'explicit' => 0.6,  'text' => 0.35 ),
+        'direct'    => array(
+            'explicit' => 1.0,
+            'text' => 0.6,
+        ),
+        'container' => array(
+            'explicit' => 0.75,
+            'text' => 0.5,
+        ),
+        'redirect'  => array(
+            'explicit' => 0.6,
+            'text' => 0.35,
+        ),
     );
 }
 
@@ -365,7 +386,7 @@ function htax_apply_sql_orderby_clauses( $clauses, $query ) {
  * Removes 'term_relevance' field (only works with text search) and sets appropriate
  * orderby/order parameters for WP_Query.
  *
- * @param array $orderby_parsed Parsed orderby array from htax_parse_orderby()
+ * @param array          $orderby_parsed Parsed orderby array from htax_parse_orderby()
  * @param array|WP_Query $query_or_args WP_Query args array or WP_Query object (passed by reference)
  * @return array|void Returns modified args array if $query_or_args is array, otherwise modifies WP_Query object directly
  */
@@ -388,7 +409,7 @@ function htax_apply_orderby_to_wp_query( $orderby_parsed, &$query_or_args ) {
             $query_or_args->set( 'order', $order );
         } else {
             $query_or_args['orderby'] = $field;
-            $query_or_args['order'] = $order;
+            $query_or_args['order']   = $order;
         }
     } elseif ( count( $wp_orderby ) > 1 ) {
         // Multiple orderby (WP 4.0+)
@@ -404,7 +425,7 @@ function htax_apply_orderby_to_wp_query( $orderby_parsed, &$query_or_args ) {
             $query_or_args->set( 'order', 'DESC' );
         } else {
             $query_or_args['orderby'] = 'date';
-            $query_or_args['order'] = 'DESC';
+            $query_or_args['order']   = 'DESC';
         }
     }
 
@@ -434,9 +455,9 @@ function htax_enhance_search_query( $query ) {
     }
 
     // Check if enhanced search is enabled (either globally or via parameter)
-    $options = get_option( 'htax_settings', array() );
+    $options        = get_option( 'htax_settings', array() );
     $always_enhance = ! empty( $options['always_enhance_search'] );
-    $param_enhance = isset( $_GET['htax_search'] );
+    $param_enhance  = isset( $_GET['htax_search'] );
 
     if ( ! $always_enhance && ! $param_enhance ) {
         return;
@@ -448,7 +469,7 @@ function htax_enhance_search_query( $query ) {
     $default_orderby = isset( $options['enhanced_search_orderby'] ) && ! empty( $options['enhanced_search_orderby'] )
         ? $options['enhanced_search_orderby']
         : 'relevance:desc,date:desc';
-    $orderby_string = isset( $_GET['htax_orderby'] ) ? sanitize_text_field( wp_unslash( $_GET['htax_orderby'] ) ) : $default_orderby;
+    $orderby_string  = isset( $_GET['htax_orderby'] ) ? sanitize_text_field( wp_unslash( $_GET['htax_orderby'] ) ) : $default_orderby;
 
     // Parse orderby parameter
     $orderby_parsed = htax_parse_orderby( $orderby_string );
@@ -468,9 +489,9 @@ function htax_enhance_search_query( $query ) {
     } else {
         $posts_per_page = (int) $query->get( 'posts_per_page' ) > 0 ? (int) $query->get( 'posts_per_page' ) : (int) get_option( 'posts_per_page', 10 );
     }
-    $paged          = htax_get_search_page_number( $query );
-    $power_search   = HyperTaxonomy_Power_Search::get_instance();
-    $search_result  = $power_search->perform_indexed_text_search( $search_text, array(
+    $paged         = htax_get_search_page_number( $query );
+    $power_search  = HyperTaxonomy_Power_Search::get_instance();
+    $search_result = $power_search->perform_indexed_text_search( $search_text, array(
         'search_in'      => $search_in,
         'orderby'        => $orderby_parsed,
         'posts_per_page' => $posts_per_page,
@@ -567,7 +588,7 @@ function htax_handle_widget_post_search( $query ) {
                             'taxonomy' => $taxonomy,
                             'terms' => $term_ids,
                             'match' => 'any',
-                            'type' => 'checklist'
+                            'type' => 'checklist',
                         );
                     }
                 } else {
@@ -580,7 +601,7 @@ function htax_handle_widget_post_search( $query ) {
                             'taxonomy' => $taxonomy,
                             'terms' => $term_ids,
                             'match' => 'any',
-                            'type' => 'pills'
+                            'type' => 'pills',
                         );
                     }
                 }
@@ -590,7 +611,7 @@ function htax_handle_widget_post_search( $query ) {
                 if ( ! is_array( $value ) ) {
                     $field_data[ $key ] = array(
                         'type' => 'text',
-                        'value' => sanitize_text_field( $value )
+                        'value' => sanitize_text_field( $value ),
                     );
                 }
             }
@@ -598,10 +619,10 @@ function htax_handle_widget_post_search( $query ) {
     }
 
     // Extract text search and check for taxonomy terms using helper methods
-    $text_search_data = $widget->extract_text_search_from_fields( $field_data );
-    $text_search_query = $text_search_data['query'];
-    $text_search_in = $text_search_data['search_in'];
-    $has_text_search = ! empty( $text_search_query );
+    $text_search_data   = $widget->extract_text_search_from_fields( $field_data );
+    $text_search_query  = $text_search_data['query'];
+    $text_search_in     = $text_search_data['search_in'];
+    $has_text_search    = ! empty( $text_search_query );
     $has_taxonomy_terms = $widget->has_taxonomy_terms_in_fields( $field_data );
 
     // Parse orderby
@@ -918,7 +939,7 @@ function htax_handle_power_post_search( $query ) {
 
     // Get search parameters from POST
     $search_query = sanitize_text_field( wp_unslash( $_POST['query'] ) );
-    $min_length = isset( $_POST['htax_min_length'] ) ? intval( wp_unslash( $_POST['htax_min_length'] ) ) : 3;
+    $min_length   = isset( $_POST['htax_min_length'] ) ? intval( wp_unslash( $_POST['htax_min_length'] ) ) : 3;
 
     // Validate minimum length
     if ( mb_strlen( $search_query ) < $min_length ) {
@@ -1183,7 +1204,7 @@ function htax_process_post_placeholders( $text, WP_Post $post ) {
     if ( $needs_image ) {
         $thumbnail_id = get_post_thumbnail_id( $post->ID );
         if ( $thumbnail_id ) {
-            $img_src = wp_get_attachment_image_src( $thumbnail_id, 'full' );
+            $img_src                        = wp_get_attachment_image_src( $thumbnail_id, 'full' );
             $replacements['{image_src}']    = $img_src ? esc_url( $img_src[0] ) : '';
             $replacements['{image_width}']  = $img_src ? (int) $img_src[1] : '';
             $replacements['{image_height}'] = $img_src ? (int) $img_src[2] : '';
@@ -1206,8 +1227,8 @@ function htax_process_post_placeholders( $text, WP_Post $post ) {
             if ( isset( $done_tokens[ $token ] ) ) {
                 continue;
             }
-            $done_tokens[ $token ] = true;
-            $size = ! empty( $tmatch[1] ) ? sanitize_key( $tmatch[1] ) : 'medium';
+            $done_tokens[ $token ]  = true;
+            $size                   = ! empty( $tmatch[1] ) ? sanitize_key( $tmatch[1] ) : 'medium';
             $replacements[ $token ] = get_the_post_thumbnail( $post->ID, $size );
         }
     }
@@ -1326,7 +1347,7 @@ function htax_get_hidden_term_filter_clause( $column = 'is_hidden' ) {
  * @return array Array of taxonomy slugs with search enhancement enabled
  */
 function htax_get_enabled_taxonomies_with_search() {
-    $enabled = htax_get_enabled_taxonomies();
+    $enabled     = htax_get_enabled_taxonomies();
     $with_search = array();
 
     foreach ( $enabled as $taxonomy ) {
@@ -1397,9 +1418,9 @@ function htax_parse_search_query( string $query, string $near_country = 'US' ): 
     if ( function_exists( 'atcf_get_term_ids_within_radius' ) ) {
         // Matches: [-]near:(me | taxonomy:slug | postal_code)[/radius]
         // Value alternatives (no spaces — tokens are space-separated in PowerSearch):
-        //   me               user location
-        //   taxonomy:slug    has exactly one colon
-        //   postal_code      alphanum + hyphens, no colon (e.g. 07012, SW1A1AA, 97201-4567)
+        // me               user location
+        // taxonomy:slug    has exactly one colon
+        // postal_code      alphanum + hyphens, no colon (e.g. 07012, SW1A1AA, 97201-4567)
         $prox_re = '/([+\-]?)(near):((?:me|[a-z0-9_\-]+:[a-z0-9_\-]+|[a-z0-9][a-z0-9\-]*)(?:\/\d+(?:\.\d+)?)?)(?=\s|$)/i';
         preg_match_all( $prox_re, $query, $pm, PREG_SET_ORDER );
         foreach ( $pm as $m ) {
@@ -1421,7 +1442,7 @@ function htax_parse_search_query( string $query, string $near_country = 'US' ): 
                     'radius'        => $radius,
                 );
             } elseif ( str_contains( $value, ':' ) ) {
-                $parts = explode( ':', $value, 2 );
+                $parts                 = explode( ':', $value, 2 );
                 $parsed['proximity'][] = array(
                     'negated'       => $negated,
                     'location_type' => 'term',
@@ -1457,7 +1478,7 @@ function htax_parse_search_query( string $query, string $near_country = 'US' ): 
     // Taxonomy slug and singular label (e.g. product_category:) → exact slug match.
     //
     // Built-in taxonomies (post_tag, category) are handled by the fixed operators below:
-    //   tags:/tag:   categories:/category:   terms:/term:
+    // tags:/tag:   categories:/category:   terms:/term:
     $fulltext_ops = array(); // operator → taxonomy_slug, FULLTEXT matching
     $slug_ops     = array(); // operator → taxonomy_slug, exact slug matching
 
@@ -1545,7 +1566,7 @@ function htax_parse_search_query( string $query, string $near_country = 'US' ): 
                 break;
             default:
                 if ( isset( $fulltext_ops[ $operator ] ) ) {
-                    $slug = $fulltext_ops[ $operator ];
+                    $slug              = $fulltext_ops[ $operator ];
                     $parsed[ $slug ][] = $term_data;
                 } elseif ( isset( $slug_ops[ $operator ] ) ) {
                     $slug = $slug_ops[ $operator ];

@@ -255,8 +255,8 @@ function htax_write_strength_rows( array $placeholders, array $values ): bool {
     $result = $wpdb->query( $wpdb->prepare(
         "INSERT INTO {$wpdb->prefix}htax_search_terms
          (post_id, term_id, source_term_id, taxonomy, relationship_type, model, is_hidden, strength)
-         VALUES " . implode( ', ', $placeholders ) . "
-         ON DUPLICATE KEY UPDATE strength = VALUES(strength), is_hidden = VALUES(is_hidden)",
+         VALUES " . implode( ', ', $placeholders ) . '
+         ON DUPLICATE KEY UPDATE strength = VALUES(strength), is_hidden = VALUES(is_hidden)',
         $values
     ) );
 
@@ -336,7 +336,10 @@ function htax_set_term_strengths( string $model, int $post_id, array $strengths 
         }
         $strength = (float) $strength;
         if ( is_nan( $strength ) || $strength < 0.0 || $strength > 1.0 ) {
-            return new WP_Error( 'htax_strength_out_of_range', __( 'Term strengths must be calibrated to the range 0–1.', 'hypertaxonomy' ), array( 'term_id' => $term_id, 'strength' => $strength ) );
+            return new WP_Error( 'htax_strength_out_of_range', __( 'Term strengths must be calibrated to the range 0–1.', 'hypertaxonomy' ), array(
+                'term_id' => $term_id,
+                'strength' => $strength,
+            ) );
         }
         $clean[ $term_id ] = $strength;
     }

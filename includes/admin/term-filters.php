@@ -91,7 +91,7 @@ function htax_merge_term_ids_to_exclude( &$args, $exclude_ids ) {
         if ( is_array( $args['exclude'] ) ) {
             $args['exclude'] = array_unique( array_merge( $args['exclude'], $exclude_ids ) );
         } elseif ( is_string( $args['exclude'] ) ) {
-            $existing = array_map( 'intval', explode( ',', $args['exclude'] ) );
+            $existing        = array_map( 'intval', explode( ',', $args['exclude'] ) );
             $args['exclude'] = array_unique( array_merge( $existing, $exclude_ids ) );
         }
     } else {
@@ -127,7 +127,7 @@ function htax_intersect_term_ids_to_include( &$args, $include_ids ) {
         if ( is_array( $args['include'] ) ) {
             $args['include'] = array_intersect( $args['include'], $include_ids );
         } elseif ( is_string( $args['include'] ) ) {
-            $existing = array_map( 'intval', explode( ',', $args['include'] ) );
+            $existing        = array_map( 'intval', explode( ',', $args['include'] ) );
             $args['include'] = array_intersect( $existing, $include_ids );
         }
     } else {
@@ -238,7 +238,7 @@ function htax_filter_terms_by_redirect( $args, $taxonomies ) {
         return $args;
     }
 
-    $filter = sanitize_text_field( wp_unslash( $_GET['htax_redirect_filter'] ) );
+    $filter   = sanitize_text_field( wp_unslash( $_GET['htax_redirect_filter'] ) );
     $taxonomy = sanitize_key( wp_unslash( $_GET['taxonomy'] ) );
 
     global $wpdb;
@@ -294,7 +294,7 @@ function htax_filter_terms_by_redirect( $args, $taxonomies ) {
 
             if ( ! empty( $redirect_ids ) ) {
                 // Now get only those that have the auto_redirect meta flag
-                $placeholders = htax_sql_placeholders( count( $redirect_ids ) );
+                $placeholders      = htax_sql_placeholders( count( $redirect_ids ) );
                 $auto_redirect_ids = $wpdb->get_col( $wpdb->prepare(
                     "SELECT DISTINCT term_id
                      FROM {$wpdb->termmeta}
@@ -410,7 +410,7 @@ function htax_filter_terms_by_group( $args, $taxonomies ) {
 
     // Parse multiple group IDs (comma-separated)
     $selected_groups = array_map( 'trim', explode( ',', $group_filter ) );
-    $selected_groups = array_filter( $selected_groups, function( $id ) {
+    $selected_groups = array_filter( $selected_groups, function ( $id ) {
         return '' !== $id;
     } );
 
@@ -450,7 +450,7 @@ function htax_filter_terms_by_group( $args, $taxonomies ) {
         if ( ! empty( $all_group_ids ) ) {
             // Get all term IDs that belong to ANY of these groups using member_of relationships
             $placeholders = htax_sql_placeholders( count( $all_group_ids ) );
-            $term_ids = $wpdb->get_col( $wpdb->prepare(
+            $term_ids     = $wpdb->get_col( $wpdb->prepare(
                 "SELECT DISTINCT source_term_id FROM {$relationships_table}
                 WHERE target_term_id IN ({$placeholders})
                 AND target_taxonomy = 'group'
@@ -472,7 +472,7 @@ function htax_filter_terms_by_group( $args, $taxonomies ) {
                     if ( is_array( $args['include'] ) ) {
                         $args['include'] = array_intersect( $args['include'], $term_ids );
                     } elseif ( is_string( $args['include'] ) ) {
-                        $existing = array_map( 'intval', explode( ',', $args['include'] ) );
+                        $existing        = array_map( 'intval', explode( ',', $args['include'] ) );
                         $args['include'] = array_intersect( $existing, $term_ids );
                     }
                 } else {
@@ -491,4 +491,3 @@ function htax_filter_terms_by_group( $args, $taxonomies ) {
 
     return $args;
 }
-

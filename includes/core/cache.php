@@ -77,8 +77,8 @@ if ( defined( 'HTAX_TIMING' ) && HTAX_TIMING ) {
     add_filter( 'rest_pre_dispatch', function ( $result, $server, $request ) {
         $GLOBALS['htax_rest_t0']    = microtime( true );
         $GLOBALS['htax_rest_route'] = $request->get_route();
-        $qs = $request->get_query_params();
-        $ctx = isset( $qs['context'] ) ? '?context=' . $qs['context'] : '';
+        $qs                         = $request->get_query_params();
+        $ctx                        = isset( $qs['context'] ) ? '?context=' . $qs['context'] : '';
         htax_trace( 'REST_START ' . $request->get_route() . $ctx );
         return $result;
     }, 1, 3 );
@@ -384,11 +384,11 @@ final class HyperTaxonomy_Transient_Batch {
     private static $pending = array();
 
     public function __construct() {
-        self::$depth++;
+        ++self::$depth;
     }
 
     public function __destruct() {
-        self::$depth--;
+        --self::$depth;
         if ( 0 === self::$depth ) {
             self::write();
         }
@@ -531,7 +531,7 @@ function htax_capture_effective_sets_before_delete( $term_id, $taxonomy ): void 
     if ( 'group' === $taxonomy || ! htax_is_taxonomy_enabled( (string) $taxonomy ) ) {
         return;
     }
-    $captured                    = &htax_request_cache( 'deleted_term_sets' );
+    $captured                   = &htax_request_cache( 'deleted_term_sets' );
     $captured[ (int) $term_id ] = array(
         'included'   => htax_load_included_term_ids( (int) $term_id, true, true ),
         'containers' => htax_load_container_term_ids( (int) $term_id, true ),
@@ -548,18 +548,30 @@ function htax_clear_relationship_caches() {
     global $wpdb;
 
     $like_pairs = array(
-        '_transient_htax_inc_',          '_transient_timeout_htax_inc_',
-        '_transient_htax_cont_',         '_transient_timeout_htax_cont_',
-        '_transient_htax_excl_',         '_transient_timeout_htax_excl_',
-        '_transient_htax_redir_',        '_transient_timeout_htax_redir_',
-        '_transient_htax_redirect_terms', '_transient_timeout_htax_redirect_terms',
-        '_transient_htax_groups_',       '_transient_timeout_htax_groups_',
-        '_transient_htax_direct_rel_',   '_transient_timeout_htax_direct_rel_',
-        '_transient_htax_reverse_rel_',  '_transient_timeout_htax_reverse_rel_',
-        '_transient_htax_crel_',         '_transient_timeout_htax_crel_',
-        '_transient_htax_grp_',          '_transient_timeout_htax_grp_',
-        '_transient_htax_hidden',        '_transient_timeout_htax_hidden',
-        '_transient_htax_term_data_',    '_transient_timeout_htax_term_data_',
+        '_transient_htax_inc_',
+        '_transient_timeout_htax_inc_',
+        '_transient_htax_cont_',
+        '_transient_timeout_htax_cont_',
+        '_transient_htax_excl_',
+        '_transient_timeout_htax_excl_',
+        '_transient_htax_redir_',
+        '_transient_timeout_htax_redir_',
+        '_transient_htax_redirect_terms',
+        '_transient_timeout_htax_redirect_terms',
+        '_transient_htax_groups_',
+        '_transient_timeout_htax_groups_',
+        '_transient_htax_direct_rel_',
+        '_transient_timeout_htax_direct_rel_',
+        '_transient_htax_reverse_rel_',
+        '_transient_timeout_htax_reverse_rel_',
+        '_transient_htax_crel_',
+        '_transient_timeout_htax_crel_',
+        '_transient_htax_grp_',
+        '_transient_timeout_htax_grp_',
+        '_transient_htax_hidden',
+        '_transient_timeout_htax_hidden',
+        '_transient_htax_term_data_',
+        '_transient_timeout_htax_term_data_',
     );
 
     $clauses = array();
@@ -753,7 +765,10 @@ function htax_delete_custom_rel_caches_for_term( int $term_id ): void {
 function htax_invalidate_group_relationship_caches( array $group_ids ): array {
     $group_ids = array_values( array_filter( array_map( 'intval', $group_ids ) ) );
     if ( empty( $group_ids ) ) {
-        return array( 'including' => array(), 'included' => array() );
+        return array(
+            'including' => array(),
+            'included' => array(),
+        );
     }
 
     global $wpdb;
@@ -860,7 +875,10 @@ function htax_invalidate_group_relationship_caches( array $group_ids ): array {
         }
     }
 
-    return array( 'including' => array_values( array_unique( $including_ids ) ), 'included' => array_values( array_unique( $included_ids ) ) );
+    return array(
+        'including' => array_values( array_unique( $including_ids ) ),
+        'included' => array_values( array_unique( $included_ids ) ),
+    );
 }
 
 /**
@@ -1047,9 +1065,9 @@ function htax_invalidate_term_caches_on_delete( $term_id_or_term, $tt_id = 0, $t
     // Outgoing data drives step 3b (clear inverse caches of terms T pointed to).
     // Direct caches have no TTL and are cleared together as a group, so if the two core
     // caches are warm the per-slug ones will be warm too — but we verify individually.
-    $out_inc_ids     = htax_get_transient( 'htax_direct_rel_includes_' . $term_id ); // T→U core includes
-    $out_inc_grp_ids = htax_get_transient( 'htax_direct_rel_grp_includes_' . $term_id ); // T→G core includes
-    $out_crel_ids    = array(); // slug => int[]  (T→U per custom type)
+    $out_inc_ids      = htax_get_transient( 'htax_direct_rel_includes_' . $term_id ); // T→U core includes
+    $out_inc_grp_ids  = htax_get_transient( 'htax_direct_rel_grp_includes_' . $term_id ); // T→G core includes
+    $out_crel_ids     = array(); // slug => int[]  (T→U per custom type)
     $out_crel_grp_ids = array(); // slug => int[] (T→G per custom type)
 
     $outgoing_from_cache = ( false !== $out_inc_ids && false !== $out_inc_grp_ids );
@@ -1072,9 +1090,9 @@ function htax_invalidate_term_caches_on_delete( $term_id_or_term, $tt_id = 0, $t
 
     if ( ! $outgoing_from_cache ) {
         // One or more caches cold; run one broad outgoing query and categorize results.
-        $out_inc_ids     = array();
-        $out_inc_grp_ids = array();
-        $out_crel_ids    = array();
+        $out_inc_ids      = array();
+        $out_inc_grp_ids  = array();
+        $out_crel_ids     = array();
         $out_crel_grp_ids = array();
 
         $includes_slugs = htax_get_relationship_type_slugs( 'includes' );
@@ -1188,7 +1206,7 @@ function htax_invalidate_term_caches_on_delete( $term_id_or_term, $tt_id = 0, $t
 
     // 4. DELETE caches for terms affected via group membership
     if ( ! empty( $all_member_groups ) ) {
-        $placeholders = htax_sql_placeholders( count( $all_member_groups ) );
+        $placeholders        = htax_sql_placeholders( count( $all_member_groups ) );
         $affected_via_groups = $wpdb->get_col( $wpdb->prepare(
             "SELECT DISTINCT source_term_id FROM {$table_name}
              WHERE target_term_id IN ({$placeholders})",
@@ -1331,8 +1349,8 @@ function htax_update_group_membership_caches( $term_id, $taxonomy, $new_groups, 
     htax_get_term_group_ids( $term_id );
 
     // 2. Surgical update of group member caches. Each group's cache lists its direct members
-    //    only (htax_load_terms_in_groups() expands subgroups when it reads them), so only the
-    //    groups the term joined or left change; their ancestors' lists stay as they are.
+    // only (htax_load_terms_in_groups() expands subgroups when it reads them), so only the
+    // groups the term joined or left change; their ancestors' lists stay as they are.
     $new_groups          = array_map( 'intval', (array) $new_groups );
     $old_groups          = array_map( 'intval', (array) $old_groups );
     $all_affected_groups = array_unique( array_merge( $new_groups, $old_groups ) );
@@ -1367,9 +1385,9 @@ function htax_update_group_membership_caches( $term_id, $taxonomy, $new_groups, 
     $connected = htax_invalidate_group_relationship_caches( array_merge( array_diff( $new_groups, $old_groups ), array_diff( $old_groups, $new_groups ) ) );
 
     // 4. The term's own lists change only through those connections: its containers when some
-    //    term includes one of the groups (or a parent group), its inclusions and archive when
-    //    one of the groups (or a subgroup) is a container group for some term. Its redirect,
-    //    exclusions and relationship rows are unchanged.
+    // term includes one of the groups (or a parent group), its inclusions and archive when
+    // one of the groups (or a subgroup) is a container group for some term. Its redirect,
+    // exclusions and relationship rows are unchanged.
     if ( ! empty( $connected['including'] ) ) {
         htax_delete_transient( 'htax_cont_' . $term_id );
     }
@@ -1397,7 +1415,7 @@ function htax_clear_count_cache( $term_ids = array(), $taxonomy = '' ) {
     }
 
     // Collect all affected term IDs and group IDs
-    $affected_term_ids = (array) $term_ids;
+    $affected_term_ids  = (array) $term_ids;
     $affected_group_ids = array();
 
     foreach ( $affected_term_ids as $term_id ) {
@@ -1420,7 +1438,7 @@ function htax_clear_count_cache( $term_ids = array(), $taxonomy = '' ) {
             $affected_group_ids[] = $group->term_id;
 
             // Get ancestor groups
-            $ancestors = get_ancestors( $group->term_id, 'group', 'taxonomy' );
+            $ancestors          = get_ancestors( $group->term_id, 'group', 'taxonomy' );
             $affected_group_ids = array_merge( $affected_group_ids, $ancestors );
         }
     }
@@ -1539,7 +1557,7 @@ function htax_delete_count_cache_for_ids( $group_ids, $term_ids, $taxonomy ) {
     // Build LIKE clauses for each ID
     // Pattern: %gX_% matches both igX_ (include group) and egX_ (exclude group)
     // Pattern: %tX_% matches both itX_ (include term) and etX_ (exclude term)
-    $like_clauses = array();
+    $like_clauses   = array();
     $prepare_values = array();
 
     // Add patterns for groups: g{id}_
@@ -1549,18 +1567,18 @@ function htax_delete_count_cache_for_ids( $group_ids, $term_ids, $taxonomy ) {
     $taxonomy_escaped       = $wpdb->esc_like( $taxonomy );
     $timeout_clauses        = array();
     foreach ( $group_ids as $group_id ) {
-        $like_clauses[]    = "option_name LIKE %s";
-        $timeout_clauses[] = "option_name LIKE %s";
-        $suffix = '%g' . intval( $group_id ) . $sep_escaped . '%' . $sep_escaped . $taxonomy_escaped;
+        $like_clauses[]    = 'option_name LIKE %s';
+        $timeout_clauses[] = 'option_name LIKE %s';
+        $suffix            = '%g' . intval( $group_id ) . $sep_escaped . '%' . $sep_escaped . $taxonomy_escaped;
         $prepare_values[]  = $prefix_escaped . $suffix;
         $prepare_values[]  = $timeout_prefix_escaped . $suffix;
     }
 
     // Add patterns for terms: t{id}_
     foreach ( $term_ids as $term_id ) {
-        $like_clauses[]    = "option_name LIKE %s";
-        $timeout_clauses[] = "option_name LIKE %s";
-        $suffix = '%t' . intval( $term_id ) . $sep_escaped . '%' . $sep_escaped . $taxonomy_escaped;
+        $like_clauses[]    = 'option_name LIKE %s';
+        $timeout_clauses[] = 'option_name LIKE %s';
+        $suffix            = '%t' . intval( $term_id ) . $sep_escaped . '%' . $sep_escaped . $taxonomy_escaped;
         $prepare_values[]  = $prefix_escaped . $suffix;
         $prepare_values[]  = $timeout_prefix_escaped . $suffix;
     }
@@ -2267,7 +2285,7 @@ function htax_post_list_cache_on_object_terms_set( $object_id, $_terms, $tt_ids,
     if ( $sorted_new === $sorted_old ) {
         return;
     }
-    $direct_ids   = array_unique( array_merge( $new_term_ids, $old_term_ids ) );
+    $direct_ids = array_unique( array_merge( $new_term_ids, $old_term_ids ) );
     if ( empty( $direct_ids ) ) {
         return;
     }
@@ -2420,4 +2438,3 @@ foreach ( array( 'added_term_meta', 'updated_term_meta', 'deleted_term_meta' ) a
     add_action( $htax_hook, 'htax_bump_term_data_cache_version_on_icon', 10, 3 );
 }
 unset( $htax_hook );
-

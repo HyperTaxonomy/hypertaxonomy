@@ -202,11 +202,13 @@ function htax_render_group_term_section( $enabled_taxonomies, $terms_by_taxonomy
                            data-target="<?php echo esc_attr( $data_target ); ?>"
                            placeholder="<?php /* translators: %s: taxonomy name, lowercase */ echo esc_attr( sprintf( __( 'Add %s...', 'hypertaxonomy' ), $taxonomy_name ) ); ?>" />
                 <?php endif; ?>
-                <input type="hidden" name="<?php echo esc_attr( $field_name ); ?>[<?php echo esc_attr( $tax_slug ); ?>]" value="<?php
-                    if ( isset( $terms_by_taxonomy[ $tax_slug ] ) ) {
-                        echo esc_attr( implode( ',', wp_list_pluck( $terms_by_taxonomy[ $tax_slug ], 'term_id' ) ) );
-                    }
-                ?>" <?php echo $is_locked ? 'disabled' : ''; ?> />
+                <input type="hidden" name="<?php echo esc_attr( $field_name ); ?>[<?php echo esc_attr( $tax_slug ); ?>]" value="
+                <?php
+                if ( isset( $terms_by_taxonomy[ $tax_slug ] ) ) {
+                    echo esc_attr( implode( ',', wp_list_pluck( $terms_by_taxonomy[ $tax_slug ], 'term_id' ) ) );
+                }
+                ?>
+                " <?php echo $is_locked ? 'disabled' : ''; ?> />
             </div>
         </div>
         <?php
@@ -686,7 +688,7 @@ function htax_save_group_screen_fields( $term_id ) {
             continue;
         }
         list( $terms_to_add, $terms_to_remove ) = $changes;
-        $changed_terms = array_unique( array_merge( $terms_to_add, $terms_to_remove ) );
+        $changed_terms                          = array_unique( array_merge( $terms_to_add, $terms_to_remove ) );
         if ( empty( $changed_terms ) ) {
             continue;
         }
@@ -809,12 +811,15 @@ function htax_render_group_crel_pill_container( array $args ): void {
          data-taxonomy="group"
          data-taxonomies="<?php echo esc_attr( implode( ',', array_map( 'sanitize_key', $search_taxes ) ) ); ?>"
          data-action="htax_search_terms">
-        <?php foreach ( $direct_term_ids as $tid ) :
+        <?php
+        foreach ( $direct_term_ids as $tid ) :
             $t = $term_objects[ $tid ] ?? null;
-            if ( ! $t ) { continue; }
+            if ( ! $t ) {
+                continue;
+            }
             $tax_obj   = get_taxonomy( $t->taxonomy );
             $tax_label = $tax_obj ? strtolower( $tax_obj->labels->singular_name ) : $t->taxonomy;
-        ?>
+            ?>
             <span class="htax-pill" data-id="<?php echo esc_attr( $tid ); ?>" tabindex="0">
                 <?php echo esc_html( $t->name ); ?>
                 <span style="color:#999;font-size:11px;">(<?php echo esc_html( $tax_label ); ?>)</span>
@@ -867,8 +872,8 @@ function htax_add_group_custom_relationships_field( WP_Term $term ): void {
         return;
     }
 
-    $term_id   = (int) $term->term_id;
-    $use_tabs  = count( $custom_types ) > 1;
+    $term_id  = (int) $term->term_id;
+    $use_tabs = count( $custom_types ) > 1;
 
     // Pre-load direct IDs for all types in one pass.
     $type_data = array();
@@ -893,20 +898,24 @@ function htax_add_group_custom_relationships_field( WP_Term $term ): void {
                     data-tab="gcrel-<?php echo esc_attr( $slug ); ?>">
                 <?php echo esc_html( $def['label'] ); ?> / <?php echo esc_html( $def['inverse_label'] ); ?>
             </button>
-            <?php $first = false; endforeach; ?>
+                <?php
+                $first = false;
+endforeach;
+            ?>
         </nav>
         <?php endif; ?>
 
-        <?php $first = true; foreach ( $custom_types as $slug => $def ) :
-            $cd            = $type_data[ $slug ];
-            $fwd_taxes     = ! empty( $def['target_taxonomies'] ) ? $def['target_taxonomies'] : array();
-            $rev_taxes     = ! empty( $def['source_taxonomies'] ) ? $def['source_taxonomies'] : array();
+        <?php
+        $first = true; foreach ( $custom_types as $slug => $def ) :
+            $cd        = $type_data[ $slug ];
+            $fwd_taxes = ! empty( $def['target_taxonomies'] ) ? $def['target_taxonomies'] : array();
+            $rev_taxes = ! empty( $def['source_taxonomies'] ) ? $def['source_taxonomies'] : array();
             /* translators: %s: relationship type label, lowercase */
-            $fwd_ph        = sprintf( __( 'Add %s…', 'hypertaxonomy' ), strtolower( $def['label'] ) );
+            $fwd_ph = sprintf( __( 'Add %s…', 'hypertaxonomy' ), strtolower( $def['label'] ) );
             /* translators: %s: relationship type inverse label, lowercase */
-            $rev_ph        = sprintf( __( 'Add %s…', 'hypertaxonomy' ), strtolower( $def['inverse_label'] ) );
-            $panel_hidden  = $use_tabs && ! $first;
-        ?>
+            $rev_ph       = sprintf( __( 'Add %s…', 'hypertaxonomy' ), strtolower( $def['inverse_label'] ) );
+            $panel_hidden = $use_tabs && ! $first;
+            ?>
         <div class="htax-rel-tab-panel<?php echo $use_tabs ? '' : ' htax-no-tabs'; ?>"
              data-panel="gcrel-<?php echo esc_attr( $slug ); ?>"
              <?php echo $use_tabs ? 'role="tabpanel"' : ''; ?>
@@ -917,13 +926,15 @@ function htax_add_group_custom_relationships_field( WP_Term $term ): void {
                 <p class="description" style="margin-top:0;">
                     <?php esc_html_e( 'Terms this group has this relationship with (this group is the source).', 'hypertaxonomy' ); ?>
                 </p>
-                <?php htax_render_group_crel_pill_container( array(
+                <?php
+                htax_render_group_crel_pill_container( array(
                     'term_id'           => $term_id,
                     'field_terms'       => 'htax_cust_' . $slug . '_fwd_terms',
                     'direct_term_ids'   => $cd['fwd'],
                     'target_taxonomies' => $fwd_taxes,
                     'placeholder'       => $fwd_ph,
-                ) ); ?>
+                ) );
+                ?>
             </div>
 
             <div class="htax-inclusions-panel">
@@ -931,17 +942,23 @@ function htax_add_group_custom_relationships_field( WP_Term $term ): void {
                 <p class="description" style="margin-top:0;">
                     <?php esc_html_e( 'Terms that have this relationship with this group (this group is the target).', 'hypertaxonomy' ); ?>
                 </p>
-                <?php htax_render_group_crel_pill_container( array(
+                <?php
+                htax_render_group_crel_pill_container( array(
                     'term_id'           => $term_id,
                     'field_terms'       => 'htax_cust_' . $slug . '_rev_terms',
                     'direct_term_ids'   => $cd['rev'],
                     'target_taxonomies' => $rev_taxes,
                     'placeholder'       => $rev_ph,
-                ) ); ?>
+                ) );
+                ?>
             </div>
 
-        </div><?php /* end panel */
-        $first = false; endforeach; ?>
+        </div>
+            <?php
+            /* end panel */
+            $first = false;
+endforeach;
+        ?>
 
         </td>
     </tr>
@@ -985,7 +1002,11 @@ function htax_group_context_panel( WP_Term $term ): void {
     // Build context-preserving URL for navigating to a related group.
     $make_group_url = function ( int $gid ) use ( $context_id, $context_dir, $context_rel ): string {
         return esc_url( add_query_arg(
-            array( 'term_context' => $context_id, 'context_dir' => $context_dir, 'context_rel' => $context_rel ),
+            array(
+                'term_context' => $context_id,
+                'context_dir' => $context_dir,
+                'context_rel' => $context_rel,
+            ),
             get_edit_term_link( $gid, 'group' )
         ) );
     };
@@ -1132,7 +1153,7 @@ function htax_save_group_custom_type_relationships( int $term_id ): void {
         return;
     }
 
-    $parse_ids = function( string $key ): array {
+    $parse_ids = function ( string $key ): array {
         if ( ! isset( $_POST[ $key ] ) ) {
             return array();
         }

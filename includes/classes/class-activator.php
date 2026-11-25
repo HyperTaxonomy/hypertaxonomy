@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 class HyperTaxonomy_Activator {
-    
+
     /**
      * The plugin's custom tables, without the table prefix.
      *
@@ -100,7 +100,7 @@ class HyperTaxonomy_Activator {
     private static function create_term_relationships_table() {
         global $wpdb;
 
-        $table_name = $wpdb->prefix . 'htax_term_relationships';
+        $table_name      = $wpdb->prefix . 'htax_term_relationships';
         $charset_collate = $wpdb->get_charset_collate();
 
         $sql = "CREATE TABLE {$table_name} (
@@ -181,7 +181,7 @@ class HyperTaxonomy_Activator {
             // one row per unique term, so both FT indexes are tiny (~750 rows each) and
             // stay warm in the buffer pool.  Search uses a two-branch UNION so each index
             // is the primary access path for its respective field.
-            $terms_indexes = $wpdb->get_results( "SHOW INDEX FROM {$wpdb->terms}" );
+            $terms_indexes       = $wpdb->get_results( "SHOW INDEX FROM {$wpdb->terms}" );
             $existing_terms_keys = array();
             if ( is_array( $terms_indexes ) ) {
                 foreach ( $terms_indexes as $idx ) {
@@ -192,7 +192,7 @@ class HyperTaxonomy_Activator {
                 $wpdb->query( "ALTER TABLE {$wpdb->terms} ADD FULLTEXT INDEX htax_ft_term_name (name)" );
             }
 
-            $tt_indexes = $wpdb->get_results( "SHOW INDEX FROM {$wpdb->term_taxonomy}" );
+            $tt_indexes       = $wpdb->get_results( "SHOW INDEX FROM {$wpdb->term_taxonomy}" );
             $existing_tt_keys = array();
             if ( is_array( $tt_indexes ) ) {
                 foreach ( $tt_indexes as $idx ) {
@@ -206,7 +206,7 @@ class HyperTaxonomy_Activator {
             $wpdb->suppress_errors( false );
         }
     }
-    
+
     /**
      * Schedule a full rebuild of both search indexes (wp_htax_search_terms and
      * wp_htax_post_text) as a background WP Cron event 30 seconds from now.

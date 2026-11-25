@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Generate export data for HyperTaxonomy
  *
  * @param array $taxonomies Array of taxonomy names to export (empty = all)
- * @param bool $include_term_posts Whether to include term-to-post assignments
+ * @param bool  $include_term_posts Whether to include term-to-post assignments
  * @return array Export data structure
  */
 function htax_generate_export_data( $taxonomies = array(), $include_term_posts = false ) {
@@ -214,7 +214,7 @@ function htax_generate_export_data( $taxonomies = array(), $include_term_posts =
  * Download export file
  *
  * @param array $taxonomies Array of taxonomy names to export
- * @param bool $include_term_posts Whether to include term-to-post assignments
+ * @param bool  $include_term_posts Whether to include term-to-post assignments
  */
 function htax_download_export( $taxonomies = array(), $include_term_posts = false ) {
     // Generate export data

@@ -108,8 +108,8 @@ function htax_render_sort_order_picker( array $args ) {
         $args['fields'] = array_filter( array_map( 'trim', explode( ',', (string) $args['fields'] ) ) );
     }
 
-    $labels     = htax_sort_field_labels();
-    $fields     = array();
+    $labels = htax_sort_field_labels();
+    $fields = array();
     foreach ( $args['fields'] as $slug ) {
         if ( isset( $labels[ $slug ] ) ) {
             $fields[ $slug ] = $labels[ $slug ];
@@ -126,7 +126,7 @@ function htax_render_sort_order_picker( array $args ) {
     $input_name = sanitize_key( $args['input_name'] ) ?: 'htax_orderby';
     $extra      = ! empty( $args['class'] ) ? ' ' . esc_attr( $args['class'] ) : '';
 
-    $label_asc    = __( 'Ascending — click to toggle',  'hypertaxonomy' );
+    $label_asc    = __( 'Ascending — click to toggle', 'hypertaxonomy' );
     $label_desc   = __( 'Descending — click to toggle', 'hypertaxonomy' );
     $label_remove = __( 'Remove', 'hypertaxonomy' );
     $label_add    = __( 'Add sort field', 'hypertaxonomy' );
@@ -146,8 +146,8 @@ function htax_render_sort_order_picker( array $args ) {
 
     // Container (active pills + add button)
     $out .= '<div data-htax-sort-container class="htax-sort-order-container"';
-    $out .= ' data-label-asc="'    . esc_attr( $label_asc )    . '"';
-    $out .= ' data-label-desc="'   . esc_attr( $label_desc )   . '"';
+    $out .= ' data-label-asc="' . esc_attr( $label_asc ) . '"';
+    $out .= ' data-label-desc="' . esc_attr( $label_desc ) . '"';
     $out .= ' data-label-remove="' . esc_attr( $label_remove ) . '">';
     $out .= '<button type="button" class="htax-sort-order-add" data-htax-sort-add';
     $out .= ' aria-label="' . esc_attr( $label_add ) . '">+</button>';

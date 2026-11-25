@@ -198,7 +198,7 @@ function htax_merge_terms( array $source_ids, int $target_id, string $taxonomy, 
     // Each new query clears last_error, so record the first failure after every write.
     $db_error = '';
 
-    $all_post_ids    = array();
+    $all_post_ids     = array();
     $posts_reassigned = 0;
 
     foreach ( $source_ids as $source_id ) {
@@ -218,7 +218,7 @@ function htax_merge_terms( array $source_ids, int $target_id, string $taxonomy, 
             $all_post_ids = array_merge( $all_post_ids, $post_ids );
 
             // Move posts not already assigned to target.
-            $placeholders = htax_sql_placeholders( count( $post_ids ) );
+            $placeholders     = htax_sql_placeholders( count( $post_ids ) );
             $already_assigned = $wpdb->get_col( $wpdb->prepare(
                 "SELECT object_id FROM {$wpdb->term_relationships}
                 WHERE term_taxonomy_id = %d
@@ -236,7 +236,7 @@ function htax_merge_terms( array $source_ids, int $target_id, string $taxonomy, 
                     AND object_id IN ($move_placeholders)",
                     array_merge( array( $target_tt_id, $source_tt_id ), $to_move )
                 ) );
-                $db_error = $db_error ?: $wpdb->last_error;
+                $db_error          = $db_error ?: $wpdb->last_error;
                 $posts_reassigned += count( $to_move );
             }
 
@@ -277,8 +277,8 @@ function htax_merge_terms( array $source_ids, int $target_id, string $taxonomy, 
         $db_error = $db_error ?: $wpdb->last_error;
 
         // 4b. Other relationships where source is the subject, including custom types:
-        //     "source includes/excludes X" → "target includes/excludes X"
-        //     Skip rows where target_term_id = target (would create self-loop).
+        // "source includes/excludes X" → "target includes/excludes X"
+        // Skip rows where target_term_id = target (would create self-loop).
         $wpdb->query( $wpdb->prepare(
             "INSERT IGNORE INTO {$rel_table}
             (source_term_id, target_term_id, relationship_type, source_taxonomy, target_taxonomy)
@@ -295,8 +295,8 @@ function htax_merge_terms( array $source_ids, int $target_id, string $taxonomy, 
         $db_error = $db_error ?: $wpdb->last_error;
 
         // 4c. Other relationships where source is the object, including custom types:
-        //     "X includes/excludes source" → "X includes/excludes target"
-        //     Skip rows where source_term_id = target (would create self-loop).
+        // "X includes/excludes source" → "X includes/excludes target"
+        // Skip rows where source_term_id = target (would create self-loop).
         $wpdb->query( $wpdb->prepare(
             "INSERT IGNORE INTO {$rel_table}
             (source_term_id, target_term_id, relationship_type, source_taxonomy, target_taxonomy)
@@ -316,8 +316,8 @@ function htax_merge_terms( array $source_ids, int $target_id, string $taxonomy, 
         // for the source term will clean them up automatically in the next step.
 
         // 4d. Sticky pins: a post pinned to source stays pinned, on the target. The archive
-        //     caps how many are shown, so going over the target's maximum loses nothing.
-        //     Rows for posts already pinned to the target are left for the delete hooks.
+        // caps how many are shown, so going over the target's maximum loses nothing.
+        // Rows for posts already pinned to the target are left for the delete hooks.
         $source_sticky_key = htax_get_sticky_assignment_key( $source_id );
         $target_sticky_key = htax_get_sticky_assignment_key( $target_id );
         $sticky_post_ids   = array_merge(
@@ -327,7 +327,7 @@ function htax_merge_terms( array $source_ids, int $target_id, string $taxonomy, 
                 $source_sticky_key
             ) ) )
         );
-        $db_error = $db_error ?: $wpdb->last_error;
+        $db_error          = $db_error ?: $wpdb->last_error;
 
         $wpdb->query( $wpdb->prepare(
             "UPDATE {$wpdb->postmeta} source_pin
@@ -346,7 +346,10 @@ function htax_merge_terms( array $source_ids, int $target_id, string $taxonomy, 
 
     if ( $db_error ) {
         $wpdb->query( 'ROLLBACK' );
-        htax_log_error( 'Term merge failed; changes rolled back', array( 'error' => $db_error, 'target_id' => $target_id ) );
+        htax_log_error( 'Term merge failed; changes rolled back', array(
+            'error' => $db_error,
+            'target_id' => $target_id,
+        ) );
         return new WP_Error( 'htax_merge_db_error', __( 'Database error during term merge; all changes rolled back.', 'hypertaxonomy' ) );
     }
 
@@ -359,22 +362,22 @@ function htax_merge_terms( array $source_ids, int $target_id, string $taxonomy, 
 
     // ----------------------------------------------------------------
     // 5. Delete source terms
-    //    - on_term_deleted() (priority 5) removes search index entries
-    //    - htax_cleanup_deleted_term() (priority 10) removes all relationship rows
+    // - on_term_deleted() (priority 5) removes search index entries
+    // - htax_cleanup_deleted_term() (priority 10) removes all relationship rows
     // ----------------------------------------------------------------
 
     $terms_deleted = 0;
     foreach ( $source_ids as $source_id ) {
         $result = wp_delete_term( $source_id, $taxonomy );
         if ( ! is_wp_error( $result ) && $result ) {
-            $terms_deleted++;
+            ++$terms_deleted;
         }
     }
 
     // ----------------------------------------------------------------
     // 6. Create redirect stubs (optional)
-    //    After the deletes: a stub takes its source term's name and slug,
-    //    which are only free once the source term is gone.
+    // After the deletes: a stub takes its source term's name and slug,
+    // which are only free once the source term is gone.
     // ----------------------------------------------------------------
 
     $redirects_created = 0;
@@ -390,7 +393,7 @@ function htax_merge_terms( array $source_ids, int $target_id, string $taxonomy, 
                 break;
             }
             $resolved_target_id = (int) $next->term_id;
-            $hops++;
+            ++$hops;
         }
 
         // Parents first, so a source whose parent is also a source can sit under that one's stub.
@@ -413,13 +416,16 @@ function htax_merge_terms( array $source_ids, int $target_id, string $taxonomy, 
                     $taxonomy,
                     $resolved_target_id,
                     $taxonomy,
-                    array( 'parent' => $parent, 'children' => $data['children'] )
+                    array(
+                        'parent' => $parent,
+                        'children' => $data['children'],
+                    )
                 );
                 if ( $stub_id ) {
                     // Keep the old archive URL when the source had a custom slug.
                     wp_update_term( $stub_id, $taxonomy, array( 'slug' => $data['slug'] ) );
                     $redirect_stubs[ $source_id ] = (int) $stub_id;
-                    $redirects_created++;
+                    ++$redirects_created;
                 }
             }
             $pending = array_values( array_diff( $pending, $ready ) );

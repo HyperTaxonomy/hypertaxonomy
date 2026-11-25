@@ -97,7 +97,7 @@ function htax_sanitize_term_ids( $term_ids ) {
     }
 
     // Convert to integers and filter out invalid values (0, negative, non-numeric)
-    $sanitized = array_filter( array_map( 'intval', $term_ids ), function( $id ) {
+    $sanitized = array_filter( array_map( 'intval', $term_ids ), function ( $id ) {
         return $id > 0;
     } );
 
@@ -132,7 +132,9 @@ function htax_parse_term_ids( $meta_value, $taxonomy = '' ) {
 
     // Fast path: no taxonomy context, or a pure numeric list — keep IDs only.
     if ( '' === $taxonomy || ctype_digit( str_replace( array( ',', ' ' ), '', $meta_value ) ) ) {
-        return array_values( array_filter( array_map( 'intval', explode( ',', $meta_value ) ), function( $id ) { return $id > 0; } ) );
+        return array_values( array_filter( array_map( 'intval', explode( ',', $meta_value ) ), function ( $id ) {
+            return $id > 0;
+        } ) );
     }
 
     // Slug-aware: numeric tokens are IDs; everything else is a slug in $taxonomy.
@@ -268,7 +270,7 @@ function htax_clear_request_cache( string $group, $key = null ): void {
  *
  * @param string $message Message to display (will be escaped with esc_html)
  * @param string $type Notice type: 'error', 'warning', 'success', 'info' (default: 'error')
- * @param bool $queue Whether to queue the notice for next page load (default: false)
+ * @param bool   $queue Whether to queue the notice for next page load (default: false)
  *
  * @example
  * // Display error immediately
@@ -305,7 +307,7 @@ function htax_add_admin_notice( $message, $type = 'error', $queue = true ) {
         }
     } else {
         // Immediate display via admin_notices hook
-        add_action( 'admin_notices', function() use ( $message, $type ) {
+        add_action( 'admin_notices', function () use ( $message, $type ) {
             ?>
             <div class="notice notice-<?php echo esc_attr( $type ); ?> is-dismissible">
                 <p><?php echo esc_html( $message ); ?></p>
@@ -399,8 +401,8 @@ function htax_verify_term_nonce( $term_id = 0 ) {
  *
  * @since 1.0.0
  * @param string $message The debug message
- * @param array $context Additional context data
- * @param bool $backtrace Whether to include backtrace (only in verbose mode)
+ * @param array  $context Additional context data
+ * @param bool   $backtrace Whether to include backtrace (only in verbose mode)
  */
 function htax_log_debug( $message, $context = array(), $backtrace = false ) {
     if ( defined( 'WP_DEBUG' ) && WP_DEBUG && defined( 'WP_DEBUG_LOG' ) && WP_DEBUG_LOG ) {
@@ -427,9 +429,9 @@ function htax_log_debug( $message, $context = array(), $backtrace = false ) {
         static $query_monitor_registered = false;
         if ( ! $query_monitor_registered ) {
             $query_monitor_registered = true;
-            $pending_start = null;
-            $pending_query = null;
-            add_filter( 'query', function( $query ) use ( &$pending_start, &$pending_query ) {
+            $pending_start            = null;
+            $pending_query            = null;
+            add_filter( 'query', function ( $query ) use ( &$pending_start, &$pending_query ) {
                 if ( strpos( $query, 'htax' ) !== false || strpos( $query, 'term' ) !== false ) {
                     $pending_start = microtime( true );
                     $pending_query = $query;
@@ -439,7 +441,7 @@ function htax_log_debug( $message, $context = array(), $backtrace = false ) {
                 }
                 return $query;
             } );
-            add_filter( 'query_results', function( $results ) use ( &$pending_start, &$pending_query ) {
+            add_filter( 'query_results', function ( $results ) use ( &$pending_start, &$pending_query ) {
                 if ( null !== $pending_start ) {
                     $time = microtime( true ) - $pending_start;
                     if ( $time > 0.01 ) { // Log slow queries (>10ms)
@@ -473,7 +475,7 @@ function htax_log_debug( $message, $context = array(), $backtrace = false ) {
  */
 function htax_add_inline_script( string $name, string $js, array $deps = array( 'jquery' ) ): void {
     static $count = 0;
-    $handle = 'htax-' . $name . '-' . ( ++$count );
+    $handle       = 'htax-' . $name . '-' . ( ++$count );
     wp_register_script( $handle, false, $deps, HTAX_VERSION, array( 'in_footer' => true ) );
     wp_enqueue_script( $handle );
     wp_add_inline_script( $handle, $js );
@@ -553,8 +555,8 @@ function htax_sanitize_decoded_json( array $data, callable $sanitize_string ): a
  *
  * @since 1.0.0
  * @param string $message The error message
- * @param array $context Additional context data
- * @param bool $backtrace Whether to include backtrace (only in verbose mode)
+ * @param array  $context Additional context data
+ * @param bool   $backtrace Whether to include backtrace (only in verbose mode)
  */
 function htax_log_error( $message, $context = array(), $backtrace = true ) {
     $log_message = 'HyperTaxonomy Error: ' . $message;
@@ -584,7 +586,7 @@ function htax_get_filtered_backtrace() {
     $trace = debug_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS );
 
     // Filter out logging functions themselves from trace
-    $filtered = array();
+    $filtered       = array();
     $skip_functions = array( 'htax_log_debug', 'htax_log_error', 'htax_get_filtered_backtrace' );
 
     foreach ( $trace as $frame ) {
@@ -594,8 +596,8 @@ function htax_get_filtered_backtrace() {
         }
 
         // Format frame
-        $file = isset( $frame['file'] ) ? basename( $frame['file'] ) : '[internal]';
-        $line = isset( $frame['line'] ) ? $frame['line'] : '?';
+        $file     = isset( $frame['file'] ) ? basename( $frame['file'] ) : '[internal]';
+        $line     = isset( $frame['line'] ) ? $frame['line'] : '?';
         $function = isset( $frame['function'] ) ? $frame['function'] : '[unknown]';
 
         if ( isset( $frame['class'] ) ) {
@@ -634,7 +636,7 @@ function htax_handle_db_error( $operation, $default = array() ) {
     if ( $wpdb->last_error ) {
         htax_log_error( 'Database operation failed: ' . $operation, array(
             'error' => $wpdb->last_error,
-            'last_query' => $wpdb->last_query
+            'last_query' => $wpdb->last_query,
         ) );
 
         // Add admin notice if in admin context
@@ -792,7 +794,7 @@ function htax_allowed_form_html(): array {
         'aria-disabled'    => true,
         'data-*'           => true,
     );
-    $input = array_merge( $common, array(
+    $input  = array_merge( $common, array(
         'type'        => true,
         'name'        => true,
         'value'       => true,
@@ -823,15 +825,37 @@ function htax_allowed_form_html(): array {
         'ul'     => $common,
         'ol'     => $common,
         'li'     => $common,
-        'a'      => array_merge( $common, array( 'href' => true, 'target' => true, 'rel' => true ) ),
+        'a'      => array_merge( $common, array(
+            'href' => true,
+            'target' => true,
+            'rel' => true,
+        ) ),
         'label'  => array_merge( $common, array( 'for' => true ) ),
         'input'  => $input,
         'button' => $input,
         'select' => $input,
         'textarea' => $input,
-        'form'   => array_merge( $common, array( 'action' => true, 'method' => true, 'novalidate' => true, 'autocomplete' => true ) ),
-        'option' => array_merge( $common, array( 'value' => true, 'selected' => true, 'disabled' => true ) ),
-        'img'    => array_merge( $common, array( 'src' => true, 'srcset' => true, 'sizes' => true, 'alt' => true, 'width' => true, 'height' => true, 'loading' => true, 'decoding' => true ) ),
+        'form'   => array_merge( $common, array(
+            'action' => true,
+            'method' => true,
+            'novalidate' => true,
+            'autocomplete' => true,
+        ) ),
+        'option' => array_merge( $common, array(
+            'value' => true,
+            'selected' => true,
+            'disabled' => true,
+        ) ),
+        'img'    => array_merge( $common, array(
+            'src' => true,
+            'srcset' => true,
+            'sizes' => true,
+            'alt' => true,
+            'width' => true,
+            'height' => true,
+            'loading' => true,
+            'decoding' => true,
+        ) ),
     );
 }
 
@@ -915,12 +939,12 @@ function htax_get_option_fresh( string $option, $default = false ) {
  * current value, apply $change, and save the result.
  *
  * @since 1.0.0
- * @param string      $option   Option name.
- * @param callable    $change   Receives the current value; returns the new value, or null to
- *                              leave the option as it is.
- * @param mixed       $default  Value when the option doesn't exist.
- * @param bool|null   $autoload Autoload setting for update_option() (null leaves it).
- * @param string      $lock     Lock name; by default one per option.
+ * @param string    $option   Option name.
+ * @param callable  $change   Receives the current value; returns the new value, or null to
+ *                            leave the option as it is.
+ * @param mixed     $default  Value when the option doesn't exist.
+ * @param bool|null $autoload Autoload setting for update_option() (null leaves it).
+ * @param string    $lock     Lock name; by default one per option.
  * @return bool False when the lock couldn't be taken (nothing was changed).
  */
 function htax_update_option_locked( string $option, callable $change, $default = array(), ?bool $autoload = null, string $lock = '' ): bool {

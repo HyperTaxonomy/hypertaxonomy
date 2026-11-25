@@ -33,7 +33,7 @@ class HyperTaxonomy_Shortcode_Post_List extends HyperTaxonomy_Shortcode_Base {
         // when HyperTaxonomy_Shortcode_Related_Posts is also instantiated).
         static $ajax_registered = false;
         if ( ! $ajax_registered ) {
-            add_action( 'wp_ajax_htax_post_list_page',        array( $this, 'ajax_load_page' ) );
+            add_action( 'wp_ajax_htax_post_list_page', array( $this, 'ajax_load_page' ) );
             add_action( 'wp_ajax_nopriv_htax_post_list_page', array( $this, 'ajax_load_page' ) );
             $ajax_registered = true;
         }
@@ -197,7 +197,10 @@ class HyperTaxonomy_Shortcode_Post_List extends HyperTaxonomy_Shortcode_Base {
      * @return array 'modified_after' and 'modified_before' ('Y-m-d H:i:s' GMT); '' = no limit.
      */
     protected function get_date_window( $atts ) {
-        return array( 'modified_after' => '', 'modified_before' => '' );
+        return array(
+            'modified_after' => '',
+            'modified_before' => '',
+        );
     }
 
     /**
@@ -348,11 +351,15 @@ class HyperTaxonomy_Shortcode_Post_List extends HyperTaxonomy_Shortcode_Base {
         global $wpdb;
 
         if ( empty( $term_ids ) ) {
-            return array( 'post_ids' => array(), 'total' => 0, 'max_pages' => 0 );
+            return array(
+                'post_ids' => array(),
+                'total' => 0,
+                'max_pages' => 0,
+            );
         }
 
-        $term_ids       = array_map( 'intval', $term_ids );
-        $term_ids_str   = implode( ',', $term_ids );
+        $term_ids     = array_map( 'intval', $term_ids );
+        $term_ids_str = implode( ',', $term_ids );
 
         // Taxonomies in play for relationship-type gating and group expansion. A
         // single explicit slug → that taxonomy; a CSV → those taxonomies; empty →
@@ -369,7 +376,11 @@ class HyperTaxonomy_Shortcode_Post_List extends HyperTaxonomy_Shortcode_Base {
         $effective_limit = $posts_per_page;
         if ( $max_results > 0 ) {
             if ( $offset >= $max_results ) {
-                return array( 'post_ids' => array(), 'total' => 0, 'max_pages' => 0 );
+                return array(
+                    'post_ids' => array(),
+                    'total' => 0,
+                    'max_pages' => 0,
+                );
             }
             $effective_limit = min( $posts_per_page, $max_results - $offset );
         }
@@ -450,13 +461,13 @@ class HyperTaxonomy_Shortcode_Post_List extends HyperTaxonomy_Shortcode_Base {
 
         // Compact orderby key: first char of field + D/A for direction, segments joined by dash.
         // e.g. "date:DESC,title:ASC" → "dD-tA", "relevance:DESC" → "rD", "date" → "d".
-        $orderby_raw  = sanitize_text_field( $atts['orderby'] ?? 'date' );
-        $ob_parts     = array();
+        $orderby_raw = sanitize_text_field( $atts['orderby'] ?? 'date' );
+        $ob_parts    = array();
         foreach ( explode( ',', $orderby_raw ) as $ob_seg ) {
             $ob_seg = trim( strtolower( $ob_seg ) );
             if ( strpos( $ob_seg, ':' ) !== false ) {
                 list( $ob_field, $ob_dir ) = explode( ':', $ob_seg, 2 );
-                $ob_parts[] = substr( $ob_field, 0, 1 ) . ( 'desc' === $ob_dir ? 'D' : 'A' );
+                $ob_parts[]                = substr( $ob_field, 0, 1 ) . ( 'desc' === $ob_dir ? 'D' : 'A' );
             } else {
                 $ob_parts[] = substr( $ob_seg, 0, 1 );
             }
@@ -470,9 +481,9 @@ class HyperTaxonomy_Shortcode_Post_List extends HyperTaxonomy_Shortcode_Base {
 
         // Date window (related posts): a post qualifies when its last update (its
         // publication date if never updated) falls inside it. Either bound is optional.
-        $modified_after   = self::sanitize_gmt_datetime( $atts['modified_after'] ?? '' );
+        $modified_after  = self::sanitize_gmt_datetime( $atts['modified_after'] ?? '' );
         $modified_before = self::sanitize_gmt_datetime( $atts['modified_before'] ?? '' );
-        $date_clause      = ( '' !== $modified_after ? $wpdb->prepare( ' AND pt.post_modified_gmt > %s', $modified_after ) : '' )
+        $date_clause     = ( '' !== $modified_after ? $wpdb->prepare( ' AND pt.post_modified_gmt > %s', $modified_after ) : '' )
                           . ( '' !== $modified_before ? $wpdb->prepare( ' AND pt.post_modified_gmt <= %s', $modified_before ) : '' );
 
         // The post fields the result depends on (sort order, search, date window), so a
@@ -523,8 +534,8 @@ class HyperTaxonomy_Shortcode_Post_List extends HyperTaxonomy_Shortcode_Base {
         $tax_gate_parts  = array();
         $tax_gate_params = array();
         foreach ( $gate_taxonomies as $gt ) {
-            $allowed = $this->compute_allowed_rel_types( $gt );
-            $ph      = implode( ',', array_fill( 0, count( $allowed ), '%s' ) );
+            $allowed           = $this->compute_allowed_rel_types( $gt );
+            $ph                = implode( ',', array_fill( 0, count( $allowed ), '%s' ) );
             $tax_gate_parts[]  = "(st.taxonomy = %s AND st.relationship_type IN ($ph))";
             $tax_gate_params[] = $gt;
             foreach ( $allowed as $rt ) {
@@ -532,7 +543,11 @@ class HyperTaxonomy_Shortcode_Post_List extends HyperTaxonomy_Shortcode_Base {
             }
         }
         if ( empty( $tax_gate_parts ) ) {
-            return array( 'post_ids' => array(), 'total' => 0, 'max_pages' => 0 );
+            return array(
+                'post_ids' => array(),
+                'total' => 0,
+                'max_pages' => 0,
+            );
         }
         $rel_type_clause = $wpdb->prepare( ' AND (' . implode( ' OR ', $tax_gate_parts ) . ')', ...$tax_gate_params );
 
@@ -555,9 +570,21 @@ class HyperTaxonomy_Shortcode_Post_List extends HyperTaxonomy_Shortcode_Base {
             $general = $parsed['general'];
 
             $field_defs = array(
-                array( 'col' => 'pt.title',   'terms' => $parsed['title'],   'weight' => $title_weight   ),
-                array( 'col' => 'pt.body',    'terms' => $parsed['body'],    'weight' => $content_weight ),
-                array( 'col' => 'pt.excerpt', 'terms' => $parsed['excerpt'], 'weight' => $excerpt_weight ),
+                array(
+                    'col' => 'pt.title',
+                    'terms' => $parsed['title'],
+                    'weight' => $title_weight,
+                ),
+                array(
+                    'col' => 'pt.body',
+                    'terms' => $parsed['body'],
+                    'weight' => $content_weight,
+                ),
+                array(
+                    'col' => 'pt.excerpt',
+                    'terms' => $parsed['excerpt'],
+                    'weight' => $excerpt_weight,
+                ),
             );
 
             foreach ( $field_defs as $fd ) {
@@ -569,8 +596,8 @@ class HyperTaxonomy_Shortcode_Post_List extends HyperTaxonomy_Shortcode_Base {
                 if ( '' === $bq ) {
                     continue;
                 }
-                $keyword_select   .= sprintf( ' + COALESCE(MATCH(%s) AGAINST(%%s IN BOOLEAN MODE) * %F, 0)', $fd['col'], $fd['weight'] );
-                $keyword_params[]  = $bq;
+                $keyword_select  .= sprintf( ' + COALESCE(MATCH(%s) AGAINST(%%s IN BOOLEAN MODE) * %F, 0)', $fd['col'], $fd['weight'] );
+                $keyword_params[] = $bq;
             }
 
             if ( '' !== $keyword_select ) {
@@ -630,7 +657,11 @@ class HyperTaxonomy_Shortcode_Post_List extends HyperTaxonomy_Shortcode_Base {
         $total = (int) $wpdb->get_var( $count_sql );
 
         if ( htax_handle_db_error( 'htax_post_list_count', array() ) !== false ) {
-            return array( 'post_ids' => array(), 'total' => 0, 'max_pages' => 0 );
+            return array(
+                'post_ids' => array(),
+                'total' => 0,
+                'max_pages' => 0,
+            );
         }
 
         // Main query: per-term relevance combines all rows for a (post, term) pair via
@@ -677,9 +708,15 @@ class HyperTaxonomy_Shortcode_Post_List extends HyperTaxonomy_Shortcode_Base {
         $rows = $wpdb->get_results( $sql );
 
         if ( htax_handle_db_error( 'htax_post_list_query', array() ) !== false ) {
-            return array( 'post_ids' => array(), 'total' => 0, 'max_pages' => 0 );
+            return array(
+                'post_ids' => array(),
+                'total' => 0,
+                'max_pages' => 0,
+            );
         }
-        $post_ids = array_map( function( $row ) { return (int) $row->post_id; }, $rows );
+        $post_ids = array_map( function ( $row ) {
+            return (int) $row->post_id;
+        }, $rows );
 
         $effective_total = ( $max_results > 0 ) ? min( $total, $max_results ) : $total;
 
@@ -770,14 +807,14 @@ class HyperTaxonomy_Shortcode_Post_List extends HyperTaxonomy_Shortcode_Base {
             ? trim( $this->htax_atts['sort_order_options'] )
             : '';
 
-        $columns     = max( 1, intval( $this->htax_atts['columns'] ?? 1 ) );
-        $col_style   = $columns > 1 ? ' style="--htax-columns:' . $columns . '"' : '';
-        $wrapper  = '<div class="htax-post-list-wrapper"' . $data_attrs . '>';
-        $wrapper .= '<div class="' . esc_attr( implode( ' ', $classes ) ) . '"' . $col_style . '>';
-        $wrapper .= $this->render_posts_inner( $posts, $start_index );
-        $wrapper .= '</div>'; // .htax-post-list
-        $wrapper .= $this->render_pagination_nav( $current_page, $max_pages );
-        $wrapper .= '</div>'; // .htax-post-list-wrapper
+        $columns   = max( 1, intval( $this->htax_atts['columns'] ?? 1 ) );
+        $col_style = $columns > 1 ? ' style="--htax-columns:' . $columns . '"' : '';
+        $wrapper   = '<div class="htax-post-list-wrapper"' . $data_attrs . '>';
+        $wrapper  .= '<div class="' . esc_attr( implode( ' ', $classes ) ) . '"' . $col_style . '>';
+        $wrapper  .= $this->render_posts_inner( $posts, $start_index );
+        $wrapper  .= '</div>'; // .htax-post-list
+        $wrapper  .= $this->render_pagination_nav( $current_page, $max_pages );
+        $wrapper  .= '</div>'; // .htax-post-list-wrapper
 
         // Inline filter panel.
         $filter_html  = '';
@@ -797,7 +834,10 @@ class HyperTaxonomy_Shortcode_Post_List extends HyperTaxonomy_Shortcode_Base {
                     $primary_seed_ids = array_values( array_filter( array_map( 'intval', htax_parse_term_ids( $this->htax_atts['filter_terms'], $this->sanitize_taxonomy_att( $this->htax_atts['taxonomy'] ) ) ) ) );
                 }
                 $resolved    = htax_resolve_filter_configs( $raw_filter_configs, array(), null, $primary_seed_ids, (string) $this->htax_atts['post_type'] );
-                $filter_html = htax_render_filter_options( $resolved, array( 'action' => '', 'class' => $filter_class ), array() );
+                $filter_html = htax_render_filter_options( $resolved, array(
+                    'action' => '',
+                    'class' => $filter_class,
+                ), array() );
             }
         }
 
@@ -817,7 +857,7 @@ class HyperTaxonomy_Shortcode_Post_List extends HyperTaxonomy_Shortcode_Base {
                 ) );
             }
             $controls_bar = '<div class="htax-controls-bar">' . $filter_html . $picker . '</div>';
-            $output = '<div class="htax-post-list-block">' . $controls_bar . $wrapper . '</div>';
+            $output       = '<div class="htax-post-list-block">' . $controls_bar . $wrapper . '</div>';
         } else {
             $output = $wrapper;
         }
@@ -843,7 +883,7 @@ class HyperTaxonomy_Shortcode_Post_List extends HyperTaxonomy_Shortcode_Base {
         $format = $this->sanitize_format( $this->htax_atts['format'] ?? 'ul' );
 
         $prepend_tpl = $this->htax_atts['prepend'] ?? '';
-        $append_tpl  = $this->htax_atts['append']  ?? '';
+        $append_tpl  = $this->htax_atts['append'] ?? '';
 
         if ( 'div' !== $format ) {
             $attrs    = ( 'ol' === $format && $start_index > 1 ) ? ' start="' . intval( $start_index ) . '"' : '';
@@ -870,7 +910,7 @@ class HyperTaxonomy_Shortcode_Post_List extends HyperTaxonomy_Shortcode_Base {
 
         $template       = sanitize_html_class( $this->htax_atts['template'] );
         $show_thumbnail = ( $this->htax_atts['show_thumbnail'] === 'true' );
-        $show_excerpt   = ( $this->htax_atts['show_excerpt']   === 'true' );
+        $show_excerpt   = ( $this->htax_atts['show_excerpt'] === 'true' );
         $meta_tpl       = $this->htax_atts['meta'] ?? '';
         $image_size     = sanitize_key( $this->htax_atts['image_size'] ?? 'medium' );
 
@@ -990,13 +1030,13 @@ class HyperTaxonomy_Shortcode_Post_List extends HyperTaxonomy_Shortcode_Base {
     public function ajax_load_page() {
         check_ajax_referer( 'htax_post_list', 'nonce' );
 
-        $page         = max( 1, intval( wp_unslash( $_POST['page'] ?? 1 ) ) );
-        $taxonomy     = $this->sanitize_taxonomy_att( sanitize_text_field( wp_unslash( $_POST['taxonomy'] ?? 'post_tag' ) ) );
-        $term_ids     = array_values( array_filter( array_map(
+        $page           = max( 1, intval( wp_unslash( $_POST['page'] ?? 1 ) ) );
+        $taxonomy       = $this->sanitize_taxonomy_att( sanitize_text_field( wp_unslash( $_POST['taxonomy'] ?? 'post_tag' ) ) );
+        $term_ids       = array_values( array_filter( array_map(
             'intval',
             explode( ',', sanitize_text_field( wp_unslash( $_POST['term_ids'] ?? '' ) ) )
         ) ) );
-        $exclude_ids  = array_values( array_filter( array_map(
+        $exclude_ids    = array_values( array_filter( array_map(
             'intval',
             explode( ',', sanitize_text_field( wp_unslash( $_POST['exclude_ids'] ?? '' ) ) )
         ) ) );
@@ -1050,7 +1090,10 @@ class HyperTaxonomy_Shortcode_Post_List extends HyperTaxonomy_Shortcode_Base {
         $result = $this->query_posts_by_term_ids( $term_ids, $taxonomy, $this->htax_atts, $exclude_ids, $page, $term_weights );
 
         if ( empty( $result['post_ids'] ) ) {
-            wp_send_json_success( array( 'posts' => '', 'nav' => '' ) );
+            wp_send_json_success( array(
+                'posts' => '',
+                'nav' => '',
+            ) );
             return;
         }
 
@@ -1324,7 +1367,6 @@ class HyperTaxonomy_Shortcode_Related_Posts extends HyperTaxonomy_Shortcode_Post
     protected function get_source_post_id() {
         return (int) get_the_ID();
     }
-
 }
 
 // Initialize shortcodes

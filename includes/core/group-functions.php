@@ -62,7 +62,7 @@ function htax_get_term_group_ids( int $term_id ): array {
     }
 
     // Check cache first
-    $cache_key = 'htax_groups_' . $term_id;
+    $cache_key        = 'htax_groups_' . $term_id;
     $cached_group_ids = htax_get_transient( $cache_key );
 
     if ( false !== $cached_group_ids && ! is_array( $cached_group_ids ) ) {
@@ -73,7 +73,7 @@ function htax_get_term_group_ids( int $term_id ): array {
     if ( false === $cached_group_ids ) {
         // Get group IDs from wp_htax_term_relationships table using member_of relationships
         $table_name = $wpdb->prefix . 'htax_term_relationships';
-        $group_ids = $wpdb->get_col( $wpdb->prepare(
+        $group_ids  = $wpdb->get_col( $wpdb->prepare(
             "SELECT target_term_id FROM {$table_name}
             WHERE source_term_id = %d
             AND target_taxonomy = 'group'
@@ -158,8 +158,8 @@ function htax_get_group_hierarchy( $group_ids ) {
  *
  * @since 1.0
  *
- * @param int    $term_id   Term ID.
- * @param int[]  $group_ids Array of group term IDs.
+ * @param int   $term_id   Term ID.
+ * @param int[] $group_ids Array of group term IDs.
  * @return bool|WP_Error True on success, WP_Error on failure.
  */
 function htax_set_term_groups( $term_id, $group_ids ) {

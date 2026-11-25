@@ -199,7 +199,7 @@ function htax_modify_archive_query( $query ) {
 
     // 6. Debug mode
     if ( defined( 'WP_DEBUG' ) && WP_DEBUG && isset( $_GET['htax_debug'] ) && current_user_can( 'manage_options' ) ) {
-        add_action( 'wp_footer', function() use ( $term_id, $all_included_ids, $taxonomy ) {
+        add_action( 'wp_footer', function () use ( $term_id, $all_included_ids, $taxonomy ) {
             echo '<div style="background:#fff;border:2px solid #333;padding:20px;margin:20px;">';
             echo '<h3>HyperTaxonomy Debug Info</h3>';
             echo '<p><strong>Term ID:</strong> ' . esc_html( $term_id ) . '</p>';
@@ -275,7 +275,7 @@ function htax_handle_redirects() {
             htax_log_debug( 'Performing redirect', array(
                 'from_term_id' => $term_id,
                 'to_term_id' => $redirect_term->term_id,
-                'url' => $redirect_url
+                'url' => $redirect_url,
             ) );
 
             wp_safe_redirect( $redirect_url, 301 );
@@ -323,7 +323,7 @@ function htax_get_contributing_terms_for_current_page() {
     }
 
     // Batch load all terms for all posts at once
-    $post_ids = wp_list_pluck( $wp_query->posts, 'ID' );
+    $post_ids  = wp_list_pluck( $wp_query->posts, 'ID' );
     $all_terms = wp_get_object_terms( $post_ids, $taxonomy, array( 'fields' => 'all_with_object_id' ) );
 
     // Group terms by post ID
@@ -343,7 +343,7 @@ function htax_get_contributing_terms_for_current_page() {
     // First pass: collect all unique contributing term IDs
     $unique_contributing_ids = array();
     foreach ( $post_ids as $post_id ) {
-        $post_terms = isset( $terms_by_post[ $post_id ] ) ? $terms_by_post[ $post_id ] : array();
+        $post_terms         = isset( $terms_by_post[ $post_id ] ) ? $terms_by_post[ $post_id ] : array();
         $post_has_main_term = in_array( $current_term_id, $post_terms, true );
 
         if ( ! $post_has_main_term ) {
@@ -428,7 +428,10 @@ function htax_get_sticky_term_from_tax_query( WP_Query $query ) {
         return null;
     }
 
-    return array( 'term_id' => $terms[0], 'taxonomy' => $taxonomy );
+    return array(
+        'term_id' => $terms[0],
+        'taxonomy' => $taxonomy,
+    );
 }
 
 /**
@@ -586,7 +589,7 @@ function htax_get_sticky_posts_for_term( $term_id, bool $include_redirect_data =
         // Posts marked sticky for this term via its per-term key (exact meta_key match,
         // uses the postmeta meta_key index).
         $post_type_placeholders = implode( ',', array_fill( 0, count( $indexed_post_types ), '%s' ) );
-        $sticky_ids = $wpdb->get_col( $wpdb->prepare(
+        $sticky_ids             = $wpdb->get_col( $wpdb->prepare(
             "SELECT pm.post_id
              FROM {$wpdb->postmeta} pm
              INNER JOIN {$wpdb->posts} p ON p.ID = pm.post_id

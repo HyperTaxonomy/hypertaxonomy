@@ -38,10 +38,10 @@ function htax_build_count_cache_key( $include_groups, $include_terms, $exclude_g
     $excl_groups = htax_parse_term_ids( $exclude_groups, 'group' );
     $excludes    = htax_parse_term_ids( $exclude_terms, $taxonomy );
 
-    sort( $groups,      SORT_NUMERIC );
-    sort( $includes,    SORT_NUMERIC );
+    sort( $groups, SORT_NUMERIC );
+    sort( $includes, SORT_NUMERIC );
     sort( $excl_groups, SORT_NUMERIC );
-    sort( $excludes,    SORT_NUMERIC );
+    sort( $excludes, SORT_NUMERIC );
 
     $key_parts = array();
     if ( ! empty( $groups ) ) {
@@ -151,9 +151,9 @@ function htax_get_distinct_post_count_for_shortcode( $include_groups, $include_t
 abstract class HyperTaxonomy_Shortcode_Base {
 
     protected $redirect_terms = array();
-    protected $htax_atts = array();
-    protected $term_anchors = array();
-    protected $term_depths = array();
+    protected $htax_atts      = array();
+    protected $term_anchors   = array();
+    protected $term_depths    = array();
 
     /**
      * Get default attributes common to all shortcodes
@@ -314,7 +314,7 @@ abstract class HyperTaxonomy_Shortcode_Base {
         foreach ( $results as $row ) {
             $loaded[ $taxonomy ][ $row->term_id ] = array(
                 'target_id' => $row->redirect_to,
-                'slug' => $row->slug
+                'slug' => $row->slug,
             );
         }
         $this->redirect_terms = $loaded[ $taxonomy ] + $this->redirect_terms;
@@ -347,13 +347,13 @@ abstract class HyperTaxonomy_Shortcode_Base {
             return false;
         }
 
-        $target_id = $this->redirect_terms[ $term->term_id ]['target_id'];
+        $target_id   = $this->redirect_terms[ $term->term_id ]['target_id'];
         $target_term = htax_get_valid_term( $target_id );
 
         if ( $target_term ) {
             return array(
                 'target_id' => $target_id,
-                'target_term' => $target_term
+                'target_term' => $target_term,
             );
         }
 
@@ -368,14 +368,14 @@ abstract class HyperTaxonomy_Shortcode_Base {
      * @since 1.0.0
      *
      * @param WP_Term $term Term object to build link for
-     * @param array &$classes Array of CSS classes (passed by reference, may be modified)
+     * @param array   &$classes Array of CSS classes (passed by reference, may be modified)
      * @return array Array with 'link_tag', 'link_href', and 'link_attrs' keys
      */
     protected function build_redirect_link_attributes( $term, &$classes ) {
         $result = array(
             'link_tag' => 'a',
             'link_href' => get_term_link( $term ),
-            'link_attrs' => ''
+            'link_attrs' => '',
         );
 
         $redirect_target = $this->get_redirect_target( $term );
@@ -383,9 +383,9 @@ abstract class HyperTaxonomy_Shortcode_Base {
             return $result;
         }
 
-        $behavior = $this->htax_atts['redirect_link_behavior'];
+        $behavior    = $this->htax_atts['redirect_link_behavior'];
         $target_term = $redirect_target['target_term'];
-        $target_id = $redirect_target['target_id'];
+        $target_id   = $redirect_target['target_id'];
 
         switch ( $behavior ) {
             case 'target':
@@ -401,9 +401,9 @@ abstract class HyperTaxonomy_Shortcode_Base {
                 break;
 
             case 'none':
-                $result['link_tag'] = 'span';
+                $result['link_tag']  = 'span';
                 $result['link_href'] = '';
-                $classes[] = 'htax-redirect-nolink';
+                $classes[]           = 'htax-redirect-nolink';
                 break;
 
             case 'original':
@@ -435,7 +435,7 @@ abstract class HyperTaxonomy_Shortcode_Base {
             return array();
         }
 
-        $classes = explode( ' ', $class_string );
+        $classes   = explode( ' ', $class_string );
         $sanitized = array();
 
         foreach ( $classes as $class ) {
@@ -460,7 +460,7 @@ abstract class HyperTaxonomy_Shortcode_Base {
      * @since 1.0.0
      *
      * @param string $base_class Base CSS class name (e.g., 'htax-term-list')
-     * @param bool $include_columns Whether to include column classes (default: true)
+     * @param bool   $include_columns Whether to include column classes (default: true)
      * @return array Array of CSS class names
      */
     protected function build_container_classes( $base_class, $include_columns = true ) {
@@ -480,7 +480,7 @@ abstract class HyperTaxonomy_Shortcode_Base {
         // Add class parameter classes (space-separated custom CSS classes)
         if ( ! empty( $this->htax_atts['class'] ) ) {
             $custom_classes = $this->sanitize_class_parameter( $this->htax_atts['class'] );
-            $classes = array_merge( $classes, $custom_classes );
+            $classes        = array_merge( $classes, $custom_classes );
         }
 
         return $classes;
@@ -552,7 +552,7 @@ abstract class HyperTaxonomy_Shortcode_Base {
             return $terms;
         }
 
-        return array_filter( $terms, function( $term ) {
+        return array_filter( $terms, function ( $term ) {
             return ! $this->should_exclude_term( $term );
         } );
     }
@@ -564,7 +564,7 @@ abstract class HyperTaxonomy_Shortcode_Base {
      * Supports: {term_count}, {total_count}, {group_names}
      *
      * @param string $header_text Header text with placeholders
-     * @param array $terms Array of term objects that will be displayed
+     * @param array  $terms Array of term objects that will be displayed
      * @param string $taxonomy Taxonomy name
      * @return string Processed header text with placeholders replaced
      */
@@ -595,9 +595,9 @@ abstract class HyperTaxonomy_Shortcode_Base {
 
         // {group_names} - Comma-separated list of group names (plain text or links)
         if ( strpos( $header_text, '{group_names}' ) !== false && ! empty( $this->htax_atts['include_groups'] ) ) {
-            $group_ids = htax_parse_term_ids( $this->htax_atts['include_groups'], 'group' );
+            $group_ids   = htax_parse_term_ids( $this->htax_atts['include_groups'], 'group' );
             $group_items = array();
-            $use_links = ( isset( $this->htax_atts['header_link_behavior'] ) &&
+            $use_links   = ( isset( $this->htax_atts['header_link_behavior'] ) &&
                            $this->htax_atts['header_link_behavior'] === 'link' );
 
             foreach ( $group_ids as $group_id ) {
@@ -618,7 +618,7 @@ abstract class HyperTaxonomy_Shortcode_Base {
                     }
                 }
             }
-            $delimiter = esc_html( $this->htax_atts['group_name_delimiter'] ?? ', ' );
+            $delimiter                     = esc_html( $this->htax_atts['group_name_delimiter'] ?? ', ' );
             $replacements['{group_names}'] = implode( $delimiter, $group_items );
         }
 
@@ -657,14 +657,18 @@ abstract class HyperTaxonomy_Shortcode_Base {
         );
 
         if ( $uses( '{url}' ) ) {
-            $term_url             = get_term_link( $term );
+            $term_url              = get_term_link( $term );
             $replacements['{url}'] = ! is_wp_error( $term_url ) ? esc_url( $term_url ) : '';
         }
 
         // Icon dimensions are taxonomy-configured, not per-attachment — free from settings cache.
         if ( $uses( '{icon_width' ) || $uses( '{icon_height' ) ) {
-            foreach ( array( 'small' => '', 'medium' => '_medium', 'large' => '_large' ) as $size => $suffix ) {
-                $dimensions = HyperTaxonomy_Term_Icons::get_icon_dimensions( $term->taxonomy, $size );
+            foreach ( array(
+                'small' => '',
+                'medium' => '_medium',
+                'large' => '_large',
+            ) as $size => $suffix ) {
+                $dimensions                                     = HyperTaxonomy_Term_Icons::get_icon_dimensions( $term->taxonomy, $size );
                 $replacements[ '{icon_width' . $suffix . '}' ]  = $dimensions['width'];
                 $replacements[ '{icon_height' . $suffix . '}' ] = $dimensions['height'];
             }
@@ -676,7 +680,7 @@ abstract class HyperTaxonomy_Shortcode_Base {
         }
 
         if ( $is_redirect && ( $uses( '{target}' ) || $uses( '{redirect_target_' ) ) ) {
-            $target_id = $this->redirect_terms[ $term->term_id ]['target_id'];
+            $target_id   = $this->redirect_terms[ $term->term_id ]['target_id'];
             $target_term = get_term( $target_id, $term->taxonomy );
 
             if ( $target_term && ! is_wp_error( $target_term ) ) {
@@ -689,9 +693,9 @@ abstract class HyperTaxonomy_Shortcode_Base {
         $text = strtr( $text, $replacements );
 
         // Process conditional logic
-        $pattern = '/\{is_redirect\?([^:}]*):([^}]*)\}/';
+        $pattern     = '/\{is_redirect\?([^:}]*):([^}]*)\}/';
         $replacement = $is_redirect ? '$1' : '$2';
-        $text = preg_replace( $pattern, $replacement, $text );
+        $text        = preg_replace( $pattern, $replacement, $text );
 
         return wp_kses_post( $text );
     }

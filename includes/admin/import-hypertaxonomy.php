@@ -99,7 +99,7 @@ function htax_preview_import( $data ) {
 
     $existing_slugs_by_tax = array();
     foreach ( $slugs_by_tax as $tax => $slugs ) {
-        $found = get_terms( array(
+        $found                         = get_terms( array(
             'taxonomy'   => $tax,
             'slug'       => $slugs,
             'hide_empty' => false,
@@ -123,12 +123,12 @@ function htax_preview_import( $data ) {
             );
         }
 
-        $taxonomies[ $tax ]['total']++;
+        ++$taxonomies[ $tax ]['total'];
 
         if ( isset( $existing_slugs_by_tax[ $tax ][ $term_data['slug'] ] ) ) {
-            $taxonomies[ $tax ]['existing']++;
+            ++$taxonomies[ $tax ]['existing'];
         } else {
-            $taxonomies[ $tax ]['new']++;
+            ++$taxonomies[ $tax ]['new'];
         }
     }
 
@@ -142,7 +142,7 @@ function htax_preview_import( $data ) {
         if ( ! isset( $relationship_types[ $type ] ) ) {
             $relationship_types[ $type ] = 0;
         }
-        $relationship_types[ $type ]++;
+        ++$relationship_types[ $type ];
     }
 
     return array(
@@ -172,7 +172,7 @@ function htax_process_import( $data, $options = array() ) {
         'update_existing' => true,
         'import_term_posts' => false,
     );
-    $options = wp_parse_args( $options, $defaults );
+    $options  = wp_parse_args( $options, $defaults );
 
     // Validate data
     $validation = htax_validate_import_data( $data );
@@ -204,11 +204,11 @@ function htax_process_import( $data, $options = array() ) {
     // Import terms
     foreach ( $data['terms'] as $term_data ) {
         if ( ! isset( $term_data['taxonomy'], $term_data['slug'], $term_data['name'] ) ) {
-            $stats['terms_skipped']++;
+            ++$stats['terms_skipped'];
             continue;
         }
         $taxonomy = $term_data['taxonomy'];
-        $slug = $term_data['slug'];
+        $slug     = $term_data['slug'];
 
         // Check if taxonomy exists
         if ( ! taxonomy_exists( $taxonomy ) ) {
@@ -218,7 +218,7 @@ function htax_process_import( $data, $options = array() ) {
                 $taxonomy,
                 $slug
             );
-            $stats['terms_skipped']++;
+            ++$stats['terms_skipped'];
             continue;
         }
 
@@ -257,15 +257,15 @@ function htax_process_import( $data, $options = array() ) {
                         $taxonomy,
                         $result->get_error_message()
                     );
-                    $stats['terms_skipped']++;
+                    ++$stats['terms_skipped'];
                     continue;
                 }
 
                 $term_id = $existing_term->term_id;
-                $stats['terms_updated']++;
+                ++$stats['terms_updated'];
             } else {
                 $term_id = $existing_term->term_id;
-                $stats['terms_skipped']++;
+                ++$stats['terms_skipped'];
             }
         } else {
             // Create new term
@@ -295,12 +295,12 @@ function htax_process_import( $data, $options = array() ) {
                     $taxonomy,
                     $result->get_error_message()
                 );
-                $stats['terms_skipped']++;
+                ++$stats['terms_skipped'];
                 continue;
             }
 
             $term_id = $result['term_id'];
-            $stats['terms_created']++;
+            ++$stats['terms_created'];
 
             if ( '' !== $missing_parent ) {
                 $pending_parents[ $term_id ] = array( $taxonomy, $missing_parent );
@@ -354,7 +354,7 @@ function htax_process_import( $data, $options = array() ) {
     // Now that every term exists, set the parents that were listed after their children.
     foreach ( $pending_parents as $child_id => $pending ) {
         list( $taxonomy, $parent_slug ) = $pending;
-        $parent_term = get_term_by( 'slug', $parent_slug, $taxonomy );
+        $parent_term                    = get_term_by( 'slug', $parent_slug, $taxonomy );
         if ( ! $parent_term ) {
             $stats['errors'][] = sprintf(
                 /* translators: 1: parent term slug, 2: taxonomy */
@@ -404,13 +404,13 @@ function htax_process_import( $data, $options = array() ) {
 
     foreach ( $data['relationships'] as $rel_data ) {
         if ( ! isset( $rel_data['type'], $rel_data['source_taxonomy'], $rel_data['source_slug'], $rel_data['target_taxonomy'], $rel_data['target_slug'] ) ) {
-            $stats['relationships_skipped']++;
+            ++$stats['relationships_skipped'];
             continue;
         }
 
         // Verify the relationship type is registered before inserting.
         if ( ! htax_get_relationship_type( $rel_data['type'] ) ) {
-            $stats['relationships_skipped']++;
+            ++$stats['relationships_skipped'];
             continue;
         }
 
@@ -423,7 +423,7 @@ function htax_process_import( $data, $options = array() ) {
                 $rel_data['source_slug'],
                 $rel_data['target_slug']
             );
-            $stats['relationships_skipped']++;
+            ++$stats['relationships_skipped'];
             continue;
         }
 
@@ -435,7 +435,7 @@ function htax_process_import( $data, $options = array() ) {
                 $rel_data['source_slug'],
                 $rel_data['target_slug']
             );
-            $stats['relationships_skipped']++;
+            ++$stats['relationships_skipped'];
             continue;
         }
 
@@ -454,7 +454,7 @@ function htax_process_import( $data, $options = array() ) {
                     $rel_data['source_slug'],
                     $rel_data['target_slug']
                 );
-                $stats['relationships_skipped']++;
+                ++$stats['relationships_skipped'];
                 continue;
             }
         }
@@ -471,7 +471,7 @@ function htax_process_import( $data, $options = array() ) {
                     $rel_data['source_slug'],
                     $rel_data['target_slug']
                 );
-                $stats['relationships_skipped']++;
+                ++$stats['relationships_skipped'];
                 continue;
             }
         }
@@ -484,9 +484,9 @@ function htax_process_import( $data, $options = array() ) {
         if ( 'redirect' === $rel_data['type'] ) {
             $current = htax_get_redirect_target( $source_id );
             if ( $current && (int) $current->term_id === (int) $target_id ) {
-                $stats['relationships_skipped']++;
+                ++$stats['relationships_skipped'];
             } elseif ( htax_set_redirect( $source_id, $target_id ) ) {
-                $stats['relationships_created']++;
+                ++$stats['relationships_created'];
             } else {
                 $stats['errors'][] = sprintf(
                     /* translators: 1: source term slug, 2: target term slug */
@@ -494,7 +494,7 @@ function htax_process_import( $data, $options = array() ) {
                     $rel_data['source_slug'],
                     $rel_data['target_slug']
                 );
-                $stats['relationships_skipped']++;
+                ++$stats['relationships_skipped'];
             }
             continue;
         }
@@ -520,7 +520,7 @@ function htax_process_import( $data, $options = array() ) {
 
         // A symmetric type stores each pair once, so a row already saved the other way round counts as existing.
         if ( $exists || htax_symmetric_pair_exists( $source_id, $target_id, $rel_data['type'] ) ) {
-            $stats['relationships_skipped']++;
+            ++$stats['relationships_skipped'];
             continue;
         }
 
@@ -545,9 +545,9 @@ function htax_process_import( $data, $options = array() ) {
                 $rel_data['target_slug'],
                 $wpdb->last_error
             );
-            $stats['relationships_skipped']++;
+            ++$stats['relationships_skipped'];
         } else {
-            $stats['relationships_created']++;
+            ++$stats['relationships_created'];
         }
     }
 
@@ -596,12 +596,12 @@ function htax_process_import( $data, $options = array() ) {
                     $result = wp_set_object_terms( $post->ID, $term_id, $assignment['taxonomy'], true );
 
                     if ( ! is_wp_error( $result ) ) {
-                        $stats['posts_assigned']++;
+                        ++$stats['posts_assigned'];
                     } else {
-                        $stats['posts_skipped']++;
+                        ++$stats['posts_skipped'];
                     }
                 } else {
-                    $stats['posts_skipped']++;
+                    ++$stats['posts_skipped'];
                 }
             }
         }

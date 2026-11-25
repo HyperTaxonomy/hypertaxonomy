@@ -35,7 +35,10 @@ function htax_filter_term_links( $term_links, $taxonomy = '' ) {
     static $taxonomy_maps = array();
 
     if ( ! isset( $taxonomy_maps[ $taxonomy ] ) ) {
-        $terms = get_terms( array( 'taxonomy' => $taxonomy, 'hide_empty' => false ) );
+        $terms = get_terms( array(
+            'taxonomy' => $taxonomy,
+            'hide_empty' => false,
+        ) );
         if ( is_wp_error( $terms ) ) {
             return $term_links;
         }
@@ -73,7 +76,7 @@ function htax_filter_term_links( $term_links, $taxonomy = '' ) {
 
         if ( $term_id && isset( $hidden_ids[ $term_id ] ) ) {
             if ( $can_see_hidden ) {
-                $term_link       = str_replace( '<a ', '<a class="htax-hidden-term" ', $term_link );
+                $term_link        = str_replace( '<a ', '<a class="htax-hidden-term" ', $term_link );
                 $filtered_links[] = $term_link;
             }
             // Hidden and user can't see — omit.
@@ -314,9 +317,9 @@ function htax_resolve_border_radius_css( $border_radius ) {
         case 'circular':
             return '50%';
         case 'custom':
-            $tl = $border_radius['top_left']     ?? 20;
-            $tr = $border_radius['top_right']    ?? 20;
-            $bl = $border_radius['bottom_left']  ?? 20;
+            $tl = $border_radius['top_left'] ?? 20;
+            $tr = $border_radius['top_right'] ?? 20;
+            $bl = $border_radius['bottom_left'] ?? 20;
             $br = $border_radius['bottom_right'] ?? 20;
             return $tl . '% ' . $tr . '% ' . $br . '% ' . $bl . '%';
         default:
@@ -340,7 +343,7 @@ function htax_icon_border_radius_styles() {
         }
 
         $border_radius = isset( $settings['border_radius'] ) ? $settings['border_radius'] : array();
-        $css = htax_resolve_border_radius_css( $border_radius );
+        $css           = htax_resolve_border_radius_css( $border_radius );
 
         if ( $css ) {
             $css_rules[ $taxonomy ] = $css;
@@ -383,7 +386,7 @@ function htax_icon_border_radius_styles() {
         }
 
         /* Placeholder squares and elements - match small icon dimensions and shape */
-        <?php $small_dims = HyperTaxonomy_Term_Icons::get_icon_dimensions( $taxonomy, 'small' ); ?>
+            <?php $small_dims = HyperTaxonomy_Term_Icons::get_icon_dimensions( $taxonomy, 'small' ); ?>
         .htax-autocomplete-placeholder[data-taxonomy="<?php echo esc_attr( $taxonomy ); ?>"],
         .htax-icon-placeholder[data-taxonomy="<?php echo esc_attr( $taxonomy ); ?>"],
         .htax-term-link .htax-term-placeholder[data-taxonomy="<?php echo esc_attr( $taxonomy ); ?>"],
@@ -447,11 +450,11 @@ function htax_get_icon_display_for_taxonomy( $taxonomy ) {
  * with optional icon or colored placeholder. Automatically applies border-radius
  * styling based on taxonomy icon settings.
  *
- * @param string $term_link The original term link HTML (from the_tags(), etc.)
+ * @param string  $term_link The original term link HTML (from the_tags(), etc.)
  * @param WP_Term $term The term object
- * @param string $show_icons Display mode: 'always' (show placeholder if no icon),
- *                           'when_available' (icon only), or 'never' (text only)
- * @param bool $is_hidden Whether the term is marked as hidden
+ * @param string  $show_icons Display mode: 'always' (show placeholder if no icon),
+ *                            'when_available' (icon only), or 'never' (text only)
+ * @param bool    $is_hidden Whether the term is marked as hidden
  * @return string Modified link with pill class, data-taxonomy attribute, and icon/placeholder
  *
  * @since 1.0.0
@@ -459,20 +462,20 @@ function htax_get_icon_display_for_taxonomy( $taxonomy ) {
 function htax_add_icon_to_term_link( $term_link, $term, $show_icons = 'when_available', $is_hidden = false ) {
     // Get taxonomy-specific size name and dimensions
     $taxonomy_size_name = HyperTaxonomy_Term_Icons::get_size_name( $term->taxonomy, 'small' );
-    $dimensions = HyperTaxonomy_Term_Icons::get_icon_dimensions( $term->taxonomy, 'small' );
+    $dimensions         = HyperTaxonomy_Term_Icons::get_icon_dimensions( $term->taxonomy, 'small' );
 
     // Get icon data
-    $icons = HyperTaxonomy_Term_Icons::get_instance();
+    $icons     = HyperTaxonomy_Term_Icons::get_instance();
     $icon_data = $icons->get_term_icon_data( $term->term_id, $taxonomy_size_name, false, $term->taxonomy );
-    $has_icon = $icon_data['has_icon'];
+    $has_icon  = $icon_data['has_icon'];
 
     // Determine if we should show icon or placeholder
     $show_visual = false;
-    $icon_html = '';
+    $icon_html   = '';
 
     if ( $has_icon ) {
         $show_visual = true;
-        $icon_html = sprintf(
+        $icon_html   = sprintf(
             '<img src="%s" class="htax-pill-icon" alt="" data-taxonomy="%s" width="%d" height="%d" />',
             esc_url( $icon_data['url'] ),
             esc_attr( $term->taxonomy ),
@@ -488,12 +491,12 @@ function htax_add_icon_to_term_link( $term_link, $term, $show_icons = 'when_avai
     // Extract link attributes and content
     if ( preg_match( '/<a([^>]*)>(.*?)<\/a>/s', $term_link, $matches ) ) {
         $attributes = $matches[1];
-        $link_text = $matches[2];
+        $link_text  = $matches[2];
 
         // Add pill class and data-taxonomy to existing classes
         if ( preg_match( '/class=(["\'])([^"\']*)\1/', $attributes, $class_matches ) ) {
             $existing_classes = $class_matches[2];
-            $new_classes = 'htax-pill ' . $existing_classes;
+            $new_classes      = 'htax-pill ' . $existing_classes;
             if ( $is_hidden ) {
                 $new_classes .= ' htax-hidden-term';
             }
@@ -560,8 +563,8 @@ function htax_filter_post_class( $classes, $class, $post_id ) {
         if ( ! is_paged() ) {
             // Only posts that were actually promoted (within max_sticky_posts) get the class.
             // htax_modify_archive_query_for_stickies stores the promoted list on the query.
-            $promoted      = $wp_query->get( 'htax_sticky_posts' );
-            $promoted_ids  = ! empty( $promoted ) ? array_map( 'intval', wp_list_pluck( $promoted, 'ID' ) ) : array();
+            $promoted     = $wp_query->get( 'htax_sticky_posts' );
+            $promoted_ids = ! empty( $promoted ) ? array_map( 'intval', wp_list_pluck( $promoted, 'ID' ) ) : array();
             if ( empty( $promoted_ids ) || ! in_array( (int) $post_id, $promoted_ids, true ) ) {
                 return $classes;
             }
@@ -586,7 +589,7 @@ function htax_get_term_icon_url( $term, $size = 'htax-icon-small' ) {
     $term_id = is_object( $term ) ? $term->term_id : $term;
 
     $icons = HyperTaxonomy_Term_Icons::get_instance();
-    $data = $icons->get_term_icon_data( $term_id, $size, false );
+    $data  = $icons->get_term_icon_data( $term_id, $size, false );
 
     return $data['has_icon'] ? $data['url'] : false;
 }
@@ -666,10 +669,10 @@ function htax_get_term_icon_html( $term, $size = 'htax-icon-small', $attr = arra
     $size_type = htax_get_icon_size_type( $size );
 
     $taxonomy_size_name = HyperTaxonomy_Term_Icons::get_size_name( $term_obj->taxonomy, $size_type );
-    $dimensions = HyperTaxonomy_Term_Icons::get_icon_dimensions( $term_obj->taxonomy, $size_type );
+    $dimensions         = HyperTaxonomy_Term_Icons::get_icon_dimensions( $term_obj->taxonomy, $size_type );
 
     $icons = HyperTaxonomy_Term_Icons::get_instance();
-    $data = $icons->get_term_icon_data( $term_obj->term_id, $taxonomy_size_name, false, $term_obj->taxonomy );
+    $data  = $icons->get_term_icon_data( $term_obj->term_id, $taxonomy_size_name, false, $term_obj->taxonomy );
 
     if ( $data['has_icon'] ) {
         $classes = isset( $attr['class'] ) ? $attr['class'] . ' htax-term-icon' : 'htax-term-icon';
@@ -726,8 +729,8 @@ function htax_get_the_archive_icon( $size = 'large', $attr = array() ) {
         return '';
     }
 
-    $attachment_id  = $data['attachment_id'];
-    $primary_dims   = HyperTaxonomy_Term_Icons::get_icon_dimensions( $term->taxonomy, $size_type );
+    $attachment_id = $data['attachment_id'];
+    $primary_dims  = HyperTaxonomy_Term_Icons::get_icon_dimensions( $term->taxonomy, $size_type );
 
     // Build srcset from all three registered htax sizes.
     $srcset_parts = array();
@@ -741,8 +744,8 @@ function htax_get_the_archive_icon( $size = 'large', $attr = array() ) {
     }
 
     $classes = isset( $attr['class'] ) ? $attr['class'] . ' htax-archive-icon' : 'htax-archive-icon';
-    $alt     = isset( $attr['alt'] )   ? $attr['alt']                          : $term->name;
-    $sizes   = isset( $attr['sizes'] ) ? $attr['sizes']                        : $primary_dims['width'] . 'px';
+    $alt     = isset( $attr['alt'] ) ? $attr['alt'] : $term->name;
+    $sizes   = isset( $attr['sizes'] ) ? $attr['sizes'] : $primary_dims['width'] . 'px';
 
     $img = sprintf(
         '<img src="%s" class="%s" alt="%s" data-taxonomy="%s" width="%d" height="%d"',
@@ -793,8 +796,8 @@ function htax_the_archive_icon( $size = 'large', $attr = array() ) {
  * Uses htax-pill class for consistent styling with border-radius from settings.
  *
  * @param WP_Term|int $term Term object or term ID
- * @param array $args {
- *     Optional. Array of arguments.
+ * @param array       $args {
+ *           Optional. Array of arguments.
  *
  *     @type string $icon_size        Icon size. Default 'htax-icon-small'.
  *     @type bool   $link             Whether to make it a link. Default true.
@@ -856,8 +859,7 @@ function htax_get_term_pill( $term, $args = array() ) {
                 esc_html( $term_obj->name )
             );
         }
-    } else {
-        if ( ! empty( $icon ) ) {
+    } elseif ( ! empty( $icon ) ) {
             return sprintf(
                 '<span class="%s" data-taxonomy="%s">%s<span class="htax-pill-text">%s</span></span>',
                 esc_attr( $args['class'] ),
@@ -865,14 +867,13 @@ function htax_get_term_pill( $term, $args = array() ) {
                 $icon,
                 esc_html( $term_obj->name )
             );
-        } else {
-            return sprintf(
-                '<span class="%s" data-taxonomy="%s"><span class="htax-pill-text">%s</span></span>',
-                esc_attr( $args['class'] ),
-                esc_attr( $term_obj->taxonomy ),
-                esc_html( $term_obj->name )
-            );
-        }
+    } else {
+        return sprintf(
+            '<span class="%s" data-taxonomy="%s"><span class="htax-pill-text">%s</span></span>',
+            esc_attr( $args['class'] ),
+            esc_attr( $term_obj->taxonomy ),
+            esc_html( $term_obj->name )
+        );
     }
 }
 
@@ -882,10 +883,10 @@ function htax_get_term_pill( $term, $args = array() ) {
  * Convenience function to display all terms of a taxonomy for a post as pills.
  * Similar to the_tags() but with pill styling and icons.
  *
- * @param int $post_id Post ID
+ * @param int    $post_id Post ID
  * @param string $taxonomy Taxonomy name
- * @param array $args {
- *     Optional. Array of arguments.
+ * @param array  $args {
+ *      Optional. Array of arguments.
  *
  *     @type string $before           HTML to output before the list. Default ''.
  *     @type string $after            HTML to output after the list. Default ''.
@@ -1107,7 +1108,7 @@ function htax_integrate_description_display() {
     add_filter( 'get_the_archive_description', 'htax_suppress_native_archive_description', 5 );
 
     // Fallback: Use loop_start hook
-    add_action( 'loop_start', function( $query ) {
+    add_action( 'loop_start', function ( $query ) {
         if ( $query->is_main_query() && ( is_tag() || is_category() || is_tax() ) ) {
             static $displayed = false;
             if ( ! $displayed ) {
@@ -1162,7 +1163,7 @@ function htax_maybe_display_archive_description() {
         return;
     }
 
-    $term_id = get_queried_object_id();
+    $term_id          = get_queried_object_id();
     $show_description = get_term_meta( $term_id, '_htax_show_description', true );
 
     if ( '1' === $show_description ) {
@@ -1180,13 +1181,13 @@ function htax_filter_query_title_block( $block_content, $block ) {
             return $block_content;
         }
 
-        $term_id = get_queried_object_id();
-        $term = get_queried_object();
+        $term_id          = get_queried_object_id();
+        $term             = get_queried_object();
         $show_description = get_term_meta( $term_id, '_htax_show_description', true );
 
         if ( ! empty( htax_get_setting( 'show_archive_description' ) ) && '1' === $show_description && ! empty( $term->description ) && htax_taxonomy_has_feature( $taxonomy, 'customize_archives' ) ) {
             $allowed_html = htax_get_allowed_description_html();
-            $description = htax_process_term_description( $term->description, $allowed_html );
+            $description  = htax_process_term_description( $term->description, $allowed_html );
 
             $description_html = '<div class="htax-archive-description">' . $description . '</div>';
 

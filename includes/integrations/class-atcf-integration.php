@@ -195,9 +195,9 @@ class HyperTaxonomy_ATCF_Integration {
             $radius_options = array( 5, 10, 25, 50 );
         }
 
-        $input_types    = array_map( 'trim', explode( ',', $a['input'] ) );
-        $show_zip       = in_array( 'zip', $input_types, true );
-        $show_geo       = in_array( 'geolocation', $input_types, true );
+        $input_types = array_map( 'trim', explode( ',', $a['input'] ) );
+        $show_zip    = in_array( 'zip', $input_types, true );
+        $show_geo    = in_array( 'geolocation', $input_types, true );
 
         // Ensure ATCF's frontend CSS (which styles .atcf-postal-wrap, .atcf-geo-btn, etc.) is loaded.
         wp_enqueue_style( 'atcf-frontend' );
@@ -211,13 +211,34 @@ class HyperTaxonomy_ATCF_Integration {
              data-unit="<?php echo esc_attr( $a['unit'] ); ?>"
              data-country="<?php echo esc_attr( strtoupper( $a['country'] ) ); ?>"
              data-no-location="<?php echo esc_attr( $a['no_location'] ); ?>"
-             <?php if ( $a['include_term_options'] ) : ?>data-include-term-options="<?php echo esc_attr( $a['include_term_options'] ); ?>"<?php endif; ?>
-             <?php if ( $a['exclude_term_options'] ) : ?>data-exclude-term-options="<?php echo esc_attr( $a['exclude_term_options'] ); ?>"<?php endif; ?>
-             <?php if ( $a['include_group_options'] ) : ?>data-include-group-options="<?php echo esc_attr( $a['include_group_options'] ); ?>"<?php endif; ?>
-             <?php if ( $a['exclude_group_options'] ) : ?>data-exclude-group-options="<?php echo esc_attr( $a['exclude_group_options'] ); ?>"<?php endif; ?>
-             <?php if ( $a['include_descendant_options'] ) : ?>data-include-descendant-options="<?php echo esc_attr( $a['include_descendant_options'] ); ?>"<?php endif; ?>
-             <?php if ( $a['exclude_descendant_options'] ) : ?>data-exclude-descendant-options="<?php echo esc_attr( $a['exclude_descendant_options'] ); ?>"<?php endif; ?>
-             <?php if ( 'all' !== $a['expand'] ) : ?>data-expand-types="<?php echo esc_attr( $a['expand'] ); ?>"<?php endif; ?>>
+             <?php
+                if ( $a['include_term_options'] ) :
+                    ?>
+                    data-include-term-options="<?php echo esc_attr( $a['include_term_options'] ); ?>"<?php endif; ?>
+             <?php
+                if ( $a['exclude_term_options'] ) :
+                    ?>
+                    data-exclude-term-options="<?php echo esc_attr( $a['exclude_term_options'] ); ?>"<?php endif; ?>
+             <?php
+                if ( $a['include_group_options'] ) :
+                    ?>
+                    data-include-group-options="<?php echo esc_attr( $a['include_group_options'] ); ?>"<?php endif; ?>
+             <?php
+                if ( $a['exclude_group_options'] ) :
+                    ?>
+                    data-exclude-group-options="<?php echo esc_attr( $a['exclude_group_options'] ); ?>"<?php endif; ?>
+             <?php
+                if ( $a['include_descendant_options'] ) :
+                    ?>
+                    data-include-descendant-options="<?php echo esc_attr( $a['include_descendant_options'] ); ?>"<?php endif; ?>
+             <?php
+                if ( $a['exclude_descendant_options'] ) :
+                    ?>
+                    data-exclude-descendant-options="<?php echo esc_attr( $a['exclude_descendant_options'] ); ?>"<?php endif; ?>
+             <?php
+                if ( 'all' !== $a['expand'] ) :
+                    ?>
+                    data-expand-types="<?php echo esc_attr( $a['expand'] ); ?>"<?php endif; ?>>
 
             <div class="atcf-finder-controls">
                 <span class="htax-distance-label"><?php esc_html_e( 'Within', 'hypertaxonomy' ); ?></span>
@@ -271,7 +292,8 @@ class HyperTaxonomy_ATCF_Integration {
             </div>
 
             <!-- Option pool parameters — passed through to server-side resolution -->
-            <?php foreach ( array(
+            <?php
+            foreach ( array(
                 'taxonomy',
                 'unit',
                 'country',
@@ -282,7 +304,8 @@ class HyperTaxonomy_ATCF_Integration {
                 'exclude_group_options',
                 'include_descendant_options',
                 'exclude_descendant_options',
-            ) as $pool_key ) : ?>
+            ) as $pool_key ) :
+                ?>
                 <?php if ( '' !== $a[ $pool_key ] ) : ?>
                     <input type="hidden"
                            name="<?php echo esc_attr( $a['name'] ); ?>[<?php echo esc_attr( $pool_key ); ?>]"
@@ -460,7 +483,7 @@ class HyperTaxonomy_ATCF_Integration {
      * @return int[]|null
      */
     private static function resolve_option_pool_ids( array $field, string $taxonomy ): ?array {
-        $allowed  = null;
+        $allowed = null;
 
         // include_term_options: comma-separated IDs or slugs.
         if ( ! empty( $field['include_term_options'] ) ) {
@@ -509,7 +532,7 @@ class HyperTaxonomy_ATCF_Integration {
                 $descendants = get_term_children( $root_id, $taxonomy );
                 if ( ! is_wp_error( $descendants ) ) {
                     $descendants[] = $root_id;
-                    $allowed = null !== $allowed
+                    $allowed       = null !== $allowed
                         ? array_values( array_intersect( $allowed, $descendants ) )
                         : $descendants;
                 }
@@ -568,7 +591,7 @@ class HyperTaxonomy_ATCF_Integration {
                 $descendants = get_term_children( $root_id, $taxonomy );
                 if ( ! is_wp_error( $descendants ) ) {
                     $descendants[] = $root_id;
-                    $allowed = array_values( array_diff( $allowed, $descendants ) );
+                    $allowed       = array_values( array_diff( $allowed, $descendants ) );
                 }
             }
         }
@@ -672,7 +695,7 @@ class HyperTaxonomy_ATCF_Integration {
      */
     private static function resolve_proximity( array $proximity ): array {
         static $memo = array();
-        $key = md5( serialize( $proximity ) . '|' . (int) htax_can_see_hidden_terms() );
+        $key         = md5( serialize( $proximity ) . '|' . (int) htax_can_see_hidden_terms() );
         if ( isset( $memo[ $key ] ) ) {
             return $memo[ $key ];
         }
@@ -790,8 +813,8 @@ class HyperTaxonomy_ATCF_Integration {
             }
 
             // No format defined or value doesn't match → treat as term slug.
-            $slug   = strtolower( $raw );
-            $points = array();
+            $slug       = strtolower( $raw );
+            $points     = array();
             $hidden_ids = htax_get_all_hidden_term_ids();
             foreach ( self::get_eligible_taxonomies() as $tax ) {
                 $term = get_term_by( 'slug', $slug, $tax );
@@ -799,7 +822,7 @@ class HyperTaxonomy_ATCF_Integration {
                     continue;
                 }
                 $inclusion_ids = htax_get_included_term_ids( $term );
-                $locs = ATCF_Locations::get_aggregated(
+                $locs          = ATCF_Locations::get_aggregated(
                     $term->term_id,
                     $tax,
                     $hidden_ids,
@@ -828,8 +851,8 @@ class HyperTaxonomy_ATCF_Integration {
             return array();
         }
 
-        $hidden_ids      = htax_get_all_hidden_term_ids();
-        $inclusion_ids   = htax_get_included_term_ids( $term );
+        $hidden_ids    = htax_get_all_hidden_term_ids();
+        $inclusion_ids = htax_get_included_term_ids( $term );
 
         $locations = ATCF_Locations::get_aggregated(
             $term->term_id,
@@ -886,7 +909,11 @@ class HyperTaxonomy_ATCF_Integration {
      */
     public static function get_user_location(): ?array {
         $loc = function_exists( 'atcf_get_visitor_location' ) ? atcf_get_visitor_location() : null;
-        return $loc ? array( 'lat' => (float) $loc['lat'], 'lng' => (float) $loc['lng'], 'source' => (string) $loc['source'] ) : null;
+        return $loc ? array(
+            'lat' => (float) $loc['lat'],
+            'lng' => (float) $loc['lng'],
+            'source' => (string) $loc['source'],
+        ) : null;
     }
 
     /**
@@ -946,7 +973,7 @@ class HyperTaxonomy_ATCF_Integration {
             "SELECT term_taxonomy_id, term_id FROM {$wpdb->term_taxonomy} WHERE taxonomy IN ($tax_ph) AND term_id IN ($term_ph)",
             array_merge( $taxonomies, $term_ids )
         ) );
-        $map = array();
+        $map     = array();
         foreach ( (array) $rows as $row ) {
             $map[ (int) $row->term_taxonomy_id ] = (int) $row->term_id;
         }
@@ -961,21 +988,24 @@ class HyperTaxonomy_ATCF_Integration {
      *
      * @since 1.0.0
      * @param array<int, array{float, float}> $ref_points Reference [lat, lng] pairs.
-     * @param float  $radius_km Radius in kilometers.
-     * @param string $taxonomy  Taxonomy slug to restrict results (empty = all taxonomies).
+     * @param float                           $radius_km Radius in kilometers.
+     * @param string                          $taxonomy  Taxonomy slug to restrict results (empty = all taxonomies).
      * @return array<int, float> term ID => distance in km
      */
     private static function get_in_range_term_distances( array $ref_points, float $radius_km, string $taxonomy = '' ): array {
         $distances = array();
         foreach ( $ref_points as [ $lat, $lng ] ) {
-            $args = array( 'lat' => $lat, 'lng' => $lng );
+            $args = array(
+                'lat' => $lat,
+                'lng' => $lng,
+            );
             if ( '' !== $taxonomy ) {
                 $args['taxonomy'] = $taxonomy;
             }
             foreach ( atcf_get_locations_within_radius( '', $radius_km, 'km', $args ) as $loc ) {
-                $loc     = (array) $loc;
-                $term_id = (int) $loc['term_id'];
-                $km      = (float) ( $loc['distance_km'] ?? 0 );
+                $loc                   = (array) $loc;
+                $term_id               = (int) $loc['term_id'];
+                $km                    = (float) ( $loc['distance_km'] ?? 0 );
                 $distances[ $term_id ] = isset( $distances[ $term_id ] ) ? min( $distances[ $term_id ], $km ) : $km;
             }
         }
@@ -988,8 +1018,8 @@ class HyperTaxonomy_ATCF_Integration {
      * Delegates entirely to atcf_get_locations_within_radius() — no direct ATCF table access.
      *
      * @param array<int, array{float, float}> $ref_points Reference [lat, lng] pairs.
-     * @param float  $radius_km  Radius in kilometers.
-     * @param string $taxonomy   Taxonomy slug to restrict results (empty = all taxonomies).
+     * @param float                           $radius_km  Radius in kilometers.
+     * @param string                          $taxonomy   Taxonomy slug to restrict results (empty = all taxonomies).
      * @return int[]
      */
     public static function get_in_range_term_ids( array $ref_points, float $radius_km, string $taxonomy = '' ): array {
@@ -1002,7 +1032,7 @@ class HyperTaxonomy_ATCF_Integration {
      *
      * When $allowed_pool is set, only IDs present in that pool are returned.
      *
-     * @param string   $taxonomy     Taxonomy slug.
+     * @param string     $taxonomy     Taxonomy slug.
      * @param int[]|null $allowed_pool Restrict to these IDs; null = no restriction.
      * @return int[]
      */
@@ -1013,7 +1043,7 @@ class HyperTaxonomy_ATCF_Integration {
             "SELECT DISTINCT term_id FROM {$table} WHERE taxonomy = %s",
             $taxonomy
         ) ) );
-        $all = get_terms( array(
+        $all     = get_terms( array(
             'taxonomy'   => $taxonomy,
             'fields'     => 'ids',
             'hide_empty' => false,

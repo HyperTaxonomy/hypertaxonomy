@@ -113,7 +113,7 @@ function htax_get_term_relationship_ids( $term_id, $id_column, $where_column, $r
     // Build WHERE clause
     $where_parts = array(
         $wpdb->prepare( "{$where_column} = %d", $term_id ),
-        $wpdb->prepare( "relationship_type = %s", $relationship_type )
+        $wpdb->prepare( 'relationship_type = %s', $relationship_type ),
     );
 
     // Add extra WHERE conditions
@@ -215,7 +215,7 @@ function htax_prime_redirects_to( array $target_ids ): void {
  *
  * Queries the htax_term_relationships table for terms that have a redirect relationship to the target.
  *
- * @param int $target_id Target term ID
+ * @param int               $target_id Target term ID
  * @param array|string|null $taxonomies Taxonomy names (array), single taxonomy (string), or null for all
  * @return array Array of term IDs that redirect to the target
  */
@@ -249,7 +249,7 @@ function htax_get_ids_of_redirects_to( $target_id, $taxonomies = null ) {
         }
 
         $placeholders = htax_sql_placeholders( count( $taxonomies ), 's' );
-        $ids = $wpdb->get_col( $wpdb->prepare(
+        $ids          = $wpdb->get_col( $wpdb->prepare(
             "SELECT source_term_id
             FROM {$table_name}
             WHERE target_term_id = %d
@@ -329,10 +329,10 @@ function htax_load_included_terms( $term, bool $include_redirect_data, bool $inc
 function htax_load_included_term_ids( $term, bool $include_redirect_data, bool $include_disabled ): array {
     // Accept either term ID or WP_Term object
     if ( is_object( $term ) && isset( $term->term_id ) ) {
-        $term_id = $term->term_id;
+        $term_id  = $term->term_id;
         $term_obj = $term;
     } else {
-        $term_id = $term;
+        $term_id  = $term;
         $term_obj = htax_get_valid_term( $term_id );
     }
 
@@ -364,8 +364,8 @@ function htax_load_included_term_ids( $term, bool $include_redirect_data, bool $
     // Single query to get all configured relationships for this term.
     // target_taxonomy is constrained to same taxonomy or 'group' — cross-taxonomy rows are ignored.
     // Expands both core types to include all user-defined mapped slugs.
-    $includes_in = htax_relationship_type_sql_in( 'includes' );
-    $excludes_in = htax_relationship_type_sql_in( 'excludes' );
+    $includes_in   = htax_relationship_type_sql_in( 'includes' );
+    $excludes_in   = htax_relationship_type_sql_in( 'excludes' );
     $relationships = $wpdb->get_results( $wpdb->prepare(
         "SELECT target_term_id, target_taxonomy, relationship_type
         FROM {$table_name}
@@ -417,7 +417,7 @@ function htax_load_included_term_ids( $term, bool $include_redirect_data, bool $
     $member_groups = htax_get_term_group_ids( $term_id );
     if ( ! empty( $member_groups ) ) {
         $expanded_member_groups = htax_get_group_hierarchy( $member_groups );
-        $container_included = htax_get_terms_with_container_groups( $expanded_member_groups, $term_obj->taxonomy );
+        $container_included     = htax_get_terms_with_container_groups( $expanded_member_groups, $term_obj->taxonomy );
         if ( ! empty( $container_included ) ) {
             $result_ids = array_unique( array_merge( $result_ids, $container_included ) );
         }
@@ -521,10 +521,10 @@ function htax_load_container_terms( $term, bool $include_disabled ) {
 function htax_load_container_term_ids( $term, bool $include_disabled ): array {
     // Accept either term ID or WP_Term object
     if ( is_object( $term ) && isset( $term->term_id ) ) {
-        $term_id = $term->term_id;
+        $term_id  = $term->term_id;
         $term_obj = $term;
     } else {
-        $term_id = $term;
+        $term_id  = $term;
         $term_obj = htax_get_valid_term( $term_id );
     }
 
@@ -563,12 +563,12 @@ function htax_load_container_term_ids( $term, bool $include_disabled ): array {
          WHERE target_term_id = %d AND source_taxonomy = 'group' AND {$includes_in}",
         $term_id
     ) ) );
-    $path3_fragment = '';
-    $path3_params   = array();
+    $path3_fragment      = '';
+    $path3_params        = array();
     if ( ! empty( $container_group_ids ) ) {
         $expanded_container_groups = htax_get_group_ancestors( $container_group_ids );
-        $cg_placeholders = htax_sql_placeholders( count( $expanded_container_groups ) );
-        $path3_fragment = "
+        $cg_placeholders           = htax_sql_placeholders( count( $expanded_container_groups ) );
+        $path3_fragment            = "
             UNION
 
             -- Path 3: Container group members (with ancestor group expansion)
@@ -579,7 +579,7 @@ function htax_load_container_term_ids( $term, bool $include_disabled ): array {
             AND source_taxonomy = %s
             AND target_taxonomy = 'group'
         ";
-        $path3_params = array_merge( $expanded_container_groups, array( $term_obj->taxonomy ) );
+        $path3_params              = array_merge( $expanded_container_groups, array( $term_obj->taxonomy ) );
     }
 
     // Path 2 groups: the groups this term belongs to, plus their ancestors. A member of a
@@ -635,7 +635,7 @@ function htax_load_container_term_ids( $term, bool $include_disabled ): array {
             AND {$includes_in}
             AND source_taxonomy = %s
         ";
-        $path2_params = array_merge( $path2_group_ids, array( $term_obj->taxonomy ) );
+        $path2_params   = array_merge( $path2_group_ids, array( $term_obj->taxonomy ) );
     }
 
     $query = "
@@ -674,7 +674,7 @@ function htax_load_container_term_ids( $term, bool $include_disabled ): array {
         $excluded_ids,                   // WHERE NOT IN: self + ancestors
         array( $term_id )                // NOT EXISTS: excl.target_term_id
     );
-    $results = $wpdb->get_results( $wpdb->prepare( $query, ...$query_params ), ARRAY_A );
+    $results      = $wpdb->get_results( $wpdb->prepare( $query, ...$query_params ), ARRAY_A );
 
     if ( empty( $results ) ) {
         // Cache empty result — no TTL; rely on explicit invalidation via htax_delete_term_transients().
@@ -1048,7 +1048,7 @@ function htax_get_terms_with_container_groups( $group_ids, $taxonomy ) {
                 AND source_taxonomy = 'group'
                 AND target_taxonomy = %s";
 
-    $params = array_merge( $group_ids, array( $taxonomy ) );
+    $params   = array_merge( $group_ids, array( $taxonomy ) );
     $term_ids = $wpdb->get_col( $wpdb->prepare( $query, ...$params ) );
 
     return array_map( 'intval', $term_ids );
@@ -1200,9 +1200,9 @@ function htax_set_redirect( $term, $target ) {
     // Accept either term ID or WP_Term object for source
     if ( is_object( $term ) && isset( $term->term_id ) ) {
         $term_obj = $term;
-        $term_id = $term->term_id;
+        $term_id  = $term->term_id;
     } else {
-        $term_id = $term;
+        $term_id  = $term;
         $term_obj = htax_get_valid_term( $term_id );
     }
 
@@ -1213,9 +1213,9 @@ function htax_set_redirect( $term, $target ) {
     // Accept either term ID or WP_Term object for target
     if ( is_object( $target ) && isset( $target->term_id ) ) {
         $target_term = $target;
-        $target_id = $target->term_id;
+        $target_id   = $target->term_id;
     } else {
-        $target_id = $target;
+        $target_id   = $target;
         $target_term = htax_get_valid_term( $target_id );
     }
 
@@ -1227,16 +1227,16 @@ function htax_set_redirect( $term, $target ) {
     if ( (int) $term_id === (int) $target_id ) {
         htax_log_debug( 'Cannot redirect term to itself', array(
             'term_id' => $term_id,
-            'target_id' => $target_id
+            'target_id' => $target_id,
         ) );
         return false;
     }
 
     // Resolve redirect chains: follow chain to ultimate non-redirect target
     $ultimate_target = $target_id;
-    $seen_ids = array( $term_id ); // Track visited IDs to detect circular redirects
-    $max_depth = HTAX_MAX_REDIRECT_DEPTH;
-    $depth = 0;
+    $seen_ids        = array( $term_id ); // Track visited IDs to detect circular redirects
+    $max_depth       = HTAX_MAX_REDIRECT_DEPTH;
+    $depth           = 0;
 
     while ( htax_is_redirect( $ultimate_target ) && $depth < $max_depth ) {
         if ( in_array( $ultimate_target, $seen_ids, true ) ) {
@@ -1244,12 +1244,12 @@ function htax_set_redirect( $term, $target ) {
             htax_log_error( 'Circular redirect chain detected', array(
                 'term_id' => $term_id,
                 'original_target' => $target_id,
-                'chain' => $seen_ids
+                'chain' => $seen_ids,
             ) );
             return false;
         }
 
-        $seen_ids[] = $ultimate_target;
+        $seen_ids[]  = $ultimate_target;
         $next_target = htax_get_redirect_target( $ultimate_target );
 
         if ( ! $next_target ) {
@@ -1257,14 +1257,14 @@ function htax_set_redirect( $term, $target ) {
         }
 
         $ultimate_target = $next_target->term_id;
-        $depth++;
+        ++$depth;
     }
 
     if ( $depth >= $max_depth ) {
         htax_log_error( 'Redirect chain too deep (max 10 levels)', array(
             'term_id' => $term_id,
             'original_target' => $target_id,
-            'chain_length' => $depth
+            'chain_length' => $depth,
         ) );
         return false;
     }
@@ -1278,7 +1278,7 @@ function htax_set_redirect( $term, $target ) {
         htax_log_debug( 'Circular redirect detected - auto-resolving by removing conflicting redirect', array(
             'term_id' => $term_id,
             'original_target' => $target_id,
-            'action' => 'removing redirect from term being redirected to'
+            'action' => 'removing redirect from term being redirected to',
         ) );
 
         // Remove the conflicting redirect from the target term
@@ -1293,7 +1293,7 @@ function htax_set_redirect( $term, $target ) {
 
         // Clear the chain tracking since we've resolved the circular issue
         $seen_ids = array( $term_id );
-        $depth = 0;
+        $depth    = 0;
     }
 
     // Use ultimate target if we followed a chain
@@ -1302,17 +1302,17 @@ function htax_set_redirect( $term, $target ) {
             'term_id' => $term_id,
             'original_target' => $target_id,
             'ultimate_target' => $ultimate_target,
-            'chain_length' => $depth
+            'chain_length' => $depth,
         ) );
 
         // Update target_id and target_term to ultimate target
-        $target_id = $ultimate_target;
+        $target_id   = $ultimate_target;
         $target_term = htax_get_valid_term( $target_id );
 
         if ( ! $target_term ) {
             htax_log_error( 'Ultimate redirect target is invalid', array(
                 'term_id' => $term_id,
-                'ultimate_target' => $ultimate_target
+                'ultimate_target' => $ultimate_target,
             ) );
             return false;
         }
@@ -1371,7 +1371,7 @@ function htax_set_redirect( $term, $target ) {
             'term_id' => $term_id,
             'new_target_id' => $target_id,
             'incoming_redirect_count' => count( $incoming_redirects ),
-            'incoming_redirect_ids' => $incoming_redirects
+            'incoming_redirect_ids' => $incoming_redirects,
         ) );
 
         foreach ( $incoming_redirects as $source_id ) {
@@ -1379,7 +1379,7 @@ function htax_set_redirect( $term, $target ) {
             if ( (int) $source_id === (int) $target_id ) {
                 htax_log_debug( 'Skipping cascade to target term itself', array(
                     'source_id' => $source_id,
-                    'target_id' => $target_id
+                    'target_id' => $target_id,
                 ) );
                 continue;
             }
@@ -1395,13 +1395,13 @@ function htax_set_redirect( $term, $target ) {
                     htax_log_debug( 'Cascaded redirect update', array(
                         'source_id' => $source_id,
                         'old_target_id' => $term_id,
-                        'new_target_id' => $target_id
+                        'new_target_id' => $target_id,
                     ) );
                 } else {
                     htax_log_error( 'Failed to cascade redirect update', array(
                         'source_id' => $source_id,
                         'old_target_id' => $term_id,
-                        'new_target_id' => $target_id
+                        'new_target_id' => $target_id,
                     ) );
                 }
             }
@@ -1471,16 +1471,16 @@ function htax_save_term_data( $term_id, $tt_id = 0 ) {
     // Note: This orchestrator is only registered for taxonomies where HyperTaxonomy is enabled,
     // so we don't need to check enabled_taxonomies again. We only check feature-specific settings.
     $missing_caps = array();
-    $features = htax_get_taxonomy_features( $taxonomy );
+    $features     = htax_get_taxonomy_features( $taxonomy );
 
     // Check visibility permission (if visibility feature enabled and the submitted value would change it)
     // OR if archive settings data present (archive settings controlled by top-level HyperTaxonomy enable checkbox).
     // The visibility checkbox is paired with a hidden "0" input, so presence alone only means the
     // field was rendered; a permission is needed only when the stored value would actually change.
-    $visibility_enabled = isset( $features['visibility'] ) && $features['visibility'];
+    $visibility_enabled  = isset( $features['visibility'] ) && $features['visibility'];
     $has_visibility_data = isset( $_POST['htax_is_hidden'] )
         && ( '1' === sanitize_text_field( wp_unslash( $_POST['htax_is_hidden'] ) ) ) !== ( '1' === get_term_meta( $term_id, '_htax_is_hidden', true ) );
-    $has_archive_data = isset( $_POST['htax_show_description'] ) ||
+    $has_archive_data    = isset( $_POST['htax_show_description'] ) ||
                        isset( $_POST['htax_posts_per_page'] ) ||
                        isset( $_POST['htax_max_sticky_posts'] );
 
@@ -1537,7 +1537,7 @@ function htax_save_term_data( $term_id, $tt_id = 0 ) {
     if ( ! empty( $missing_caps ) ) {
         htax_log_debug( 'User lacks required permissions for term metadata save', array(
             'term_id' => $term_id,
-            'missing_capabilities' => $missing_caps
+            'missing_capabilities' => $missing_caps,
         ) );
 
         htax_add_admin_notice(
@@ -1550,8 +1550,6 @@ function htax_save_term_data( $term_id, $tt_id = 0 ) {
         );
         return;
     }
-
-
 
     // ============================================
     // CALL INDIVIDUAL SAVE FUNCTIONS
@@ -1609,14 +1607,14 @@ function htax_save_redirect( $term_id, $tt_id = 0 ) {
     }
 
     // Get redirect settings from POST
-    $is_redirect = isset( $_POST['htax_is_redirect'] ) && '1' === sanitize_text_field( wp_unslash( $_POST['htax_is_redirect'] ) );
-    $redirect_to = isset( $_POST['htax_redirect_to'] ) ? intval( wp_unslash( $_POST['htax_redirect_to'] ) ) : 0;
+    $is_redirect       = isset( $_POST['htax_is_redirect'] ) && '1' === sanitize_text_field( wp_unslash( $_POST['htax_is_redirect'] ) );
+    $redirect_to       = isset( $_POST['htax_redirect_to'] ) ? intval( wp_unslash( $_POST['htax_redirect_to'] ) ) : 0;
     $redirect_taxonomy = isset( $_POST['htax_redirect_taxonomy'] ) ? sanitize_text_field( wp_unslash( $_POST['htax_redirect_taxonomy'] ) ) : $taxonomy;
 
     // Get old redirect value from database
     $old_redirect_term = htax_get_redirect_target( $term_id );
-    $old_redirect_to = $old_redirect_term ? $old_redirect_term->term_id : false;
-    $old_is_redirect = ! empty( $old_redirect_to );
+    $old_redirect_to   = $old_redirect_term ? $old_redirect_term->term_id : false;
+    $old_is_redirect   = ! empty( $old_redirect_to );
 
     // Early return when nothing has changed — avoids DB writes, cache busts, and action fires.
     if ( ! $is_redirect && ! $old_is_redirect ) {
@@ -1631,7 +1629,7 @@ function htax_save_redirect( $term_id, $tt_id = 0 ) {
         'taxonomy' => $taxonomy,
         'is_redirect' => $is_redirect,
         'redirect_to' => $redirect_to,
-        'old_redirect_to' => $old_redirect_to
+        'old_redirect_to' => $old_redirect_to,
     ) );
 
     // Handle redirect logic
@@ -1640,7 +1638,7 @@ function htax_save_redirect( $term_id, $tt_id = 0 ) {
         if ( ! $redirect_to || $redirect_to === $term_id ) {
             htax_log_debug( 'Invalid redirect: empty or self-redirect', array(
                 'term_id' => $term_id,
-                'redirect_to' => $redirect_to
+                'redirect_to' => $redirect_to,
             ) );
 
             htax_add_admin_notice( __( 'Invalid redirect: cannot redirect to self or empty target.', 'hypertaxonomy' ), 'warning' );
@@ -1652,7 +1650,7 @@ function htax_save_redirect( $term_id, $tt_id = 0 ) {
 
                 htax_log_error( 'Invalid redirect target', array(
                     'term_id' => $term_id,
-                    'redirect_to' => $redirect_to
+                    'redirect_to' => $redirect_to,
                 ) );
             } else {
                 // Pre-call analysis — detect side-effects to explain in admin notices.
@@ -1663,9 +1661,16 @@ function htax_save_redirect( $term_id, $tt_id = 0 ) {
                 $visited          = array( $term_id, $check );
                 while ( htax_is_redirect( $check ) ) {
                     $next = htax_get_redirect_target( $check );
-                    if ( ! $next ) { break; }
-                    if ( (int) $next->term_id === $term_id ) { $will_be_circular = true; break; }
-                    if ( in_array( (int) $next->term_id, $visited, true ) ) { break; }
+                    if ( ! $next ) {
+                        break;
+                    }
+                    if ( (int) $next->term_id === $term_id ) {
+                        $will_be_circular = true;
+                        break;
+                    }
+                    if ( in_array( (int) $next->term_id, $visited, true ) ) {
+                        break;
+                    }
                     $visited[] = (int) $next->term_id;
                     $check     = $next->term_id;
                 }
@@ -1685,7 +1690,7 @@ function htax_save_redirect( $term_id, $tt_id = 0 ) {
                     htax_log_debug( 'Redirect saved successfully', array(
                         'term_id' => $term_id,
                         'redirect_to' => $redirect_to,
-                        'was_new_redirect' => ( ! $old_is_redirect )
+                        'was_new_redirect' => ( ! $old_is_redirect ),
                     ) );
 
                     htax_add_admin_notice( __( 'Redirect saved.', 'hypertaxonomy' ), 'success' );
@@ -1730,7 +1735,8 @@ function htax_save_redirect( $term_id, $tt_id = 0 ) {
                         $cascade_names = array();
                         foreach ( $incoming_cascades as $src_id ) {
                             $src = htax_get_valid_term( $src_id );
-                            if ( $src ) { $cascade_names[] = $src->name; }
+                            if ( $src ) {
+                                $cascade_names[] = $src->name; }
                         }
                         if ( ! empty( $cascade_names ) ) {
                             $actual_target = htax_get_redirect_target( $term_id );
@@ -1823,7 +1829,7 @@ function htax_save_group_relationships( $term_id, $taxonomy, $relationship_direc
 
     // Validate for ALL types of invalid relationships BEFORE saving
     $validation_result = htax_validate_and_filter_group_relationships( $term_id, $new_groups, $taxonomy, $relationship_direction );
-    $new_groups = $validation_result['valid_groups'];
+    $new_groups        = $validation_result['valid_groups'];
 
     // Log and notify user about invalid groups that were removed
     if ( ! empty( $validation_result['invalid_groups'] ) ) {
@@ -1831,7 +1837,7 @@ function htax_save_group_relationships( $term_id, $taxonomy, $relationship_direc
             'term_id' => $term_id,
             'taxonomy' => $taxonomy,
             'group_taxonomy' => 'group',
-            'invalid_groups' => $validation_result['invalid_groups']
+            'invalid_groups' => $validation_result['invalid_groups'],
         ) );
 
         $reasons = array_unique( array_values( $validation_result['invalid_groups'] ) );
@@ -1899,7 +1905,7 @@ function htax_save_group_relationships( $term_id, $taxonomy, $relationship_direc
     return array(
         'new_groups' => $new_groups,
         'old_groups' => $old_groups,
-        'changed' => $changed
+        'changed' => $changed,
     );
 }
 
@@ -1942,7 +1948,7 @@ function htax_save_term_relationships( $term_id, $tt_id = 0 ) {
     try {
 
         // Get relationship data from POST
-        $new_included = htax_parse_post_field_ids( 'htax_includes' );
+        $new_included   = htax_parse_post_field_ids( 'htax_includes' );
         $new_containers = htax_parse_post_field_ids( 'htax_containers' );
 
         // Group terms cannot directly include/exclude other group terms.
@@ -1967,20 +1973,20 @@ function htax_save_term_relationships( $term_id, $tt_id = 0 ) {
 
         // Validate target IDs belong to the source taxonomy — drop any that don't.
         if ( ! empty( $new_included ) || ! empty( $new_containers ) ) {
-            $all_ids   = array_unique( array_merge( $new_included, $new_containers ) );
-            $valid_ids = get_terms( array(
+            $all_ids        = array_unique( array_merge( $new_included, $new_containers ) );
+            $valid_ids      = get_terms( array(
                 'taxonomy'   => $taxonomy,
                 'include'    => $all_ids,
                 'fields'     => 'ids',
                 'hide_empty' => false,
             ) );
             $valid_ids      = is_wp_error( $valid_ids ) ? array() : array_map( 'intval', $valid_ids );
-            $new_included   = array_values( array_intersect( $new_included,   $valid_ids ) );
+            $new_included   = array_values( array_intersect( $new_included, $valid_ids ) );
             $new_containers = array_values( array_intersect( $new_containers, $valid_ids ) );
         }
 
         // Remove self-referential relationships (prevent term from including/containing itself)
-        $new_included   = array_diff( $new_included,   array( $term_id ) );
+        $new_included   = array_diff( $new_included, array( $term_id ) );
         $new_containers = array_diff( $new_containers, array( $term_id ) );
 
         // Strip ancestors and descendants from inclusions and containers.
@@ -1996,7 +2002,7 @@ function htax_save_term_relationships( $term_id, $tt_id = 0 ) {
                 $hierarchy_ids = array_merge( $hierarchy_ids, $desc_ids );
             }
             if ( ! empty( $hierarchy_ids ) ) {
-                $new_included   = array_values( array_diff( $new_included,   $hierarchy_ids ) );
+                $new_included   = array_values( array_diff( $new_included, $hierarchy_ids ) );
                 $new_containers = array_values( array_diff( $new_containers, $hierarchy_ids ) );
             }
         }
@@ -2106,7 +2112,7 @@ function htax_save_term_relationships( $term_id, $tt_id = 0 ) {
 
         // Validate excluded target IDs belong to the source taxonomy — drop any that don't.
         if ( ! empty( $new_excluded ) ) {
-            $valid_ids = get_terms( array(
+            $valid_ids    = get_terms( array(
                 'taxonomy'   => $taxonomy,
                 'include'    => $new_excluded,
                 'fields'     => 'ids',
@@ -2163,14 +2169,14 @@ function htax_save_term_relationships( $term_id, $tt_id = 0 ) {
         }
 
         // Handle custom relationship type terms and groups (edit form only — add form sends nothing).
-        $custom_types_changed           = false;
-        $custom_inclusion_term_ids      = array(); // terms whose container sets changed via inclusion-based custom types
-        $custom_rel_changed_fwd         = array(); // slug => changed target IDs (rev cache of each target needs clearing)
-        $custom_rel_changed_rev         = array(); // slug => changed source IDs (fwd cache of each source needs clearing)
-        $custom_rel_changed_fwd_groups  = array(); // slug => changed group IDs for T→G rows (member rev caches need clearing)
-        $custom_rel_changed_rev_groups  = array(); // slug => changed group IDs for G→T rows (member fwd caches need clearing)
+        $custom_types_changed          = false;
+        $custom_inclusion_term_ids     = array(); // terms whose container sets changed via inclusion-based custom types
+        $custom_rel_changed_fwd        = array(); // slug => changed target IDs (rev cache of each target needs clearing)
+        $custom_rel_changed_rev        = array(); // slug => changed source IDs (fwd cache of each source needs clearing)
+        $custom_rel_changed_fwd_groups = array(); // slug => changed group IDs for T→G rows (member rev caches need clearing)
+        $custom_rel_changed_rev_groups = array(); // slug => changed group IDs for G→T rows (member fwd caches need clearing)
         if ( 'group' !== $taxonomy && htax_taxonomy_has_feature( $taxonomy, 'term_relationships' ) ) {
-            $all_type_defs = htax_get_registered_relationship_types();
+            $all_type_defs  = htax_get_registered_relationship_types();
             $includes_slugs = htax_get_relationship_type_slugs( 'includes' );
 
             foreach ( $all_type_defs as $cslug => $cdef ) {
@@ -2238,7 +2244,11 @@ function htax_save_term_relationships( $term_id, $tt_id = 0 ) {
 
                 // Sync forward rows.
                 foreach ( array_diff( $old_fwd, $new_fwd ) as $rid ) {
-                    $wpdb->delete( $table_name, array( 'source_term_id' => $term_id, 'target_term_id' => $rid, 'relationship_type' => $cslug ), array( '%d', '%d', '%s' ) );
+                    $wpdb->delete( $table_name, array(
+                        'source_term_id' => $term_id,
+                        'target_term_id' => $rid,
+                        'relationship_type' => $cslug,
+                    ), array( '%d', '%d', '%s' ) );
                     htax_throw_on_db_error( 'save term relationships' );
                 }
                 foreach ( array_diff( $new_fwd, $old_fwd ) as $rid ) {
@@ -2254,7 +2264,11 @@ function htax_save_term_relationships( $term_id, $tt_id = 0 ) {
 
                 // Sync reverse rows.
                 foreach ( array_diff( $old_rev, $new_rev ) as $rid ) {
-                    $wpdb->delete( $table_name, array( 'source_term_id' => $rid, 'target_term_id' => $term_id, 'relationship_type' => $cslug ), array( '%d', '%d', '%s' ) );
+                    $wpdb->delete( $table_name, array(
+                        'source_term_id' => $rid,
+                        'target_term_id' => $term_id,
+                        'relationship_type' => $cslug,
+                    ), array( '%d', '%d', '%s' ) );
                     htax_throw_on_db_error( 'save term relationships' );
                 }
                 foreach ( array_diff( $new_rev, $old_rev ) as $rid ) {
@@ -2276,8 +2290,8 @@ function htax_save_term_relationships( $term_id, $tt_id = 0 ) {
                     if ( isset( $_POST[ $fwd_grp_field ] ) ) {
                         $fwd_grp_result = htax_save_group_relationships( $term_id, $taxonomy, 'included', $cslug, sanitize_text_field( wp_unslash( $_POST[ $fwd_grp_field ] ) ) );
                         if ( $fwd_grp_result['changed'] ) {
-                            $custom_types_changed = true;
-                            $changed_fwd_g = array_unique( array_merge(
+                            $custom_types_changed                    = true;
+                            $changed_fwd_g                           = array_unique( array_merge(
                                 array_diff( $fwd_grp_result['new_groups'], $fwd_grp_result['old_groups'] ),
                                 array_diff( $fwd_grp_result['old_groups'], $fwd_grp_result['new_groups'] )
                             ) );
@@ -2290,8 +2304,8 @@ function htax_save_term_relationships( $term_id, $tt_id = 0 ) {
                     if ( isset( $_POST[ $rev_grp_field ] ) ) {
                         $rev_grp_result = htax_save_group_relationships( $term_id, $taxonomy, 'container', $cslug, sanitize_text_field( wp_unslash( $_POST[ $rev_grp_field ] ) ) );
                         if ( $rev_grp_result['changed'] ) {
-                            $custom_types_changed = true;
-                            $changed_rev_g = array_unique( array_merge(
+                            $custom_types_changed                    = true;
+                            $changed_rev_g                           = array_unique( array_merge(
                                 array_diff( $rev_grp_result['new_groups'], $rev_grp_result['old_groups'] ),
                                 array_diff( $rev_grp_result['old_groups'], $rev_grp_result['new_groups'] )
                             ) );
@@ -2304,7 +2318,7 @@ function htax_save_term_relationships( $term_id, $tt_id = 0 ) {
                 }
 
                 if ( htax_arrays_differ( $new_fwd, $old_fwd ) || htax_arrays_differ( $new_rev, $old_rev ) ) {
-                    $custom_types_changed = true;
+                    $custom_types_changed             = true;
                     $custom_rel_changed_fwd[ $cslug ] = array_unique( array_merge(
                         array_diff( $new_fwd, $old_fwd ),
                         array_diff( $old_fwd, $new_fwd )
@@ -2319,16 +2333,15 @@ function htax_save_term_relationships( $term_id, $tt_id = 0 ) {
 
         $wpdb->query( 'COMMIT' );
 
-
         // Only show success notice if relationships actually changed
-        $includes_changed   = htax_arrays_differ( $new_included,   $old_included );
+        $includes_changed   = htax_arrays_differ( $new_included, $old_included );
         $containers_changed = htax_arrays_differ( $new_containers, $old_containers );
-        $excludes_changed   = htax_arrays_differ( $new_excluded,   $old_excluded );
+        $excludes_changed   = htax_arrays_differ( $new_excluded, $old_excluded );
 
         // Check if group relationships changed (if applicable)
         $container_groups_changed = ( $container_groups_result && $container_groups_result['changed'] );
-        $included_groups_changed = ( $included_groups_result && $included_groups_result['changed'] );
-        $groups_changed = ( $container_groups_changed || $included_groups_changed );
+        $included_groups_changed  = ( $included_groups_result && $included_groups_result['changed'] );
+        $groups_changed           = ( $container_groups_changed || $included_groups_changed );
 
         if ( $includes_changed || $containers_changed || $excludes_changed || $groups_changed || $custom_types_changed ) {
             htax_add_admin_notice(
@@ -2492,7 +2505,7 @@ function htax_save_term_relationships( $term_id, $tt_id = 0 ) {
             // The term's caches were cleared above; the index handlers and other listeners
             // recompute them from the new rows on first read. Marked fresh so the cache handler
             // doesn't clear them again for each action fired below.
-            $fresh                     = &htax_request_cache( 'term_caches_fresh' );
+            $fresh                   = &htax_request_cache( 'term_caches_fresh' );
             $fresh[ (int) $term_id ] = true;
         }
 
@@ -2526,7 +2539,6 @@ function htax_save_term_relationships( $term_id, $tt_id = 0 ) {
              */
             do_action( 'htax_custom_inclusions_changed', $term_id, $taxonomy, $custom_inclusion_term_ids );
         }
-
     } catch ( Exception $e ) {
         $wpdb->query( 'ROLLBACK' );
 
@@ -2534,7 +2546,7 @@ function htax_save_term_relationships( $term_id, $tt_id = 0 ) {
             'term_id' => $term_id,
             'taxonomy' => $taxonomy,
             'error' => $e->getMessage(),
-            'trace' => $e->getTraceAsString()
+            'trace' => $e->getTraceAsString(),
         ) );
 
         // Add admin notice for the error
@@ -2770,7 +2782,7 @@ function htax_cleanup_symmetric_relationship_duplicates(): int {
  * @param int $term_id Term ID.
  */
 function htax_mark_term_deleting( $term_id ): void {
-    $deleting                    = &htax_request_cache( 'deleting_terms' );
+    $deleting                   = &htax_request_cache( 'deleting_terms' );
     $deleting[ (int) $term_id ] = true;
 }
 
@@ -2787,18 +2799,18 @@ function htax_cleanup_bulk_deleted_terms( $tt_id ) {
 
     if ( ! $term || is_wp_error( $term ) ) {
         htax_log_debug( 'Could not get term for bulk cleanup', array(
-            'tt_id' => $tt_id
+            'tt_id' => $tt_id,
         ) );
         return;
     }
 
-    $term_id = $term->term_id;
+    $term_id  = $term->term_id;
     $taxonomy = $term->taxonomy;
 
     if ( ! htax_is_taxonomy_enabled( $taxonomy ) ) {
         htax_log_debug( 'Skipping bulk cleanup for disabled taxonomy', array(
             'taxonomy' => $taxonomy,
-            'tt_id' => $tt_id
+            'tt_id' => $tt_id,
         ) );
         return;
     }
@@ -2851,7 +2863,7 @@ function htax_get_included_term_ids( $term, bool $include_redirect_data = false 
     }
 
     $taxonomy = $term_obj->taxonomy;
-    $term_id = $term_obj->term_id;
+    $term_id  = $term_obj->term_id;
 
     // For hierarchical taxonomies, expand to include children
     if ( is_taxonomy_hierarchical( $taxonomy ) ) {
@@ -2975,7 +2987,7 @@ function htax_get_redirect_target( $term_id ) {
 
     // Check persistent transient cache.
     $cache_key = 'htax_redir_' . $term_id;
-    $cached = htax_get_transient( $cache_key );
+    $cached    = htax_get_transient( $cache_key );
     if ( false !== $cached ) {
         // Cache stores false as 'none' string to distinguish from cache miss
         if ( 'none' === $cached ) {
@@ -3136,8 +3148,8 @@ function htax_get_all_redirect_term_ids(): array {
         return array();
     }
 
-    $result                = array_map( 'intval', $ids );
-    $request_cache['all']  = $result;
+    $result               = array_map( 'intval', $ids );
+    $request_cache['all'] = $result;
     htax_set_transient( 'htax_redirect_terms', $result, htax_get_cache_duration( 'relationship' ) );
     return $result;
 }
@@ -3202,7 +3214,7 @@ function htax_cleanup_hierarchy_conflicts( $term_id, $tt_id, $taxonomy ) {
     htax_log_debug( 'Checking hierarchy conflicts', array(
         'term_id' => $term_id,
         'parent_id' => $parent_id,
-        'taxonomy' => $taxonomy
+        'taxonomy' => $taxonomy,
     ) );
 
     // Delegate to the shared helper which covers inclusions, containers, and exclusions.

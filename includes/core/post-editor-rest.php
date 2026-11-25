@@ -35,16 +35,26 @@ function htax_register_tag_suggestions_rest_route(): void {
         'callback'            => 'htax_rest_suggested_tags',
         // Suggestions are built from the post's text and list the taxonomy's terms, so
         // require edit access to that post and the right to assign that taxonomy's terms.
-        'permission_callback' => function( WP_REST_Request $request ) {
+        'permission_callback' => function ( WP_REST_Request $request ) {
             $taxonomy = get_taxonomy( sanitize_key( (string) $request['taxonomy'] ) );
             return current_user_can( 'edit_post', absint( $request['post_id'] ) )
                 && $taxonomy
                 && current_user_can( $taxonomy->cap->assign_terms );
         },
         'args' => array(
-            'post_id'  => array( 'required' => true, 'sanitize_callback' => 'absint' ),
-            'taxonomy' => array( 'default' => 'post_tag', 'sanitize_callback' => 'sanitize_key', 'validate_callback' => 'taxonomy_exists' ),
-            'per_page' => array( 'default' => 10, 'sanitize_callback' => 'absint' ),
+            'post_id'  => array(
+                'required' => true,
+                'sanitize_callback' => 'absint',
+            ),
+            'taxonomy' => array(
+                'default' => 'post_tag',
+                'sanitize_callback' => 'sanitize_key',
+                'validate_callback' => 'taxonomy_exists',
+            ),
+            'per_page' => array(
+                'default' => 10,
+                'sanitize_callback' => 'absint',
+            ),
         ),
     ) );
 }
@@ -88,7 +98,7 @@ function htax_rest_suggested_tags( WP_REST_Request $request ) {
 
     $ignore_raw = trim( htax_get_setting( 'tag_suggestion_ignore_words', '' ) );
 
-    $apply_ignore = function( string $text ) use ( $ignore_raw ): string {
+    $apply_ignore = function ( string $text ) use ( $ignore_raw ): string {
         if ( $ignore_raw === '' ) {
             return $text;
         }
@@ -145,14 +155,18 @@ function htax_rest_suggested_tags( WP_REST_Request $request ) {
             continue;
         }
 
-        $scored[] = array( 'term' => $term, 'group' => $group, 'count' => $count );
+        $scored[] = array(
+            'term' => $term,
+            'group' => $group,
+            'count' => $count,
+        );
     }
 
     if ( empty( $scored ) ) {
         return rest_ensure_response( array() );
     }
 
-    usort( $scored, function( $a, $b ) {
+    usort( $scored, function ( $a, $b ) {
         if ( $a['group'] !== $b['group'] ) {
             return $a['group'] - $b['group'];
         }
@@ -185,7 +199,7 @@ function htax_register_term_meta_route(): void {
     register_rest_route( 'htax/v1', '/term-meta', array(
         'methods'             => WP_REST_Server::READABLE,
         'callback'            => 'htax_rest_term_meta',
-        'permission_callback' => function() {
+        'permission_callback' => function () {
             return current_user_can( 'edit_posts' );
         },
         'args' => array(

@@ -233,17 +233,17 @@ class HyperTaxonomy_Blocks {
      */
     public static function render_power_search( $attributes, $content = '' ) {
         $atts = array(
-            'placeholder'    => ! empty( $attributes['placeholder'] )    ? $attributes['placeholder']    : '',
-            'button_text'    => ! empty( $attributes['button_text'] )    ? $attributes['button_text']    : '',
-            'min_length'     => ! empty( $attributes['min_length'] )     ? $attributes['min_length']     : '3',
-            'search_in'      => ! empty( $attributes['search_in'] )      ? $attributes['search_in']      : 'all',
+            'placeholder'    => ! empty( $attributes['placeholder'] ) ? $attributes['placeholder'] : '',
+            'button_text'    => ! empty( $attributes['button_text'] ) ? $attributes['button_text'] : '',
+            'min_length'     => ! empty( $attributes['min_length'] ) ? $attributes['min_length'] : '3',
+            'search_in'      => ! empty( $attributes['search_in'] ) ? $attributes['search_in'] : 'all',
             'posts_per_page' => ! empty( $attributes['posts_per_page'] ) ? $attributes['posts_per_page'] : '10',
             'max_results'    => ! empty( $attributes['max_results'] ) ? $attributes['max_results'] : '0',
-            'orderby'        => ! empty( $attributes['orderby'] )        ? $attributes['orderby']        : 'relevance:desc,date:desc',
-            'min_score'      => ! empty( $attributes['min_score'] )      ? $attributes['min_score']      : '0.01',
-            'ajax'           => ! empty( $attributes['ajax'] )           ? $attributes['ajax']           : '',
-            'class'          => ! empty( $attributes['class'] )          ? $attributes['class']          : '',
-            'near_country'   => ! empty( $attributes['near_country'] )   ? $attributes['near_country']   : 'US',
+            'orderby'        => ! empty( $attributes['orderby'] ) ? $attributes['orderby'] : 'relevance:desc,date:desc',
+            'min_score'      => ! empty( $attributes['min_score'] ) ? $attributes['min_score'] : '0.01',
+            'ajax'           => ! empty( $attributes['ajax'] ) ? $attributes['ajax'] : '',
+            'class'          => ! empty( $attributes['class'] ) ? $attributes['class'] : '',
+            'near_country'   => ! empty( $attributes['near_country'] ) ? $attributes['near_country'] : 'US',
         );
         // Empty match (the block's "Default" choice) is left out, so the shortcode falls back
         // to the Default Match Mode setting, as [ht_power_search] does without match=.

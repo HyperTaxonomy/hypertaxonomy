@@ -313,13 +313,20 @@ function htax_computed_term_meta_rest_schema( string $key ): array {
             );
 
         case 'htax_redirect':
-            return array( 'type' => 'integer', 'default' => 0 );
+            return array(
+                'type' => 'integer',
+                'default' => 0,
+            );
 
         default:
             $keys = htax_computed_term_meta_keys();
             return ( $keys[ $key ] ?? false )
                 ? array( 'type' => 'integer' )                 // Term or post IDs.
-                : array( 'type' => 'string', 'format' => 'uri', 'default' => '' ); // Icon URLs.
+                : array(
+                    'type' => 'string',
+                    'format' => 'uri',
+                    'default' => '',
+                ); // Icon URLs.
     }
 }
 

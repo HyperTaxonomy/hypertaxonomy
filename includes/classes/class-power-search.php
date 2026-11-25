@@ -407,7 +407,7 @@ class HyperTaxonomy_Power_Search {
      * with field-specific operators and tier-based relevance weights.
      *
      * Supports operators: title:, content:, excerpt:, tags:, categories:, terms:, {taxonomy_plural}:
-     * Example: title:WordPress photography categories:news colors:blue
+     * Example: title:wordpress photography categories:news colors:blue
      *
      * @param string $query Search query with optional field operators
      * @param array  $config Configuration array with keys:

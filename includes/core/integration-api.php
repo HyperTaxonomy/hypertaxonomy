@@ -507,7 +507,7 @@ function htax_get_term_locations( int $term_id ): array {
  * The optional `$args` bag is forwarded opaquely to providers as scope hints —
  * HyperTaxonomy does not interpret it. TermConnect understands:
  *   - 'platforms'  string[]|string  Peer platform types to include (e.g.
- *                                   'WordPress', 'feed'); default: all supported.
+ *                                   'wordpress', 'feed'); default: all supported.
  *   - 'foaf_depth' int              FOAF traversal depth; 0 = direct peers only.
  *   - 'peers'      string|string[]  Restrict to specific peer link-type slugs
  *                                   (omit for all). Consumers that should not
@@ -547,7 +547,7 @@ function htax_get_term_external_posts( int $term_id, array $args = array() ): ar
  * Each entry is an associative array keyed by slug:
  *   - 'slug'     string  Stable identifier (the provider's link-type slug).
  *   - 'label'    string  Human-readable name.
- *   - 'platform' string  Peer platform type (e.g. 'WordPress', 'feed').
+ *   - 'platform' string  Peer platform type (e.g. 'wordpress', 'feed').
  *   - 'origin'   string  Site origin (scheme://host) or feed URL, when known.
  *
  * @since 1.0.0

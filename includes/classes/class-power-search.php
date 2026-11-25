@@ -860,7 +860,7 @@ class HyperTaxonomy_Power_Search {
         $add_excluded_term_where = function ( array $field_terms, string $taxonomy, bool $include_text_layer = false )
  use ( $wpdb, &$where_clause ) {
             $hst_hidden = htax_get_hidden_term_filter_clause( 'hst.is_hidden' );
-            $tax_sql    = $taxonomy !== '' ? " AND hst.taxonomy = '" . esc_sql( $taxonomy ) . "'" : '';
+            $tax_sql    = '' !== $taxonomy ? " AND hst.taxonomy = '" . esc_sql( $taxonomy ) . "'" : '';
             foreach ( $field_terms as $td ) {
                 if ( empty( $td['excluded'] ) ) {
                     continue;
@@ -910,7 +910,7 @@ class HyperTaxonomy_Power_Search {
         $add_required_term_where = function ( array $field_terms, string $taxonomy )
  use ( $wpdb, &$where_clause ) {
             $hst_hidden = htax_get_hidden_term_filter_clause( 'hst.is_hidden' );
-            $tax_sql    = $taxonomy !== '' ? " AND hst.taxonomy = '" . esc_sql( $taxonomy ) . "'" : '';
+            $tax_sql    = '' !== $taxonomy ? " AND hst.taxonomy = '" . esc_sql( $taxonomy ) . "'" : '';
             foreach ( $field_terms as $td ) {
                 if ( empty( $td['required'] ) ) {
                     continue;

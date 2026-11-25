@@ -917,9 +917,8 @@ class HyperTaxonomy_Term_Icons {
             ) );
 
             $deleted = false;
-            if ( ! empty( $other_users ) && ! is_wp_error( $other_users ) ) {
-                // Another term uses this attachment — skip deletion.
-            } else {
+            // Delete the attachment unless another term still uses it.
+            if ( empty( $other_users ) || is_wp_error( $other_users ) ) {
                 $deleted = wp_delete_attachment( $attachment_id, true );
             }
 
@@ -1095,9 +1094,8 @@ class HyperTaxonomy_Term_Icons {
                     'number'     => 1,
                 ) );
 
-                if ( ! empty( $other_users ) && ! is_wp_error( $other_users ) ) {
-                    // Another term uses this attachment — skip deletion.
-                } else {
+                // Delete the attachment unless another term still uses it.
+                if ( empty( $other_users ) || is_wp_error( $other_users ) ) {
                     $deleted = wp_delete_attachment( $attachment_id, true );
                     if ( $deleted ) {
                         ++$attachment_count;

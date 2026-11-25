@@ -1370,11 +1370,11 @@ class HyperTaxonomy_Search_Widget {
                 if ( $term->parent && isset( $present[ (int) $term->parent ] ) ) {
                     continue;
                 }
-            } elseif ( $term->parent != $parent ) {
+            } elseif ( (int) $term->parent !== (int) $parent ) {
                 continue;
             }
 
-            $checked = in_array( $term->term_id, $default_terms ) ? 'checked' : '';
+            $checked = in_array( (int) $term->term_id, array_map( 'intval', (array) $default_terms ), true ) ? 'checked' : '';
             $indent  = $depth * 20;
 
             $output .= '<div class="htax-checklist-item"';
@@ -1431,7 +1431,7 @@ class HyperTaxonomy_Search_Widget {
         $field_name    = $atts['name'] . $field_suffix;
 
         foreach ( $terms as $term ) {
-            $checked = in_array( $term->term_id, $default_terms ) ? 'checked' : '';
+            $checked = in_array( (int) $term->term_id, array_map( 'intval', (array) $default_terms ), true ) ? 'checked' : '';
 
             // data-term-id identifies the item for controller selection actions (as in the hierarchical renderer).
             $output .= '<div class="htax-checklist-item" data-term-id="' . esc_attr( $term->term_id ) . '">';
@@ -1838,7 +1838,7 @@ class HyperTaxonomy_Search_Widget {
             $output .= 'name="' . esc_attr( $atts['name'] ) . '" ';
             $output .= 'value="' . esc_attr( $option['value'] ) . '" ';
             if ( ! empty( $option['actions'] ) ) {
-                $output .= 'data-actions=\'' . esc_attr( json_encode( array( 'actions' => $option['actions'] ) ) ) . '\' ';
+                $output .= 'data-actions=\'' . esc_attr( wp_json_encode( array( 'actions' => $option['actions'] ) ) ) . '\' ';
             }
             $output .= $checked . ' ';
             if ( 'true' !== $atts['enabled'] ) {
@@ -1985,7 +1985,7 @@ class HyperTaxonomy_Search_Widget {
 
         foreach ( $options as $option ) {
             $option_id = $atts['id'] . '-' . sanitize_key( $option['value'] );
-            if ( $post_controller !== null ) {
+            if ( null !== $post_controller ) {
                 $checked = in_array( $option['value'], $post_controller, true ) ? 'checked' : '';
             } else {
                 $checked = $option['default'] ? 'checked' : '';
@@ -1998,7 +1998,7 @@ class HyperTaxonomy_Search_Widget {
             $output .= 'name="' . esc_attr( $atts['name'] ) . '[]" ';
             $output .= 'value="' . esc_attr( $option['value'] ) . '" ';
             if ( ! empty( $option['actions'] ) ) {
-                $output .= 'data-actions=\'' . esc_attr( json_encode( array( 'actions' => $option['actions'] ) ) ) . '\' ';
+                $output .= 'data-actions=\'' . esc_attr( wp_json_encode( array( 'actions' => $option['actions'] ) ) ) . '\' ';
             }
             $output .= $checked . ' ';
             if ( 'true' !== $atts['enabled'] ) {
@@ -2078,7 +2078,7 @@ class HyperTaxonomy_Search_Widget {
             $selected = $option['default'] ? 'selected' : '';
             $output  .= '<option value="' . esc_attr( $option['value'] ) . '" ';
             if ( ! empty( $option['actions'] ) ) {
-                $output .= 'data-actions=\'' . esc_attr( json_encode( array( 'actions' => $option['actions'] ) ) ) . '\' ';
+                $output .= 'data-actions=\'' . esc_attr( wp_json_encode( array( 'actions' => $option['actions'] ) ) ) . '\' ';
             }
             $output .= $selected . '>';
             $output .= esc_html( $option['label'] );
@@ -3348,7 +3348,7 @@ class HyperTaxonomy_Search_Widget {
 
         // Resolve group IDs to the set of allowed term IDs.
         $include_ids = array();
-        if ( $groups_raw !== '' ) {
+        if ( '' !== $groups_raw ) {
             $group_ids = array_filter( array_map( 'intval', explode( ',', $groups_raw ) ) );
             foreach ( $group_ids as $gid ) {
                 $members     = htax_get_terms_in_groups( array( $gid ), $taxonomy );
@@ -3357,7 +3357,7 @@ class HyperTaxonomy_Search_Widget {
         }
 
         // Groups and individually included terms form the pool together.
-        if ( $groups_raw !== '' || $terms_in ) {
+        if ( '' !== $groups_raw || $terms_in ) {
             $include_ids = array_diff( array_unique( array_merge( $include_ids, $terms_in ) ), $terms_out );
 
             // Filter out hidden terms.
@@ -3376,7 +3376,7 @@ class HyperTaxonomy_Search_Widget {
             'update_term_meta_cache' => false,
         );
 
-        if ( $search !== '' ) {
+        if ( '' !== $search ) {
             $args['search']  = htax_encode_term_search( $search );
             $args['orderby'] = 'name';
         } else {

@@ -100,7 +100,7 @@ function htax_add_settings_link( $links ) {
  * Add additional links in plugin meta row
  */
 function htax_add_plugin_meta_links( $links, $file ) {
-    if ( $file === HTAX_PLUGIN_BASENAME ) {
+    if ( HTAX_PLUGIN_BASENAME === $file ) {
         $row_meta = array(
             'docs' => '<a href="https://wordpress.org/plugins/hypertaxonomy/#description" target="_blank">' . __( 'Documentation', 'hypertaxonomy' ) . '</a>',
             'support' => '<a href="https://wordpress.org/support/plugin/hypertaxonomy/" target="_blank">' . __( 'Support', 'hypertaxonomy' ) . '</a>',

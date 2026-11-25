@@ -56,7 +56,7 @@ abstract class HyperTaxonomy_Term_Display_Base extends HyperTaxonomy_Shortcode_B
     protected function get_terms( $taxonomy, $additional_args = array() ) {
         $args = array(
             'taxonomy' => $taxonomy,
-            'hide_empty' => $this->htax_atts['hide_empty'] === '1',
+            'hide_empty' => '1' === $this->htax_atts['hide_empty'],
         );
 
         // Merge any additional arguments (e.g., orderby/order for term-list)

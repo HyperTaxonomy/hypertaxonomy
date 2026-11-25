@@ -384,7 +384,7 @@ function htax_get_group_display_tree( $groups, $parent = 0, $depth = 0 ) {
     $result = array();
 
     foreach ( $groups as $group ) {
-        if ( $group->parent == $parent ) {
+        if ( (int) $group->parent === (int) $parent ) {
             $group->depth = $depth;
             $result[]     = $group;
 
@@ -714,7 +714,7 @@ function htax_add_sticky_indicators( $term_list, $taxonomy, $post_id ) {
     foreach ( $term_list as $i => $term_html ) {
         if ( preg_match( '/tag_ID=(\d+)/', $term_html, $matches ) ||
              preg_match( '/category&amp;tag_ID=(\d+)/', $term_html, $matches ) ) {
-            if ( in_array( (int) $matches[1], $sticky_term_ids ) ) {
+            if ( in_array( (int) $matches[1], array_map( 'intval', (array) $sticky_term_ids ), true ) ) {
                 $term_list[ $i ] .= ' <span class="dashicons dashicons-admin-post" title="' .
                                     esc_attr__( 'Sticky for this term', 'hypertaxonomy' ) .
                                     '" style="font-size: 14px; width: 14px; height: 14px; vertical-align: text-top;"></span>';
@@ -828,11 +828,11 @@ function htax_quick_edit_fields( $column_name, $screen, $taxonomy ) {
     $has_groups     = htax_taxonomy_has_feature( $taxonomy, 'group_assignment' );
 
     // Render once, anchored to the most appropriate column.
-    if ( $has_groups && 'htax_term_groups' === $column_name ) {
-        // Groups column is the anchor when group_assignment is enabled.
-    } elseif ( $has_visibility && ! $has_groups && 'htax_hidden' === $column_name ) {
-        // Visibility column is the anchor when only visibility is enabled.
-    } else {
+    // The Groups column is the anchor when group_assignment is enabled; otherwise the
+    // visibility column is, when only visibility is enabled.
+    $is_anchor = ( $has_groups && 'htax_term_groups' === $column_name )
+        || ( $has_visibility && ! $has_groups && 'htax_hidden' === $column_name );
+    if ( ! $is_anchor ) {
         return;
     }
     ?>

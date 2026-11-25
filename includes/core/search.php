@@ -733,7 +733,7 @@ function htax_extract_post_body( string $html ): string {
             }
             $text = trim( wp_strip_all_tags( $m[2] ) );
             $url  = trim( $url );
-            return $text !== '' && $url !== '' ? "$text [$url]" : $text . $url;
+            return '' !== $text && '' !== $url ? "$text [$url]" : $text . $url;
         },
         $html
     );
@@ -758,7 +758,7 @@ function htax_extract_post_body( string $html ): string {
             }
             $abbr = trim( wp_strip_all_tags( $m[3] ) );
             $full = trim( $full );
-            return $abbr !== '' && $full !== '' ? "$abbr $full" : $abbr . $full;
+            return '' !== $abbr && '' !== $full ? "$abbr $full" : $abbr . $full;
         },
         $html
     );

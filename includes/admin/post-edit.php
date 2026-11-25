@@ -23,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * custom post types, not just the built-in 'post' type.
  */
 function htax_enqueue_post_editor_assets( $hook ) {
-    if ( ! in_array( $hook, array( 'post.php', 'post-new.php' ) ) ) {
+    if ( ! in_array( $hook, array( 'post.php', 'post-new.php' ), true ) ) {
         return;
     }
 

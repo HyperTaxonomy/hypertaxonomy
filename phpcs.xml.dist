@@ -8,6 +8,8 @@
     <exclude-pattern>*/node_modules/*</exclude-pattern>
     <exclude-pattern>*/dist/*</exclude-pattern>
     <exclude-pattern>*/build/*</exclude-pattern>
+    <!-- Local developer scripts; not shipped (see utils/package.sh). -->
+    <exclude-pattern>*/utils/*</exclude-pattern>
 
     <arg name="extensions" value="php"/>
     <arg name="tab-width" value="4"/>
@@ -69,6 +71,20 @@
         </properties>
     </rule>
 
+    <!-- Capabilities registered by HyperTaxonomy_Capabilities. -->
+    <rule ref="WordPress.WP.Capabilities">
+        <properties>
+            <property name="custom_capabilities" type="array">
+                <element value="manage_hypertaxonomy_settings"/>
+                <element value="manage_term_relationships"/>
+                <element value="manage_term_redirects"/>
+                <element value="manage_term_icons"/>
+                <element value="manage_term_visibility"/>
+                <element value="manage_term_sticky_posts"/>
+            </property>
+        </properties>
+    </rule>
+
     <rule ref="WordPress.NamingConventions.PrefixAllGlobals">
         <properties>
             <property name="prefixes" type="array">
@@ -76,6 +92,14 @@
                 <element value="hypertaxonomy"/>
             </property>
         </properties>
+    </rule>
+
+    <!-- Tab templates required from inside the settings page render function, so
+         their variables are function-local, not globals. -->
+    <rule ref="WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound">
+        <exclude-pattern>*/includes/admin/export-ui.php</exclude-pattern>
+        <exclude-pattern>*/includes/admin/tag-groups-migrate-ui.php</exclude-pattern>
+        <exclude-pattern>*/includes/admin/tag-groups-sync-ui.php</exclude-pattern>
     </rule>
 
     <!-- export-hypertaxonomy.php must query custom tables directly — these are not

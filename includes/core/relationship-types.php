@@ -267,7 +267,7 @@ function htax_set_custom_relationship_type( string $slug, array $args, bool $is_
         $ex_label = strtolower( $existing['label'] );
         $ex_inv   = strtolower( $existing['inverse_label'] );
 
-        if ( $new_label === $ex_label || ( $ex_inv !== '' && $new_label === $ex_inv ) ) {
+        if ( $new_label === $ex_label || ( '' !== $ex_inv && $new_label === $ex_inv ) ) {
             return new WP_Error(
                 'duplicate_label',
                 sprintf(
@@ -278,7 +278,7 @@ function htax_set_custom_relationship_type( string $slug, array $args, bool $is_
                 )
             );
         }
-        if ( $new_inv !== '' && ( $new_inv === $ex_label || ( $ex_inv !== '' && $new_inv === $ex_inv ) ) ) {
+        if ( '' !== $new_inv && ( $new_inv === $ex_label || ( '' !== $ex_inv && $new_inv === $ex_inv ) ) ) {
             return new WP_Error(
                 'duplicate_inverse_label',
                 sprintf(

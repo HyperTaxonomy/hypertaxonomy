@@ -1928,7 +1928,7 @@ if ( function_exists( 'htax_the_archive_icon' ) ) {
                     $total_pairs       = (int) array_sum( wp_list_pluck( (array) $pairs_by_taxonomy, 'pairs' ) );
                     $missing           = max( 0, $eligible - $indexed );
                     $pct               = $eligible > 0 ? (int) floor( $indexed / $eligible * 100 ) : 100;
-                    $color             = $missing === 0 ? '#46b450' : ( $missing < 10 ? '#ffb900' : '#d63638' );
+                    $color             = 0 === $missing ? '#46b450' : ( $missing < 10 ? '#ffb900' : '#d63638' );
                     ?>
                     <span style="color:<?php echo esc_attr( $color ); ?>; font-weight:600;">
                         <?php echo esc_html( number_format_i18n( $indexed ) ); ?> / <?php echo esc_html( number_format_i18n( $eligible ) ); ?>
@@ -2124,11 +2124,12 @@ if ( function_exists( 'htax_the_archive_icon' ) ) {
                     $container_weights = isset( $tax_weights['container'] ) ? $tax_weights['container'] : $default_weights['container'];
                     $redirect_weights  = isset( $tax_weights['redirect'] ) ? $tax_weights['redirect'] : $default_weights['redirect'];
                     // Ensure description key exists in loaded weights (upgrade path for saved settings without it).
-                    foreach ( array( 'direct_weights', 'container_weights', 'redirect_weights' ) as $wvar ) {
-                        if ( ! isset( $$wvar['description'] ) ) {
-                            $$wvar['description'] = round( (float) ( $$wvar['text'] ?? 0.5 ) * 0.7, 2 );
+                    foreach ( array( &$direct_weights, &$container_weights, &$redirect_weights ) as &$weights ) {
+                        if ( ! isset( $weights['description'] ) ) {
+                            $weights['description'] = round( (float) ( $weights['text'] ?? 0.5 ) * 0.7, 2 );
                         }
                     }
+                    unset( $weights );
                     if ( $is_hierarchical && ! isset( $hierarchy_weights['description'] ) ) {
                         $hierarchy_weights['description'] = round( (float) ( $hierarchy_weights['text'] ?? 0.4 ) * 0.7, 2 );
                     }
@@ -3175,7 +3176,7 @@ if ( function_exists( 'htax_the_archive_icon' ) ) {
 
             $valid_visibility                     = array( 'all', 'post_editors', 'none' );
             $sanitized['hidden_terms_visibility'] = isset( $input['hidden_terms_visibility'] ) &&
-                in_array( $input['hidden_terms_visibility'], $valid_visibility ) ?
+                in_array( $input['hidden_terms_visibility'], $valid_visibility, true ) ?
                 $input['hidden_terms_visibility'] : 'post_editors';
 
             $sanitized['disable_sticky_styles'] = ! empty( $input['disable_sticky_styles'] );

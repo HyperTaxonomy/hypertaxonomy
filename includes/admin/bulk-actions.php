@@ -51,7 +51,7 @@ function htax_add_bulk_actions( $bulk_actions ) {
  */
 function htax_handle_bulk_actions( $redirect_to, $action, $term_ids ) {
     // Only process our custom actions
-    if ( ! in_array( $action, array( 'htax_make_visible', 'htax_make_hidden', 'htax_remove_icon', 'htax_assign_to_groups' ) ) ) {
+    if ( ! in_array( $action, array( 'htax_make_visible', 'htax_make_hidden', 'htax_remove_icon', 'htax_assign_to_groups' ), true ) ) {
         return $redirect_to;
     }
 

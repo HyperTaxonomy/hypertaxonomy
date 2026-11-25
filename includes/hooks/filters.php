@@ -213,7 +213,7 @@ add_action( 'rest_api_init', 'htax_register_tag_suggestions_rest_route' );
 // form for the duration of REST requests only.
 add_action( 'rest_api_init', function () {
     add_filter( 'get_terms_args', function ( $args, $taxonomies ) {
-        if ( isset( $args['search'] ) && is_string( $args['search'] ) && $args['search'] !== '' ) {
+        if ( isset( $args['search'] ) && is_string( $args['search'] ) && '' !== $args['search'] ) {
             $args['search'] = htax_encode_term_search( $args['search'] );
         }
         return $args;

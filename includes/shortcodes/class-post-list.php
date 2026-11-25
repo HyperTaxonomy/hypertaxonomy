@@ -909,8 +909,8 @@ class HyperTaxonomy_Shortcode_Post_List extends HyperTaxonomy_Shortcode_Base {
         }
 
         $template       = sanitize_html_class( $this->htax_atts['template'] );
-        $show_thumbnail = ( $this->htax_atts['show_thumbnail'] === 'true' );
-        $show_excerpt   = ( $this->htax_atts['show_excerpt'] === 'true' );
+        $show_thumbnail = ( 'true' === $this->htax_atts['show_thumbnail'] );
+        $show_excerpt   = ( 'true' === $this->htax_atts['show_excerpt'] );
         $meta_tpl       = $this->htax_atts['meta'] ?? '';
         $image_size     = sanitize_key( $this->htax_atts['image_size'] ?? 'medium' );
 

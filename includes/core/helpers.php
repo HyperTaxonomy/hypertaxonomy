@@ -409,7 +409,7 @@ function htax_log_debug( $message, $context = array(), $backtrace = false ) {
         $log_message = 'HyperTaxonomy: ' . $message;
 
         if ( ! empty( $context ) ) {
-            $log_message .= ' | Context: ' . json_encode( $context );
+            $log_message .= ' | Context: ' . wp_json_encode( $context );
         }
 
         // Add backtrace in verbose mode
@@ -562,7 +562,7 @@ function htax_log_error( $message, $context = array(), $backtrace = true ) {
     $log_message = 'HyperTaxonomy Error: ' . $message;
 
     if ( ! empty( $context ) ) {
-        $log_message .= ' | Context: ' . json_encode( $context );
+        $log_message .= ' | Context: ' . wp_json_encode( $context );
     }
 
     // Add backtrace in verbose mode (enabled by default for errors)

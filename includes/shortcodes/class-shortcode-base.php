@@ -523,12 +523,12 @@ abstract class HyperTaxonomy_Shortcode_Base {
         $is_redirect = isset( $this->redirect_terms[ $term->term_id ] );
 
         // Exclude all redirects if requested
-        if ( $this->htax_atts['exclude_redirects'] === '1' && $is_redirect ) {
+        if ( '1' === $this->htax_atts['exclude_redirects'] && $is_redirect ) {
             return true;
         }
 
         // Exclude empty redirects if requested
-        if ( $this->htax_atts['hide_empty_redirects'] === '1' && $is_redirect && $term->count == 0 ) {
+        if ( '1' === $this->htax_atts['hide_empty_redirects'] && $is_redirect && 0 === (int) $term->count ) {
             return true;
         }
 
@@ -598,7 +598,7 @@ abstract class HyperTaxonomy_Shortcode_Base {
             $group_ids   = htax_parse_term_ids( $this->htax_atts['include_groups'], 'group' );
             $group_items = array();
             $use_links   = ( isset( $this->htax_atts['header_link_behavior'] ) &&
-                           $this->htax_atts['header_link_behavior'] === 'link' );
+                           'link' === $this->htax_atts['header_link_behavior'] );
 
             foreach ( $group_ids as $group_id ) {
                 $group = htax_get_valid_term( $group_id );

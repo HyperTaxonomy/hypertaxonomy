@@ -181,7 +181,7 @@ class HyperTaxonomy_Term_Index extends HyperTaxonomy_Term_Display_Base {
 
         // Generate all letters A-Z
         foreach ( range( 'A', 'Z' ) as $letter ) {
-            $is_available = in_array( $letter, $available_letters );
+            $is_available = in_array( $letter, $available_letters, true );
 
             if ( $is_available ) {
                 $output .= '<a href="#htax-letter-' . strtolower( $letter ) . '" class="htax-nav-letter htax-nav-available">';
@@ -195,13 +195,13 @@ class HyperTaxonomy_Term_Index extends HyperTaxonomy_Term_Display_Base {
         }
 
         // Add 0-9 if present
-        if ( in_array( '0-9', $available_letters ) ) {
+        if ( in_array( '0-9', $available_letters, true ) ) {
             $output .= '<a href="#htax-letter-09" class="htax-nav-letter htax-nav-available">';
             $output .= '0-9</a> ';
         }
 
         // Add # if present
-        if ( in_array( '#', $available_letters ) ) {
+        if ( in_array( '#', $available_letters, true ) ) {
             $output .= '<a href="#htax-letter-special" class="htax-nav-letter htax-nav-available">';
             $output .= '#</a>';
         }
@@ -227,8 +227,8 @@ class HyperTaxonomy_Term_Index extends HyperTaxonomy_Term_Display_Base {
         $output = '<div class="htax-letter-section" id="' . esc_attr( $anchor_id ) . '">';
 
         // Add letter header
-        if ( $this->htax_atts['show_letter_headers'] === 'true' ) {
-            $display_letter = $this->htax_atts['uppercase_letters'] === 'true' ? $letter : strtolower( $letter );
+        if ( 'true' === $this->htax_atts['show_letter_headers'] ) {
+            $display_letter = 'true' === $this->htax_atts['uppercase_letters'] ? $letter : strtolower( $letter );
             $output        .= '<h3 class="htax-letter-header">' . esc_html( $display_letter ) . '</h3>';
         }
 
@@ -312,7 +312,7 @@ class HyperTaxonomy_Term_Index extends HyperTaxonomy_Term_Display_Base {
         }
         $output .= '>' . $this->build_term_name_html( $term );
 
-        if ( $this->htax_atts['show_count'] === 'true' ) {
+        if ( 'true' === $this->htax_atts['show_count'] ) {
             $output .= $this->no_italic( $term, ' <span class="htax-term-count">(' . $term->count . ')</span>' );
         }
 

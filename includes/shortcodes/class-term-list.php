@@ -171,7 +171,7 @@ class HyperTaxonomy_Term_List extends HyperTaxonomy_Term_Display_Base {
 
         $all_terms = get_terms( array(
             'taxonomy'   => $taxonomy,
-            'hide_empty' => $this->htax_atts['hide_empty'] === '1',
+            'hide_empty' => '1' === $this->htax_atts['hide_empty'],
         ) );
 
         if ( is_wp_error( $all_terms ) || empty( $all_terms ) ) {
@@ -360,7 +360,7 @@ class HyperTaxonomy_Term_List extends HyperTaxonomy_Term_Display_Base {
 
         // Build styles
         $styles = array();
-        if ( $depth > 0 && $this->htax_atts['indent_style'] === 'padding' ) {
+        if ( $depth > 0 && 'padding' === $this->htax_atts['indent_style'] ) {
             $indent   = $depth * intval( $this->htax_atts['indent_size'] );
             $styles[] = 'padding-left: ' . $indent . 'px';
         }
@@ -395,13 +395,13 @@ class HyperTaxonomy_Term_List extends HyperTaxonomy_Term_Display_Base {
             $output .= ' style="' . esc_attr( implode( '; ', $styles ) ) . '"';
         }
         // Add anchor ID if available and generate_anchors is enabled
-        if ( $this->htax_atts['generate_anchors'] === 'true' && isset( $this->term_anchors[ $term->term_id ] ) ) {
+        if ( 'true' === $this->htax_atts['generate_anchors'] && isset( $this->term_anchors[ $term->term_id ] ) ) {
             $output .= ' id="' . esc_attr( $this->term_anchors[ $term->term_id ] ) . '"';
         }
         $output .= '>';
 
         // Add indent dashes if specified
-        if ( $depth > 0 && $this->htax_atts['indent_style'] === 'dash' ) {
+        if ( $depth > 0 && 'dash' === $this->htax_atts['indent_style'] ) {
             $output .= str_repeat( '– ', $depth );
         }
 
@@ -464,7 +464,7 @@ class HyperTaxonomy_Term_List extends HyperTaxonomy_Term_Display_Base {
             return $content;
         }
 
-        $is_initially_open = ( $this->htax_atts['collapsible'] === 'true' );
+        $is_initially_open = ( 'true' === $this->htax_atts['collapsible'] );
 
         // Prepare header text
         $header_text = '';

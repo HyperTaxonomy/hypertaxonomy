@@ -99,12 +99,12 @@ function htax_rest_suggested_tags( WP_REST_Request $request ) {
     $ignore_raw = trim( htax_get_setting( 'tag_suggestion_ignore_words', '' ) );
 
     $apply_ignore = function ( string $text ) use ( $ignore_raw ): string {
-        if ( $ignore_raw === '' ) {
+        if ( '' === $ignore_raw ) {
             return $text;
         }
         $words = array_filter( array_map( 'trim', explode( ',', strtolower( $ignore_raw ) ) ) );
         foreach ( $words as $word ) {
-            if ( $word !== '' ) {
+            if ( '' !== $word ) {
                 $text = preg_replace( '/\b' . preg_quote( $word, '/' ) . '\b/u', ' ', $text );
             }
         }

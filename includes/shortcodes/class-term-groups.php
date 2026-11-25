@@ -273,7 +273,7 @@ class HyperTaxonomy_Term_Groups extends HyperTaxonomy_Shortcode_Base {
         $classes = $this->build_container_classes( 'htax-term-groups', false );
 
         // Add auto-collapse class if enabled
-        if ( $this->htax_atts['auto_collapse'] === 'true' ) {
+        if ( 'true' === $this->htax_atts['auto_collapse'] ) {
             $classes[] = 'htax-auto-collapse';
         }
 
@@ -281,7 +281,7 @@ class HyperTaxonomy_Term_Groups extends HyperTaxonomy_Shortcode_Base {
         $output = '<div class="' . esc_attr( implode( ' ', $classes ) ) . '"' . $this->build_container_id_attr() . '>';
 
         // Determine initial state for root groups
-        $is_root_open = ( $this->htax_atts['collapsible'] === 'true' );
+        $is_root_open = ( 'true' === $this->htax_atts['collapsible'] );
 
         foreach ( $root_groups as $group ) {
             $output .= $this->render_group( $group, $taxonomies, 0, $is_root_open );
@@ -290,7 +290,7 @@ class HyperTaxonomy_Term_Groups extends HyperTaxonomy_Shortcode_Base {
         $output .= '</div>';
 
         // Enqueue JavaScript if auto_collapse is enabled
-        if ( $this->htax_atts['auto_collapse'] === 'true' && $this->htax_atts['collapsible'] === 'true' ) {
+        if ( 'true' === $this->htax_atts['auto_collapse'] && 'true' === $this->htax_atts['collapsible'] ) {
             $this->enqueue_auto_collapse_script();
         }
 
@@ -331,7 +331,7 @@ class HyperTaxonomy_Term_Groups extends HyperTaxonomy_Shortcode_Base {
             }
             $output .= '<span class="htax-group-name">' . esc_html( $group->name ) . '</span>';
 
-            if ( $this->htax_atts['show_group_count'] === 'true' ) {
+            if ( 'true' === $this->htax_atts['show_group_count'] ) {
                 $term_count = count( $terms );
                 $output    .= ' <span class="htax-group-count">(' . $term_count . ')</span>';
             }
@@ -349,7 +349,7 @@ class HyperTaxonomy_Term_Groups extends HyperTaxonomy_Shortcode_Base {
             }
             $output .= '<span class="htax-group-name">' . esc_html( $group->name ) . '</span>';
 
-            if ( $this->htax_atts['show_group_count'] === 'true' ) {
+            if ( 'true' === $this->htax_atts['show_group_count'] ) {
                 $term_count = count( $terms );
                 $output    .= ' <span class="htax-group-count">(' . $term_count . ')</span>';
             }
@@ -462,7 +462,7 @@ class HyperTaxonomy_Term_Groups extends HyperTaxonomy_Shortcode_Base {
         $output .= ' class="htax-term-link">';
         $output .= $this->build_term_name_html( $term );
 
-        if ( $this->htax_atts['show_term_count'] === 'true' ) {
+        if ( 'true' === $this->htax_atts['show_term_count'] ) {
             $output .= $this->no_italic( $term, ' <span class="htax-term-count">(' . $term->count . ')</span>' );
         }
 

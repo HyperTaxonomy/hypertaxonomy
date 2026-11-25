@@ -9,6 +9,7 @@
 # (committed to git but not needed at runtime):
 #   docs/              — documentation source, published at hypertaxonomy.org
 #   webpack.config.js  — build tooling
+#   phpcs.xml.dist     — coding standards ruleset
 #   src/               — block source dirs (compiled into build/ directories)
 #   blocks/shared/     — shared editor JS factory (compiled into each block's build/)
 #
@@ -111,6 +112,7 @@ rules += [
     ('.git',              True,  False),
     ('.github',           True,  False),
     ('.distignore',       False, False),
+    ('phpcs.xml.dist',    False, False),
     ('.gitignore',        False, False),
     ('.wordpress-org',    True,  False),
     ('docs',              True,  True),
